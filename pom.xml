@@ -1,0 +1,199 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <groupId>org.nuxeo.java.client</groupId>
+  <artifactId>nuxeo-java-client</artifactId>
+  <version>1.0-SNAPSHOT</version>
+  <name>Nuxeo Java Client</name>
+  <description>Java Client for Nuxeo REST APIs.</description>
+  <packaging>pom</packaging>
+
+  <url>http://www.nuxeo.com/en/products</url>
+  <organization>
+    <name>Nuxeo SA</name>
+    <url>http://www.nuxeo.com</url>
+  </organization>
+  <licenses>
+    <license>
+      <name>GNU LESSER GENERAL PUBLIC LICENSE, Version 2.1</name>
+      <url>http://www.gnu.org/licenses/lgpl-2.1.html</url>
+    </license>
+  </licenses>
+
+  <mailingLists>
+    <mailingList>
+      <name>Nuxeo ECM list</name>
+      <post>ecm@lists.nuxeo.com</post>
+      <subscribe>http://lists.nuxeo.com/mailman/listinfo/ECM</subscribe>
+      <unsubscribe>http://lists.nuxeo.com/mailman/listinfo/ECM</unsubscribe>
+      <archive>http://lists.nuxeo.com/pipermail/ecm/</archive>
+      <otherArchives>
+        <otherArchive>
+          http://dir.gmane.org/gmane.comp.cms.nuxeo.bugs
+        </otherArchive>
+        <otherArchive>
+          http://www.mail-archive.com/ecm@lists.nuxeo.com/
+        </otherArchive>
+      </otherArchives>
+    </mailingList>
+    <mailingList>
+      <name>Nuxeo ECM checkins list</name>
+      <subscribe>
+        http://lists.nuxeo.com/mailman/listinfo/ecm-checkins
+      </subscribe>
+      <unsubscribe>
+        http://lists.nuxeo.com/mailman/listinfo/ecm-checkins
+      </unsubscribe>
+      <archive>http://lists.nuxeo.com/pipermail/ecm-checkins/</archive>
+      <otherArchives>
+        <otherArchive>
+          http://dir.gmane.org/gmane.comp.cms.nuxeo.scm
+        </otherArchive>
+        <otherArchive>
+          http://www.mail-archive.com/ecm-checkins@lists.nuxeo.com/
+        </otherArchive>
+      </otherArchives>
+    </mailingList>
+    <mailingList>
+      <name>Nuxeo ECM developers list</name>
+      <post>nuxeo-dev@lists.nuxeo.com</post>
+      <subscribe>http://lists.nuxeo.com/mailman/listinfo/nuxeo-dev</subscribe>
+      <unsubscribe>
+        http://lists.nuxeo.com/mailman/listinfo/nuxeo-dev
+      </unsubscribe>
+      <archive>http://lists.nuxeo.com/pipermail/nuxeo-dev/</archive>
+    </mailingList>
+  </mailingLists>
+
+  <issueManagement>
+    <system>jira</system>
+    <url>http://jira.nuxeo.com/browse/NXP</url>
+  </issueManagement>
+
+  <ciManagement>
+    <system>Jenkins</system>
+    <url>http://qa.nuxeo.org/jenkins/</url>
+    <notifiers>
+      <notifier>
+        <type>mail</type>
+        <configuration>
+          <address>ecm-qa@lists.nuxeo.com</address>
+        </configuration>
+      </notifier>
+    </notifiers>
+  </ciManagement>
+
+  <modules>
+    <module>nuxeo-java-client-core</module>
+  </modules>
+
+  <properties>
+    <fasterxml.version>2.6.3</fasterxml.version>
+    <retrofit.version>2.0.0-beta2</retrofit.version>
+    <log4j.version>2.4.1</log4j.version>
+    <retrolambda.version>2.0.6</retrolambda.version>
+    <junit.version>4.12</junit.version>
+    <java.version.source>1.8</java.version.source>
+    <java.version.target>1.7</java.version.target>
+    <compiler.version>3.3</compiler.version>
+    <mvn.prerequisites.version>3.1.1</mvn.prerequisites.version>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+  </properties>
+
+  <prerequisites>
+    <maven>${mvn.prerequisites.version}</maven>
+  </prerequisites>
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <groupId>com.squareup.retrofit</groupId>
+        <artifactId>retrofit</artifactId>
+        <version>${retrofit.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.fasterxml.jackson.core</groupId>
+        <artifactId>jackson-annotations</artifactId>
+        <version>${fasterxml.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.fasterxml.jackson.core</groupId>
+        <artifactId>jackson-core</artifactId>
+        <version>${fasterxml.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.fasterxml.jackson.core</groupId>
+        <artifactId>jackson-databind</artifactId>
+        <version>${fasterxml.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.logging.log4j</groupId>
+        <artifactId>log4j-api</artifactId>
+        <version>${log4j.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.logging.log4j</groupId>
+        <artifactId>log4j-core</artifactId>
+        <version>${log4j.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>junit</groupId>
+        <artifactId>junit</artifactId>
+        <version>${junit.version}</version>
+        <scope>test</scope>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <version>${compiler.version}</version>
+        <configuration>
+          <source>${java.version.source}</source>
+          <target>${java.version.source}</target>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>net.orfjackal.retrolambda</groupId>
+        <artifactId>retrolambda-maven-plugin</artifactId>
+        <version>${retrolambda.version}</version>
+        <executions>
+          <execution>
+            <goals>
+              <goal>process-main</goal>
+              <goal>process-test</goal>
+            </goals>
+          </execution>
+        </executions>
+        <configuration>
+          <target>${java.version.target}</target>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+
+  <distributionManagement>
+    <site>
+      <id>maven-website</id>
+      <url>scpexe://gironde.nuxeo.com/home/mavenweb/site/</url>
+    </site>
+    <repository>
+      <id>public-releases</id>
+      <url>
+        http://maven.in.nuxeo.com/nexus/content/repositories/public-releases
+      </url>
+    </repository>
+    <snapshotRepository>
+      <id>public-snapshots</id>
+      <url>
+        http://maven.in.nuxeo.com/nexus/content/repositories/public-snapshots
+      </url>
+      <uniqueVersion>true</uniqueVersion>
+    </snapshotRepository>
+  </distributionManagement>
+
+</project>
