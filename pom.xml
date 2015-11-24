@@ -4,10 +4,10 @@
   <modelVersion>4.0.0</modelVersion>
 
   <groupId>org.nuxeo.java.client</groupId>
-  <artifactId>nuxeo-java-client</artifactId>
+  <artifactId>nuxeo-java-client-parent</artifactId>
   <version>1.0-SNAPSHOT</version>
-  <name>Nuxeo Java Client</name>
-  <description>Java Client for Nuxeo REST APIs.</description>
+  <name>Nuxeo Java Client Parent</name>
+  <description>Java Client Parent for Nuxeo REST APIs.</description>
   <packaging>pom</packaging>
 
   <url>http://www.nuxeo.com/en/products</url>
@@ -87,6 +87,8 @@
 
   <modules>
     <module>nuxeo-java-client-core</module>
+    <module>nuxeo-java-client-test</module>
+    <module>nuxeo-java-client-android-sample</module>
   </modules>
 
   <properties>
@@ -99,6 +101,7 @@
     <java.version.target>1.7</java.version.target>
     <compiler.version>3.3</compiler.version>
     <mvn.prerequisites.version>3.1.1</mvn.prerequisites.version>
+    <nuxeo.java.client.version>1.0-SNAPSHOT</nuxeo.java.client.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
   </properties>
 
@@ -107,6 +110,11 @@
   </prerequisites>
   <dependencyManagement>
     <dependencies>
+      <dependency>
+        <groupId>org.nuxeo.java.client</groupId>
+        <artifactId>nuxeo-java-client</artifactId>
+        <version>${nuxeo.java.client.version}</version>
+      </dependency>
       <dependency>
         <groupId>com.squareup.retrofit</groupId>
         <artifactId>retrofit</artifactId>

@@ -8,7 +8,9 @@ This is an on-going project, supported by Nuxeo.
 
 ## Sub-Modules Organization
 
-- `nuxeo-java-client-core`: Nuxeo Java Client Core.
+- `nuxeo-java-client-core`: Nuxeo Java Client Library.
+- `nuxeo-java-client-test`: Nuxeo Java Client Suite Test.
+- `nuxeo-java-client-android-test`: Nuxeo Java Client Android Application Sample And Suite Test.
 
 ## Building
 
@@ -33,6 +35,38 @@ This is an on-going project, supported by Nuxeo.
   - username: Administrator
   - password: Administrator
 
+### Library Import
+
+Import Nuxeo Java Client with:
+
+Maven:
+
+```
+<dependency>
+  <groupId>org.nuxeo.java.client</groupId>
+  <artifactId>nuxeo-java-client</artifactId>
+  <version>1.0-SNAPSHOT</version>
+</dependency>
+```
+
+Gradle:
+
+```
+compile 'org.nuxeo.java.client:nuxeo-java-client:1.0-SNAPSHOT'
+```
+
+Ivy:
+
+```
+<dependency org="org.nuxeo.java.client" name="nuxeo-java-client" rev="1.0-SNAPSHOT" />
+
+```
+
+SBT:
+
+```
+libraryDependencies += "org.nuxeo.java.client" % "nuxeo-java-client" % "1.0-SNAPSHOT"
+```
 
 ## Reporting Issues
 
