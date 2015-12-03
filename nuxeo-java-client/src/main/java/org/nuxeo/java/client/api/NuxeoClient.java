@@ -16,12 +16,10 @@
  */
 package org.nuxeo.java.client.api;
 
-import org.nuxeo.java.client.api.objects.Directory;
-import org.nuxeo.java.client.api.objects.Group;
+import java.util.concurrent.TimeUnit;
+
 import org.nuxeo.java.client.api.objects.CurrentUser;
-import org.nuxeo.java.client.api.objects.Operation;
 import org.nuxeo.java.client.api.objects.Repository;
-import org.nuxeo.java.client.api.objects.User;
 import org.nuxeo.java.client.internals.spi.NuxeoClientException;
 import org.nuxeo.java.client.internals.spi.auth.BasicAuthInterceptor;
 
@@ -30,8 +28,6 @@ import retrofit.Retrofit;
 
 import com.squareup.okhttp.Interceptor;
 import com.squareup.okhttp.OkHttpClient;
-
-import java.util.concurrent.TimeUnit;
 
 /**
  * @since 1.0
@@ -51,14 +47,6 @@ public class NuxeoClient implements Client {
     protected final OkHttpClient httpClient;
 
     protected final Retrofit.Builder builder;
-
-    protected User user;
-
-    protected Group group;
-
-    protected Directory directory;
-
-    protected Operation operation;
 
     public NuxeoClient(String url, String username, String password)  {
         httpClient = new OkHttpClient();
@@ -90,22 +78,6 @@ public class NuxeoClient implements Client {
 
     public void logout()  {
         httpClient.interceptors().clear();
-    }
-
-    public User getUser() {
-        return user;
-    }
-
-    public Group getGroup() {
-        return group;
-    }
-
-    public Directory getDirectory() {
-        return directory;
-    }
-
-    public Operation getOperation() {
-        return operation;
     }
 
     @Override

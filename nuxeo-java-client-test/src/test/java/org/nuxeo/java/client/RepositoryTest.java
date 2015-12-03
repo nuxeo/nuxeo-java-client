@@ -79,7 +79,7 @@ public class RepositoryTest extends BaseTest {
     @Test
     public void itCanFetchFolder() {
         Document root = nuxeoClient.getRepository().getDocumentRoot();
-        Document folder = nuxeoClient.getRepository().getDocumentByPath("pouet");
+        Document folder = nuxeoClient.getRepository().getDocumentByPath("folder_2");
         assertNotNull(folder);
         assertEquals("Folder", folder.getType());
         assertEquals("document", folder.getEntityType());
