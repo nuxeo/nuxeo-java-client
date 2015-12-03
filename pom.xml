@@ -86,12 +86,13 @@
   </ciManagement>
 
   <modules>
-    <module>nuxeo-java-client-core</module>
+    <module>nuxeo-java-client</module>
     <module>nuxeo-java-client-test</module>
     <module>nuxeo-java-client-android-sample</module>
   </modules>
 
   <properties>
+    <nuxeo.version>8.1-SNAPSHOT</nuxeo.version>
     <fasterxml.version>2.6.3</fasterxml.version>
     <retrofit.version>2.0.0-beta2</retrofit.version>
     <log4j.version>2.4.1</log4j.version>
@@ -100,9 +101,11 @@
     <java.version.source>1.8</java.version.source>
     <java.version.target>1.7</java.version.target>
     <compiler.version>3.3</compiler.version>
+    <guava.version>18.0</guava.version>
     <mvn.prerequisites.version>3.1.1</mvn.prerequisites.version>
     <nuxeo.java.client.version>1.0-SNAPSHOT</nuxeo.java.client.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <commons-io.version>2.4</commons-io.version>
   </properties>
 
   <prerequisites>
@@ -118,6 +121,11 @@
       <dependency>
         <groupId>com.squareup.retrofit</groupId>
         <artifactId>retrofit</artifactId>
+        <version>${retrofit.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.squareup.retrofit</groupId>
+        <artifactId>converter-jackson</artifactId>
         <version>${retrofit.version}</version>
       </dependency>
       <dependency>
@@ -146,9 +154,64 @@
         <version>${log4j.version}</version>
       </dependency>
       <dependency>
+        <groupId>com.google.guava</groupId>
+        <artifactId>guava</artifactId>
+        <version>${guava.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>commons-io</groupId>
+        <artifactId>commons-io</artifactId>
+        <version>${commons-io.version}</version>
+      </dependency>
+
+      <!-- TEST -->
+
+      <dependency>
         <groupId>junit</groupId>
         <artifactId>junit</artifactId>
         <version>${junit.version}</version>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.runtime</groupId>
+        <artifactId>nuxeo-runtime-test</artifactId>
+        <version>${nuxeo.version}</version>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-rest-api-test</artifactId>
+        <version>${nuxeo.version}</version>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.core</groupId>
+        <artifactId>nuxeo-core-test</artifactId>
+        <version>${nuxeo.version}</version>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-platform-test</artifactId>
+        <version>${nuxeo.version}</version>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-platform-tag-api</artifactId>
+        <version>${nuxeo.version}</version>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-platform-tag-core</artifactId>
+        <version>${nuxeo.version}</version>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-platform-url-core</artifactId>
+        <version>${nuxeo.version}</version>
         <scope>test</scope>
       </dependency>
     </dependencies>
