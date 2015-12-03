@@ -8,7 +8,7 @@ This is an on-going project, supported by Nuxeo.
 
 ## Sub-Modules Organization
 
-- `nuxeo-java-client-core`: Nuxeo Java Client Library.
+- `nuxeo-java-client`: Nuxeo Java Client Library.
 - `nuxeo-java-client-test`: Nuxeo Java Client Suite Test.
 - `nuxeo-java-client-android-test`: Nuxeo Java Client Android Application Sample And Suite Test.
 
