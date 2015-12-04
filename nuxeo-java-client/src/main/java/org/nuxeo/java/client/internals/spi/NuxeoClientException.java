@@ -22,6 +22,7 @@ import java.io.StringWriter;
 import java.lang.reflect.Field;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import org.nuxeo.java.client.api.ConstantsV1;
 
 /**
  * @since 1.0
@@ -54,7 +55,7 @@ public class NuxeoClientException extends RuntimeException {
         this.type = type;
         info = extractInfo(cause);
         throwable = cause;
-        entityType = "exception";
+        entityType = ConstantsV1.ENTITY_TYPE_EXCEPTION;
         exception = null;
     }
 
@@ -63,7 +64,7 @@ public class NuxeoClientException extends RuntimeException {
         this.type = type;
         this.info = info;
         throwable = null;
-        entityType = "exception";
+        entityType = ConstantsV1.ENTITY_TYPE_EXCEPTION;
         exception = null;
     }
 
@@ -72,7 +73,7 @@ public class NuxeoClientException extends RuntimeException {
         status = 500;
         type = "Error";
         info = e.getMessage();
-        entityType = "exception";
+        entityType = ConstantsV1.ENTITY_TYPE_EXCEPTION;
         exception = null;
     }
 
@@ -81,7 +82,7 @@ public class NuxeoClientException extends RuntimeException {
         throwable = null;
         type = null;
         status = code;
-        entityType = "exception";
+        entityType = ConstantsV1.ENTITY_TYPE_EXCEPTION;
         exception = null;
     }
 
@@ -90,7 +91,7 @@ public class NuxeoClientException extends RuntimeException {
         throwable = null;
         type = null;
         status = 666;
-        entityType = "exception";
+        entityType = ConstantsV1.ENTITY_TYPE_EXCEPTION;
         exception = null;
     }
 

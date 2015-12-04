@@ -18,9 +18,11 @@ package org.nuxeo.java.client;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.io.IOException;
+import java.util.List;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -30,6 +32,7 @@ import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.restapi.test.RestServerFeature;
 import org.nuxeo.ecm.restapi.test.RestServerInit;
 import org.nuxeo.java.client.api.objects.Document;
+import org.nuxeo.java.client.api.objects.Documents;
 import org.nuxeo.java.client.internals.spi.NuxeoClientException;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -124,6 +127,16 @@ public class RepositoryTest extends BaseTest {
         assertEquals(folder.getRef(), document.getParentRef());
         assertEquals("/folder_1/file", document.getPath());
         assertEquals("file", document.getTitle());
+    }
+
+    @Test
+    public void itCanQuery() {
+        Documents documents = nuxeoClient.getRepository().query("SELECT * From Note");
+        assertTrue(documents.getDocuments().size() != 0);
+        Document document = documents.getDocuments().get(0);
+        assertEquals("Note", document.getType());
+        assertEquals("test", document.getRepositoryName());
+        assertEquals("project", document.getState());
     }
 
     // TODO JAVACLIENT-22

@@ -129,6 +129,16 @@ public class Repository<T> extends NuxeoObject {
 
     /* By Path - Async */
 
+    public void getDocumentRoot(Callback<Document> callback)  {
+        // TODO: JAVACLIENT-20
+        //executeAsync(getCurrentMethodName(), callback);
+        if (repositoryName == null) {
+            repositoryAPI.getDocumentRoot().enqueue(callback);
+        } else {
+            repositoryAPI.getDocumentRoot(repositoryName).enqueue(callback);
+        }
+    }
+
     public void getDocumentByPath(String documentPath, Callback<Document> callback) {
         if (repositoryName == null) {
             repositoryAPI.getDocumentByPath(documentPath).enqueue(callback);
@@ -163,37 +173,35 @@ public class Repository<T> extends NuxeoObject {
 
     /* Query - Sync */
 
-    public List<Document> query(String query, String pageSize, String currentPageIndex, String maxResults,
+    public Documents query(String query)  {
+        return (Documents) getResponse(getCurrentMethodName(), query);
+    }
+
+    public Documents query(String query, String pageSize, String currentPageIndex, String maxResults,
             String sortBy, String sortOrder, String queryParams)  {
-        return (List<Document>) getResponse(getCurrentMethodName(), query, pageSize, currentPageIndex, maxResults, sortBy, sortOrder,
+        return (Documents) getResponse(getCurrentMethodName(), query, pageSize, currentPageIndex, maxResults, sortBy, sortOrder,
                 queryParams);
     }
 
-    public List<Document> queryByProvider(String providerName, String pageSize, String currentPageIndex,
+    public Documents queryByProvider(String providerName, String pageSize, String currentPageIndex,
             String maxResults, String sortBy, String sortOrder, String queryParams)  {
-        return (List<Document>) getResponse(getCurrentMethodName(), providerName, pageSize, currentPageIndex, maxResults, sortBy, sortOrder, queryParams);
+        return (Documents) getResponse(getCurrentMethodName(), providerName, pageSize, currentPageIndex, maxResults, sortBy, sortOrder, queryParams);
     }
 
     /* Query - Async */
 
-    public void getDocumentRoot(Callback<Document> callback)  {
-        // TODO: JAVACLIENT-20
-        //executeAsync(getCurrentMethodName(), callback);
-        if (repositoryName == null) {
-            repositoryAPI.getDocumentRoot().enqueue(callback);
-        } else {
-            repositoryAPI.getDocumentRoot(repositoryName).enqueue(callback);
-        }
+    public void query(String query, Callback<Documents> callback) {
+        repositoryAPI.query(query).enqueue(callback);
     }
 
     public void query(String query, String pageSize, String currentPageIndex, String maxResults, String sortBy,
-            String sortOrder, String queryParams, Callback<List<Document>> callback) {
-        repositoryAPI.queryByProvider(query, pageSize, currentPageIndex, maxResults, sortBy, sortOrder, queryParams)
+            String sortOrder, String queryParams, Callback<Documents> callback) {
+        repositoryAPI.query(query, pageSize, currentPageIndex, maxResults, sortBy, sortOrder, queryParams)
                      .enqueue(callback);
     }
 
     public void queryByProvider(String providerName, String pageSize, String currentPageIndex, String maxResults,
-            String sortBy, String sortOrder, String queryParams, Callback<List<Document>> callback) {
+            String sortBy, String sortOrder, String queryParams, Callback<Documents> callback) {
         repositoryAPI.queryByProvider(providerName, pageSize, currentPageIndex, maxResults, sortBy, sortOrder,
                 queryParams).enqueue(callback);
     }

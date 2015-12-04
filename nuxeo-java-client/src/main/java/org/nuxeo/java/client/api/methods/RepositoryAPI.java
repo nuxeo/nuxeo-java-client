@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.nuxeo.java.client.api.objects.Document;
 
+import org.nuxeo.java.client.api.objects.Documents;
 import retrofit.Call;
 import retrofit.http.Body;
 import retrofit.http.DELETE;
@@ -72,13 +73,16 @@ public interface RepositoryAPI {
     Call<Document> deleteDocumentByPath(@Path("docPath") String docPath);
 
     @GET("query")
-    Call<List<Document>> query(@Query("query") String query, @Query("pageSize") String pageSize,
+    Call<Documents> query(@Query("query") String query);
+
+    @GET("query")
+    Call<Documents> query(@Query("query") String query, @Query("pageSize") String pageSize,
             @Query("currentPageIndex") String currentPageIndex, @Query("maxResults") String maxResults,
             @Query("sortBy") String sortBy, @Query("sortOrder") String sortOrder,
             @Query("queryParams") String queryParams);
 
     @GET("query/{providerName}")
-    Call<List<Document>> queryByProvider(@Path("providerName") String providerName, @Query("pageSize") String pageSize,
+    Call<Documents> queryByProvider(@Path("providerName") String providerName, @Query("pageSize") String pageSize,
             @Query("currentPageIndex") String currentPageIndex, @Query("maxResults") String maxResults,
             @Query("sortBy") String sortBy, @Query("sortOrder") String sortOrder,
             @Query("queryParams") String queryParams);
