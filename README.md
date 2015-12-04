@@ -10,7 +10,7 @@ This is an on-going project, supported by Nuxeo.
 
 - `nuxeo-java-client`: Nuxeo Java Client Library.
 - `nuxeo-java-client-test`: Nuxeo Java Client Suite Test.
-- `nuxeo-java-client-android-test`: Nuxeo Java Client Android Application Sample And Suite Test.
+- `NuxeoJavaClientSample`: Nuxeo Java Client Android Application Sample And Suite Test.
 
 ## Building
 
