@@ -88,7 +88,6 @@
   <modules>
     <module>nuxeo-java-client</module>
     <module>nuxeo-java-client-test</module>
-    <module>nuxeo-java-client-android-sample</module>
   </modules>
 
   <properties>
