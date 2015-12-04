@@ -3,6 +3,7 @@ package org.nuxeo.client.java.android;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
+import android.app.MediaRouteButton;
 import android.content.pm.PackageManager;
 import android.os.StrictMode;
 import android.support.annotation.NonNull;
@@ -63,8 +64,20 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
     // UI references.
     private EditText mEmailView;
     private EditText mPasswordView;
+
+    private EditText uid;
+    private EditText title;
+    private EditText creator;
+    private EditText path;
+    private EditText repository;
+    private EditText properties;
+    private EditText type;
+
+
+
     private View mProgressView;
     private View mLoginFormView;
+    private View mDocFormView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -75,6 +88,14 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         // Set up the login form.
         mEmailView = (EditText) findViewById(R.id.login);
         populateAutoComplete();
+
+        uid = (EditText) findViewById(R.id.uid);
+        title = (EditText) findViewById(R.id.title);
+        path = (EditText) findViewById(R.id.path);
+        type = (EditText) findViewById(R.id.type);
+        properties = (EditText) findViewById(R.id.properties);
+        repository = (EditText) findViewById(R.id.repository);
+        creator = (EditText) findViewById(R.id.creator);
 
         mPasswordView = (EditText) findViewById(R.id.password);
         mPasswordView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
@@ -97,6 +118,8 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         });
 
         mLoginFormView = findViewById(R.id.login_form);
+        mDocFormView = findViewById(R.id.doc_form);
+
         mProgressView = findViewById(R.id.login_progress);
     }
 
@@ -327,13 +350,19 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         @Override
         protected void onPostExecute(final Boolean success) {
             mAuthTask = null;
-            showProgress(false);
 
             Document root = nuxeoClient.getRepository().getDocumentRoot();
             if (root!=null) {
-                mEmailView.setText(root.getId());
-                mEmailView.requestFocus();
+                mProgressView.setVisibility(View.GONE);
+                mLoginFormView.setVisibility(View.GONE);
+                mDocFormView.setVisibility(View.VISIBLE);
+                uid.setText(root.getId());
+                path.setText(root.getPath());
+                type.setText(root.getType());
+                repository.setText(root.getRepositoryName());
+                creator.setText((CharSequence) root.getName());
             } else {
+                showProgress(false);
                 mEmailView.setError("Root isn't available");
                 mEmailView.requestFocus();
             }
