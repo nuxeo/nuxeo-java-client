@@ -26,3 +26,7 @@ dependency-tree.log
 target
 nashorn_code_cache/
 *.tmp
+.gradle
+local.properties
+build
+captures
