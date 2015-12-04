@@ -18,12 +18,12 @@ package org.nuxeo.java.client.api;
 
 import com.squareup.okhttp.Interceptor;
 
-import java.util.concurrent.TimeUnit;
-
 /**
  * @since 1.0
  */
 public interface Client {
+
+    NuxeoClient header(String header, String value);
 
     /**
      * Set Authentication Method.<br/>
@@ -36,7 +36,7 @@ public interface Client {
      */
     NuxeoClient setAuthenticationMethod(Interceptor interceptor);
 
-    NuxeoClient setTimeOut(long timeout);
+    NuxeoClient timeout(long timeout);
 
     /**
      * Gets base URL.

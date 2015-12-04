@@ -20,7 +20,6 @@ import javax.inject.Inject;
 
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.java.client.api.NuxeoClient;
-import org.nuxeo.java.client.internals.spi.NuxeoClientException;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
 /**
@@ -34,7 +33,7 @@ public class BaseTest {
     public NuxeoClient nuxeoClient;
 
     public void login()  {
-        nuxeoClient = new NuxeoClient("http://localhost:18090", "Administrator", "Administrator").setTimeOut(60);
+        nuxeoClient = new NuxeoClient("http://localhost:18090", "Administrator", "Administrator").timeout(60);
     }
 
     public void login(String username, String pwd)  {

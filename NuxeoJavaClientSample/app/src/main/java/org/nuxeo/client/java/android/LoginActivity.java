@@ -351,7 +351,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         protected void onPostExecute(final Boolean success) {
             mAuthTask = null;
 
-            Document root = nuxeoClient.getRepository().getDocumentRoot();
+            Document root = nuxeoClient.header("X-NXproperties", "*").getRepository().getDocumentRoot();
             if (root!=null) {
                 mProgressView.setVisibility(View.GONE);
                 mLoginFormView.setVisibility(View.GONE);

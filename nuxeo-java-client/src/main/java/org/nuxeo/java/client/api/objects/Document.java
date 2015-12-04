@@ -17,6 +17,7 @@
 package org.nuxeo.java.client.api.objects;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import org.nuxeo.java.client.api.ConstantsV1;
 
 import java.util.HashMap;
 import java.util.List;
@@ -26,8 +27,6 @@ import java.util.Map;
  * @since 1.0
  */
 public class Document extends NuxeoObject{
-
-    private static final long serialVersionUID = 1L;
 
     @JsonProperty("repository")
     protected  String repositoryName;
@@ -68,7 +67,7 @@ public class Document extends NuxeoObject{
     public Document(String id, String type, List<String> facets, String changeToken, String path, String state,
             String lockOwner, String lockCreated, String repositoryName, String versionLabel, String isCheckedOut,
             Map<String, Object> properties, Map<String, Object> contextParameters) {
-        super("document");
+        super(ConstantsV1.ENTITY_TYPE_DOCUMENT);
         ref = id;
         this.changeToken = changeToken;
         this.facets = facets;
@@ -86,7 +85,7 @@ public class Document extends NuxeoObject{
     }
 
     public Document(String title, String type) {
-        super("document");
+        super(ConstantsV1.ENTITY_TYPE_DOCUMENT);
         ref = null;
         this.title = title;
         name = title;
@@ -105,7 +104,7 @@ public class Document extends NuxeoObject{
     }
 
     public Document() {
-        super("document");
+        super(ConstantsV1.ENTITY_TYPE_DOCUMENT);
     }
 
     public String getRepositoryName() {
@@ -117,7 +116,7 @@ public class Document extends NuxeoObject{
     }
 
     public String getInputType() {
-        return "document";
+        return ConstantsV1.ENTITY_TYPE_DOCUMENT;
     }
 
     public String getPath() {

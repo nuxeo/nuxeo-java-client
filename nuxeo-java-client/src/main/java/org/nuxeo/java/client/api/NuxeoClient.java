@@ -28,17 +28,15 @@ import retrofit.Retrofit;
 
 import com.squareup.okhttp.Interceptor;
 import com.squareup.okhttp.OkHttpClient;
+import com.squareup.okhttp.Request;
+import com.squareup.okhttp.Response;
 
 /**
  * @since 1.0
  */
 public class NuxeoClient implements Client {
 
-    public static final String VERSION = "v1/";
-
-    public static final String API_PATH = "/api/" + VERSION;
-
-    protected Retrofit retrofit;
+    protected final Retrofit retrofit;
 
     protected final Repository repository;
 
@@ -48,9 +46,10 @@ public class NuxeoClient implements Client {
 
     protected final Retrofit.Builder builder;
 
-    public NuxeoClient(String url, String username, String password)  {
+    public NuxeoClient(String url, String username, String password) {
         httpClient = new OkHttpClient();
-        builder = new Retrofit.Builder().baseUrl(url + API_PATH).addConverterFactory(JacksonConverterFactory.create());
+        builder = new Retrofit.Builder().baseUrl(url + ConstantsV1.API_PATH).addConverterFactory(
+                JacksonConverterFactory.create());
         if (httpClient.interceptors().isEmpty()) {
             if (username != null && password != null) {
                 setAuthenticationMethod(new BasicAuthInterceptor(username, password));
@@ -58,6 +57,7 @@ public class NuxeoClient implements Client {
                 throw new NuxeoClientException("Define credentials");
             }
         }
+        retrofit = builder.client(httpClient).build();
         currentUser = new CurrentUser(retrofit);
         repository = new Repository(retrofit);
     }
@@ -67,30 +67,84 @@ public class NuxeoClient implements Client {
         return repository;
     }
 
+    public Repository repositoryName(String repositoryName) {
+        return getRepository(repositoryName);
+    }
+
     public Repository getRepository(String repositoryName) {
         repository.repositoryName(repositoryName);
         return repository;
     }
 
-    public CurrentUser getCurrentUser()  {
+    public CurrentUser getCurrentUser() {
         return currentUser.getCurrentUser();
     }
 
-    public void logout()  {
-        httpClient.interceptors().clear();
+    public void logout() {
+        retrofit.client().interceptors().clear();
+    }
+
+    @Override
+    public NuxeoClient header(String header, String value) {
+        retrofit.client().interceptors().add(chain -> {
+            Request request = chain.request();
+            request = request.newBuilder().addHeader(header, value).build();
+            Response response = chain.proceed(request);
+            return response;
+        });
+        return this;
+    }
+
+    public NuxeoClient enrichers(String... enrichers) {
+        for (String enricher : enrichers) {
+            header(ConstantsV1.HEADER_ENRICHERS, enricher);
+        }
+        return this;
+    }
+
+    public NuxeoClient voidOperation(boolean value) {
+        header(ConstantsV1.HEADER_VOID_OPERATION, Boolean.toString(value));
+        return this;
+    }
+
+    public NuxeoClient transactionTimeout(long timeout) {
+        header(ConstantsV1.HEADER_TX_TIMEOUT, String.valueOf(timeout));
+        return this;
+    }
+
+    public NuxeoClient fetch(String... fetchs) {
+        for (String fetch : fetchs) {
+            header(ConstantsV1.HEADER_FETCH, fetch);
+        }
+        return this;
+    }
+
+    public NuxeoClient depth(String value) {
+        header(ConstantsV1.HEADER_DEPTH, value);
+        return this;
+    }
+
+    public NuxeoClient version(String value) {
+        header(ConstantsV1.HEADER_VERSIONING, value);
+        return this;
+    }
+
+    public NuxeoClient schemas(String... properties) {
+        for (String property : properties) {
+            header(ConstantsV1.HEADER_PROPERTIES, property);
+        }
+        return this;
     }
 
     @Override
     public NuxeoClient setAuthenticationMethod(Interceptor interceptor) {
         httpClient.interceptors().add(interceptor);
-        retrofit = builder.client(httpClient).build();
         return this;
     }
 
     @Override
-    public NuxeoClient setTimeOut(long timeout) {
-        httpClient.setConnectTimeout(timeout, TimeUnit.SECONDS);
-        retrofit = builder.client(httpClient).build();
+    public NuxeoClient timeout(long timeout) {
+        retrofit.client().setConnectTimeout(timeout, TimeUnit.SECONDS);
         return this;
     }
 
@@ -101,6 +155,6 @@ public class NuxeoClient implements Client {
 
     @Override
     public void shutdown() {
-
+        logout();
     }
 }
