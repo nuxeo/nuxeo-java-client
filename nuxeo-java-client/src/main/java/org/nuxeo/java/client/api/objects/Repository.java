@@ -235,7 +235,7 @@ public class Repository<T> extends NuxeoObject {
             Method method = null;
             for (Method currentMethod : methods) {
                 if (currentMethod.getName().equals(methodName)) {
-                    if (currentMethod.getParameterCount() == parametersArray.length) {
+                    if (currentMethod.getParameterTypes().length == parametersArray.length) {
                         method = currentMethod;
                         break;
                     }
