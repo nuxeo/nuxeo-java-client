@@ -134,12 +134,33 @@ public class RepositoryTest extends BaseTest {
 
     @Test
     public void itCanQuery() {
+        Documents documents = nuxeoClient.getRepository().query("SELECT * " + "From Note");
+        assertTrue(documents.getDocuments().size() != 0);
+        Document document = documents.getDocuments().get(0);
+        assertEquals("Note", document.getType());
+        assertEquals("test", document.getRepositoryName());
+        assertEquals("project", document.getState());
+    }
+
+    @Test
+    public void itCanUseCaching() {
         Documents documents = nuxeoClient.getRepository().query("SELECT * From Note");
         assertTrue(documents.getDocuments().size() != 0);
         Document document = documents.getDocuments().get(0);
         assertEquals("Note", document.getType());
         assertEquals("test", document.getRepositoryName());
         assertEquals("project", document.getState());
+        assertTrue(nuxeoClient.getNuxeoCache().size() == 1);
+
+        documents = nuxeoClient.getRepository().query("SELECT * From Note");
+        document = documents.getDocuments().get(0);
+        assertEquals("Note", document.getType());
+        assertEquals("test", document.getRepositoryName());
+        assertEquals("project", document.getState());
+
+        assertTrue(nuxeoClient.getNuxeoCache().size() == 1);
+    }
+
     @Test
     public void itCanUpdateDocument() {
         Document document = nuxeoClient.getRepository().getDocumentByPath("folder_1/note_0");

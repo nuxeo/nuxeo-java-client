@@ -18,6 +18,8 @@ package org.nuxeo.java.client.api;
 
 import java.util.concurrent.TimeUnit;
 
+import org.nuxeo.java.client.api.cache.NuxeoResponseCache;
+import org.nuxeo.java.client.api.cache.ResultCacheInMemory;
 import org.nuxeo.java.client.api.marshaller.NuxeoConverterFactory;
 import org.nuxeo.java.client.api.marshaller.NuxeoMarshaller;
 import org.nuxeo.java.client.api.objects.CurrentUser;
@@ -47,8 +49,15 @@ public class NuxeoClient implements Client {
 
     protected final Retrofit.Builder builder;
 
+    protected NuxeoResponseCache nuxeoCache;
+
     protected final NuxeoConverterFactory converterFactory;
+
     public NuxeoClient(String url, String username, String password) {
+        this(url, username, password, true);
+    }
+
+    public NuxeoClient(String url, String username, String password, boolean enableDefaultCache) {
         httpClient = new OkHttpClient();
         converterFactory = NuxeoConverterFactory.create();
         builder = new Retrofit.Builder().baseUrl(url + ConstantsV1.API_PATH).addConverterFactory(converterFactory);
@@ -59,9 +68,13 @@ public class NuxeoClient implements Client {
                 throw new NuxeoClientException("Define credentials");
             }
         }
+        if (enableDefaultCache) {
+            nuxeoCache = new ResultCacheInMemory();
+        }
         retrofit = builder.client(httpClient).build();
-        currentUser = new CurrentUser(retrofit);
-        repository = new Repository(retrofit);
+        currentUser = new CurrentUser(this);
+        repository = new Repository(this);
+    }
 
     public NuxeoClient registerMarshaller(NuxeoMarshaller<?> marshaller) {
         converterFactory.registerMarshaller(marshaller);
@@ -143,6 +156,12 @@ public class NuxeoClient implements Client {
     }
 
     @Override
+    public NuxeoClient setCache(NuxeoResponseCache nuxeoCache) {
+        this.nuxeoCache = nuxeoCache;
+        return this;
+    }
+
+    @Override
     public NuxeoClient setAuthenticationMethod(Interceptor interceptor) {
         httpClient.interceptors().add(interceptor);
         return this;
@@ -162,5 +181,20 @@ public class NuxeoClient implements Client {
     @Override
     public void shutdown() {
         logout();
+    }
+
+    @Override
+    public Retrofit getRetrofit() {
+        return retrofit;
+    }
+
+    @Override
+    public NuxeoResponseCache getNuxeoCache() {
+        return nuxeoCache;
+    }
+
+    @Override
+    public boolean isCacheEnabled() {
+        return nuxeoCache != null;
     }
 }

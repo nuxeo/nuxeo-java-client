@@ -16,59 +16,47 @@
  */
 package org.nuxeo.java.client.api.objects;
 
-import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
-import com.fasterxml.jackson.databind.DeserializationFeature;
+import org.nuxeo.java.client.api.ConstantsV1;
+import org.nuxeo.java.client.api.NuxeoClient;
 import org.nuxeo.java.client.api.methods.RepositoryAPI;
-import org.nuxeo.java.client.internals.spi.NuxeoClientException;
 
-import retrofit.Call;
 import retrofit.Callback;
-import retrofit.Response;
-import retrofit.Retrofit;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * @since 1.0
  */
-public class Repository<T> extends NuxeoObject {
+public class Repository extends NuxeoObject {
 
     protected final RepositoryAPI repositoryAPI;
 
-    protected String repositoryName;
-
-    public Repository(Retrofit retrofit) {
-        super("document");
-        repositoryAPI = retrofit.create(RepositoryAPI.class);
+    public Repository(NuxeoClient nuxeoClient) {
+        super(ConstantsV1.ENTITY_TYPE_DOCUMENT, nuxeoClient);
+        repositoryAPI = nuxeoClient.getRetrofit().create(RepositoryAPI.class);
     }
 
     public Repository repositoryName(String repositoryName) {
-        this.repositoryName = repositoryName;
+        super.repositoryName = repositoryName;
         return this;
     }
 
     /* By Id - Sync */
 
-    public Document getDocumentById(String documentId)  {
-        return (Document) getResponse(getCurrentMethodName(), documentId);
+    public Document getDocumentById(String documentId) {
+        return (Document) getResponse(repositoryAPI, getCurrentMethodName(), documentId);
     }
 
-    public Document createDocumentById(String parentId, Document document)  {
-        return (Document) getResponse(getCurrentMethodName(), parentId, document);
+    public Document createDocumentById(String parentId, Document document) {
+        return (Document) getResponse(repositoryAPI, getCurrentMethodName(), parentId, document);
     }
 
-    public Document updateDocumentById(String documentId, Document document)  {
-        return (Document) getResponse(getCurrentMethodName(), documentId, document);
+    public Document updateDocumentById(String documentId, Document document) {
+        document.setProperties(document.getDirtyProperties());
+        return (Document) getResponse(repositoryAPI, getCurrentMethodName(), documentId, document);
+
     }
 
-    public Document deleteDocumentById(String documentId)  {
-        return (Document) getResponse(getCurrentMethodName(), documentId);
+    public Document deleteDocumentById(String documentId) {
+        return (Document) getResponse(repositoryAPI, getCurrentMethodName(), documentId);
     }
 
     /* By Id - Async */
@@ -90,6 +78,7 @@ public class Repository<T> extends NuxeoObject {
     }
 
     public void updateDocumentById(String documentId, Document document, Callback<Document> callback) {
+        document.setProperties(document.getDirtyProperties());
         if (repositoryName == null) {
             repositoryAPI.updateDocumentById(documentId, document).enqueue(callback);
         } else {
@@ -107,31 +96,32 @@ public class Repository<T> extends NuxeoObject {
 
     /* By Path - Sync */
 
-    public Document getDocumentRoot()  {
-        return (Document) getResponse(getCurrentMethodName());
+    public Document getDocumentRoot() {
+        return (Document) getResponse(repositoryAPI, getCurrentMethodName());
     }
 
-    public Document getDocumentByPath(String documentPath)  {
-        return (Document) getResponse(getCurrentMethodName(), documentPath);
+    public Document getDocumentByPath(String documentPath) {
+        return (Document) getResponse(repositoryAPI, getCurrentMethodName(), documentPath);
     }
 
-    public Document createDocumentByPath(String parentPath, Document document)  {
-        return (Document) getResponse(getCurrentMethodName(), parentPath, document);
+    public Document createDocumentByPath(String parentPath, Document document) {
+        return (Document) getResponse(repositoryAPI, getCurrentMethodName(), parentPath, document);
     }
 
-    public Document updateDocumentByPath(String documentPath, Document document)  {
-        return (Document) getResponse(getCurrentMethodName(), documentPath, document);
+    public Document updateDocumentByPath(String documentPath, Document document) {
+        document.setProperties(document.getDirtyProperties());
+        return (Document) getResponse(repositoryAPI, getCurrentMethodName(), documentPath, document);
     }
 
-    public Document deleteDocumentByPath(String documentPath)  {
-        return (Document) getResponse(getCurrentMethodName(), documentPath);
+    public Document deleteDocumentByPath(String documentPath) {
+        return (Document) getResponse(repositoryAPI, getCurrentMethodName(), documentPath);
     }
 
     /* By Path - Async */
 
-    public void getDocumentRoot(Callback<Document> callback)  {
+    public void getDocumentRoot(Callback<Document> callback) {
         // TODO: JAVACLIENT-20
-        //executeAsync(getCurrentMethodName(), callback);
+        // executeAsync(getCurrentMethodName(), callback);
         if (repositoryName == null) {
             repositoryAPI.getDocumentRoot().enqueue(callback);
         } else {
@@ -156,6 +146,7 @@ public class Repository<T> extends NuxeoObject {
     }
 
     public void updateDocumentByPath(String documentPath, Document document, Callback<Document> callback) {
+        document.setProperties(document.getDirtyProperties());
         if (repositoryName == null) {
             repositoryAPI.updateDocumentByPath(documentPath, document).enqueue(callback);
         } else {
@@ -173,19 +164,20 @@ public class Repository<T> extends NuxeoObject {
 
     /* Query - Sync */
 
-    public Documents query(String query)  {
-        return (Documents) getResponse(getCurrentMethodName(), query);
+    public Documents query(String query) {
+        return (Documents) getResponse(repositoryAPI, getCurrentMethodName(), query);
     }
 
-    public Documents query(String query, String pageSize, String currentPageIndex, String maxResults,
-            String sortBy, String sortOrder, String queryParams)  {
-        return (Documents) getResponse(getCurrentMethodName(), query, pageSize, currentPageIndex, maxResults, sortBy, sortOrder,
-                queryParams);
+    public Documents query(String query, String pageSize, String currentPageIndex, String maxResults, String sortBy,
+            String sortOrder, String queryParams) {
+        return (Documents) getResponse(repositoryAPI, getCurrentMethodName(), query, pageSize, currentPageIndex,
+                maxResults, sortBy, sortOrder, queryParams);
     }
 
-    public Documents queryByProvider(String providerName, String pageSize, String currentPageIndex,
-            String maxResults, String sortBy, String sortOrder, String queryParams)  {
-        return (Documents) getResponse(getCurrentMethodName(), providerName, pageSize, currentPageIndex, maxResults, sortBy, sortOrder, queryParams);
+    public Documents queryByProvider(String providerName, String pageSize, String currentPageIndex, String maxResults,
+            String sortBy, String sortOrder, String queryParams) {
+        return (Documents) getResponse(repositoryAPI, getCurrentMethodName(), providerName, pageSize, currentPageIndex,
+                maxResults, sortBy, sortOrder, queryParams);
     }
 
     /* Query - Async */
@@ -196,8 +188,8 @@ public class Repository<T> extends NuxeoObject {
 
     public void query(String query, String pageSize, String currentPageIndex, String maxResults, String sortBy,
             String sortOrder, String queryParams, Callback<Documents> callback) {
-        repositoryAPI.query(query, pageSize, currentPageIndex, maxResults, sortBy, sortOrder, queryParams)
-                     .enqueue(callback);
+        repositoryAPI.query(query, pageSize, currentPageIndex, maxResults, sortBy, sortOrder, queryParams).enqueue(
+                callback);
     }
 
     public void queryByProvider(String providerName, String pageSize, String currentPageIndex, String maxResults,
@@ -206,58 +198,12 @@ public class Repository<T> extends NuxeoObject {
                 queryParams).enqueue(callback);
     }
 
-
     /* Internal */
 
     // TODO: JAVACLIENT-20
-//    protected void executeAsync(String method, Callback<T> callback, Object... parametersArray) {
-//        Call<?> methodResult = getCall(method, parametersArray);
-//        methodResult.enqueue(callback);
-//    }
-
-
-    protected Object getResponse(String method, Object... parametersArray) {
-        Call<?> methodResult = getCall(method, parametersArray);
-        try {
-            Response<?> response = methodResult.execute();
-            if (!response.isSuccess()) {
-                ObjectMapper objectMapper = new ObjectMapper();
-                // TODO JAVACLIENT-21
-                objectMapper.configure( DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-                NuxeoClientException nuxeoClientException = objectMapper.readValue(response.errorBody().string(),NuxeoClientException.class);
-                throw nuxeoClientException;
-            }
-            return response.body();
-        } catch (IOException reason) {
-            throw new NuxeoClientException(reason);
-        }
-    }
-
-    protected Call<?> getCall(String methodName, Object... parametersArray) {
-        try {
-            Method[] methods = RepositoryAPI.class.getMethods();
-            List<Object> parameters = new ArrayList<>(Arrays.asList(parametersArray));
-            if (repositoryName != null)
-                parameters.add(repositoryName);
-            parametersArray = parameters.toArray();
-            Method method = null;
-            for (Method currentMethod : methods) {
-                if (currentMethod.getName().equals(methodName)) {
-                    if (currentMethod.getParameterTypes().length == parametersArray.length) {
-                        method = currentMethod;
-                        break;
-                    }
-                }
-            }
-            return (Call<?>) method.invoke(repositoryAPI, parametersArray);
-        } catch (IllegalAccessException | InvocationTargetException reason) {
-            throw new NuxeoClientException(reason);
-        }
-    }
-
-    protected String getCurrentMethodName() {
-        StackTraceElement stackTraceElements[] = (new Throwable()).getStackTrace();
-        return stackTraceElements[1].getMethodName();
-    }
+    // protected void executeAsync(String method, Callback<T> callback, Object... parametersArray) {
+    // Call<?> methodResult = getCall(method, parametersArray);
+    // methodResult.enqueue(callback);
+    // }
 
 }

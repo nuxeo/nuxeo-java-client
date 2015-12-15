@@ -16,6 +16,10 @@
  */
 package org.nuxeo.java.client.api;
 
+import org.nuxeo.java.client.api.cache.NuxeoResponseCache;
+
+import retrofit.Retrofit;
+
 import com.squareup.okhttp.Interceptor;
 
 /**
@@ -23,7 +27,15 @@ import com.squareup.okhttp.Interceptor;
  */
 public interface Client {
 
+    /**
+     * Add header to client requests.
+     */
     NuxeoClient header(String header, String value);
+
+    /**
+     * Define Custom Cache.
+     */
+    NuxeoClient setCache(NuxeoResponseCache nuxeoCache);
 
     /**
      * Set Authentication Method.<br/>
@@ -36,10 +48,15 @@ public interface Client {
      */
     NuxeoClient setAuthenticationMethod(Interceptor interceptor);
 
+    /**
+     * Define the http call timeout.
+     * 
+     * @param timeout in milliseconds.
+     */
     NuxeoClient timeout(long timeout);
 
     /**
-     * Gets base URL.
+     * Get base URL.
      */
     String getBaseUrl();
 
@@ -48,4 +65,18 @@ public interface Client {
      */
     void shutdown();
 
+    /**
+     * @return retrofit instance.
+     */
+    Retrofit getRetrofit();
+
+    /**
+     * @return Nuxeo cache.
+     */
+    NuxeoResponseCache getNuxeoCache();
+
+    /**
+     * @return Cache Status.
+     */
+    boolean isCacheEnabled();
 }
