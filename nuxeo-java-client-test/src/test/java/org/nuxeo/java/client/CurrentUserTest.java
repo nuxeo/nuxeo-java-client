@@ -20,14 +20,12 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.restapi.test.RestServerFeature;
 import org.nuxeo.java.client.api.objects.CurrentUser;
-import org.nuxeo.java.client.internals.spi.NuxeoClientException;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.Jetty;
@@ -42,7 +40,7 @@ import org.nuxeo.runtime.test.runner.Jetty;
 public class CurrentUserTest extends BaseTest {
 
     @Test
-    public void itCanLogin()  {
+    public void itCanLogin() {
         login();
         CurrentUser currentUser = nuxeoClient.getCurrentUser();
         assertNotNull(currentUser);
@@ -53,7 +51,7 @@ public class CurrentUserTest extends BaseTest {
     }
 
     @Test
-    public void itCanLogout()  {
+    public void itCanLogout() {
         login();
         logout();
         CurrentUser currentUser = nuxeoClient.getCurrentUser();
@@ -61,7 +59,7 @@ public class CurrentUserTest extends BaseTest {
     }
 
     @Test
-    public void itCanFailOnLogin()  {
+    public void itCanFailOnLogin() {
         login("wrong", "credentials");
         CurrentUser currentUser = nuxeoClient.getCurrentUser();
         assertNull(currentUser);

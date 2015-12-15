@@ -48,8 +48,7 @@ public class BasicAuthInterceptor implements Interceptor {
                                .newBuilder()
                                .addHeader(HttpHeaders.AUTHORIZATION, token)
                                .addHeader(HttpHeaders.CONTENT_TYPE,
-                                       com.google.common.net.MediaType
-                                               .JSON_UTF_8.toString())
+                                       com.google.common.net.MediaType.JSON_UTF_8.toString())
                                .method(original.method(), original.body())
                                .build();
         return chain.proceed(request);
