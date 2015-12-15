@@ -22,7 +22,6 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.io.IOException;
-import java.util.List;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -34,6 +33,7 @@ import org.nuxeo.ecm.restapi.test.RestServerInit;
 import org.nuxeo.java.client.api.objects.Document;
 import org.nuxeo.java.client.api.objects.Documents;
 import org.nuxeo.java.client.internals.spi.NuxeoClientException;
+import org.nuxeo.java.client.marshallers.DocumentMarshaller;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.Jetty;
@@ -86,7 +86,7 @@ public class RepositoryTest extends BaseTest {
         assertNotNull(folder);
         assertEquals("Folder", folder.getType());
         assertEquals("document", folder.getEntityType());
-        assertEquals(root.getRef(), folder.getParentRef());
+        assertEquals(root.getUid(), folder.getParentRef());
         assertEquals("/folder_2", folder.getPath());
         assertEquals("Folder 2", folder.getTitle());
     }
@@ -94,12 +94,13 @@ public class RepositoryTest extends BaseTest {
     @Test
     public void itCanFetchFolderWithRepositoryName() {
         Document root = nuxeoClient.getRepository().getDocumentRoot();
-        Document folder = nuxeoClient.getRepository().repositoryName(root
-                .getRepositoryName()).getDocumentByPath("folder_2");
+        Document folder = nuxeoClient.getRepository()
+                                     .repositoryName(root.getRepositoryName())
+                                     .getDocumentByPath("folder_2");
         assertNotNull(folder);
         assertEquals("Folder", folder.getType());
         assertEquals("document", folder.getEntityType());
-        assertEquals(root.getRef(), folder.getParentRef());
+        assertEquals(root.getUid(), folder.getParentRef());
         assertEquals("/folder_2", folder.getPath());
         assertEquals("Folder 2", folder.getTitle());
     }
@@ -111,7 +112,7 @@ public class RepositoryTest extends BaseTest {
         assertNotNull(note);
         assertEquals("Note", note.getType());
         assertEquals("document", note.getEntityType());
-        assertEquals(folder.getRef(), note.getParentRef());
+        assertEquals(folder.getUid(), note.getParentRef());
         assertEquals("/folder_1/note_1", note.getPath());
         assertEquals("Note 1", note.getTitle());
     }
@@ -120,13 +121,15 @@ public class RepositoryTest extends BaseTest {
     public void itCanCreateDocument() {
         Document folder = nuxeoClient.getRepository().getDocumentByPath("folder_1");
         Document document = new Document("file", "File");
+        document.set("dc:title", "new title");
         document = nuxeoClient.getRepository().createDocumentByPath("folder_1", document);
         assertNotNull(document);
         assertEquals("File", document.getType());
         assertEquals("document", document.getEntityType());
-        assertEquals(folder.getRef(), document.getParentRef());
+        assertEquals(folder.getUid(), document.getParentRef());
         assertEquals("/folder_1/file", document.getPath());
-        assertEquals("file", document.getTitle());
+        assertEquals("new title", document.getTitle());
+        assertEquals("new title", document.get("dc:title"));
     }
 
     @Test
@@ -137,6 +140,31 @@ public class RepositoryTest extends BaseTest {
         assertEquals("Note", document.getType());
         assertEquals("test", document.getRepositoryName());
         assertEquals("project", document.getState());
+    @Test
+    public void itCanUpdateDocument() {
+        Document document = nuxeoClient.getRepository().getDocumentByPath("folder_1/note_0");
+        assertEquals("Note", document.getType());
+        assertEquals("test", document.getRepositoryName());
+        assertEquals("project", document.getState());
+        assertEquals("Note 0", document.getTitle());
+        assertEquals("Note 0", document.get("dc:title"));
+
+        Document documentUpdated = new Document("test update", "Note");
+        documentUpdated.set("dc:title", "note updated");
+        documentUpdated.setTitle("note updated");
+        documentUpdated.set("dc:nature", "test");
+
+        documentUpdated = nuxeoClient.getRepository().updateDocumentById(document.getId(), documentUpdated);
+        assertNotNull(documentUpdated);
+        assertEquals("note updated", documentUpdated.get("dc:title"));
+        assertEquals("test", documentUpdated.get("dc:nature"));
+
+        // Check if the document in the repository has been changed.
+        Document result = nuxeoClient.getRepository().getDocumentById(documentUpdated.getId());
+        assertNotNull(result);
+        assertEquals("note updated", result.get("dc:title"));
+        assertEquals("test", result.get("dc:nature"));
+    }
     }
 
     // TODO JAVACLIENT-22
