@@ -1,15 +1,14 @@
 package org.nuxeo.java.client.api.methods;
 
-import java.util.List;
-
 import org.nuxeo.java.client.api.objects.Document;
-
 import org.nuxeo.java.client.api.objects.Documents;
+
 import retrofit.Call;
 import retrofit.http.Body;
 import retrofit.http.DELETE;
 import retrofit.http.GET;
 import retrofit.http.POST;
+import retrofit.http.PUT;
 import retrofit.http.Path;
 import retrofit.http.Query;
 
@@ -28,7 +27,7 @@ public interface RepositoryAPI {
     Call<Document> createDocumentById(@Path("parentId") String parentId,
             @Body Document document, @Path("repositoryName") String repositoryName);
 
-    @POST("repo/{repositoryName}/id/{documentId}")
+    @PUT("repo/{repositoryName}/id/{documentId}")
     Call<Document> updateDocumentById(@Path("documentId") String documentId,
             @Body Document document, @Path("repositoryName") String repositoryName);
 
@@ -41,7 +40,7 @@ public interface RepositoryAPI {
     @POST("id/{parentId}")
     Call<Document> createDocumentById(@Path("parentId") String parentId, @Body Document document);
 
-    @POST("id/{documentId}")
+    @PUT("id/{documentId}")
     Call<Document> updateDocumentById(@Path("documentId") String documentId, @Body Document document);
 
     @DELETE("id/{documentId}")
@@ -53,7 +52,7 @@ public interface RepositoryAPI {
     @POST("repo/{repositoryName}/path/{parentPath}")
     Call<Document> createDocumentByPath(@Path("parentPath") String parentPath, @Body Document document, @Path("repositoryName") String repositoryName);
 
-    @POST("repo/{repositoryName}/path/{docPath}")
+    @PUT("repo/{repositoryName}/path/{docPath}")
     Call<Document> updateDocumentByPath(@Path("docPath") String docPath,
             @Body Document document, @Path("repositoryName") String repositoryName);
 
@@ -66,7 +65,7 @@ public interface RepositoryAPI {
     @POST("path/{parentPath}")
     Call<Document> createDocumentByPath(@Path("parentPath") String parentPath, @Body Document document);
 
-    @POST("path/{docPath}")
+    @PUT("path/{docPath}")
     Call<Document> updateDocumentByPath(@Path("docPath") String docPath, @Body Document document);
 
     @DELETE("path/{docPath}")
