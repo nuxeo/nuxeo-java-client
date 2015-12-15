@@ -1,0 +1,81 @@
+/*
+ * (C) Copyright 2015 Nuxeo SA (http://nuxeo.com/) and contributors.
+ *
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the GNU Lesser General Public License
+ * (LGPL) version 2.1 which accompanies this distribution, and is available at
+ * http://www.gnu.org/licenses/lgpl-2.1.html
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * Contributors:
+ *          Nuxeo
+ */
+package org.nuxeo.java.client.api.marshaller;
+
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Type;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+
+import retrofit.Converter;
+
+import com.fasterxml.jackson.databind.JavaType;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectReader;
+import com.fasterxml.jackson.databind.ObjectWriter;
+import com.squareup.okhttp.RequestBody;
+import com.squareup.okhttp.ResponseBody;
+
+/**
+ * @since 1.0
+ */
+public class NuxeoConverterFactory extends Converter.Factory {
+
+    protected static final Map<Class<?>, NuxeoMarshaller<?>> marshallers = new ConcurrentHashMap<>();
+
+    protected final ObjectMapper mapper;
+
+    public static NuxeoConverterFactory create() {
+        return create(new ObjectMapper());
+    }
+
+    public static NuxeoConverterFactory create(ObjectMapper mapper) {
+        return new NuxeoConverterFactory(mapper);
+    }
+
+    protected NuxeoConverterFactory(ObjectMapper mapper) {
+        if (mapper == null)
+            throw new NullPointerException("mapper == null");
+        this.mapper = mapper;
+    }
+
+    @Override
+    public Converter<ResponseBody, ?> fromResponseBody(Type type, Annotation[] annotations) {
+        JavaType javaType = mapper.getTypeFactory().constructType(type);
+        NuxeoMarshaller<?> nuxeoMarshaller = marshallers.get(javaType.getRawClass());
+        if (nuxeoMarshaller != null) {
+            return new NuxeoResponseConverterFactory<>(nuxeoMarshaller, mapper.getFactory());
+        }
+        ObjectReader reader = mapper.readerFor(javaType);
+        return new NuxeoResponseConverterFactory<>(reader);
+    }
+
+    @Override
+    public Converter<?, RequestBody> toRequestBody(Type type, Annotation[] annotations) {
+        JavaType javaType = mapper.getTypeFactory().constructType(type);
+        NuxeoMarshaller<?> nuxeoMarshaller = marshallers.get(javaType.getRawClass());
+        if (nuxeoMarshaller != null) {
+            return new NuxeoRequestConverterFactory<>(nuxeoMarshaller, mapper.getFactory());
+        }
+        ObjectWriter writer = mapper.writerFor(javaType);
+        return new NuxeoRequestConverterFactory<>(writer);
+    }
+
+    public void registerMarshaller(NuxeoMarshaller<?> marshaller) {
+        marshallers.put(marshaller.getJavaType(), marshaller);
+    }
+}

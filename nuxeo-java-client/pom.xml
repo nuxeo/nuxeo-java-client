@@ -19,10 +19,6 @@
       <artifactId>retrofit</artifactId>
     </dependency>
     <dependency>
-      <groupId>com.squareup.retrofit</groupId>
-      <artifactId>converter-jackson</artifactId>
-    </dependency>
-    <dependency>
       <groupId>com.fasterxml.jackson.core</groupId>
       <artifactId>jackson-annotations</artifactId>
     </dependency>

@@ -165,6 +165,16 @@ public class RepositoryTest extends BaseTest {
         assertEquals("note updated", result.get("dc:title"));
         assertEquals("test", result.get("dc:nature"));
     }
+
+    @Test
+    public void itCanUseCustomMarshallers() {
+        Document folder = nuxeoClient.registerMarshaller(new DocumentMarshaller())
+                                     .getRepository()
+                                     .getDocumentByPath("folder_1");
+        assertNotNull(folder);
+        assertEquals(folder.getPath(), "/folder_1");
+        assertEquals(folder.getState(), "project");
+        assertEquals(folder.getType(), "Folder");
     }
 
     // TODO JAVACLIENT-22

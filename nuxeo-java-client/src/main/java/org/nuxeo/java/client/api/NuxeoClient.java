@@ -18,12 +18,13 @@ package org.nuxeo.java.client.api;
 
 import java.util.concurrent.TimeUnit;
 
+import org.nuxeo.java.client.api.marshaller.NuxeoConverterFactory;
+import org.nuxeo.java.client.api.marshaller.NuxeoMarshaller;
 import org.nuxeo.java.client.api.objects.CurrentUser;
 import org.nuxeo.java.client.api.objects.Repository;
 import org.nuxeo.java.client.internals.spi.NuxeoClientException;
 import org.nuxeo.java.client.internals.spi.auth.BasicAuthInterceptor;
 
-import retrofit.JacksonConverterFactory;
 import retrofit.Retrofit;
 
 import com.squareup.okhttp.Interceptor;
@@ -46,10 +47,11 @@ public class NuxeoClient implements Client {
 
     protected final Retrofit.Builder builder;
 
+    protected final NuxeoConverterFactory converterFactory;
     public NuxeoClient(String url, String username, String password) {
         httpClient = new OkHttpClient();
-        builder = new Retrofit.Builder().baseUrl(url + ConstantsV1.API_PATH).addConverterFactory(
-                JacksonConverterFactory.create());
+        converterFactory = NuxeoConverterFactory.create();
+        builder = new Retrofit.Builder().baseUrl(url + ConstantsV1.API_PATH).addConverterFactory(converterFactory);
         if (httpClient.interceptors().isEmpty()) {
             if (username != null && password != null) {
                 setAuthenticationMethod(new BasicAuthInterceptor(username, password));
@@ -60,6 +62,10 @@ public class NuxeoClient implements Client {
         retrofit = builder.client(httpClient).build();
         currentUser = new CurrentUser(retrofit);
         repository = new Repository(retrofit);
+
+    public NuxeoClient registerMarshaller(NuxeoMarshaller<?> marshaller) {
+        converterFactory.registerMarshaller(marshaller);
+        return this;
     }
 
     public Repository getRepository() {
