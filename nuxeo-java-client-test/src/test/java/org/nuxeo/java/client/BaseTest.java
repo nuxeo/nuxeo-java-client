@@ -19,6 +19,7 @@ package org.nuxeo.java.client;
 import javax.inject.Inject;
 
 import org.nuxeo.ecm.core.api.CoreSession;
+import org.nuxeo.java.client.api.ConstantsV1;
 import org.nuxeo.java.client.api.NuxeoClient;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
@@ -32,15 +33,18 @@ public class BaseTest {
 
     public NuxeoClient nuxeoClient;
 
-    public void login()  {
-        nuxeoClient = new NuxeoClient("http://localhost:18090", "Administrator", "Administrator").timeout(60);
+    public void login() {
+        String url = "http://localhost:18090";
+        // url = "http://localhost:8080/nuxeo";
+        nuxeoClient = new NuxeoClient(url, "Administrator", "Administrator").timeout(60).header(
+                ConstantsV1.HEADER_PROPERTIES, "*");
     }
 
-    public void login(String username, String pwd)  {
+    public void login(String username, String pwd) {
         nuxeoClient = new NuxeoClient("http://localhost:18090", username, pwd);
     }
 
-    public void logout()  {
+    public void logout() {
         nuxeoClient.logout();
     }
 

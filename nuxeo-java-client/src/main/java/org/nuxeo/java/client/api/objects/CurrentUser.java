@@ -19,14 +19,15 @@ package org.nuxeo.java.client.api.objects;
 import java.io.IOException;
 import java.util.List;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
+import org.nuxeo.java.client.api.ConstantsV1;
+import org.nuxeo.java.client.api.NuxeoClient;
 import org.nuxeo.java.client.api.methods.CurrentUserAPI;
 import org.nuxeo.java.client.internals.spi.NuxeoClientException;
 
 import retrofit.Response;
-import retrofit.Retrofit;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
  * @since 1.0
@@ -44,13 +45,14 @@ public class CurrentUser extends NuxeoObject {
     protected List<String> groups;
 
     public CurrentUser() {
-        super("login");
+        super(ConstantsV1.ENTITY_TYPE_LOGIN);
     }
 
-    public CurrentUser(Retrofit retrofit) {
-        super("login");
-        currentUserAPI = retrofit.create(CurrentUserAPI.class);
+    public CurrentUser(NuxeoClient nuxeoClient) {
+        super(ConstantsV1.ENTITY_TYPE_LOGIN, nuxeoClient);
+        currentUserAPI = nuxeoClient.getRetrofit().create(CurrentUserAPI.class);
     }
+
     public List<String> getGroups() {
         return groups;
     }
@@ -63,7 +65,7 @@ public class CurrentUser extends NuxeoObject {
         return username;
     }
 
-    public CurrentUser getCurrentUser()  {
+    public CurrentUser getCurrentUser() {
         try {
             Response<CurrentUser> response = currentUserAPI.getCurrentUser().execute();
             return response.body();

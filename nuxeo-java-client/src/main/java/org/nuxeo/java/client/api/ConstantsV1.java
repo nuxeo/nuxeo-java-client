@@ -27,6 +27,10 @@ public class ConstantsV1 {
 
     public static final String ENTITY_TYPE_DOCUMENT = "document";
 
+    public static final String DEFAULT_DOC_TYPE = "File";
+
+    public static final String ENTITY_TYPE_LOGIN = "login";
+
     public static final String HEADER_VOID_OPERATION = "X-NXVoidOperation";
 
     public static final String HEADER_TX_TIMEOUT = "Nuxeo-Transaction-Timeout";
