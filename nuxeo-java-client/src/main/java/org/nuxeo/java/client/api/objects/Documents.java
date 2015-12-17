@@ -66,7 +66,7 @@ public class Documents extends NuxeoObject {
         super(ConstantsV1.ENTITY_TYPE_DOCUMENTS);
     }
 
-    protected Documents(List<Document> documents) {
+    public Documents(List<Document> documents) {
         super(ConstantsV1.ENTITY_TYPE_DOCUMENTS);
         this.documents = documents;
     }

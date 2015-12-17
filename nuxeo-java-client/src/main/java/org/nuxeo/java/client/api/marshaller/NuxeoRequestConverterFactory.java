@@ -18,6 +18,7 @@ package org.nuxeo.java.client.api.marshaller;
 
 import java.io.IOException;
 
+import org.nuxeo.java.client.api.ConstantsV1;
 import retrofit.Converter;
 
 import com.fasterxml.jackson.core.JsonEncoding;
@@ -32,8 +33,6 @@ import com.squareup.okhttp.RequestBody;
  * @since 1.0
  */
 public final class NuxeoRequestConverterFactory<T> implements Converter<T, RequestBody> {
-
-    private static final MediaType MEDIA_TYPE = MediaType.parse("application/json; charset=UTF-8");
 
     protected ObjectWriter adapter;
 
@@ -61,6 +60,6 @@ public final class NuxeoRequestConverterFactory<T> implements Converter<T, Reque
         } else {
             bytes = adapter.writeValueAsBytes(value);
         }
-        return RequestBody.create(MEDIA_TYPE, bytes);
+        return RequestBody.create(ConstantsV1.APPLICATION_JSON_CHARSET_UTF_8, bytes);
     }
 }

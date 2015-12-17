@@ -67,6 +67,11 @@ public abstract class NuxeoObject {
         return entityType;
     }
 
+    /**
+     * Handle cache and invocation of API methods.
+     *
+     * @return the response as business objects.
+     */
     protected Object getResponse(Object api, Object... parametersArray) {
         if (client == null) {
             throw new NuxeoClientException("You should pass to your Nuxeo object the client instance");
@@ -108,10 +113,14 @@ public abstract class NuxeoObject {
         }
     }
 
+    /**
+     * Compute the cache key with request
+     */
     protected String computeCacheKey(Call<?> methodResult) {
         com.squareup.okhttp.Call rawCall;
         Request originalRequest;
         try {
+            // TODO JAVACLIENT-26
             Method rawCallMethod = methodResult.getClass().getDeclaredMethod(CREATE_RAW_CALL);
             rawCallMethod.setAccessible(true);
             rawCall = (com.squareup.okhttp.Call) rawCallMethod.invoke(methodResult);
@@ -122,7 +131,7 @@ public abstract class NuxeoObject {
         } catch (NoSuchFieldException | NoSuchMethodException | IllegalAccessException reason) {
             throw new NuxeoClientException(reason);
         } catch (InvocationTargetException reason) {
-            throw new NuxeoClientException(reason.getTargetException().getMessage());
+            throw new NuxeoClientException(reason.getTargetException().getMessage(), reason);
         }
         StringBuffer sb = new StringBuffer();
         sb.append(originalRequest.toString());
@@ -142,6 +151,9 @@ public abstract class NuxeoObject {
         return hexString.toString();
     }
 
+    /**
+     * Invoking the method of each class "API"
+     */
     protected Call<?> getCall(Object api, String methodName, Object... parametersArray) {
         try {
             Method[] methods = api.getClass().getInterfaces()[0].getMethods();

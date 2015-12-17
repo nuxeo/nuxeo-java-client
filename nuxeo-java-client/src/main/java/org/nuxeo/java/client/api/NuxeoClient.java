@@ -23,6 +23,8 @@ import org.nuxeo.java.client.api.cache.ResultCacheInMemory;
 import org.nuxeo.java.client.api.marshaller.NuxeoConverterFactory;
 import org.nuxeo.java.client.api.marshaller.NuxeoMarshaller;
 import org.nuxeo.java.client.api.objects.CurrentUser;
+import org.nuxeo.java.client.api.objects.Operation;
+import org.nuxeo.java.client.api.objects.OperationBody;
 import org.nuxeo.java.client.api.objects.Repository;
 import org.nuxeo.java.client.internals.spi.NuxeoClientException;
 import org.nuxeo.java.client.internals.spi.auth.BasicAuthInterceptor;
@@ -42,6 +44,8 @@ public class NuxeoClient implements Client {
     protected final Retrofit retrofit;
 
     protected final Repository repository;
+
+    protected final Operation automation;
 
     protected final CurrentUser currentUser;
 
@@ -74,6 +78,7 @@ public class NuxeoClient implements Client {
         retrofit = builder.client(httpClient).build();
         currentUser = new CurrentUser(this);
         repository = new Repository(this);
+        automation = new Operation(this);
     }
 
     public NuxeoClient registerMarshaller(NuxeoMarshaller<?> marshaller) {
@@ -197,4 +202,13 @@ public class NuxeoClient implements Client {
     public boolean isCacheEnabled() {
         return nuxeoCache != null;
     }
+
+    public Operation automation() {
+        return automation;
+    }
+
+    public NuxeoConverterFactory getConverterFactory() {
+        return converterFactory;
+    }
+
 }

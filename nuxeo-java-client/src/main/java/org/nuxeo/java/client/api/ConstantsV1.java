@@ -16,6 +16,8 @@
  */
 package org.nuxeo.java.client.api;
 
+import com.squareup.okhttp.MediaType;
+
 /**
  * @since 1.0
  */
@@ -47,6 +49,20 @@ public class ConstantsV1 {
 
     public static final String ENTITY_TYPE_DOCUMENTS = "documents";
 
-    public static String ENTITY_TYPE_EXCEPTION = "exception";
-    public static String ENTITY_TYPE = "entity-type";
+    public static final String ENTITY_TYPE_BLOB = "blob";
+
+    public static final String ENTITY_TYPE_BLOBS = "blobs";
+
+    public static final MediaType APPLICATION_JSON_CHARSET_UTF_8 = MediaType.parse("application/json; charset=UTF-8");
+
+    public static final String ENTITY_TYPE_EXCEPTION = "exception";
+
+    public static final String ENTITY_TYPE_OPERATION = "operation";
+
+    public static final String ENTITY_TYPE = "entity-type";
+
+    public static final MediaType APPLICATION_JSON = MediaType.parse("application/json");
+
+    public static final String APPLICATION_OCTET_STREAM = "application/octet-stream";
+
 }
