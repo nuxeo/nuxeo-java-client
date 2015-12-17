@@ -26,6 +26,7 @@ import java.io.IOException;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.restapi.test.RestServerFeature;
@@ -177,11 +178,12 @@ public class RepositoryTest extends BaseTest {
         assertEquals("Note 0", document.get("dc:title"));
 
         Document documentUpdated = new Document("test update", "Note");
+        documentUpdated.setId(document.getId());
         documentUpdated.set("dc:title", "note updated");
         documentUpdated.setTitle("note updated");
         documentUpdated.set("dc:nature", "test");
 
-        documentUpdated = nuxeoClient.getRepository().updateDocumentById(document.getId(), documentUpdated);
+        documentUpdated = nuxeoClient.getRepository().updateDocument(documentUpdated);
         assertNotNull(documentUpdated);
         assertEquals("note updated", documentUpdated.get("dc:title"));
         assertEquals("test", documentUpdated.get("dc:nature"));
@@ -191,6 +193,16 @@ public class RepositoryTest extends BaseTest {
         assertNotNull(result);
         assertEquals("note updated", result.get("dc:title"));
         assertEquals("test", result.get("dc:nature"));
+    }
+
+    @Test
+    public void itCanDeleteDocument() {
+        Document documentToDelete = nuxeoClient.getRepository().getDocumentByPath("folder_1/note_1");
+        assertNotNull(documentToDelete);
+        assertTrue(session.exists(new IdRef(documentToDelete.getId())));
+        nuxeoClient.getRepository().deleteDocument(documentToDelete);
+        fetchInvalidations();
+        assertTrue(!session.exists(new IdRef(documentToDelete.getId())));
     }
 
     @Test

@@ -16,6 +16,7 @@
  */
 package org.nuxeo.java.client.api.objects;
 
+import com.squareup.okhttp.ResponseBody;
 import org.nuxeo.java.client.api.ConstantsV1;
 import org.nuxeo.java.client.api.NuxeoClient;
 import org.nuxeo.java.client.api.methods.RepositoryAPI;
@@ -50,21 +51,17 @@ public class Repository extends NuxeoObject {
     /* By Id - Sync */
 
     public Document getDocumentById(String documentId) {
-        return (Document) getResponse(repositoryAPI, getCurrentMethodName(), documentId);
+        return (Document) getResponse(repositoryAPI, documentId);
     }
 
     public Document createDocumentById(String parentId, Document document) {
-        return (Document) getResponse(repositoryAPI, getCurrentMethodName(), parentId, document);
+        return (Document) getResponse(repositoryAPI, parentId, document);
     }
 
-    public Document updateDocumentById(String documentId, Document document) {
+    public Document updateDocument(Document document) {
         document.setProperties(document.getDirtyProperties());
-        return (Document) getResponse(repositoryAPI, getCurrentMethodName(), documentId, document);
+        return (Document) getResponse(repositoryAPI, document.getId(), document);
 
-    }
-
-    public Document deleteDocumentById(String documentId) {
-        return (Document) getResponse(repositoryAPI, getCurrentMethodName(), documentId);
     }
 
     /* By Id - Async */
@@ -85,44 +82,39 @@ public class Repository extends NuxeoObject {
         }
     }
 
-    public void updateDocumentById(String documentId, Document document, Callback<Document> callback) {
+    public void updateDocument(Document document, Callback<Document> callback) {
         document.setProperties(document.getDirtyProperties());
         if (repositoryName == null) {
-            repositoryAPI.updateDocumentById(documentId, document).enqueue(callback);
+            repositoryAPI.updateDocument(document.getId(), document).enqueue(callback);
         } else {
-            repositoryAPI.updateDocumentById(documentId, document, repositoryName).enqueue(callback);
+            repositoryAPI.updateDocument(document.getId(), document, repositoryName).enqueue(callback);
         }
     }
 
-    public void deleteDocumentById(String documentId, Callback<Document> callback) {
+    public void deleteDocument(Document document, Callback<ResponseBody> callback) {
         if (repositoryName == null) {
-            repositoryAPI.deleteDocumentById(documentId).enqueue(callback);
+            repositoryAPI.deleteDocument(document.getId()).enqueue(callback);
         } else {
-            repositoryAPI.deleteDocumentById(documentId, repositoryName).enqueue(callback);
+            repositoryAPI.deleteDocument(document.getId(), repositoryName).enqueue(callback);
         }
     }
 
     /* By Path - Sync */
 
     public Document getDocumentRoot() {
-        return (Document) getResponse(repositoryAPI, getCurrentMethodName());
+        return (Document) getResponse(repositoryAPI);
     }
 
     public Document getDocumentByPath(String documentPath) {
-        return (Document) getResponse(repositoryAPI, getCurrentMethodName(), documentPath);
+        return (Document) getResponse(repositoryAPI, documentPath);
     }
 
     public Document createDocumentByPath(String parentPath, Document document) {
-        return (Document) getResponse(repositoryAPI, getCurrentMethodName(), parentPath, document);
+        return (Document) getResponse(repositoryAPI, parentPath, document);
     }
 
-    public Document updateDocumentByPath(String documentPath, Document document) {
-        document.setProperties(document.getDirtyProperties());
-        return (Document) getResponse(repositoryAPI, getCurrentMethodName(), documentPath, document);
-    }
-
-    public Document deleteDocumentByPath(String documentPath) {
-        return (Document) getResponse(repositoryAPI, getCurrentMethodName(), documentPath);
+    public void deleteDocument(Document document) {
+        getResponse(repositoryAPI, document.getId());
     }
 
     /* By Path - Async */
@@ -153,38 +145,21 @@ public class Repository extends NuxeoObject {
         }
     }
 
-    public void updateDocumentByPath(String documentPath, Document document, Callback<Document> callback) {
-        document.setProperties(document.getDirtyProperties());
-        if (repositoryName == null) {
-            repositoryAPI.updateDocumentByPath(documentPath, document).enqueue(callback);
-        } else {
-            repositoryAPI.updateDocumentByPath(documentPath, document, repositoryName).enqueue(callback);
-        }
-    }
-
-    public void deleteDocumentByPath(String documentPath, Callback<Document> callback) {
-        if (repositoryName == null) {
-            repositoryAPI.deleteDocumentByPath(documentPath).enqueue(callback);
-        } else {
-            repositoryAPI.deleteDocumentByPath(documentPath, repositoryName).enqueue(callback);
-        }
-    }
-
     /* Query - Sync */
 
     public Documents query(String query) {
-        return (Documents) getResponse(repositoryAPI, getCurrentMethodName(), query);
+        return (Documents) getResponse(repositoryAPI, query);
     }
 
     public Documents query(String query, String pageSize, String currentPageIndex, String maxResults, String sortBy,
             String sortOrder, String queryParams) {
-        return (Documents) getResponse(repositoryAPI, getCurrentMethodName(), query, pageSize, currentPageIndex,
+        return (Documents) getResponse(repositoryAPI, query, pageSize, currentPageIndex,
                 maxResults, sortBy, sortOrder, queryParams);
     }
 
     public Documents queryByProvider(String providerName, String pageSize, String currentPageIndex, String maxResults,
             String sortBy, String sortOrder, String queryParams) {
-        return (Documents) getResponse(repositoryAPI, getCurrentMethodName(), providerName, pageSize, currentPageIndex,
+        return (Documents) getResponse(repositoryAPI, providerName, pageSize, currentPageIndex,
                 maxResults, sortBy, sortOrder, queryParams);
     }
 

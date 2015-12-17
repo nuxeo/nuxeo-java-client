@@ -29,7 +29,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
  */
 public class Document extends NuxeoObject {
 
-    protected final String path;
+    protected String path;
 
     protected final String type;
 
@@ -105,6 +105,9 @@ public class Document extends NuxeoObject {
 
     }
 
+    /**
+     * For internal marshalling purpose.
+     */
     public Document() {
         super(ConstantsV1.ENTITY_TYPE_DOCUMENT);
         uid = null;
@@ -265,7 +268,7 @@ public class Document extends NuxeoObject {
         this.parentRef = parentRef;
     }
 
-    public void setUid(String uid) {
+    public void setId(String uid) {
         this.uid = uid;
     }
 
@@ -291,4 +294,5 @@ public class Document extends NuxeoObject {
     public Map<String, Object> getContextParameters() {
         return contextParameters;
     }
+
 }

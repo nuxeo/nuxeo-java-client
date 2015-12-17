@@ -48,4 +48,5 @@ public class ConstantsV1 {
     public static final String ENTITY_TYPE_DOCUMENTS = "documents";
 
     public static String ENTITY_TYPE_EXCEPTION = "exception";
+    public static String ENTITY_TYPE = "entity-type";
 }

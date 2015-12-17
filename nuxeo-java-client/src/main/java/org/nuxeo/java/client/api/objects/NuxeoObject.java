@@ -65,10 +65,11 @@ public abstract class NuxeoObject {
         return entityType;
     }
 
-    protected Object getResponse(Object api, String method, Object... parametersArray) {
+    protected Object getResponse(Object api, Object... parametersArray) {
         if (client == null) {
             throw new NuxeoClientException("You should pass to your Nuxeo object the client instance");
         }
+        String method = getCurrentMethodName();
         Call<?> methodResult = getCall(api, method, parametersArray);
         String cacheKey = Strings.EMPTY;
         if (client.isCacheEnabled()) {
@@ -159,7 +160,7 @@ public abstract class NuxeoObject {
 
     protected String getCurrentMethodName() {
         StackTraceElement stackTraceElements[] = (new Throwable()).getStackTrace();
-        return stackTraceElements[1].getMethodName();
+        return stackTraceElements[2].getMethodName();
     }
 
     public String getRepositoryName() {

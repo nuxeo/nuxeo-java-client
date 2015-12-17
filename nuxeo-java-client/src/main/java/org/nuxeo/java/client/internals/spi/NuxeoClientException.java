@@ -51,31 +51,17 @@ public class NuxeoClientException extends RuntimeException {
         return entityType;
     }
 
-    public NuxeoClientException(int status, String type, Throwable cause) {
-        this.status = status;
-        this.type = type;
-        info = extractInfo(cause);
-        throwable = cause;
-        entityType = ConstantsV1.ENTITY_TYPE_EXCEPTION;
-        exception = null;
-    }
-
-    public NuxeoClientException(int status, String type, String info) {
-        this.status = status;
-        this.type = type;
-        this.info = info;
-        throwable = null;
-        entityType = ConstantsV1.ENTITY_TYPE_EXCEPTION;
-        exception = null;
-    }
-
     public NuxeoClientException(Throwable e) {
+        this("error", e);
+    }
+
+    public NuxeoClientException(String message, Throwable e) {
         throwable = e;
         status = 666;
         type = "Error";
-        info = e.getMessage();
+        info = e == null ? null : e.getMessage();
         entityType = ConstantsV1.ENTITY_TYPE_EXCEPTION;
-        exception = null;
+        exception = message;
     }
 
     public NuxeoClientException(int code, String message) {
@@ -88,12 +74,7 @@ public class NuxeoClientException extends RuntimeException {
     }
 
     public NuxeoClientException(String message) {
-        info = message;
-        throwable = null;
-        type = null;
-        status = 666;
-        entityType = ConstantsV1.ENTITY_TYPE_EXCEPTION;
-        exception = null;
+        this(message,null);
     }
 
     public int getStatus() {

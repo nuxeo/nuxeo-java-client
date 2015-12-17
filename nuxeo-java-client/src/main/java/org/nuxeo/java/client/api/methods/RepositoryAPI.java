@@ -12,6 +12,8 @@ import retrofit.http.PUT;
 import retrofit.http.Path;
 import retrofit.http.Query;
 
+import com.squareup.okhttp.ResponseBody;
+
 public interface RepositoryAPI {
 
     @GET("repo/{repositoryName}/path/")
@@ -28,11 +30,11 @@ public interface RepositoryAPI {
             @Body Document document, @Path("repositoryName") String repositoryName);
 
     @PUT("repo/{repositoryName}/id/{documentId}")
-    Call<Document> updateDocumentById(@Path("documentId") String documentId,
+    Call<Document> updateDocument(@Path("documentId") String documentId,
             @Body Document document, @Path("repositoryName") String repositoryName);
 
     @DELETE("repo/{repositoryName}/id/{documentId}")
-    Call<Document> deleteDocumentById(@Path("documentId") String documentId, @Path("repositoryName") String repositoryName);
+    Call<ResponseBody> deleteDocument(@Path("documentId") String documentId, @Path("repositoryName") String repositoryName);
 
     @GET("id/{documentId}")
     Call<Document> getDocumentById(@Path("documentId") String documentId);
@@ -41,10 +43,10 @@ public interface RepositoryAPI {
     Call<Document> createDocumentById(@Path("parentId") String parentId, @Body Document document);
 
     @PUT("id/{documentId}")
-    Call<Document> updateDocumentById(@Path("documentId") String documentId, @Body Document document);
+    Call<Document> updateDocument(@Path("documentId") String documentId, @Body Document document);
 
     @DELETE("id/{documentId}")
-    Call<Document> deleteDocumentById(@Path("documentId") String documentId);
+    Call<ResponseBody> deleteDocument(@Path("documentId") String documentId);
 
     @GET("repo/{repositoryName}/path/{docPath}")
     Call<Document> getDocumentByPath(@Path("docPath") String docPath, @Path("repositoryName") String repositoryName);
@@ -52,24 +54,11 @@ public interface RepositoryAPI {
     @POST("repo/{repositoryName}/path/{parentPath}")
     Call<Document> createDocumentByPath(@Path("parentPath") String parentPath, @Body Document document, @Path("repositoryName") String repositoryName);
 
-    @PUT("repo/{repositoryName}/path/{docPath}")
-    Call<Document> updateDocumentByPath(@Path("docPath") String docPath,
-            @Body Document document, @Path("repositoryName") String repositoryName);
-
-    @DELETE("repo/{repositoryName}/path/{docPath}")
-    Call<Document> deleteDocumentByPath(@Path("docPath") String docPath, @Path("repositoryName") String repositoryName);
-
     @GET("path/{docPath}")
-    Call<Document> getDocumentByPath(@Path("docPath") String docPath);
+    Call<Document> getDocumentByPath(@Path(value = "docPath", encoded = false) String docPath);
 
     @POST("path/{parentPath}")
     Call<Document> createDocumentByPath(@Path("parentPath") String parentPath, @Body Document document);
-
-    @PUT("path/{docPath}")
-    Call<Document> updateDocumentByPath(@Path("docPath") String docPath, @Body Document document);
-
-    @DELETE("path/{docPath}")
-    Call<Document> deleteDocumentByPath(@Path("docPath") String docPath);
 
     @GET("query")
     Call<Documents> query(@Query("query") String query);
