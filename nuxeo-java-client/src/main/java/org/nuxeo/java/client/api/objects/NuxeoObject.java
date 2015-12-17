@@ -41,7 +41,7 @@ public abstract class NuxeoObject {
     protected String repositoryName;
 
     @JsonIgnore
-    protected boolean forceRefresh = false;
+    protected boolean refreshCache = false;
 
     @JsonIgnore
     protected NuxeoClient client;
@@ -72,11 +72,15 @@ public abstract class NuxeoObject {
         Call<?> methodResult = getCall(api, method, parametersArray);
         String cacheKey = Strings.EMPTY;
         if (client.isCacheEnabled()) {
-            cacheKey = computeCacheKey(methodResult);
-            Object result = client.getNuxeoCache().getBody(cacheKey);
-            if (result != null || forceRefresh) {
-                this.forceRefresh = false;
-                return result;
+            if (refreshCache) {
+                this.refreshCache = false;
+                client.getNuxeoCache().invalidateAll();
+            } else {
+                cacheKey = computeCacheKey(methodResult);
+                Object result = client.getNuxeoCache().getBody(cacheKey);
+                if (result != null) {
+                    return result;
+                }
             }
         }
         try {
@@ -162,11 +166,4 @@ public abstract class NuxeoObject {
         return repositoryName;
     }
 
-    /**
-     * Force the cache refresh.
-     */
-    public NuxeoObject refresh() {
-        this.forceRefresh = true;
-        return this;
-    }
 }

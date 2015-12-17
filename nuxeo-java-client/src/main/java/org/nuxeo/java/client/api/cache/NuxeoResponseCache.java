@@ -30,4 +30,6 @@ public interface NuxeoResponseCache {
     Object getRaw(Object key);
 
     Object getBody(Object key);
+
+    void invalidateAll();
 }

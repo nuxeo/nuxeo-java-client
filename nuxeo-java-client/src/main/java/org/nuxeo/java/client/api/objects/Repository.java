@@ -39,6 +39,14 @@ public class Repository extends NuxeoObject {
         return this;
     }
 
+    /**
+     * Force the cache refresh.
+     */
+    public Repository refreshCache() {
+        this.refreshCache = true;
+        return this;
+    }
+
     /* By Id - Sync */
 
     public Document getDocumentById(String documentId) {

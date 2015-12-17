@@ -144,20 +144,26 @@ public class RepositoryTest extends BaseTest {
 
     @Test
     public void itCanUseCaching() {
-        Documents documents = nuxeoClient.getRepository().query("SELECT * From Note");
-        assertTrue(documents.getDocuments().size() != 0);
-        Document document = documents.getDocuments().get(0);
-        assertEquals("Note", document.getType());
-        assertEquals("test", document.getRepositoryName());
-        assertEquals("project", document.getState());
+        // Retrieve a document from query
+        Document document = nuxeoClient.getRepository().getDocumentByPath("folder_1/note_3");
+        assertEquals("Note 3", document.get("dc:title"));
         assertTrue(nuxeoClient.getNuxeoCache().size() == 1);
 
-        documents = nuxeoClient.getRepository().query("SELECT * From Note");
-        document = documents.getDocuments().get(0);
-        assertEquals("Note", document.getType());
-        assertEquals("test", document.getRepositoryName());
-        assertEquals("project", document.getState());
+        // Update this document
+        Document documentUpdated = new Document("test update", "Note");
+        documentUpdated.setId(document.getId());
+        documentUpdated.set("dc:title", "note updated");
+        documentUpdated = nuxeoClient.getRepository().updateDocument(documentUpdated);
+        assertEquals("note updated", documentUpdated.get("dc:title"));
 
+        // Retrieve again this document within cache
+        document = nuxeoClient.getRepository().getDocumentByPath("folder_1/note_3");
+        assertEquals("Note 3", document.get("dc:title"));
+        assertTrue(nuxeoClient.getNuxeoCache().size() == 2);
+
+        // Refresh the cache and check the update has been recovered.
+        document = nuxeoClient.getRepository().refreshCache().getDocumentByPath("folder_1/note_3");
+        assertEquals("note updated", document.get("dc:title"));
         assertTrue(nuxeoClient.getNuxeoCache().size() == 1);
     }
 

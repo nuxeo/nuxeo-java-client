@@ -39,7 +39,7 @@ public class ResultCacheInMemory implements NuxeoResponseCache {
 
     protected static final Integer CACHE_TIMEOUT = 10;
 
-    public com.google.common.cache.Cache<String, Object> getCache() {
+    public Cache<String, Object> getCache() {
         return cache;
     }
 
@@ -97,4 +97,8 @@ public class ResultCacheInMemory implements NuxeoResponseCache {
         return ((Response) result).body();
     }
 
+    @Override
+    public void invalidateAll(){
+        cache.invalidateAll();
+    }
 }
