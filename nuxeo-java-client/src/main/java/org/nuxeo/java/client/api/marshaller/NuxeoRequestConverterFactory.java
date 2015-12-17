@@ -21,9 +21,9 @@ import java.io.IOException;
 import retrofit.Converter;
 
 import com.fasterxml.jackson.core.JsonEncoding;
-import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.util.ByteArrayBuilder;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import com.squareup.okhttp.MediaType;
 import com.squareup.okhttp.RequestBody;
@@ -37,7 +37,7 @@ public final class NuxeoRequestConverterFactory<T> implements Converter<T, Reque
 
     protected ObjectWriter adapter;
 
-    protected JsonFactory jsonFactory;
+    protected ObjectMapper objectMapper;
 
     protected NuxeoMarshaller<T> nuxeoMarshaller;
 
@@ -45,9 +45,9 @@ public final class NuxeoRequestConverterFactory<T> implements Converter<T, Reque
         this.adapter = adapter;
     }
 
-    NuxeoRequestConverterFactory(NuxeoMarshaller<T> nuxeoMarshaller, JsonFactory jsonFactory) {
+    NuxeoRequestConverterFactory(NuxeoMarshaller<T> nuxeoMarshaller, ObjectMapper objectMapper) {
         this.nuxeoMarshaller = nuxeoMarshaller;
-        this.jsonFactory = jsonFactory;
+        this.objectMapper = objectMapper;
     }
 
     @Override
@@ -55,7 +55,7 @@ public final class NuxeoRequestConverterFactory<T> implements Converter<T, Reque
         ByteArrayBuilder bb = new ByteArrayBuilder();
         byte[] bytes;
         if (nuxeoMarshaller != null) {
-            JsonGenerator jg = jsonFactory.createGenerator(bb, JsonEncoding.UTF8);
+            JsonGenerator jg = objectMapper.getFactory().createGenerator(bb, JsonEncoding.UTF8);
             nuxeoMarshaller.write(jg, value);
             bytes = bb.toByteArray();
         } else {

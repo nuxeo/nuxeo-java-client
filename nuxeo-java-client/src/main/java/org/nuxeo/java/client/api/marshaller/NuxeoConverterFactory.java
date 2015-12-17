@@ -16,13 +16,17 @@
  */
 package org.nuxeo.java.client.api.marshaller;
 
+import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.nuxeo.java.client.internals.spi.NuxeoClientException;
+
 import retrofit.Converter;
 
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectReader;
@@ -40,7 +44,10 @@ public class NuxeoConverterFactory extends Converter.Factory {
     protected final ObjectMapper mapper;
 
     public static NuxeoConverterFactory create() {
-        return create(new ObjectMapper());
+        // TODO JAVACLIENT-21
+        ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+        return create(objectMapper);
     }
 
     public static NuxeoConverterFactory create(ObjectMapper mapper) {
@@ -58,7 +65,7 @@ public class NuxeoConverterFactory extends Converter.Factory {
         JavaType javaType = mapper.getTypeFactory().constructType(type);
         NuxeoMarshaller<?> nuxeoMarshaller = marshallers.get(javaType.getRawClass());
         if (nuxeoMarshaller != null) {
-            return new NuxeoResponseConverterFactory<>(nuxeoMarshaller, mapper.getFactory());
+            return new NuxeoResponseConverterFactory<>(nuxeoMarshaller, mapper);
         }
         ObjectReader reader = mapper.readerFor(javaType);
         return new NuxeoResponseConverterFactory<>(reader);
@@ -69,7 +76,7 @@ public class NuxeoConverterFactory extends Converter.Factory {
         JavaType javaType = mapper.getTypeFactory().constructType(type);
         NuxeoMarshaller<?> nuxeoMarshaller = marshallers.get(javaType.getRawClass());
         if (nuxeoMarshaller != null) {
-            return new NuxeoRequestConverterFactory<>(nuxeoMarshaller, mapper.getFactory());
+            return new NuxeoRequestConverterFactory<>(nuxeoMarshaller, mapper);
         }
         ObjectWriter writer = mapper.writerFor(javaType);
         return new NuxeoRequestConverterFactory<>(writer);
@@ -77,5 +84,21 @@ public class NuxeoConverterFactory extends Converter.Factory {
 
     public void registerMarshaller(NuxeoMarshaller<?> marshaller) {
         marshallers.put(marshaller.getJavaType(), marshaller);
+    }
+
+    public Object readJSON(String json, Class javaType) {
+        try {
+            return mapper.readValue(json, javaType);
+        } catch (IOException reason) {
+            throw new NuxeoClientException("Converter Read Issue. See NuxeoConverterFactory#readJSON", reason);
+        }
+    }
+
+    public String writeJSON(Object object) {
+        try {
+            return mapper.writeValueAsString(object);
+        } catch (IOException reason) {
+            throw new NuxeoClientException("Converter Write Issue. See NuxeoConverterFactory#writeJSON", reason);
+        }
     }
 }

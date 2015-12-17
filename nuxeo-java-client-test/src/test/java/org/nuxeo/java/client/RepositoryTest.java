@@ -219,17 +219,14 @@ public class RepositoryTest extends BaseTest {
     // TODO JAVACLIENT-22
     @Test
     public void itCanFetchDocumentWithCallback() throws InterruptedException {
-        nuxeoClient.getRepository().getDocumentByPath("folder_2", new
-                Callback<Document>() {
+        nuxeoClient.getRepository().getDocumentByPath("folder_2", new Callback<Document>() {
             @Override
-            public void onResponse(Response<Document> response, Retrofit
-                    retrofit) {
+            public void onResponse(Response<Document> response, Retrofit retrofit) {
                 if (!response.isSuccess()) {
                     ObjectMapper objectMapper = new ObjectMapper();
                     NuxeoClientException nuxeoClientException;
                     try {
-                        nuxeoClientException = objectMapper.readValue
-                                (response.errorBody().string(),
+                        nuxeoClientException = objectMapper.readValue(response.errorBody().string(),
                                 NuxeoClientException.class);
                     } catch (IOException reason) {
                         throw new NuxeoClientException(reason);

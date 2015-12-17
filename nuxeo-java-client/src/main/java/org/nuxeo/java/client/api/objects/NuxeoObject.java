@@ -10,6 +10,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.util.Strings;
 import org.nuxeo.java.client.api.NuxeoClient;
 import org.nuxeo.java.client.internals.spi.NuxeoClientException;
@@ -19,14 +21,14 @@ import retrofit.Response;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.squareup.okhttp.Request;
 
 /**
  * @since 1.0
  */
 public abstract class NuxeoObject {
+
+    private static final Logger logger = LogManager.getLogger(NuxeoObject.class);
 
     public static final String CREATE_RAW_CALL = "createRawCall";
 
@@ -87,11 +89,14 @@ public abstract class NuxeoObject {
         try {
             Response<?> response = methodResult.execute();
             if (!response.isSuccess()) {
-                ObjectMapper objectMapper = new ObjectMapper();
-                // TODO JAVACLIENT-21
-                objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-                NuxeoClientException nuxeoClientException = objectMapper.readValue(response.errorBody().string(),
-                        NuxeoClientException.class);
+                NuxeoClientException nuxeoClientException;
+                String errorBody = response.errorBody().string();
+                if (errorBody.equals(Strings.EMPTY)) {
+                    nuxeoClientException = new NuxeoClientException(response.code(), response.message());
+                } else {
+                    nuxeoClientException = (NuxeoClientException) client.getConverterFactory().readJSON(errorBody,
+                            NuxeoClientException.class);
+                }
                 throw nuxeoClientException;
             }
             if (client.isCacheEnabled()) {
@@ -113,6 +118,7 @@ public abstract class NuxeoObject {
             Field originalRequestField = rawCall.getClass().getDeclaredField(ORIGINAL_REQUEST);
             originalRequestField.setAccessible(true);
             originalRequest = (Request) originalRequestField.get(rawCall);
+            logger.debug("Request:" + originalRequest.toString());
         } catch (NoSuchFieldException | NoSuchMethodException | IllegalAccessException reason) {
             throw new NuxeoClientException(reason);
         } catch (InvocationTargetException reason) {
