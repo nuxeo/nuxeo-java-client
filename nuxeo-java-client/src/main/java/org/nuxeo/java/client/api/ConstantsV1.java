@@ -29,6 +29,8 @@ public class ConstantsV1 {
 
     public static final String ENTITY_TYPE_DOCUMENT = "document";
 
+    public static final String ENTITY_TYPE_RECORDSET = "recordSet";
+
     public static final String DEFAULT_DOC_TYPE = "File";
 
     public static final String ENTITY_TYPE_LOGIN = "login";
@@ -62,6 +64,8 @@ public class ConstantsV1 {
     public static final String ENTITY_TYPE = "entity-type";
 
     public static final MediaType APPLICATION_JSON = MediaType.parse("application/json");
+
+    public static final MediaType APPLICATION_JSON_NXENTITY = MediaType.parse("application/json+nxentity");
 
     public static final String APPLICATION_OCTET_STREAM = "application/octet-stream";
 

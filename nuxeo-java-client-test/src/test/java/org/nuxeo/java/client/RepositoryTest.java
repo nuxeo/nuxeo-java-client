@@ -33,6 +33,7 @@ import org.nuxeo.ecm.restapi.test.RestServerFeature;
 import org.nuxeo.ecm.restapi.test.RestServerInit;
 import org.nuxeo.java.client.api.objects.Document;
 import org.nuxeo.java.client.api.objects.Documents;
+import org.nuxeo.java.client.api.objects.RecordSet;
 import org.nuxeo.java.client.internals.spi.NuxeoClientException;
 import org.nuxeo.java.client.marshallers.DocumentMarshaller;
 import org.nuxeo.runtime.test.runner.Features;
@@ -214,6 +215,12 @@ public class RepositoryTest extends BaseTest {
         assertEquals(folder.getPath(), "/folder_1");
         assertEquals(folder.getState(), "project");
         assertEquals(folder.getType(), "Folder");
+    }
+
+    @Test
+    public void itCanUseQueriesAndResultSet(){
+        RecordSet documents = (RecordSet) nuxeoClient.automation().param("query", "SELECT * FROM Document").execute("Repository.ResultSetQuery");
+        assertTrue(documents.getUuids().size() != 0);
     }
 
     // TODO JAVACLIENT-22

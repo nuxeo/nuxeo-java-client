@@ -19,7 +19,6 @@ package org.nuxeo.java.client.api.objects;
 import java.io.IOException;
 import java.util.Map;
 
-import com.squareup.okhttp.MediaType;
 import org.nuxeo.java.client.api.ConstantsV1;
 import org.nuxeo.java.client.api.NuxeoClient;
 import org.nuxeo.java.client.api.methods.OperationAPI;
@@ -28,6 +27,7 @@ import org.nuxeo.java.client.internals.spi.NuxeoClientException;
 import org.nuxeo.java.client.internals.util.IOUtils;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.squareup.okhttp.MediaType;
 import com.squareup.okhttp.ResponseBody;
 
 /**
@@ -55,7 +55,9 @@ public class Operation extends NuxeoObject {
     public Object execute(String operationId, OperationBody body) {
         ResponseBody responseBody = (ResponseBody) getResponse(operationAPI, operationId, body);
         try {
-            if(!responseBody.contentType().equals(ConstantsV1.APPLICATION_JSON)){
+            MediaType mediaType = responseBody.contentType();
+            if (!mediaType.equals(ConstantsV1.APPLICATION_JSON)
+                    && !mediaType.equals(ConstantsV1.APPLICATION_JSON_NXENTITY)) {
                 return new FileBlob(IOUtils.copyToTempFile(responseBody.byteStream()));
             }
             String response = responseBody.string();
@@ -65,6 +67,9 @@ public class Operation extends NuxeoObject {
                 return nuxeoClient.getConverterFactory().readJSON(response, Document.class);
             case ConstantsV1.ENTITY_TYPE_DOCUMENTS:
                 return nuxeoClient.getConverterFactory().readJSON(response, Documents.class);
+            case ConstantsV1.ENTITY_TYPE_RECORDSET:
+                return nuxeoClient.getConverterFactory().readJSON(response, RecordSet.class);
+                // TODO:JAVACLIENT-31
             case ConstantsV1.ENTITY_TYPE_BLOB:
                 return nuxeoClient.getConverterFactory().readJSON(response, Blob.class);
             case ConstantsV1.ENTITY_TYPE_BLOBS:
