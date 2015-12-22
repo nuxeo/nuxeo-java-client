@@ -126,15 +126,76 @@ Allow to use Lambda in the code.
 
 **Jackson & Marshaling**
 
-Jackson + Annotations.
+By default, the library fasterXML Jackson is used for objects marshalling in `nuxeo-java-client`.
+
+Several usages:
+
+- POJOS and Annotations.
+- Custom Json generators and parsers.
 
 **Caching Interceptors**
 
-TBD
+#### Goals
+
+If needed, for example on Android, we should be able to easily add caching logic.
+
+##### How?
+
+All caches should be accessible via a generated cache key defined by the request itself:
+
+- headers
+- base url
+- endpoint used
+- parameters
+- body
+- content type
+- ...?
+
+##### How many?
+
+3 caches should be implemented:
+
+- **Raw Response Store** : The server response is simply stored on the device so that it can be reused in case the server is unreachable OR to avoid too many frequent calls.
+- **Document Response Store**: Store the unmarshalled response objects (here Documents) and updates.
+- **Document Transient Store** bound with deferred calls queue: keeping changes of document.
+- **Deferred Calls Queue**: The Create Update Delete operation will be stored locally and replayed when the server is available. Requests pure calls.
+
+- Actions/Events
+
+[Scenarii](https://docs.google.com/a/nuxeo.com/spreadsheets/d/1rlzMyLk_LD4OvdbJ37DBZjD5LiH4i7sb4V2YAYjINcc/edit?usp=sharing)
+
+#####Pending questions: Invalidations
+
+----> What would be a default timeout for each cache?
+
+**Potential rules offline:**
+
+- When listing documents, check the document transient store
+- then check the document response store
+- then check the server response
+
+#####Synchronisation
+
+- Should we apply those [rules](https://doc.nuxeo.com/display/NXDOC/Android+Connector+and+Caching#AndroidConnectorandCaching-TransientState) ?
+- Should we use ETag And/Or If-Modified-Since with HEAD method ?
+
+#####Potential Stores
+
+Depending on client:
+- "In memory" - guava for java
+- "Database" - SQlite for Android
+- Local storage for JS
+- On disk for both
+- Others?
+
+#####Miscellaneous
+
+- For the dirty properties of objects (like dirty properties of automation client for documents) - out of scope of caching
+
 
 **Error & Logging**
 
-TBD
+The `NuxeoClientException` within `nuxeo-java-client` is consuming the default and the extended rest exception response by the server. Here the [documentation](https://doc.nuxeo.com/x/JQI5AQ)
 
 ## Testing
 
