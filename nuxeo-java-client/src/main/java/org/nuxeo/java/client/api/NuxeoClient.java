@@ -16,6 +16,7 @@
  */
 package org.nuxeo.java.client.api;
 
+import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
 import org.nuxeo.java.client.api.cache.NuxeoResponseCache;
@@ -33,6 +34,7 @@ import retrofit.Retrofit;
 import com.squareup.okhttp.Interceptor;
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
+import com.squareup.okhttp.RequestBody;
 import com.squareup.okhttp.Response;
 
 /**
@@ -200,6 +202,64 @@ public class NuxeoClient implements Client {
     @Override
     public boolean isCacheEnabled() {
         return nuxeoCache != null;
+    }
+
+    @Override
+    public Response get(String url) {
+        Request request = new Request.Builder().url(url).build();
+        try {
+            return retrofit.client().newCall(request).execute();
+        } catch (IOException e) {
+            throw new NuxeoClientException(e);
+        }
+    }
+
+    @Override
+     public Response delete(String url, String json) {
+        Request request;
+        if (json != null) {
+            RequestBody body = RequestBody.create(ConstantsV1.APPLICATION_JSON_CHARSET_UTF_8, json);
+            request = new Request.Builder().url(url).delete(body).build();
+        } else {
+            request = new Request.Builder().url(url).build();
+        }
+        try {
+            return retrofit.client().newCall(request).execute();
+        } catch (IOException e) {
+            throw new NuxeoClientException(e);
+        }
+    }
+
+    @Override
+    public Response put(String url, String json) {
+        Request request;
+        if (json != null) {
+            RequestBody body = RequestBody.create(ConstantsV1.APPLICATION_JSON_CHARSET_UTF_8, json);
+            request = new Request.Builder().url(url).put(body).build();
+        } else {
+            request = new Request.Builder().url(url).build();
+        }
+        try {
+            return retrofit.client().newCall(request).execute();
+        } catch (IOException e) {
+            throw new NuxeoClientException(e);
+        }
+    }
+
+    @Override
+    public Response post(String url, String json) {
+        Request request;
+        if (json != null) {
+            RequestBody body = RequestBody.create(ConstantsV1.APPLICATION_JSON_CHARSET_UTF_8, json);
+            request = new Request.Builder().url(url).post(body).build();
+        } else {
+            request = new Request.Builder().url(url).build();
+        }
+        try {
+            return retrofit.client().newCall(request).execute();
+        } catch (IOException e) {
+            throw new NuxeoClientException(e);
+        }
     }
 
     public Operation automation() {

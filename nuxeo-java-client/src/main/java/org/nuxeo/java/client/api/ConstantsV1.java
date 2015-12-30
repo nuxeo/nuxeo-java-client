@@ -32,6 +32,7 @@ public class ConstantsV1 {
     public static final String ENTITY_TYPE_DOCUMENT = "document";
 
     public static final String ENTITY_TYPE_WORKFLOW = "workflow";
+
     public static final String ENTITY_TYPE_GRAPH = "graph";
 
     public static final String ENTITY_TYPE_WORKFLOWS = "workflows";
@@ -59,6 +60,7 @@ public class ConstantsV1 {
     public static final String ENTITY_TYPE_DOCUMENTS = "documents";
 
     public static final String ENTITY_TYPE_BLOB = "blob";
+
     public static final String ENTITY_TYPE_USER = "user";
 
     public static final String ENTITY_TYPE_BLOBS = "blobs";

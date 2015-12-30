@@ -18,6 +18,7 @@
  */
 package org.nuxeo.java.client.api;
 
+import com.squareup.okhttp.Response;
 import org.nuxeo.java.client.api.cache.NuxeoResponseCache;
 
 import retrofit.Retrofit;
@@ -81,4 +82,35 @@ public interface Client {
      * @return Cache Status.
      */
     boolean isCacheEnabled();
+
+    /**
+     * GET simple method.
+     * @param url should contains parameters if needed.
+     * @return okhttp response (response.body().string() -> to get the payload).
+     */
+    Response get(String url);
+
+    /**
+     * DELETE simple method.
+     * @param url should contains parameters if needed.
+     * @param json - can be null.
+     * @return okhttp response.
+     */
+    Response delete(String url, String json);
+
+    /**
+     * PUT simple method.
+     * @param url should contains parameters if needed.
+     * @param json - can be null.
+     * @return okhttp response (response.body().string() -> to get the payload).
+     */
+    Response put(String url, String json);
+
+    /**
+     * POST simple method.
+     * @param url should contains parameters if needed.
+     * @param json - can be null.
+     * @return okhttp response (response.body().string() -> to get the payload).
+     */
+    Response post(String url, String json);
 }
