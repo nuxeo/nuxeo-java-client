@@ -63,6 +63,12 @@ public class ConstantsV1 {
 
     public static final String ENTITY_TYPE_USER = "user";
 
+    public static final String ENTITY_TYPE_USERS = "users";
+
+    public static final String ENTITY_TYPE_GROUPS = "groups";
+
+    public static final String ENTITY_TYPE_GROUP = "group";
+
     public static final String ENTITY_TYPE_BLOBS = "blobs";
 
     public static final MediaType APPLICATION_JSON_CHARSET_UTF_8 = MediaType.parse("application/json; charset=UTF-8");
