@@ -16,29 +16,32 @@
  * Contributors:
  *         Vladimir Pasquier <vpasquier@nuxeo.com>
  */
-package org.nuxeo.java.client.api.methods;
+package org.nuxeo.java.client.api.objects.workflow;
 
-import org.nuxeo.java.client.api.objects.CurrentUser;
-import org.nuxeo.java.client.api.objects.Workflow;
-import org.nuxeo.java.client.api.objects.Workflows;
+import java.util.List;
+import java.util.Map;
 
-import retrofit.Call;
-import retrofit.http.Body;
-import retrofit.http.GET;
-import retrofit.http.POST;
+import org.nuxeo.java.client.api.ConstantsV1;
+import org.nuxeo.java.client.api.objects.NuxeoEntity;
 
 /**
  * @since 1.0
  */
-public interface CurrentUserAPI {
+public class Graph extends NuxeoEntity {
 
-    @POST("automation/login")
-    Call<CurrentUser> getCurrentUser();
+    public Graph() {
+        super(ConstantsV1.ENTITY_TYPE_GRAPH);
+    }
 
-    @GET("workflow")
-    Call<Workflows> getWorkflowInstances();
+    protected List<Map<String, Object>> nodes;
 
-    @POST("workflow")
-    Call<Workflow> startWorkflowInstance(@Body Workflow workflow);
+    protected List<Map<String, String>> transitions;
 
+    public List<Map<String, Object>> getNodes() {
+        return nodes;
+    }
+
+    public List<Map<String, String>> getTransitions() {
+        return transitions;
+    }
 }

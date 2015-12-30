@@ -159,7 +159,69 @@
       </dependency>
 
       <!-- TEST -->
+      <dependency>
+        <groupId>org.nuxeo.ecm.routing</groupId>
+        <artifactId>nuxeo-routing-core</artifactId>
+        <version>${nuxeo.version}</version>
+      </dependency>
 
+      <!-- Test -->
+      <dependency>
+        <groupId>org.nuxeo.ecm.routing</groupId>
+        <artifactId>nuxeo-routing-core</artifactId>
+        <type>test-jar</type>
+        <version>${nuxeo.version}</version>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-platform-types-api</artifactId>
+        <version>${nuxeo.version}</version>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.routing</groupId>
+        <artifactId>nuxeo-routing-default</artifactId>
+        <version>${nuxeo.version}</version>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-platform-filemanager-api</artifactId>
+        <version>${nuxeo.version}</version>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-platform-filemanager-core</artifactId>
+        <version>${nuxeo.version}</version>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.core</groupId>
+        <artifactId>nuxeo-core-mimetype</artifactId>
+        <version>${nuxeo.version}</version>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-platform-userworkspace-types</artifactId>
+        <version>${nuxeo.version}</version>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-platform-audit-core</artifactId>
+        <version>${nuxeo.version}</version>
+        <type>test-jar</type>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-platform-audit-core</artifactId>
+        <version>${nuxeo.version}</version>
+        <scope>test</scope>
+      </dependency>
       <dependency>
         <groupId>junit</groupId>
         <artifactId>junit</artifactId>
@@ -171,6 +233,11 @@
         <artifactId>nuxeo-runtime-test</artifactId>
         <version>${nuxeo.version}</version>
         <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.routing</groupId>
+        <artifactId>nuxeo-routing-rest-api</artifactId>
+        <version>${nuxeo.version}</version>
       </dependency>
       <dependency>
         <groupId>org.nuxeo.ecm.platform</groupId>

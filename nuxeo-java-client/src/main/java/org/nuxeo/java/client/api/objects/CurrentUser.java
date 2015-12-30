@@ -1,41 +1,35 @@
 /*
- * (C) Copyright 2016 Nuxeo SA (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the GNU Lesser General Public License
- * (LGPL) version 2.1 which accompanies this distribution, and is available at
- * http://www.gnu.org/licenses/lgpl-2.1.html
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  *
  * Contributors:
- *          Nuxeo
+ *         Vladimir Pasquier <vpasquier@nuxeo.com>
  */
 package org.nuxeo.java.client.api.objects;
 
-import java.io.IOException;
 import java.util.List;
 
 import org.nuxeo.java.client.api.ConstantsV1;
 import org.nuxeo.java.client.api.NuxeoClient;
 import org.nuxeo.java.client.api.methods.CurrentUserAPI;
-import org.nuxeo.java.client.internals.spi.NuxeoClientException;
 
-import retrofit.Response;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
  * @since 1.0
  */
-public class CurrentUser extends NuxeoObject {
-
-    @JsonIgnore
-    protected CurrentUserAPI currentUserAPI;
+public class CurrentUser extends NuxeoEntity {
 
     protected String username;
 
@@ -49,8 +43,7 @@ public class CurrentUser extends NuxeoObject {
     }
 
     public CurrentUser(NuxeoClient nuxeoClient) {
-        super(ConstantsV1.ENTITY_TYPE_LOGIN, nuxeoClient);
-        currentUserAPI = nuxeoClient.getRetrofit().create(CurrentUserAPI.class);
+        super(ConstantsV1.ENTITY_TYPE_LOGIN, nuxeoClient, CurrentUserAPI.class);
     }
 
     public List<String> getGroups() {
@@ -66,12 +59,15 @@ public class CurrentUser extends NuxeoObject {
     }
 
     public CurrentUser getCurrentUser() {
-        try {
-            Response<CurrentUser> response = currentUserAPI.getCurrentUser().execute();
-            return response.body();
-        } catch (IOException reason) {
-            throw new NuxeoClientException(reason);
-        }
+        return (CurrentUser) getResponse();
+    }
+
+    public Workflows getWorkflowInstances() {
+        return (Workflows) getResponse();
+    }
+
+    public Workflow startWorkflowInstance(Workflow workflow){
+        return (Workflow) getResponse(workflow);
     }
 
 }

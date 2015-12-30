@@ -16,29 +16,27 @@
  * Contributors:
  *         Vladimir Pasquier <vpasquier@nuxeo.com>
  */
-package org.nuxeo.java.client.api.methods;
+package org.nuxeo.java.client.api.objects;
 
-import org.nuxeo.java.client.api.objects.CurrentUser;
-import org.nuxeo.java.client.api.objects.Workflow;
-import org.nuxeo.java.client.api.objects.Workflows;
+import java.util.List;
 
-import retrofit.Call;
-import retrofit.http.Body;
-import retrofit.http.GET;
-import retrofit.http.POST;
+import org.nuxeo.java.client.api.ConstantsV1;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
  * @since 1.0
  */
-public interface CurrentUserAPI {
+public class Workflows extends NuxeoEntity {
 
-    @POST("automation/login")
-    Call<CurrentUser> getCurrentUser();
+    @JsonProperty("entries")
+    protected List<Workflow> workflows;
 
-    @GET("workflow")
-    Call<Workflows> getWorkflowInstances();
+    public Workflows() {
+        super(ConstantsV1.ENTITY_TYPE_WORKFLOWS);
+    }
 
-    @POST("workflow")
-    Call<Workflow> startWorkflowInstance(@Body Workflow workflow);
-
+    public List<Workflow> getWorkflows() {
+        return workflows;
+    }
 }

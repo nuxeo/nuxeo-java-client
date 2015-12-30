@@ -1,38 +1,35 @@
 /*
- * (C) Copyright 2016 Nuxeo SA (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the GNU Lesser General Public License
- * (LGPL) version 2.1 which accompanies this distribution, and is available at
- * http://www.gnu.org/licenses/lgpl-2.1.html
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  *
  * Contributors:
- *          Nuxeo
+ *         Vladimir Pasquier <vpasquier@nuxeo.com>
  */
 package org.nuxeo.java.client.api.objects;
 
-import com.squareup.okhttp.ResponseBody;
 import org.nuxeo.java.client.api.ConstantsV1;
 import org.nuxeo.java.client.api.NuxeoClient;
 import org.nuxeo.java.client.api.methods.RepositoryAPI;
-
-import retrofit.Callback;
+import org.nuxeo.java.client.api.objects.workflow.Graph;
 
 /**
  * @since 1.0
  */
-public class Repository extends NuxeoObject {
-
-    protected final RepositoryAPI repositoryAPI;
+public class Repository extends NuxeoEntity {
 
     public Repository(NuxeoClient nuxeoClient) {
-        super(ConstantsV1.ENTITY_TYPE_DOCUMENT, nuxeoClient);
-        repositoryAPI = nuxeoClient.getRetrofit().create(RepositoryAPI.class);
+        super(ConstantsV1.ENTITY_TYPE_DOCUMENT, nuxeoClient, RepositoryAPI.class);
     }
 
     public Repository repositoryName(String repositoryName) {
@@ -51,135 +48,135 @@ public class Repository extends NuxeoObject {
     /* By Id - Sync */
 
     public Document getDocumentById(String documentId) {
-        return (Document) getResponse(repositoryAPI, documentId);
+        return (Document) getResponse(documentId);
     }
 
     public Document createDocumentById(String parentId, Document document) {
-        return (Document) getResponse(repositoryAPI, parentId, document);
+        return (Document) getResponse(parentId, document);
     }
 
     public Document updateDocument(Document document) {
         document.setProperties(document.getDirtyProperties());
-        return (Document) getResponse(repositoryAPI, document.getId(), document);
+        return (Document) getResponse(document.getId(), document);
 
     }
 
     /* By Id - Async */
 
-    public void getDocumentById(String documentId, Callback<Document> callback) {
-        if (repositoryName == null) {
-            repositoryAPI.getDocumentById(documentId).enqueue(callback);
-        } else {
-            repositoryAPI.getDocumentById(documentId, repositoryName).enqueue(callback);
-        }
-    }
-
-    public void createDocumentById(String parentId, Document document, Callback<Document> callback) {
-        if (repositoryName == null) {
-            repositoryAPI.createDocumentById(parentId, document).enqueue(callback);
-        } else {
-            repositoryAPI.createDocumentById(parentId, document).enqueue(callback);
-        }
-    }
-
-    public void updateDocument(Document document, Callback<Document> callback) {
-        document.setProperties(document.getDirtyProperties());
-        if (repositoryName == null) {
-            repositoryAPI.updateDocument(document.getId(), document).enqueue(callback);
-        } else {
-            repositoryAPI.updateDocument(document.getId(), document, repositoryName).enqueue(callback);
-        }
-    }
-
-    public void deleteDocument(Document document, Callback<ResponseBody> callback) {
-        if (repositoryName == null) {
-            repositoryAPI.deleteDocument(document.getId()).enqueue(callback);
-        } else {
-            repositoryAPI.deleteDocument(document.getId(), repositoryName).enqueue(callback);
-        }
-    }
+//    public void getDocumentById(String documentId, Callback<Document> callback) {
+//        if (repositoryName == null) {
+//            repositoryAPI.getDocumentById(documentId).enqueue(callback);
+//        } else {
+//            repositoryAPI.getDocumentById(documentId, repositoryName).enqueue(callback);
+//        }
+//    }
+//
+//    public void createDocumentById(String parentId, Document document, Callback<Document> callback) {
+//        if (repositoryName == null) {
+//            repositoryAPI.createDocumentById(parentId, document).enqueue(callback);
+//        } else {
+//            repositoryAPI.createDocumentById(parentId, document).enqueue(callback);
+//        }
+//    }
+//
+//    public void updateDocument(Document document, Callback<Document> callback) {
+//        document.setProperties(document.getDirtyProperties());
+//        if (repositoryName == null) {
+//            repositoryAPI.updateDocument(document.getId(), document).enqueue(callback);
+//        } else {
+//            repositoryAPI.updateDocument(document.getId(), document, repositoryName).enqueue(callback);
+//        }
+//    }
+//
+//    public void deleteDocument(Document document, Callback<ResponseBody> callback) {
+//        if (repositoryName == null) {
+//            repositoryAPI.deleteDocument(document.getId()).enqueue(callback);
+//        } else {
+//            repositoryAPI.deleteDocument(document.getId(), repositoryName).enqueue(callback);
+//        }
+//    }
 
     /* By Path - Sync */
 
     public Document getDocumentRoot() {
-        return (Document) getResponse(repositoryAPI);
+        return (Document) getResponse();
     }
 
     public Document getDocumentByPath(String documentPath) {
-        return (Document) getResponse(repositoryAPI, documentPath);
+        return (Document) getResponse(documentPath);
     }
 
     public Document createDocumentByPath(String parentPath, Document document) {
-        return (Document) getResponse(repositoryAPI, parentPath, document);
+        return (Document) getResponse(parentPath, document);
     }
 
     public void deleteDocument(Document document) {
-        getResponse(repositoryAPI, document.getId());
+        getResponse(document.getId());
     }
 
     /* By Path - Async */
 
-    public void getDocumentRoot(Callback<Document> callback) {
-        // TODO: JAVACLIENT-20
-        // executeAsync(getCurrentMethodName(), callback);
-        if (repositoryName == null) {
-            repositoryAPI.getDocumentRoot().enqueue(callback);
-        } else {
-            repositoryAPI.getDocumentRoot(repositoryName).enqueue(callback);
-        }
-    }
-
-    public void getDocumentByPath(String documentPath, Callback<Document> callback) {
-        if (repositoryName == null) {
-            repositoryAPI.getDocumentByPath(documentPath).enqueue(callback);
-        } else {
-            repositoryAPI.getDocumentByPath(documentPath, repositoryName).enqueue(callback);
-        }
-    }
-
-    public void createDocumentByPath(String parentPath, Document document, Callback<Document> callback) {
-        if (repositoryName == null) {
-            repositoryAPI.createDocumentByPath(parentPath, document).enqueue(callback);
-        } else {
-            repositoryAPI.createDocumentByPath(parentPath, document).enqueue(callback);
-        }
-    }
+//    public void getDocumentRoot(Callback<Document> callback) {
+//        // TODO: JAVACLIENT-20
+//        // executeAsync(getCurrentMethodName(), callback);
+//        if (repositoryName == null) {
+//            repositoryAPI.getDocumentRoot().enqueue(callback);
+//        } else {
+//            repositoryAPI.getDocumentRoot(repositoryName).enqueue(callback);
+//        }
+//    }
+//
+//    public void getDocumentByPath(String documentPath, Callback<Document> callback) {
+//        if (repositoryName == null) {
+//            repositoryAPI.getDocumentByPath(documentPath).enqueue(callback);
+//        } else {
+//            repositoryAPI.getDocumentByPath(documentPath, repositoryName).enqueue(callback);
+//        }
+//    }
+//
+//    public void createDocumentByPath(String parentPath, Document document, Callback<Document> callback) {
+//        if (repositoryName == null) {
+//            repositoryAPI.createDocumentByPath(parentPath, document).enqueue(callback);
+//        } else {
+//            repositoryAPI.createDocumentByPath(parentPath, document).enqueue(callback);
+//        }
+//    }
 
     /* Query - Sync */
 
     public Documents query(String query) {
-        return (Documents) getResponse(repositoryAPI, query);
+        return (Documents) getResponse(query);
     }
 
     public Documents query(String query, String pageSize, String currentPageIndex, String maxResults, String sortBy,
             String sortOrder, String queryParams) {
-        return (Documents) getResponse(repositoryAPI, query, pageSize, currentPageIndex,
+        return (Documents) getResponse(query, pageSize, currentPageIndex,
                 maxResults, sortBy, sortOrder, queryParams);
     }
 
     public Documents queryByProvider(String providerName, String pageSize, String currentPageIndex, String maxResults,
             String sortBy, String sortOrder, String queryParams) {
-        return (Documents) getResponse(repositoryAPI, providerName, pageSize, currentPageIndex,
+        return (Documents) getResponse(providerName, pageSize, currentPageIndex,
                 maxResults, sortBy, sortOrder, queryParams);
     }
 
     /* Query - Async */
 
-    public void query(String query, Callback<Documents> callback) {
-        repositoryAPI.query(query).enqueue(callback);
-    }
-
-    public void query(String query, String pageSize, String currentPageIndex, String maxResults, String sortBy,
-            String sortOrder, String queryParams, Callback<Documents> callback) {
-        repositoryAPI.query(query, pageSize, currentPageIndex, maxResults, sortBy, sortOrder, queryParams).enqueue(
-                callback);
-    }
-
-    public void queryByProvider(String providerName, String pageSize, String currentPageIndex, String maxResults,
-            String sortBy, String sortOrder, String queryParams, Callback<Documents> callback) {
-        repositoryAPI.queryByProvider(providerName, pageSize, currentPageIndex, maxResults, sortBy, sortOrder,
-                queryParams).enqueue(callback);
-    }
+//    public void query(String query, Callback<Documents> callback) {
+//        repositoryAPI.query(query).enqueue(callback);
+//    }
+//
+//    public void query(String query, String pageSize, String currentPageIndex, String maxResults, String sortBy,
+//            String sortOrder, String queryParams, Callback<Documents> callback) {
+//        repositoryAPI.query(query, pageSize, currentPageIndex, maxResults, sortBy, sortOrder, queryParams).enqueue(
+//                callback);
+//    }
+//
+//    public void queryByProvider(String providerName, String pageSize, String currentPageIndex, String maxResults,
+//            String sortBy, String sortOrder, String queryParams, Callback<Documents> callback) {
+//        repositoryAPI.queryByProvider(providerName, pageSize, currentPageIndex, maxResults, sortBy, sortOrder,
+//                queryParams).enqueue(callback);
+//    }
 
     /* Internal */
 
@@ -189,4 +186,45 @@ public class Repository extends NuxeoObject {
     // methodResult.enqueue(callback);
     // }
 
+    /* Workflows */
+
+    public Workflow startWorkflowInstanceWithDocPath(String documentPath, Workflow workflow){
+        return (Workflow) getResponse(documentPath, workflow);
+    }
+
+    public Workflow startWorkflowInstanceWithDocId(String documentId, Workflow workflow) {
+        return (Workflow) getResponse(documentId, workflow);
+    }
+
+    public Workflows getWorkflowInstancesByDocId(String documentId) {
+        return (Workflows) getResponse(documentId);
+    }
+
+    public Workflows getWorkflowInstancesByDocPath(String documentPath) {
+        return (Workflows) getResponse(documentPath);
+    }
+
+    public Workflow getWorkflowInstance(String workflowInstanceId) {
+        return (Workflow) getResponse(workflowInstanceId);
+    }
+
+    public void deleteWorkflowInstance(String workflowInstanceId) {
+        getResponse(workflowInstanceId);
+    }
+
+    public Graph getWorkflowInstanceGraph(String workflowInstanceId) {
+        return (Graph) getResponse(workflowInstanceId);
+    }
+
+    public Graph getWorkflowModelGraph(String workflowModelName) {
+        return (Graph) getResponse(workflowModelName);
+    }
+
+    public Workflow getWorkflowModel(String workflowModelName) {
+        return (Workflow) getResponse(workflowModelName);
+    }
+
+    public Workflows getWorkflowModels() {
+        return (Workflows) getResponse();
+    }
 }
