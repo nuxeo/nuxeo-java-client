@@ -18,26 +18,47 @@
  */
 package org.nuxeo.java.client.api.objects.user;
 
+import org.nuxeo.java.client.api.ConstantsV1;
+import org.nuxeo.java.client.api.objects.NuxeoEntity;
+
+import java.util.List;
+
 /**
  * @since 1.0
  */
-public class ExtendedGroups {
+public class User extends NuxeoEntity {
 
-    protected String name;
+    protected String id;
 
-    protected String label;
+    protected UserProperties properties;
 
-    protected String url;
+    protected List<ExtendedGroup> extendedGroups;
 
-    public String getName() {
-        return name;
+    protected boolean isAdministrator;
+
+    protected boolean isAnonymous;
+
+    public User() {
+        super(ConstantsV1.ENTITY_TYPE_USER);
     }
 
-    public String getLabel() {
-        return label;
+    public String getId() {
+        return id;
     }
 
-    public String getUrl() {
-        return url;
+    public UserProperties getProperties() {
+        return properties;
+    }
+
+    public boolean isAdministrator() {
+        return isAdministrator;
+    }
+
+    public boolean isAnonymous() {
+        return isAnonymous;
+    }
+
+    public List<ExtendedGroup> getExtendedGroups() {
+        return extendedGroups;
     }
 }
