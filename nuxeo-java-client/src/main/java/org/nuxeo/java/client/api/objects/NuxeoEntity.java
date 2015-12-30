@@ -1,3 +1,21 @@
+/*
+ * (C) Copyright 2016 Nuxeo SA (http://nuxeo.com/) and others.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ * Contributors:
+ *         Vladimir Pasquier <vpasquier@nuxeo.com>
+ */
 package org.nuxeo.java.client.api.objects;
 
 import java.io.IOException;
@@ -13,6 +31,7 @@ import java.util.List;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.util.Strings;
+import org.nuxeo.java.client.api.ConstantsV1;
 import org.nuxeo.java.client.api.NuxeoClient;
 import org.nuxeo.java.client.internals.spi.NuxeoClientException;
 
@@ -22,19 +41,14 @@ import retrofit.Response;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.squareup.okhttp.Request;
+import com.squareup.okhttp.ResponseBody;
 
 /**
  * @since 1.0
  */
-public abstract class NuxeoObject {
+public abstract class NuxeoEntity {
 
-    private static final Logger logger = LogManager.getLogger(NuxeoObject.class);
-
-    public static final String CREATE_RAW_CALL = "createRawCall";
-
-    public static final String ORIGINAL_REQUEST = "originalRequest";
-
-    public static final String MD_5 = "MD5";
+    private static final Logger logger = LogManager.getLogger(NuxeoEntity.class);
 
     @JsonProperty("entity-type")
     protected final String entityType;
@@ -46,21 +60,25 @@ public abstract class NuxeoObject {
     protected boolean refreshCache = false;
 
     @JsonIgnore
-    protected NuxeoClient client;
+    protected NuxeoClient nuxeoClient;
+
+    @JsonIgnore
+    protected Object api;
 
     /**
      * For Serialization purpose.
      */
-    public NuxeoObject(String entityType) {
+    public NuxeoEntity(String entityType) {
         this.entityType = entityType;
     }
 
     /**
      * The constructor to use.
      */
-    public NuxeoObject(String entityType, NuxeoClient client) {
+    public NuxeoEntity(String entityType, NuxeoClient nuxeoClient, Class api) {
         this.entityType = entityType;
-        this.client = client;
+        this.nuxeoClient = nuxeoClient;
+        this.api = nuxeoClient.getRetrofit().create(api);
     }
 
     public String getEntityType() {
@@ -72,20 +90,20 @@ public abstract class NuxeoObject {
      *
      * @return the response as business objects.
      */
-    protected Object getResponse(Object api, Object... parametersArray) {
-        if (client == null) {
+    protected Object getResponse(Object... parametersArray) {
+        if (nuxeoClient == null) {
             throw new NuxeoClientException("You should pass to your Nuxeo object the client instance");
         }
         String method = getCurrentMethodName();
         Call<?> methodResult = getCall(api, method, parametersArray);
         String cacheKey = Strings.EMPTY;
-        if (client.isCacheEnabled()) {
+        if (nuxeoClient.isCacheEnabled()) {
             if (refreshCache) {
                 this.refreshCache = false;
-                client.getNuxeoCache().invalidateAll();
+                nuxeoClient.getNuxeoCache().invalidateAll();
             } else {
                 cacheKey = computeCacheKey(methodResult);
-                Object result = client.getNuxeoCache().getBody(cacheKey);
+                NuxeoEntity result = (NuxeoEntity) nuxeoClient.getNuxeoCache().getBody(cacheKey);
                 if (result != null) {
                     return result;
                 }
@@ -98,16 +116,25 @@ public abstract class NuxeoObject {
                 String errorBody = response.errorBody().string();
                 if (errorBody.equals(Strings.EMPTY)) {
                     nuxeoClientException = new NuxeoClientException(response.code(), response.message());
+                } else if (!response.raw().body().contentType().equals(ConstantsV1.APPLICATION_JSON)) {
+                    nuxeoClientException = new NuxeoClientException(response.code(), errorBody);
                 } else {
-                    nuxeoClientException = (NuxeoClientException) client.getConverterFactory().readJSON(errorBody,
+                    nuxeoClientException = (NuxeoClientException) nuxeoClient.getConverterFactory().readJSON(errorBody,
                             NuxeoClientException.class);
                 }
                 throw nuxeoClientException;
             }
-            if (client.isCacheEnabled()) {
-                client.getNuxeoCache().put(cacheKey, response);
+            if (nuxeoClient.isCacheEnabled()) {
+                nuxeoClient.getNuxeoCache().put(cacheKey, response);
             }
-            return response.body();
+            Object body = response.body();
+            if (body instanceof ResponseBody) {
+                return body;
+            } else if (body == null) {
+                return response;
+            } else {
+                return reconnectObject((NuxeoEntity) body, api, nuxeoClient);
+            }
         } catch (IOException reason) {
             throw new NuxeoClientException(reason);
         }
@@ -121,10 +148,10 @@ public abstract class NuxeoObject {
         Request originalRequest;
         try {
             // TODO JAVACLIENT-26
-            Method rawCallMethod = methodResult.getClass().getDeclaredMethod(CREATE_RAW_CALL);
+            Method rawCallMethod = methodResult.getClass().getDeclaredMethod(ConstantsV1.CREATE_RAW_CALL);
             rawCallMethod.setAccessible(true);
             rawCall = (com.squareup.okhttp.Call) rawCallMethod.invoke(methodResult);
-            Field originalRequestField = rawCall.getClass().getDeclaredField(ORIGINAL_REQUEST);
+            Field originalRequestField = rawCall.getClass().getDeclaredField(ConstantsV1.ORIGINAL_REQUEST);
             originalRequestField.setAccessible(true);
             originalRequest = (Request) originalRequestField.get(rawCall);
             logger.debug("Request:" + originalRequest.toString());
@@ -139,7 +166,7 @@ public abstract class NuxeoObject {
 
         MessageDigest digest;
         try {
-            digest = java.security.MessageDigest.getInstance(MD_5);
+            digest = java.security.MessageDigest.getInstance(ConstantsV1.MD_5);
         } catch (NoSuchAlgorithmException e) {
             return null;
         }
@@ -171,8 +198,10 @@ public abstract class NuxeoObject {
                 }
             }
             return (Call<?>) method.invoke(api, parametersArray);
-        } catch (IllegalArgumentException | IllegalAccessException | InvocationTargetException reason) {
+        } catch (IllegalArgumentException | IllegalAccessException reason) {
             throw new NuxeoClientException(reason);
+        } catch(InvocationTargetException reason){
+            throw new NuxeoClientException(reason.getTargetException().getMessage(), reason);
         }
     }
 
@@ -185,4 +214,9 @@ public abstract class NuxeoObject {
         return repositoryName;
     }
 
+    public NuxeoEntity reconnectObject(NuxeoEntity nuxeoEntity, Object api, NuxeoClient nuxeoClient) {
+        nuxeoEntity.nuxeoClient = nuxeoClient;
+        nuxeoEntity.api = api;
+        return nuxeoEntity;
+    }
 }

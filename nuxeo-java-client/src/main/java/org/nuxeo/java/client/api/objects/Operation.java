@@ -1,18 +1,20 @@
 /*
- * (C) Copyright 2016 Nuxeo SA (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the GNU Lesser General Public License
- * (LGPL) version 2.1 which accompanies this distribution, and is available at
- * http://www.gnu.org/licenses/lgpl-2.1.html
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  *
  * Contributors:
- *          Nuxeo
+ *         Vladimir Pasquier <vpasquier@nuxeo.com>
  */
 package org.nuxeo.java.client.api.objects;
 
@@ -23,6 +25,7 @@ import org.nuxeo.java.client.api.ConstantsV1;
 import org.nuxeo.java.client.api.NuxeoClient;
 import org.nuxeo.java.client.api.methods.OperationAPI;
 import org.nuxeo.java.client.api.objects.blob.FileBlob;
+import org.nuxeo.java.client.api.objects.operation.OperationBody;
 import org.nuxeo.java.client.internals.spi.NuxeoClientException;
 import org.nuxeo.java.client.internals.util.IOUtils;
 
@@ -33,27 +36,20 @@ import com.squareup.okhttp.ResponseBody;
 /**
  * @since 1.0
  */
-public class Operation extends NuxeoObject {
-
-    @JsonIgnore
-    protected final OperationAPI operationAPI;
+public class Operation extends NuxeoEntity {
 
     @JsonIgnore
     protected OperationBody body;
 
-    protected final NuxeoClient nuxeoClient;
-
     protected String operationId;
 
     public Operation(NuxeoClient nuxeoClient) {
-        super(ConstantsV1.ENTITY_TYPE_OPERATION, nuxeoClient);
-        operationAPI = nuxeoClient.getRetrofit().create(OperationAPI.class);
+        super(ConstantsV1.ENTITY_TYPE_OPERATION, nuxeoClient, OperationAPI.class);
         body = new OperationBody();
-        this.nuxeoClient = nuxeoClient;
     }
 
     public Object execute(String operationId, OperationBody body) {
-        ResponseBody responseBody = (ResponseBody) getResponse(operationAPI, operationId, body);
+        ResponseBody responseBody = (ResponseBody) getResponse(operationId, body);
         try {
             MediaType mediaType = responseBody.contentType();
             if (!mediaType.equals(ConstantsV1.APPLICATION_JSON)

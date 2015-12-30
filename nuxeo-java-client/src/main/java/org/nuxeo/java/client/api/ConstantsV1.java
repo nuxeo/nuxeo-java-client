@@ -1,18 +1,20 @@
 /*
- * (C) Copyright 2016 Nuxeo SA (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the GNU Lesser General Public License
- * (LGPL) version 2.1 which accompanies this distribution, and is available at
- * http://www.gnu.org/licenses/lgpl-2.1.html
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  *
  * Contributors:
- *          Nuxeo
+ *         Vladimir Pasquier <vpasquier@nuxeo.com>
  */
 package org.nuxeo.java.client.api;
 
@@ -28,6 +30,11 @@ public class ConstantsV1 {
     public static final String API_PATH = "/api/" + VERSION;
 
     public static final String ENTITY_TYPE_DOCUMENT = "document";
+
+    public static final String ENTITY_TYPE_WORKFLOW = "workflow";
+    public static final String ENTITY_TYPE_GRAPH = "graph";
+
+    public static final String ENTITY_TYPE_WORKFLOWS = "workflows";
 
     public static final String ENTITY_TYPE_RECORDSET = "recordSet";
 
@@ -52,6 +59,7 @@ public class ConstantsV1 {
     public static final String ENTITY_TYPE_DOCUMENTS = "documents";
 
     public static final String ENTITY_TYPE_BLOB = "blob";
+    public static final String ENTITY_TYPE_USER = "user";
 
     public static final String ENTITY_TYPE_BLOBS = "blobs";
 
@@ -68,5 +76,11 @@ public class ConstantsV1 {
     public static final MediaType APPLICATION_JSON_NXENTITY = MediaType.parse("application/json+nxentity");
 
     public static final String APPLICATION_OCTET_STREAM = "application/octet-stream";
+
+    public static final String CREATE_RAW_CALL = "createRawCall";
+
+    public static final String ORIGINAL_REQUEST = "originalRequest";
+
+    public static final String MD_5 = "MD5";
 
 }

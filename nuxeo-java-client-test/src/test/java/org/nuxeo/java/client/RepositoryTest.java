@@ -1,18 +1,20 @@
 /*
- * (C) Copyright 2016 Nuxeo SA (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the GNU Lesser General Public License
- * (LGPL) version 2.1 which accompanies this distribution, and is available at
- * http://www.gnu.org/licenses/lgpl-2.1.html
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  *
  * Contributors:
- *          Nuxeo
+ *         Vladimir Pasquier <vpasquier@nuxeo.com>
  */
 package org.nuxeo.java.client;
 
@@ -20,8 +22,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
-
-import java.io.IOException;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -39,12 +39,6 @@ import org.nuxeo.java.client.marshallers.DocumentMarshaller;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.Jetty;
-
-import retrofit.Callback;
-import retrofit.Response;
-import retrofit.Retrofit;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * @since 1.0
@@ -223,35 +217,45 @@ public class RepositoryTest extends BaseTest {
         assertTrue(documents.getUuids().size() != 0);
     }
 
-    // TODO JAVACLIENT-22
+    @Test
+    public void itCanFail(){
+        try {
+            nuxeoClient.getRepository().getDocumentByPath("folder_1/wrong");
+            fail("Should be not found");
+        }catch(NuxeoClientException reason){
+            assertEquals(404, reason.getStatus());
+        }
+    }
+
+    // TODO JAVACLIENT-22 AND JAVACLIENT-20
     @Test
     public void itCanFetchDocumentWithCallback() throws InterruptedException {
-        nuxeoClient.getRepository().getDocumentByPath("folder_2", new Callback<Document>() {
-            @Override
-            public void onResponse(Response<Document> response, Retrofit retrofit) {
-                if (!response.isSuccess()) {
-                    ObjectMapper objectMapper = new ObjectMapper();
-                    NuxeoClientException nuxeoClientException;
-                    try {
-                        nuxeoClientException = objectMapper.readValue(response.errorBody().string(),
-                                NuxeoClientException.class);
-                    } catch (IOException reason) {
-                        throw new NuxeoClientException(reason);
-                    }
-                    fail(nuxeoClientException.getRemoteStackTrace());
-                }
-                Document folder = response.body();
-                assertNotNull(folder);
-                assertEquals("Folder", folder.getType());
-                assertEquals("document", folder.getEntityType());
-                assertEquals("/folder_2", folder.getPath());
-                assertEquals("Folder 2", folder.getTitle());
-            }
-
-            @Override
-            public void onFailure(Throwable reason) {
-                fail(reason.getMessage());
-            }
-        });
+//        nuxeoClient.getRepository().getDocumentByPath("folder_2", new Callback<Document>() {
+//            @Override
+//            public void onResponse(Response<Document> response, Retrofit retrofit) {
+//                if (!response.isSuccess()) {
+//                    ObjectMapper objectMapper = new ObjectMapper();
+//                    NuxeoClientException nuxeoClientException;
+//                    try {
+//                        nuxeoClientException = objectMapper.readValue(response.errorBody().string(),
+//                                NuxeoClientException.class);
+//                    } catch (IOException reason) {
+//                        throw new NuxeoClientException(reason);
+//                    }
+//                    fail(nuxeoClientException.getRemoteStackTrace());
+//                }
+//                Document folder = response.body();
+//                assertNotNull(folder);
+//                assertEquals("Folder", folder.getType());
+//                assertEquals("document", folder.getEntityType());
+//                assertEquals("/folder_2", folder.getPath());
+//                assertEquals("Folder 2", folder.getTitle());
+//            }
+//
+//            @Override
+//            public void onFailure(Throwable reason) {
+//                fail(reason.getMessage());
+//            }
+//        });
     }
 }
