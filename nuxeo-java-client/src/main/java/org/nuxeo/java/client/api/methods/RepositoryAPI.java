@@ -116,10 +116,10 @@ public interface RepositoryAPI {
     Call<Workflow> startWorkflowInstanceWithDocPath(@Path("documentPath") String documentPath, @Body Workflow workflow, @Path("repositoryName") String repositoryName);
 
     @GET("id/{documentId}/@workflow")
-    Call<Workflows> getWorkflowInstancesByDocId(@Path("documentId") String documentId);
+    Call<Workflows> getWorkflowInstances(@Path("documentId") String documentId);
 
     @GET("repo/{repositoryName}/id/{documentId}/@workflow")
-    Call<Workflows> getWorkflowInstancesByDocId(@Path("documentId") String documentId, @Path("repositoryName") String repositoryName);
+    Call<Workflows> getWorkflowInstances(@Path("documentId") String documentId, @Path("repositoryName") String repositoryName);
 
     @GET("path/{documentPath}/@workflow")
     Call<Workflows> getWorkflowInstancesByDocPath(@Path("documentPath") String documentPath);
