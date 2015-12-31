@@ -50,7 +50,7 @@ public class NuxeoClient implements Client {
 
     protected final Operation automation;
 
-    protected final CurrentUser currentUser;
+    protected CurrentUser currentUser;
 
     protected final OkHttpClient httpClient;
 
@@ -83,9 +83,8 @@ public class NuxeoClient implements Client {
             nuxeoCache = new ResultCacheInMemory();
         }
         retrofit = builder.client(httpClient).build();
-        currentUser = new CurrentUser(this);
-        repository = new Repository(this);
         automation = new Operation(this);
+        repository = new Repository(this);
         userManager = new UserManager(this);
         directoryManager = new DirectoryManager(this);
     }
@@ -96,8 +95,11 @@ public class NuxeoClient implements Client {
     }
 
     public Repository getRepository() {
-        repository.repositoryName(null);
         return repository;
+    }
+
+    public CurrentUser getCurrentUser() {
+        return currentUser;
     }
 
     public Repository repositoryName(String repositoryName) {
@@ -109,7 +111,9 @@ public class NuxeoClient implements Client {
         return repository;
     }
 
-    public CurrentUser getCurrentUser() {
+    public CurrentUser fetchCurrentUser() {
+        CurrentUser user = new CurrentUser(this);
+        this.currentUser = user;
         return currentUser.getCurrentUser();
     }
 

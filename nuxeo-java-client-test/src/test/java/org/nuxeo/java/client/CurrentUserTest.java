@@ -45,7 +45,7 @@ public class CurrentUserTest extends BaseTest {
     @Test
     public void itCanLogin() {
         login();
-        CurrentUser currentUser = nuxeoClient.getCurrentUser();
+        CurrentUser currentUser = nuxeoClient.fetchCurrentUser();
         assertNotNull(currentUser);
         assertEquals("Administrator", currentUser.getUsername());
         assertEquals(true, currentUser.isAdministrator());
@@ -58,7 +58,7 @@ public class CurrentUserTest extends BaseTest {
         login();
         logout();
         try {
-            nuxeoClient.getCurrentUser();
+            nuxeoClient.fetchCurrentUser();
             fail("Should be non authorized");
         }catch(NuxeoClientException reason){
             assertEquals(401, reason.getStatus());
@@ -69,7 +69,7 @@ public class CurrentUserTest extends BaseTest {
     public void itCanFailOnLogin() {
         login("wrong", "credentials");
         try {
-            nuxeoClient.getCurrentUser();
+            nuxeoClient.fetchCurrentUser();
             fail("Should be non authorized");
         }catch(NuxeoClientException reason){
             assertEquals(401, reason.getStatus());
