@@ -67,6 +67,10 @@ public class ConstantsV1 {
 
     public static final String ENTITY_TYPE_GROUPS = "groups";
 
+    public static final String ENTITY_TYPE_DIRECTORY = "directoryEntries";
+
+    public static final String ENTITY_TYPE_DIRECTORY_ENTRY = "directoryEntry";
+
     public static final String ENTITY_TYPE_GROUP = "group";
 
     public static final String ENTITY_TYPE_BLOBS = "blobs";

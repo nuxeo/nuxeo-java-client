@@ -24,6 +24,7 @@ import org.nuxeo.java.client.api.cache.ResultCacheInMemory;
 import org.nuxeo.java.client.api.marshaller.NuxeoConverterFactory;
 import org.nuxeo.java.client.api.marshaller.NuxeoMarshaller;
 import org.nuxeo.java.client.api.objects.CurrentUser;
+import org.nuxeo.java.client.api.objects.DirectoryManager;
 import org.nuxeo.java.client.api.objects.Operation;
 import org.nuxeo.java.client.api.objects.Repository;
 import org.nuxeo.java.client.api.objects.UserManager;
@@ -57,6 +58,8 @@ public class NuxeoClient implements Client {
 
     protected final UserManager userManager;
 
+    protected final DirectoryManager directoryManager;
+
     protected NuxeoResponseCache nuxeoCache;
 
     protected final NuxeoConverterFactory converterFactory;
@@ -84,6 +87,7 @@ public class NuxeoClient implements Client {
         repository = new Repository(this);
         automation = new Operation(this);
         userManager = new UserManager(this);
+        directoryManager = new DirectoryManager(this);
     }
 
     public NuxeoClient registerMarshaller(NuxeoMarshaller<?> marshaller) {
@@ -219,7 +223,7 @@ public class NuxeoClient implements Client {
     }
 
     @Override
-     public Response delete(String url, String json) {
+    public Response delete(String url, String json) {
         Request request;
         if (json != null) {
             RequestBody body = RequestBody.create(ConstantsV1.APPLICATION_JSON_CHARSET_UTF_8, json);
@@ -276,5 +280,9 @@ public class NuxeoClient implements Client {
 
     public UserManager getUserManager() {
         return userManager;
+    }
+
+    public DirectoryManager getDirectoryManager() {
+        return directoryManager;
     }
 }
