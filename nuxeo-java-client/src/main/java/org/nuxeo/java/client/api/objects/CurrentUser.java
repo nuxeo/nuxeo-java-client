@@ -25,16 +25,14 @@ import org.nuxeo.java.client.api.NuxeoClient;
 import org.nuxeo.java.client.api.methods.CurrentUserAPI;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import org.nuxeo.java.client.api.objects.user.User;
 
 /**
  * @since 1.0
  */
-public class CurrentUser extends NuxeoEntity {
+public class CurrentUser extends User {
 
     protected String username;
-
-    @JsonProperty("isAdministrator")
-    protected boolean isAdministrator;
 
     protected List<String> groups;
 
@@ -48,10 +46,6 @@ public class CurrentUser extends NuxeoEntity {
 
     public List<String> getGroups() {
         return groups;
-    }
-
-    public boolean isAdministrator() {
-        return isAdministrator;
     }
 
     public String getUsername() {

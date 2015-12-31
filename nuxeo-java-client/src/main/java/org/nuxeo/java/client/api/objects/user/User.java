@@ -18,7 +18,9 @@
  */
 package org.nuxeo.java.client.api.objects.user;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import org.nuxeo.java.client.api.ConstantsV1;
+import org.nuxeo.java.client.api.NuxeoClient;
 import org.nuxeo.java.client.api.objects.NuxeoEntity;
 
 import java.util.List;
@@ -34,12 +36,22 @@ public class User extends NuxeoEntity {
 
     protected List<ExtendedGroup> extendedGroups;
 
+    @JsonProperty("isAdministrator")
     protected boolean isAdministrator;
 
+    @JsonProperty("isAnonymous")
     protected boolean isAnonymous;
 
     public User() {
         super(ConstantsV1.ENTITY_TYPE_USER);
+    }
+
+    public User(String entityType) {
+        super(entityType);
+    }
+
+    public User(String entityType, NuxeoClient nuxeoClient, Class api) {
+        super(entityType, nuxeoClient, api);
     }
 
     public String getId() {
