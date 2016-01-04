@@ -93,7 +93,7 @@
   <properties>
     <nuxeo.version>8.1-SNAPSHOT</nuxeo.version>
     <fasterxml.version>2.6.3</fasterxml.version>
-    <retrofit.version>2.0.0-beta2</retrofit.version>
+    <retrofit.version>2.0.0-SNAPSHOT</retrofit.version>
     <log4j.version>2.4.1</log4j.version>
     <retrolambda.version>2.0.6</retrolambda.version>
     <junit.version>4.12</junit.version>
