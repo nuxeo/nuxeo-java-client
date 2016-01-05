@@ -16,10 +16,11 @@
  * Contributors:
  *         Vladimir Pasquier <vpasquier@nuxeo.com>
  */
-package org.nuxeo.java.client.api.objects;
+package org.nuxeo.java.client.api.objects.directory;
 
 import org.nuxeo.java.client.api.NuxeoClient;
 import org.nuxeo.java.client.api.methods.DirectoryManagerAPI;
+import org.nuxeo.java.client.api.objects.NuxeoEntity;
 import org.nuxeo.java.client.api.objects.directory.Directory;
 import org.nuxeo.java.client.api.objects.directory.DirectoryEntry;
 
