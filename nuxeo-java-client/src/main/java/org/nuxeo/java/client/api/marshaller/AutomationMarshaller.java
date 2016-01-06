@@ -24,7 +24,7 @@ import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;
 
 /**
- * @since 1.0
+ * @since 0.1
  */
 public class AutomationMarshaller implements NuxeoMarshaller<Object> {
 

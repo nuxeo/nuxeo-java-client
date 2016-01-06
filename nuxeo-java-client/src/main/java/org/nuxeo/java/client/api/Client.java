@@ -26,7 +26,7 @@ import retrofit2.Retrofit;
 import okhttp3.Interceptor;
 
 /**
- * @since 1.0
+ * @since 0.1
  */
 public interface Client {
 

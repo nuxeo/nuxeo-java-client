@@ -32,7 +32,7 @@ import com.fasterxml.jackson.databind.ObjectWriter;
 import okhttp3.RequestBody;
 
 /**
- * @since 1.0
+ * @since 0.1
  */
 public final class NuxeoRequestConverterFactory<T> implements Converter<T, RequestBody> {
 

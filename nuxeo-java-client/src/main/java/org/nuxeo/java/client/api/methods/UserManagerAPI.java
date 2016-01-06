@@ -35,7 +35,7 @@ import retrofit2.http.Query;
 import okhttp3.ResponseBody;
 
 /**
- * @since 1.0
+ * @since 0.1
  */
 public interface UserManagerAPI {
 

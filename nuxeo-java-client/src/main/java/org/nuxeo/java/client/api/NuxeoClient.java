@@ -41,7 +41,7 @@ import org.nuxeo.java.client.internals.spi.auth.BasicAuthInterceptor;
 import retrofit2.Retrofit;
 
 /**
- * @since 1.0
+ * @since 0.1
  */
 public class NuxeoClient implements Client {
 

@@ -21,7 +21,7 @@ package org.nuxeo.java.client.api.objects.user;
 import java.util.List;
 
 /**
- * @since 1.0
+ * @since 0.1
  */
 public class UserProperties {
 

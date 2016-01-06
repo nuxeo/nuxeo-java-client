@@ -24,7 +24,7 @@ import java.util.Map;
 import org.nuxeo.java.client.api.ConstantsV1;
 
 /**
- * @since 1.0
+ * @since 0.1
  */
 public class Workflow extends NuxeoEntity {
 

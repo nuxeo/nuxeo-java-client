@@ -33,7 +33,7 @@ import com.fasterxml.jackson.databind.ObjectReader;
 import okhttp3.ResponseBody;
 
 /**
- * @since 1.0
+ * @since 0.1
  */
 public final class NuxeoResponseConverterFactory<T> implements Converter<ResponseBody, T> {
 

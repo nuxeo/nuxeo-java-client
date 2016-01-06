@@ -28,7 +28,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import org.nuxeo.java.client.api.objects.user.User;
 
 /**
- * @since 1.0
+ * @since 0.1
  */
 public class CurrentUser extends User {
 

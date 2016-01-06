@@ -39,7 +39,7 @@ import org.nuxeo.transientstore.test.TransientStoreFeature;
 import java.io.File;
 
 /**
- * @since 1.0
+ * @since 0.1
  */
 @RunWith(FeaturesRunner.class)
 @Features({ TransientStoreFeature.class, RestServerFeature.class })

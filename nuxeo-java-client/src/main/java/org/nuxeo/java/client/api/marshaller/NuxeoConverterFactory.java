@@ -38,7 +38,7 @@ import okhttp3.ResponseBody;
 import retrofit2.Retrofit;
 
 /**
- * @since 1.0
+ * @since 0.1
  */
 public class NuxeoConverterFactory extends Converter.Factory {
 

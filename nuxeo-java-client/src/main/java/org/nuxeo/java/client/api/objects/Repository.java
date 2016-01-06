@@ -24,7 +24,7 @@ import org.nuxeo.java.client.api.methods.RepositoryAPI;
 import org.nuxeo.java.client.api.objects.workflow.Graph;
 
 /**
- * @since 1.0
+ * @since 0.1
  */
 public class Repository extends NuxeoEntity {
 

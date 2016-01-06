@@ -45,7 +45,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
- * @since 1.0
+ * @since 0.1
  */
 public abstract class NuxeoEntity {
 

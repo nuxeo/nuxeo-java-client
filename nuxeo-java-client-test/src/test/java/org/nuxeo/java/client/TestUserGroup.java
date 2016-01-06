@@ -35,7 +35,7 @@ import static junit.framework.TestCase.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 /**
- * @since 1.0
+ * @since 0.1
  */
 @RunWith(FeaturesRunner.class)
 @Features({ RestServerFeature.class })

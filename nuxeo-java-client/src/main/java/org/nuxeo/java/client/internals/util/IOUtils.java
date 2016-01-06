@@ -27,7 +27,7 @@ import java.io.OutputStream;
 import java.io.Reader;
 
 /**
- * @since 1.0 File is deleted on JVM exit. You should delete it explicitly earlier if you know it won't be used anymore.
+ * @since 0.1 File is deleted on JVM exit. You should delete it explicitly earlier if you know it won't be used anymore.
  */
 public class IOUtils {
 

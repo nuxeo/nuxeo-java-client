@@ -32,7 +32,7 @@ import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonToken;
 
 /**
- * @since 1.0
+ * @since 0.1
  */
 public class DocumentMarshaller implements NuxeoMarshaller<Document> {
 

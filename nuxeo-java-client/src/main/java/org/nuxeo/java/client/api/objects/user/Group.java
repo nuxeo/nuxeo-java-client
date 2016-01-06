@@ -26,7 +26,7 @@ import org.nuxeo.java.client.api.objects.NuxeoEntity;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
- * @since 1.0
+ * @since 0.1
  */
 public class Group extends NuxeoEntity {
 

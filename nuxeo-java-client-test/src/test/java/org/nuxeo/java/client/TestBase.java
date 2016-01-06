@@ -26,7 +26,7 @@ import org.nuxeo.java.client.api.NuxeoClient;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
 /**
- * @since 1.0
+ * @since 0.1
  */
 public class TestBase {
 

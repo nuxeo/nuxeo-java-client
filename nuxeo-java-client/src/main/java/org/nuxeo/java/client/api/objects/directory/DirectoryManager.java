@@ -25,7 +25,7 @@ import org.nuxeo.java.client.api.objects.directory.Directory;
 import org.nuxeo.java.client.api.objects.directory.DirectoryEntry;
 
 /**
- * @since 1.0
+ * @since 0.1
  */
 public class DirectoryManager extends NuxeoEntity {
 

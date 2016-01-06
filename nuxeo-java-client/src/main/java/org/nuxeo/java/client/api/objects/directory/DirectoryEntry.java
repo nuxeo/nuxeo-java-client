@@ -24,7 +24,7 @@ import org.nuxeo.java.client.api.objects.NuxeoEntity;
 import java.util.Map;
 
 /**
- * @since 1.0
+ * @since 0.1
  */
 public class DirectoryEntry extends NuxeoEntity {
 

@@ -28,7 +28,7 @@ import retrofit2.http.GET;
 import retrofit2.http.POST;
 
 /**
- * @since 1.0
+ * @since 0.1
  */
 public interface CurrentUserAPI {
 

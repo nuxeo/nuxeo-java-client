@@ -48,7 +48,7 @@ import org.nuxeo.runtime.test.runner.Jetty;
 import com.google.common.io.Files;
 
 /**
- * @since 1.0
+ * @since 0.1
  */
 @RunWith(FeaturesRunner.class)
 @Features({ RestServerFeature.class })

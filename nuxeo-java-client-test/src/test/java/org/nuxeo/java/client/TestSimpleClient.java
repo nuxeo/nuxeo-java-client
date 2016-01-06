@@ -40,7 +40,7 @@ import org.nuxeo.runtime.test.runner.Jetty;
 import okhttp3.Response;
 
 /**
- * @since 1.0
+ * @since 0.1
  */
 @RunWith(FeaturesRunner.class)
 @Features({ RestServerFeature.class })

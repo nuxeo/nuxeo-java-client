@@ -27,7 +27,7 @@ import org.nuxeo.java.client.api.objects.user.User;
 import org.nuxeo.java.client.api.objects.user.Users;
 
 /**
- * @since 1.0
+ * @since 0.1
  */
 public class UserManager extends NuxeoEntity {
 

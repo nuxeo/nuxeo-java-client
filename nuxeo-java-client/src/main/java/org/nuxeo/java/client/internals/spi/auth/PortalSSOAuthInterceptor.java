@@ -32,7 +32,7 @@ import okhttp3.Request;
 import okhttp3.Response;
 
 /**
- * @since 1.0
+ * @since 0.1
  */
 public class PortalSSOAuthInterceptor implements Interceptor {
 

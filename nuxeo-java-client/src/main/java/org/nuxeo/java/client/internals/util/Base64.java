@@ -24,7 +24,7 @@ import java.nio.charset.Charset;
 import org.apache.commons.io.IOUtils;
 
 /**
- * @since 1.0
+ * @since 0.1
  */
 public class Base64 {
 

@@ -29,7 +29,7 @@ import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 
 /**
- * @since 1.0
+ * @since 0.1
  */
 public class ResultCacheInMemory implements NuxeoResponseCache {
 

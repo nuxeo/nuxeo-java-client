@@ -38,7 +38,7 @@ import org.nuxeo.runtime.test.runner.Jetty;
 import org.nuxeo.runtime.test.runner.LocalDeploy;
 
 /**
- * @since 1.0
+ * @since 0.1
  */
 @RunWith(FeaturesRunner.class)
 @Features({ RestServerFeature.class })

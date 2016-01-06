@@ -19,7 +19,7 @@
 package org.nuxeo.java.client.api.cache;
 
 /**
- * @since 1.0
+ * @since 0.1
  */
 public interface NuxeoResponseCache {
 

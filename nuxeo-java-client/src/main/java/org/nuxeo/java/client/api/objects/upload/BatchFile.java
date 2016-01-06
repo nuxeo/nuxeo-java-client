@@ -19,7 +19,7 @@
 package org.nuxeo.java.client.api.objects.upload;
 
 /**
- * @since 1.0
+ * @since 0.1
  */
 public class BatchFile {
 

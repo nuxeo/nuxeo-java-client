@@ -38,7 +38,7 @@ import retrofit2.http.Path;
 import okhttp3.RequestBody;
 
 /**
- * @since 1.0
+ * @since 0.1
  */
 public interface BatchUploadAPI {
 

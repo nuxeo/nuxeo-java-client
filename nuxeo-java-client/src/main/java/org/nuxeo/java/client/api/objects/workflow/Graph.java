@@ -25,7 +25,7 @@ import org.nuxeo.java.client.api.ConstantsV1;
 import org.nuxeo.java.client.api.objects.NuxeoEntity;
 
 /**
- * @since 1.0
+ * @since 0.1
  */
 public class Graph extends NuxeoEntity {
 

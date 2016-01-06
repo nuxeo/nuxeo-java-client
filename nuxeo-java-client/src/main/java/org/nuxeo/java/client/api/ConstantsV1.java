@@ -21,7 +21,7 @@ package org.nuxeo.java.client.api;
 import okhttp3.MediaType;
 
 /**
- * @since 1.0
+ * @since 0.1
  */
 public class ConstantsV1 {
 
