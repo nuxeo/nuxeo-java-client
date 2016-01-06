@@ -54,7 +54,7 @@ import com.google.common.io.Files;
 @Features({ RestServerFeature.class })
 @Jetty(port = 18090)
 @RepositoryConfig(cleanup = Granularity.METHOD, init = RestServerInit.class)
-public class OperationTest extends BaseTest {
+public class TestOperation extends TestBase {
 
     @Before
     public void authentication() {

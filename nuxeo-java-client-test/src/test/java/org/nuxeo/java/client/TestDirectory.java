@@ -18,34 +18,34 @@
  */
 package org.nuxeo.java.client;
 
+import static junit.framework.TestCase.assertNotNull;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.restapi.test.RestServerFeature;
 import org.nuxeo.ecm.restapi.test.RestServerInit;
-import org.nuxeo.java.client.api.objects.upload.BatchUpload;
+import org.nuxeo.java.client.api.objects.directory.Directory;
+import org.nuxeo.java.client.api.objects.directory.DirectoryEntry;
+import org.nuxeo.java.client.api.objects.directory.DirectoryEntryProperties;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.Jetty;
-import org.nuxeo.transientstore.test.TransientStoreFeature;
-
-import java.io.File;
+import org.nuxeo.runtime.test.runner.LocalDeploy;
 
 /**
  * @since 1.0
  */
 @RunWith(FeaturesRunner.class)
-@Features({ TransientStoreFeature.class, RestServerFeature.class })
+@Features({ RestServerFeature.class })
 @Jetty(port = 18090)
+@LocalDeploy("org.nuxeo.java.client.test:test-directories-sql-contrib.xml")
 @RepositoryConfig(cleanup = Granularity.METHOD, init = RestServerInit.class)
-public class UploadTest extends BaseTest {
+public class TestDirectory extends TestBase {
 
     @Before
     public void authentication() {
@@ -53,23 +53,25 @@ public class UploadTest extends BaseTest {
     }
 
     @Test
-    public void itCanManageBatch() {
-        BatchUpload batchUpload = nuxeoClient.fetchUploadManager();
-        assertNotNull(batchUpload);
-        assertNotNull(batchUpload.getBatchId());
-        batchUpload = batchUpload.cancel(batchUpload.getBatchId());
-        assertTrue(Boolean.parseBoolean(batchUpload.getDropped()));
+    public void itCanGetDirectory() {
+        Directory directory = nuxeoClient.getDirectoryManager().getDirectory("continent");
+        assertNotNull(directory);
+        assertEquals(7, directory.getDirectoryEntries().size());
     }
 
+    @Ignore("JAVACLIENT-41")
     @Test
-    public void itCanUploadFile() {
-        BatchUpload batchUpload = nuxeoClient.fetchUploadManager();
-        assertNotNull(batchUpload);
-        assertNotNull(batchUpload.getBatchId());
-        File file = FileUtils.getResourceFileFromContext("blob.json");
-        batchUpload = batchUpload.upload(file.getName(), file.length(), "json", batchUpload.getBatchId(), "1", file);
-        assertNotNull(batchUpload);
-        assertEquals("normal", batchUpload.getUploadType());
-        //assertEquals(file.length(), batch.getUploadedSize());
+    public void itCanUpdateDirectory() {
+        DirectoryEntry entry = new DirectoryEntry();
+        DirectoryEntryProperties directoryEntryProperties = new DirectoryEntryProperties();
+        directoryEntryProperties.setId(("test"));
+        directoryEntryProperties.setLabel("test");
+        directoryEntryProperties.setObsolete(0);
+        directoryEntryProperties.setOrdering(0);
+        entry.setProperties(directoryEntryProperties);
+        DirectoryEntry result = nuxeoClient.getDirectoryManager().createDirectoryEntry("continent", entry);
+        assertNotNull(result);
+        assertEquals("continent", result.getDirectoryName());
     }
+
 }

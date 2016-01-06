@@ -46,7 +46,7 @@ import okhttp3.Response;
 @Features({ RestServerFeature.class })
 @Jetty(port = 18090)
 @RepositoryConfig(cleanup = Granularity.METHOD)
-public class SimpleClientTest extends BaseTest {
+public class TestSimpleClient extends TestBase {
 
     @Before
     public void authentication() {

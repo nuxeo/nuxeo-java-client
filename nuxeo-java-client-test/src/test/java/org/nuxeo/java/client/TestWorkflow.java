@@ -42,7 +42,7 @@ import org.nuxeo.runtime.test.runner.Jetty;
 @Deploy({ "org.nuxeo.ecm.platform.restapi.server.routing"})
 @Jetty(port = 18090)
 @RepositoryConfig(cleanup = Granularity.METHOD, init = RestServerInit.class)
-public class WorkflowTest extends BaseTest {
+public class TestWorkflow extends TestBase {
 
     @Before
     public void authentication() {

@@ -47,7 +47,7 @@ import org.nuxeo.runtime.test.runner.Jetty;
 @Features({ RestServerFeature.class })
 @Jetty(port = 18090)
 @RepositoryConfig(cleanup = Granularity.METHOD, init = RestServerInit.class)
-public class RepositoryTest extends BaseTest {
+public class TestRepository extends TestBase {
 
     @Before
     public void authentication() {

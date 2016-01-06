@@ -28,7 +28,7 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
 /**
  * @since 1.0
  */
-public class BaseTest {
+public class TestBase {
 
     @Inject
     public CoreSession session;

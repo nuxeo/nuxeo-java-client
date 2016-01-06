@@ -18,20 +18,21 @@
  */
 package org.nuxeo.java.client;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.fail;
-
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.restapi.test.RestServerFeature;
-import org.nuxeo.java.client.api.objects.CurrentUser;
-import org.nuxeo.java.client.internals.spi.NuxeoClientException;
+import org.nuxeo.java.client.api.objects.user.Group;
+import org.nuxeo.java.client.api.objects.user.User;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.Jetty;
+
+import static junit.framework.Assert.assertEquals;
+import static junit.framework.TestCase.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 /**
  * @since 1.0
@@ -40,40 +41,24 @@ import org.nuxeo.runtime.test.runner.Jetty;
 @Features({ RestServerFeature.class })
 @Jetty(port = 18090)
 @RepositoryConfig(cleanup = Granularity.METHOD)
-public class CurrentUserTest extends BaseTest {
+public class TestUserGroup extends TestBase {
 
-    @Test
-    public void itCanLogin() {
+    @Before
+    public void authentication() {
         login();
-        CurrentUser currentUser = nuxeoClient.fetchCurrentUser();
-        assertNotNull(currentUser);
-        assertEquals("Administrator", currentUser.getUsername());
-        assertEquals(true, currentUser.isAdministrator());
-        assertEquals("administrators", currentUser.getGroups().get(1));
-        assertEquals("login", currentUser.getEntityType());
     }
 
     @Test
-    public void itCanLogout() {
-        login();
-        logout();
-        try {
-            nuxeoClient.fetchCurrentUser();
-            fail("Should be non authorized");
-        }catch(NuxeoClientException reason){
-            assertEquals(401, reason.getStatus());
-        }
+    public void itCanGetUser() {
+        User user = nuxeoClient.getUserManager().fetchUser("Administrator");
+        assertNotNull(user);
+        assertEquals("Administrator", user.getProperties().getUsername());
     }
 
     @Test
-    public void itCanFailOnLogin() {
-        login("wrong", "credentials");
-        try {
-            nuxeoClient.fetchCurrentUser();
-            fail("Should be non authorized");
-        }catch(NuxeoClientException reason){
-            assertEquals(401, reason.getStatus());
-        }
+    public void itCanGetGroup() {
+        Group group = nuxeoClient.getUserManager().fetchGroup("administrators");
+        assertNotNull(group);
+        assertEquals("administrators", group.getGroupName());
     }
-
 }
