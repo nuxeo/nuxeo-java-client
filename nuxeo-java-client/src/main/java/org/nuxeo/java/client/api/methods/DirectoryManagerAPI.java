@@ -21,16 +21,16 @@ package org.nuxeo.java.client.api.methods;
 import org.nuxeo.java.client.api.objects.directory.Directory;
 import org.nuxeo.java.client.api.objects.directory.DirectoryEntry;
 
-import retrofit.Call;
-import retrofit.http.Body;
-import retrofit.http.DELETE;
-import retrofit.http.GET;
-import retrofit.http.POST;
-import retrofit.http.PUT;
-import retrofit.http.Path;
-import retrofit.http.Query;
+import retrofit2.Call;
+import retrofit2.http.Body;
+import retrofit2.http.DELETE;
+import retrofit2.http.GET;
+import retrofit2.http.POST;
+import retrofit2.http.PUT;
+import retrofit2.http.Path;
+import retrofit2.http.Query;
 
-import com.squareup.okhttp.ResponseBody;
+import okhttp3.ResponseBody;
 
 /**
  * @since 1.0

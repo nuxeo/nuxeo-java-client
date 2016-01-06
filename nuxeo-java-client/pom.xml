@@ -15,8 +15,12 @@
 
   <dependencies>
     <dependency>
-      <groupId>com.squareup.retrofit</groupId>
+      <groupId>com.squareup.retrofit2</groupId>
       <artifactId>retrofit</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.squareup.okhttp3</groupId>
+      <artifactId>okhttp</artifactId>
     </dependency>
     <dependency>
       <groupId>com.fasterxml.jackson.core</groupId>

@@ -57,7 +57,7 @@ public class WorkflowTest extends BaseTest {
 
     @Test
     public void itCanFetchDocWorflowInstances(){
-        Workflows workflows = nuxeoClient.getRepository().getDocumentRoot().getWorkflowInstances();
+        Workflows workflows = nuxeoClient.repository().getDocumentRoot().getWorkflowInstances();
         assertNotNull(workflows);
     }
 }

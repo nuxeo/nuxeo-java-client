@@ -25,12 +25,12 @@ import java.io.Reader;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import retrofit.Converter;
+import retrofit2.Converter;
 
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectReader;
-import com.squareup.okhttp.ResponseBody;
+import okhttp3.ResponseBody;
 
 /**
  * @since 1.0
@@ -57,7 +57,6 @@ public final class NuxeoResponseConverterFactory<T> implements Converter<Respons
     @Override
     public T convert(ResponseBody value) throws IOException {
         if (nuxeoMarshaller != null) {
-            // TODO JAVACLIENT-26
             String response = value.string();
             logger.debug(response);
             JsonParser jsonParser = objectMapper.getFactory().createParser(response);

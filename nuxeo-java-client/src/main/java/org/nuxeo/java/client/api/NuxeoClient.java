@@ -19,74 +19,76 @@ package org.nuxeo.java.client.api;
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
+import okhttp3.Interceptor;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
+
 import org.nuxeo.java.client.api.cache.NuxeoResponseCache;
 import org.nuxeo.java.client.api.cache.ResultCacheInMemory;
 import org.nuxeo.java.client.api.marshaller.NuxeoConverterFactory;
 import org.nuxeo.java.client.api.marshaller.NuxeoMarshaller;
 import org.nuxeo.java.client.api.objects.CurrentUser;
-import org.nuxeo.java.client.api.objects.directory.DirectoryManager;
 import org.nuxeo.java.client.api.objects.Operation;
 import org.nuxeo.java.client.api.objects.Repository;
+import org.nuxeo.java.client.api.objects.directory.DirectoryManager;
+import org.nuxeo.java.client.api.objects.upload.BatchUpload;
 import org.nuxeo.java.client.api.objects.user.UserManager;
 import org.nuxeo.java.client.internals.spi.NuxeoClientException;
 import org.nuxeo.java.client.internals.spi.auth.BasicAuthInterceptor;
 
-import retrofit.Retrofit;
-
-import com.squareup.okhttp.Interceptor;
-import com.squareup.okhttp.OkHttpClient;
-import com.squareup.okhttp.Request;
-import com.squareup.okhttp.RequestBody;
-import com.squareup.okhttp.Response;
+import retrofit2.Retrofit;
 
 /**
  * @since 1.0
  */
 public class NuxeoClient implements Client {
 
-    protected final Retrofit retrofit;
+    protected final OkHttpClient.Builder okhttpBuilder;
 
     protected final Repository repository;
 
     protected final Operation automation;
 
-    protected CurrentUser currentUser;
-
-    protected final OkHttpClient httpClient;
-
-    protected final Retrofit.Builder builder;
+    protected final BatchUpload batchUpload;
 
     protected final UserManager userManager;
 
     protected final DirectoryManager directoryManager;
 
-    protected NuxeoResponseCache nuxeoCache;
-
     protected final NuxeoConverterFactory converterFactory;
 
-    public NuxeoClient(String url, String username, String password) {
-        this(url, username, password, true);
-    }
+    protected final Retrofit.Builder retrofitBuilder;
 
-    public NuxeoClient(String url, String username, String password, boolean enableDefaultCache) {
-        httpClient = new OkHttpClient();
-        converterFactory = NuxeoConverterFactory.create();
-        builder = new Retrofit.Builder().baseUrl(url + ConstantsV1.API_PATH).addConverterFactory(converterFactory);
-        if (httpClient.interceptors().isEmpty()) {
-            if (username != null && password != null) {
-                setAuthenticationMethod(new BasicAuthInterceptor(username, password));
+    protected CurrentUser currentUser;
+
+    protected NuxeoResponseCache nuxeoCache;
+
+    protected Retrofit retrofit;
+
+    public NuxeoClient(String url, String userName, String password) {
+        // okhttp builder
+        okhttpBuilder = new OkHttpClient.Builder();
+        if (okhttpBuilder.interceptors().isEmpty()) {
+            if (userName != null && password != null) {
+                setAuthenticationMethod(new BasicAuthInterceptor(userName, password));
             } else {
                 throw new NuxeoClientException("Define credentials");
             }
         }
-        if (enableDefaultCache) {
-            nuxeoCache = new ResultCacheInMemory();
-        }
-        retrofit = builder.client(httpClient).build();
+        // retrofit builder
+        converterFactory = NuxeoConverterFactory.create();
+        retrofitBuilder = new Retrofit.Builder().baseUrl(url + ConstantsV1.API_PATH).addConverterFactory(
+                converterFactory);
+        // client builder
+        retrofit();
+        // nuxeo builders
         automation = new Operation(this);
         repository = new Repository(this);
         userManager = new UserManager(this);
         directoryManager = new DirectoryManager(this);
+        batchUpload = new BatchUpload(this);
     }
 
     public NuxeoClient registerMarshaller(NuxeoMarshaller<?> marshaller) {
@@ -94,41 +96,29 @@ public class NuxeoClient implements Client {
         return this;
     }
 
-    public Repository getRepository() {
-        return repository;
-    }
-
-    public CurrentUser getCurrentUser() {
-        return currentUser;
-    }
-
-    public Repository repositoryName(String repositoryName) {
-        return getRepository(repositoryName);
-    }
-
-    public Repository getRepository(String repositoryName) {
-        repository.repositoryName(repositoryName);
-        return repository;
-    }
-
-    public CurrentUser fetchCurrentUser() {
-        CurrentUser user = new CurrentUser(this);
-        this.currentUser = user;
-        return currentUser.getCurrentUser();
+    public NuxeoClient enableDefaultCache() {
+        nuxeoCache = new ResultCacheInMemory();
+        return this;
     }
 
     public void logout() {
-        retrofit.client().interceptors().clear();
+        okhttpBuilder.interceptors().clear();
+        retrofit();
+    }
+
+    public NuxeoConverterFactory getConverterFactory() {
+        return converterFactory;
     }
 
     @Override
     public NuxeoClient header(String header, String value) {
-        retrofit.client().interceptors().add(chain -> {
+        okhttpBuilder.interceptors().add(chain -> {
             Request request = chain.request();
             request = request.newBuilder().addHeader(header, value).build();
             Response response = chain.proceed(request);
             return response;
         });
+        retrofit();
         return this;
     }
 
@@ -181,13 +171,14 @@ public class NuxeoClient implements Client {
 
     @Override
     public NuxeoClient setAuthenticationMethod(Interceptor interceptor) {
-        httpClient.interceptors().add(interceptor);
+        okhttpBuilder.interceptors().add(interceptor);
         return this;
     }
 
     @Override
     public NuxeoClient timeout(long timeout) {
-        retrofit.client().setConnectTimeout(timeout, TimeUnit.SECONDS);
+        okhttpBuilder.connectTimeout(timeout, TimeUnit.SECONDS);
+        retrofit();
         return this;
     }
 
@@ -201,9 +192,13 @@ public class NuxeoClient implements Client {
         logout();
     }
 
-    @Override
     public Retrofit getRetrofit() {
         return retrofit;
+    }
+
+    protected void retrofit() {
+        OkHttpClient okHttpClient = okhttpBuilder.build();
+        retrofit = retrofitBuilder.callFactory(okHttpClient).build();
     }
 
     @Override
@@ -216,11 +211,47 @@ public class NuxeoClient implements Client {
         return nuxeoCache != null;
     }
 
+    /** Services **/
+
+    public Repository repository() {
+        return repository;
+    }
+
+    public CurrentUser getCurrentUser() {
+        return currentUser;
+    }
+
+    public CurrentUser fetchCurrentUser() {
+        this.currentUser = new CurrentUser(this);
+        return currentUser.getCurrentUser();
+    }
+
+    public Repository repositoryName(String repositoryName) {
+        return repository(repositoryName);
+    }
+
+    public Repository repository(String repositoryName) {
+        repository.repositoryName(repositoryName);
+        return repository;
+    }
+
+    public Operation automation() {
+        return automation;
+    }
+
+    public UserManager getUserManager() {
+        return userManager;
+    }
+
+    public DirectoryManager getDirectoryManager() {
+        return directoryManager;
+    }
+
     @Override
     public Response get(String url) {
         Request request = new Request.Builder().url(url).build();
         try {
-            return retrofit.client().newCall(request).execute();
+            return retrofit.callFactory().newCall(request).execute();
         } catch (IOException e) {
             throw new NuxeoClientException(e);
         }
@@ -236,7 +267,7 @@ public class NuxeoClient implements Client {
             request = new Request.Builder().url(url).build();
         }
         try {
-            return retrofit.client().newCall(request).execute();
+            return retrofit.callFactory().newCall(request).execute();
         } catch (IOException e) {
             throw new NuxeoClientException(e);
         }
@@ -252,7 +283,7 @@ public class NuxeoClient implements Client {
             request = new Request.Builder().url(url).build();
         }
         try {
-            return retrofit.client().newCall(request).execute();
+            return retrofit.callFactory().newCall(request).execute();
         } catch (IOException e) {
             throw new NuxeoClientException(e);
         }
@@ -268,25 +299,17 @@ public class NuxeoClient implements Client {
             request = new Request.Builder().url(url).build();
         }
         try {
-            return retrofit.client().newCall(request).execute();
+            return retrofit.callFactory().newCall(request).execute();
         } catch (IOException e) {
             throw new NuxeoClientException(e);
         }
     }
 
-    public Operation automation() {
-        return automation;
+    public BatchUpload fetchUploadManager() {
+        return batchUpload.createBatch();
     }
 
-    public NuxeoConverterFactory getConverterFactory() {
-        return converterFactory;
-    }
-
-    public UserManager getUserManager() {
-        return userManager;
-    }
-
-    public DirectoryManager getDirectoryManager() {
-        return directoryManager;
+    public BatchUpload batchUpload() {
+        return batchUpload;
     }
 }

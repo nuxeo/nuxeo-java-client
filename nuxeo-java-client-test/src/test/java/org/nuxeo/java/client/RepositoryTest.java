@@ -56,7 +56,7 @@ public class RepositoryTest extends BaseTest {
 
     @Test
     public void itCanFetchRoot() {
-        Document root = nuxeoClient.getRepository().getDocumentRoot();
+        Document root = nuxeoClient.repository().getDocumentRoot();
         assertNotNull(root);
         assertEquals("Root", root.getType());
         assertEquals("document", root.getEntityType());
@@ -66,8 +66,8 @@ public class RepositoryTest extends BaseTest {
 
     @Test
     public void itCanFetchRootWithRepositoryName() {
-        Document root = nuxeoClient.getRepository().getDocumentRoot();
-        root = nuxeoClient.getRepository().repositoryName(root.getRepositoryName()).getDocumentRoot();
+        Document root = nuxeoClient.repository().getDocumentRoot();
+        root = nuxeoClient.repository().repositoryName(root.getRepositoryName()).getDocumentRoot();
         assertNotNull(root);
         assertEquals("Root", root.getType());
         assertEquals("document", root.getEntityType());
@@ -77,8 +77,8 @@ public class RepositoryTest extends BaseTest {
 
     @Test
     public void itCanFetchFolder() {
-        Document root = nuxeoClient.getRepository().getDocumentRoot();
-        Document folder = nuxeoClient.getRepository().getDocumentByPath("folder_2");
+        Document root = nuxeoClient.repository().getDocumentRoot();
+        Document folder = nuxeoClient.repository().getDocumentByPath("folder_2");
         assertNotNull(folder);
         assertEquals("Folder", folder.getType());
         assertEquals("document", folder.getEntityType());
@@ -89,8 +89,8 @@ public class RepositoryTest extends BaseTest {
 
     @Test
     public void itCanFetchFolderWithRepositoryName() {
-        Document root = nuxeoClient.getRepository().getDocumentRoot();
-        Document folder = nuxeoClient.getRepository()
+        Document root = nuxeoClient.repository().getDocumentRoot();
+        Document folder = nuxeoClient.repository()
                                      .repositoryName(root.getRepositoryName())
                                      .getDocumentByPath("folder_2");
         assertNotNull(folder);
@@ -103,8 +103,8 @@ public class RepositoryTest extends BaseTest {
 
     @Test
     public void itCanFetchNote() {
-        Document folder = nuxeoClient.getRepository().getDocumentByPath("folder_1");
-        Document note = nuxeoClient.getRepository().getDocumentByPath("folder_1/note_1");
+        Document folder = nuxeoClient.repository().getDocumentByPath("folder_1");
+        Document note = nuxeoClient.repository().getDocumentByPath("folder_1/note_1");
         assertNotNull(note);
         assertEquals("Note", note.getType());
         assertEquals("document", note.getEntityType());
@@ -115,10 +115,10 @@ public class RepositoryTest extends BaseTest {
 
     @Test
     public void itCanCreateDocument() {
-        Document folder = nuxeoClient.getRepository().getDocumentByPath("folder_1");
+        Document folder = nuxeoClient.repository().getDocumentByPath("folder_1");
         Document document = new Document("file", "File");
         document.set("dc:title", "new title");
-        document = nuxeoClient.getRepository().createDocumentByPath("folder_1", document);
+        document = nuxeoClient.repository().createDocumentByPath("folder_1", document);
         assertNotNull(document);
         assertEquals("File", document.getType());
         assertEquals("document", document.getEntityType());
@@ -130,7 +130,7 @@ public class RepositoryTest extends BaseTest {
 
     @Test
     public void itCanQuery() {
-        Documents documents = nuxeoClient.getRepository().query("SELECT * " + "From Note");
+        Documents documents = nuxeoClient.repository().query("SELECT * " + "From Note");
         assertTrue(documents.getDocuments().size() != 0);
         Document document = documents.getDocuments().get(0);
         assertEquals("Note", document.getType());
@@ -141,7 +141,7 @@ public class RepositoryTest extends BaseTest {
     @Test
     public void itCanUseCaching() {
         // Retrieve a document from query
-        Document document = nuxeoClient.getRepository().getDocumentByPath("folder_1/note_3");
+        Document document = nuxeoClient.enableDefaultCache().repository().getDocumentByPath("folder_1/note_3");
         assertEquals("Note 3", document.get("dc:title"));
         assertTrue(nuxeoClient.getNuxeoCache().size() == 1);
 
@@ -149,23 +149,23 @@ public class RepositoryTest extends BaseTest {
         Document documentUpdated = new Document("test update", "Note");
         documentUpdated.setId(document.getId());
         documentUpdated.set("dc:title", "note updated");
-        documentUpdated = nuxeoClient.getRepository().updateDocument(documentUpdated);
+        documentUpdated = nuxeoClient.repository().updateDocument(documentUpdated);
         assertEquals("note updated", documentUpdated.get("dc:title"));
 
         // Retrieve again this document within cache
-        document = nuxeoClient.getRepository().getDocumentByPath("folder_1/note_3");
+        document = nuxeoClient.repository().getDocumentByPath("folder_1/note_3");
         assertEquals("Note 3", document.get("dc:title"));
         assertTrue(nuxeoClient.getNuxeoCache().size() == 2);
 
         // Refresh the cache and check the update has been recovered.
-        document = nuxeoClient.getRepository().refreshCache().getDocumentByPath("folder_1/note_3");
+        document = nuxeoClient.repository().refreshCache().getDocumentByPath("folder_1/note_3");
         assertEquals("note updated", document.get("dc:title"));
         assertTrue(nuxeoClient.getNuxeoCache().size() == 1);
     }
 
     @Test
     public void itCanUpdateDocument() {
-        Document document = nuxeoClient.getRepository().getDocumentByPath("folder_1/note_0");
+        Document document = nuxeoClient.repository().getDocumentByPath("folder_1/note_0");
         assertEquals("Note", document.getType());
         assertEquals("test", document.getRepositoryName());
         assertEquals("project", document.getState());
@@ -178,13 +178,13 @@ public class RepositoryTest extends BaseTest {
         documentUpdated.setTitle("note updated");
         documentUpdated.set("dc:nature", "test");
 
-        documentUpdated = nuxeoClient.getRepository().updateDocument(documentUpdated);
+        documentUpdated = nuxeoClient.repository().updateDocument(documentUpdated);
         assertNotNull(documentUpdated);
         assertEquals("note updated", documentUpdated.get("dc:title"));
         assertEquals("test", documentUpdated.get("dc:nature"));
 
         // Check if the document in the repository has been changed.
-        Document result = nuxeoClient.getRepository().getDocumentById(documentUpdated.getId());
+        Document result = nuxeoClient.repository().getDocumentById(documentUpdated.getId());
         assertNotNull(result);
         assertEquals("note updated", result.get("dc:title"));
         assertEquals("test", result.get("dc:nature"));
@@ -192,10 +192,10 @@ public class RepositoryTest extends BaseTest {
 
     @Test
     public void itCanDeleteDocument() {
-        Document documentToDelete = nuxeoClient.getRepository().getDocumentByPath("folder_1/note_1");
+        Document documentToDelete = nuxeoClient.repository().getDocumentByPath("folder_1/note_1");
         assertNotNull(documentToDelete);
         assertTrue(session.exists(new IdRef(documentToDelete.getId())));
-        nuxeoClient.getRepository().deleteDocument(documentToDelete);
+        nuxeoClient.repository().deleteDocument(documentToDelete);
         fetchInvalidations();
         assertTrue(!session.exists(new IdRef(documentToDelete.getId())));
     }
@@ -203,7 +203,7 @@ public class RepositoryTest extends BaseTest {
     @Test
     public void itCanUseCustomMarshallers() {
         Document folder = nuxeoClient.registerMarshaller(new DocumentMarshaller())
-                                     .getRepository()
+                                     .repository()
                                      .getDocumentByPath("folder_1");
         assertNotNull(folder);
         assertEquals(folder.getPath(), "/folder_1");
@@ -220,7 +220,7 @@ public class RepositoryTest extends BaseTest {
     @Test
     public void itCanFail(){
         try {
-            nuxeoClient.getRepository().getDocumentByPath("folder_1/wrong");
+            nuxeoClient.repository().getDocumentByPath("folder_1/wrong");
             fail("Should be not found");
         }catch(NuxeoClientException reason){
             assertEquals(404, reason.getStatus());

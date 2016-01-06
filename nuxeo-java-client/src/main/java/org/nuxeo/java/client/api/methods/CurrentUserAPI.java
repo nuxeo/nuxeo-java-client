@@ -22,10 +22,10 @@ import org.nuxeo.java.client.api.objects.CurrentUser;
 import org.nuxeo.java.client.api.objects.Workflow;
 import org.nuxeo.java.client.api.objects.Workflows;
 
-import retrofit.Call;
-import retrofit.http.Body;
-import retrofit.http.GET;
-import retrofit.http.POST;
+import retrofit2.Call;
+import retrofit2.http.Body;
+import retrofit2.http.GET;
+import retrofit2.http.POST;
 
 /**
  * @since 1.0

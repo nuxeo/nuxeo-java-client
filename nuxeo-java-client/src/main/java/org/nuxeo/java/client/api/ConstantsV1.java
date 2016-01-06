@@ -18,7 +18,7 @@
  */
 package org.nuxeo.java.client.api;
 
-import com.squareup.okhttp.MediaType;
+import okhttp3.MediaType;
 
 /**
  * @since 1.0
@@ -88,6 +88,8 @@ public class ConstantsV1 {
     public static final MediaType APPLICATION_JSON_NXENTITY = MediaType.parse("application/json+nxentity");
 
     public static final String APPLICATION_OCTET_STREAM = "application/octet-stream";
+
+    public static final String CONTENT_TYPE_APPLICATION_OCTET_STREAM = "Content-Type: " + APPLICATION_OCTET_STREAM;
 
     public static final String CREATE_RAW_CALL = "createRawCall";
 

@@ -30,8 +30,8 @@ import org.nuxeo.java.client.internals.spi.NuxeoClientException;
 import org.nuxeo.java.client.internals.util.IOUtils;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.squareup.okhttp.MediaType;
-import com.squareup.okhttp.ResponseBody;
+import okhttp3.MediaType;
+import okhttp3.ResponseBody;
 
 /**
  * @since 1.0

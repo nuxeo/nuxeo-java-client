@@ -26,15 +26,16 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.nuxeo.java.client.internals.spi.NuxeoClientException;
 
-import retrofit.Converter;
+import retrofit2.Converter;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectReader;
 import com.fasterxml.jackson.databind.ObjectWriter;
-import com.squareup.okhttp.RequestBody;
-import com.squareup.okhttp.ResponseBody;
+import okhttp3.RequestBody;
+import okhttp3.ResponseBody;
+import retrofit2.Retrofit;
 
 /**
  * @since 1.0
@@ -63,7 +64,7 @@ public class NuxeoConverterFactory extends Converter.Factory {
     }
 
     @Override
-    public Converter<ResponseBody, ?> fromResponseBody(Type type, Annotation[] annotations) {
+    public Converter<ResponseBody, ?> responseBodyConverter(Type type, Annotation[] annotations, Retrofit client) {
         JavaType javaType = mapper.getTypeFactory().constructType(type);
         NuxeoMarshaller<?> nuxeoMarshaller = marshallers.get(javaType.getRawClass());
         if (nuxeoMarshaller != null) {
@@ -74,7 +75,7 @@ public class NuxeoConverterFactory extends Converter.Factory {
     }
 
     @Override
-    public Converter<?, RequestBody> toRequestBody(Type type, Annotation[] annotations) {
+    public Converter<?, RequestBody> requestBodyConverter(Type type, Annotation[] annotations, Retrofit client) {
         JavaType javaType = mapper.getTypeFactory().constructType(type);
         NuxeoMarshaller<?> nuxeoMarshaller = marshallers.get(javaType.getRawClass());
         if (nuxeoMarshaller != null) {

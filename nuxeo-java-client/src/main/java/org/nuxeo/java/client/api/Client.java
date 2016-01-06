@@ -18,12 +18,12 @@
  */
 package org.nuxeo.java.client.api;
 
-import com.squareup.okhttp.Response;
+import okhttp3.Response;
 import org.nuxeo.java.client.api.cache.NuxeoResponseCache;
 
-import retrofit.Retrofit;
+import retrofit2.Retrofit;
 
-import com.squareup.okhttp.Interceptor;
+import okhttp3.Interceptor;
 
 /**
  * @since 1.0
@@ -53,7 +53,7 @@ public interface Client {
 
     /**
      * Define the http call timeout.
-     * 
+     *
      * @param timeout in milliseconds.
      */
     NuxeoClient timeout(long timeout);
@@ -69,7 +69,7 @@ public interface Client {
     void shutdown();
 
     /**
-     * @return retrofit instance.
+     * @return retrofit2 instance.
      */
     Retrofit getRetrofit();
 

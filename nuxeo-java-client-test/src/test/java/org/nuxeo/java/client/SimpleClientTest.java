@@ -37,7 +37,7 @@ import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.Jetty;
 
-import com.squareup.okhttp.Response;
+import okhttp3.Response;
 
 /**
  * @since 1.0

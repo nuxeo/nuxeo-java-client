@@ -28,6 +28,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import okhttp3.Request;
+import okhttp3.ResponseBody;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.util.Strings;
@@ -35,13 +38,11 @@ import org.nuxeo.java.client.api.ConstantsV1;
 import org.nuxeo.java.client.api.NuxeoClient;
 import org.nuxeo.java.client.internals.spi.NuxeoClientException;
 
-import retrofit.Call;
-import retrofit.Response;
+import retrofit2.Call;
+import retrofit2.Response;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.squareup.okhttp.Request;
-import com.squareup.okhttp.ResponseBody;
 
 /**
  * @since 1.0
@@ -65,6 +66,9 @@ public abstract class NuxeoEntity {
     @JsonIgnore
     protected Object api;
 
+    @JsonIgnore
+    protected Class<Object> apiClass;
+
     /**
      * For Serialization purpose.
      */
@@ -75,15 +79,19 @@ public abstract class NuxeoEntity {
     /**
      * The constructor to use.
      */
-    public NuxeoEntity(String entityType, NuxeoClient nuxeoClient, Class api) {
+    public NuxeoEntity(String entityType, NuxeoClient nuxeoClient, Class apiClass) {
         this.entityType = entityType;
         this.nuxeoClient = nuxeoClient;
-        this.api = nuxeoClient.getRetrofit().create(api);
+        this.apiClass = apiClass;
     }
 
     public String getEntityType() {
         return entityType;
     }
+
+//    public NuxeoEntity header(String key, String value){
+//
+//    }
 
     /**
      * Handle cache and invocation of API methods.
@@ -91,6 +99,9 @@ public abstract class NuxeoEntity {
      * @return the response as business objects.
      */
     protected Object getResponse(Object... parametersArray) {
+        if (api == null) {
+            api = nuxeoClient.getRetrofit().create(apiClass);
+        }
         if (nuxeoClient == null) {
             throw new NuxeoClientException("You should pass to your Nuxeo object the client instance");
         }
@@ -144,13 +155,12 @@ public abstract class NuxeoEntity {
      * Compute the cache key with request
      */
     protected String computeCacheKey(Call<?> methodResult) {
-        com.squareup.okhttp.Call rawCall;
+        okhttp3.Call rawCall;
         Request originalRequest;
         try {
-            // TODO JAVACLIENT-26
             Method rawCallMethod = methodResult.getClass().getDeclaredMethod(ConstantsV1.CREATE_RAW_CALL);
             rawCallMethod.setAccessible(true);
-            rawCall = (com.squareup.okhttp.Call) rawCallMethod.invoke(methodResult);
+            rawCall = (okhttp3.Call) rawCallMethod.invoke(methodResult);
             Field originalRequestField = rawCall.getClass().getDeclaredField(ConstantsV1.ORIGINAL_REQUEST);
             originalRequestField.setAccessible(true);
             originalRequest = (Request) originalRequestField.get(rawCall);
@@ -200,7 +210,7 @@ public abstract class NuxeoEntity {
             return (Call<?>) method.invoke(api, parametersArray);
         } catch (IllegalArgumentException | IllegalAccessException reason) {
             throw new NuxeoClientException(reason);
-        } catch(InvocationTargetException reason){
+        } catch (InvocationTargetException reason) {
             throw new NuxeoClientException(reason.getTargetException().getMessage(), reason);
         }
     }
@@ -217,6 +227,7 @@ public abstract class NuxeoEntity {
     public NuxeoEntity reconnectObject(NuxeoEntity nuxeoEntity, Object api, NuxeoClient nuxeoClient) {
         nuxeoEntity.nuxeoClient = nuxeoClient;
         nuxeoEntity.api = api;
+        nuxeoEntity.apiClass = apiClass;
         return nuxeoEntity;
     }
 }

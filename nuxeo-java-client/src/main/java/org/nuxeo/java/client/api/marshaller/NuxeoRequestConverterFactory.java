@@ -22,14 +22,14 @@ import java.io.IOException;
 
 import org.nuxeo.java.client.api.ConstantsV1;
 
-import retrofit.Converter;
+import retrofit2.Converter;
 
 import com.fasterxml.jackson.core.JsonEncoding;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.util.ByteArrayBuilder;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
-import com.squareup.okhttp.RequestBody;
+import okhttp3.RequestBody;
 
 /**
  * @since 1.0

@@ -23,7 +23,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.nuxeo.java.client.internals.spi.NuxeoClientException;
 
-import retrofit.Response;
+import retrofit2.Response;
 
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
