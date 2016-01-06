@@ -296,8 +296,14 @@ public class Document extends NuxeoEntity {
         return contextParameters;
     }
 
+    /* Workflows */
+
     @JsonIgnore
     public Workflows getWorkflowInstances() {
-        return (Workflows) getResponse(getId());
+        return (Workflows) getResponse(uid);
+    }
+
+    public Workflow startWorkflowInstance(Workflow workflow){
+        return (Workflow) getResponse(uid, workflow);
     }
 }
