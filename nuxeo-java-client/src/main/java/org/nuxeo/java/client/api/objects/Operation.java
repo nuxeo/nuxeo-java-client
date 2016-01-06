@@ -21,6 +21,9 @@ package org.nuxeo.java.client.api.objects;
 import java.io.IOException;
 import java.util.Map;
 
+import okhttp3.MediaType;
+import okhttp3.ResponseBody;
+
 import org.nuxeo.java.client.api.ConstantsV1;
 import org.nuxeo.java.client.api.NuxeoClient;
 import org.nuxeo.java.client.api.methods.OperationAPI;
@@ -30,8 +33,6 @@ import org.nuxeo.java.client.internals.spi.NuxeoClientException;
 import org.nuxeo.java.client.internals.util.IOUtils;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import okhttp3.MediaType;
-import okhttp3.ResponseBody;
 
 /**
  * @since 0.1

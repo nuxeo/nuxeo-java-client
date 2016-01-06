@@ -24,18 +24,19 @@ import java.lang.reflect.Type;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import okhttp3.RequestBody;
+import okhttp3.ResponseBody;
+
 import org.nuxeo.java.client.internals.spi.NuxeoClientException;
 
 import retrofit2.Converter;
+import retrofit2.Retrofit;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectReader;
 import com.fasterxml.jackson.databind.ObjectWriter;
-import okhttp3.RequestBody;
-import okhttp3.ResponseBody;
-import retrofit2.Retrofit;
 
 /**
  * @since 0.1

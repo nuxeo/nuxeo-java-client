@@ -54,7 +54,7 @@ public class TestDirectory extends TestBase {
 
     @Test
     public void itCanGetDirectory() {
-        Directory directory = nuxeoClient.getDirectoryManager().getDirectory("continent");
+        Directory directory = nuxeoClient.getDirectoryManager().fetchDirectory("continent");
         assertNotNull(directory);
         assertEquals(7, directory.getDirectoryEntries().size());
     }

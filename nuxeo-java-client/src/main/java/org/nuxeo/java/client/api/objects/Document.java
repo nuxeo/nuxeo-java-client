@@ -299,7 +299,7 @@ public class Document extends NuxeoEntity {
     /* Workflows */
 
     @JsonIgnore
-    public Workflows getWorkflowInstances() {
+    public Workflows fetchWorkflowInstances() {
         return (Workflows) getResponse(uid);
     }
 

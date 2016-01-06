@@ -24,6 +24,8 @@ import static org.junit.Assert.assertNotNull;
 
 import java.io.IOException;
 
+import okhttp3.Response;
+
 import org.apache.logging.log4j.util.Strings;
 import org.junit.Before;
 import org.junit.Test;
@@ -36,8 +38,6 @@ import org.nuxeo.java.client.api.objects.Document;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.Jetty;
-
-import okhttp3.Response;
 
 /**
  * @since 0.1

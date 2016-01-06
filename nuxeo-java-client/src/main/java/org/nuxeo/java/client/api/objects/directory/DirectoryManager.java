@@ -21,8 +21,6 @@ package org.nuxeo.java.client.api.objects.directory;
 import org.nuxeo.java.client.api.NuxeoClient;
 import org.nuxeo.java.client.api.methods.DirectoryManagerAPI;
 import org.nuxeo.java.client.api.objects.NuxeoEntity;
-import org.nuxeo.java.client.api.objects.directory.Directory;
-import org.nuxeo.java.client.api.objects.directory.DirectoryEntry;
 
 /**
  * @since 0.1
@@ -33,11 +31,12 @@ public class DirectoryManager extends NuxeoEntity {
         super(null, nuxeoClient, DirectoryManagerAPI.class);
     }
 
-    public Directory getDirectory(String directoryName) {
+    public Directory fetchDirectory(String directoryName) {
         return (Directory) getResponse(directoryName);
     }
 
-    public Directory getDirectory(String directoryName, String currentPageIndex, String pageSize, String maxResults,
+    public Directory fetchDirectory(String directoryName, String
+            currentPageIndex, String pageSize, String maxResults,
             String sortBy, String sortOrder) {
         return (Directory) getResponse(directoryName, currentPageIndex, pageSize, maxResults, sortBy, sortOrder);
     }

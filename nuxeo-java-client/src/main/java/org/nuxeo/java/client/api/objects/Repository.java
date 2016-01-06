@@ -28,6 +28,8 @@ import org.nuxeo.java.client.api.objects.workflow.Graph;
  */
 public class Repository extends NuxeoEntity {
 
+    protected Document root;
+
     public Repository(NuxeoClient nuxeoClient) {
         super(ConstantsV1.ENTITY_TYPE_DOCUMENT, nuxeoClient, RepositoryAPI.class);
     }
@@ -47,7 +49,7 @@ public class Repository extends NuxeoEntity {
 
     /* By Id - Sync */
 
-    public Document getDocumentById(String documentId) {
+    public Document fetchDocumentById(String documentId) {
         return (Document) getResponse(documentId);
     }
 
@@ -98,11 +100,16 @@ public class Repository extends NuxeoEntity {
 
     /* By Path - Sync */
 
-    public Document getDocumentRoot() {
-        return (Document) getResponse();
+    public Document fetchDocumentRoot() {
+        root = (Document) getResponse();
+        return root;
     }
 
-    public Document getDocumentByPath(String documentPath) {
+    public Document getDocumentRoot() {
+        return root;
+    }
+
+    public Document fetchDocumentByPath(String documentPath) {
         return (Document) getResponse(documentPath);
     }
 
@@ -196,15 +203,15 @@ public class Repository extends NuxeoEntity {
         return (Workflow) getResponse(documentId, workflow);
     }
 
-    public Workflows getWorkflowInstancesByDocId(String documentId) {
+    public Workflows fetchWorkflowInstancesByDocId(String documentId) {
         return (Workflows) getResponse(documentId);
     }
 
-    public Workflows getWorkflowInstancesByDocPath(String documentPath) {
+    public Workflows fetchWorkflowInstancesByDocPath(String documentPath) {
         return (Workflows) getResponse(documentPath);
     }
 
-    public Workflow getWorkflowInstance(String workflowInstanceId) {
+    public Workflow fetchWorkflowInstance(String workflowInstanceId) {
         return (Workflow) getResponse(workflowInstanceId);
     }
 
@@ -212,19 +219,19 @@ public class Repository extends NuxeoEntity {
         getResponse(workflowInstanceId);
     }
 
-    public Graph getWorkflowInstanceGraph(String workflowInstanceId) {
+    public Graph fetchWorkflowInstanceGraph(String workflowInstanceId) {
         return (Graph) getResponse(workflowInstanceId);
     }
 
-    public Graph getWorkflowModelGraph(String workflowModelName) {
+    public Graph fetchWorkflowModelGraph(String workflowModelName) {
         return (Graph) getResponse(workflowModelName);
     }
 
-    public Workflow getWorkflowModel(String workflowModelName) {
+    public Workflow fetchWorkflowModel(String workflowModelName) {
         return (Workflow) getResponse(workflowModelName);
     }
 
-    public Workflows getWorkflowModels() {
+    public Workflows fetchWorkflowModels() {
         return (Workflows) getResponse();
     }
 }

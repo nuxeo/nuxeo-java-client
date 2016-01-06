@@ -36,7 +36,7 @@ public interface CurrentUserAPI {
     Call<CurrentUser> getCurrentUser();
 
     @GET("workflow")
-    Call<Workflows> getWorkflowInstances();
+    Call<Workflows> fetchWorkflowInstances();
 
     @POST("workflow")
     Call<Workflow> startWorkflowInstance(@Body Workflow workflow);

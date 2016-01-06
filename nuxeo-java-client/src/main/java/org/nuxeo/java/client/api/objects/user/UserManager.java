@@ -21,10 +21,6 @@ package org.nuxeo.java.client.api.objects.user;
 import org.nuxeo.java.client.api.NuxeoClient;
 import org.nuxeo.java.client.api.methods.UserManagerAPI;
 import org.nuxeo.java.client.api.objects.NuxeoEntity;
-import org.nuxeo.java.client.api.objects.user.Group;
-import org.nuxeo.java.client.api.objects.user.Groups;
-import org.nuxeo.java.client.api.objects.user.User;
-import org.nuxeo.java.client.api.objects.user.Users;
 
 /**
  * @since 0.1

@@ -20,6 +20,8 @@ package org.nuxeo.java.client.api.methods;
 
 import java.util.List;
 
+import okhttp3.RequestBody;
+
 import org.nuxeo.java.client.api.ConstantsV1;
 import org.nuxeo.java.client.api.objects.upload.BatchFile;
 import org.nuxeo.java.client.api.objects.upload.BatchUpload;
@@ -34,8 +36,6 @@ import retrofit2.http.Multipart;
 import retrofit2.http.POST;
 import retrofit2.http.Part;
 import retrofit2.http.Path;
-
-import okhttp3.RequestBody;
 
 /**
  * @since 0.1
@@ -52,20 +52,19 @@ public interface BatchUploadAPI {
             @Body RequestBody file);
 
     @GET("upload/{batchId}")
-    Call<List<BatchFile>> getBatchFiles(@Path("batchId") String batchId);
+    Call<List<BatchFile>> fetchBatchFiles(@Path("batchId") String batchId);
 
     @GET("upload/{batchId}/{fileIdx}")
-    Call<BatchFile> getBatchFile(@Path("batchId") String batchId, @Path("fileIdx") String fileIdx);
+    Call<BatchFile> fetchBatchFile(@Path("batchId") String batchId, @Path("fileIdx") String fileIdx);
 
     @DELETE("upload/{batchId}")
     Call<BatchUpload> cancel(@Path("batchId") String batchId);
 
-    @Multipart
     @Headers(ConstantsV1.CONTENT_TYPE_APPLICATION_OCTET_STREAM)
     @POST("upload/{batchId}/{fileIdx}")
-    Call<BatchUpload> upload(@Header("X-File-Name") String fileName, @Header("X-File-Size") String fileSize,
+    Call<BatchUpload> uploadChunks(@Header("X-File-Name") String fileName, @Header("X-File-Size") String fileSize,
             @Header("X-File-Type") String fileType, @Header("X-Upload-Type") String uploadType,
             @Header("X-Upload-Chunk-Index") String uploadChunkIndex,
             @Header("X-Upload-Chunk-Count") String totalChunkCount, @Path("batchId") String batchId,
-            @Path("fileIdx") String fileIdx, @Part("file\"; filename=\"file\" ") RequestBody file);
+            @Path("fileIdx") String fileIdx, @Body RequestBody file);
 }

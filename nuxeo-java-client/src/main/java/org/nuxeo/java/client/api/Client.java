@@ -18,12 +18,12 @@
  */
 package org.nuxeo.java.client.api;
 
+import okhttp3.Interceptor;
 import okhttp3.Response;
+
 import org.nuxeo.java.client.api.cache.NuxeoResponseCache;
 
 import retrofit2.Retrofit;
-
-import okhttp3.Interceptor;
 
 /**
  * @since 0.1

@@ -18,6 +18,8 @@
  */
 package org.nuxeo.java.client.api.methods;
 
+import okhttp3.ResponseBody;
+
 import org.nuxeo.java.client.api.objects.user.Group;
 import org.nuxeo.java.client.api.objects.user.Groups;
 import org.nuxeo.java.client.api.objects.user.User;
@@ -31,8 +33,6 @@ import retrofit2.http.POST;
 import retrofit2.http.PUT;
 import retrofit2.http.Path;
 import retrofit2.http.Query;
-
-import okhttp3.ResponseBody;
 
 /**
  * @since 0.1

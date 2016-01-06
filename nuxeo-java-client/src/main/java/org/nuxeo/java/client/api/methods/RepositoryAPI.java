@@ -18,6 +18,8 @@
  */
 package org.nuxeo.java.client.api.methods;
 
+import okhttp3.ResponseBody;
+
 import org.nuxeo.java.client.api.objects.Document;
 import org.nuxeo.java.client.api.objects.Documents;
 import org.nuxeo.java.client.api.objects.Workflow;
@@ -33,20 +35,18 @@ import retrofit2.http.PUT;
 import retrofit2.http.Path;
 import retrofit2.http.Query;
 
-import okhttp3.ResponseBody;
-
 public interface RepositoryAPI {
 
     /* Documents */
 
     @GET("repo/{repositoryName}/path/")
-    Call<Document> getDocumentRoot(@Path("repositoryName") String repositoryName);
+    Call<Document> fetchDocumentRoot(@Path("repositoryName") String repositoryName);
 
     @GET("path/")
-    Call<Document> getDocumentRoot();
+    Call<Document> fetchDocumentRoot();
 
     @GET("repo/{repositoryName}/id/{documentId}")
-    Call<Document> getDocumentById(@Path("documentId") String documentId, @Path("repositoryName") String repositoryName);
+    Call<Document> fetchDocumentById(@Path("documentId") String documentId, @Path("repositoryName") String repositoryName);
 
     @POST("repo/{repositoryName}/id/{parentId}")
     Call<Document> createDocumentById(@Path("parentId") String parentId,
@@ -60,7 +60,7 @@ public interface RepositoryAPI {
     Call<ResponseBody> deleteDocument(@Path("documentId") String documentId, @Path("repositoryName") String repositoryName);
 
     @GET("id/{documentId}")
-    Call<Document> getDocumentById(@Path("documentId") String documentId);
+    Call<Document> fetchDocumentById(@Path("documentId") String documentId);
 
     @POST("id/{parentId}")
     Call<Document> createDocumentById(@Path("parentId") String parentId, @Body Document document);
@@ -72,13 +72,13 @@ public interface RepositoryAPI {
     Call<ResponseBody> deleteDocument(@Path("documentId") String documentId);
 
     @GET("repo/{repositoryName}/path/{docPath}")
-    Call<Document> getDocumentByPath(@Path("docPath") String docPath, @Path("repositoryName") String repositoryName);
+    Call<Document> fetchDocumentByPath(@Path("docPath") String docPath, @Path("repositoryName") String repositoryName);
 
     @POST("repo/{repositoryName}/path/{parentPath}")
     Call<Document> createDocumentByPath(@Path("parentPath") String parentPath, @Body Document document, @Path("repositoryName") String repositoryName);
 
     @GET("path/{docPath}")
-    Call<Document> getDocumentByPath(@Path(value = "docPath", encoded = false) String docPath);
+    Call<Document> fetchDocumentByPath(@Path(value = "docPath", encoded = false) String docPath);
 
     @POST("path/{parentPath}")
     Call<Document> createDocumentByPath(@Path("parentPath") String parentPath, @Body Document document);
@@ -116,33 +116,33 @@ public interface RepositoryAPI {
     Call<Workflow> startWorkflowInstanceWithDocPath(@Path("documentPath") String documentPath, @Body Workflow workflow, @Path("repositoryName") String repositoryName);
 
     @GET("id/{documentId}/@workflow")
-    Call<Workflows> getWorkflowInstances(@Path("documentId") String documentId);
+    Call<Workflows> fetchWorkflowInstances(@Path("documentId") String documentId);
 
     @GET("repo/{repositoryName}/id/{documentId}/@workflow")
-    Call<Workflows> getWorkflowInstances(@Path("documentId") String documentId, @Path("repositoryName") String repositoryName);
+    Call<Workflows> fetchWorkflowInstances(@Path("documentId") String documentId, @Path("repositoryName") String repositoryName);
 
     @GET("path/{documentPath}/@workflow")
-    Call<Workflows> getWorkflowInstancesByDocPath(@Path("documentPath") String documentPath);
+    Call<Workflows> fetchWorkflowInstancesByDocPath(@Path("documentPath") String documentPath);
 
     @GET("repo/{repositoryName}/id/{documentId}/@workflow")
-    Call<Workflows> getWorkflowInstancesByDocPath(@Path("documentPath") String documentPath, @Path("repositoryName") String repositoryName);
+    Call<Workflows> fetchWorkflowInstancesByDocPath(@Path("documentPath") String documentPath, @Path("repositoryName") String repositoryName);
 
     @GET("workflow/{workflowInstanceId}")
-    Call<Workflow> getWorkflowInstance(@Path("workflowInstanceId") String workflowInstanceId);
+    Call<Workflow> fetchWorkflowInstance(@Path("workflowInstanceId") String workflowInstanceId);
 
     @DELETE("workflow/{workflowInstanceId}")
     Call<ResponseBody> deleteWorkflowInstance(@Path("workflowInstanceId") String workflowInstanceId);
 
     @GET("workflow/{workflowInstanceId}/graph")
-    Call<Graph> getWorkflowInstanceGraph(@Path("workflowInstanceId") String workflowInstanceId);
+    Call<Graph> fetchWorkflowInstanceGraph(@Path("workflowInstanceId") String workflowInstanceId);
 
     @GET("workflowModel/{workflowModelName}")
-    Call<Workflow> getWorkflowModel(@Path("workflowModelName") String workflowModelName);
+    Call<Workflow> fetchWorkflowModel(@Path("workflowModelName") String workflowModelName);
 
     @GET("workflowModel/{workflowModelName}/graph")
-    Call<Graph> getWorkflowModelGraph(@Path("workflowModelName") String workflowModelName);
+    Call<Graph> fetchWorkflowModelGraph(@Path("workflowModelName") String workflowModelName);
 
     @GET("workflowModel")
-    Call<Workflows> getWorkflowModels();
+    Call<Workflows> fetchWorkflowModels();
 
 }

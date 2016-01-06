@@ -23,8 +23,6 @@ import java.util.List;
 import org.nuxeo.java.client.api.ConstantsV1;
 import org.nuxeo.java.client.api.NuxeoClient;
 import org.nuxeo.java.client.api.methods.CurrentUserAPI;
-
-import com.fasterxml.jackson.annotation.JsonProperty;
 import org.nuxeo.java.client.api.objects.user.User;
 
 /**
@@ -56,7 +54,7 @@ public class CurrentUser extends User {
         return (CurrentUser) getResponse();
     }
 
-    public Workflows getWorkflowInstances() {
+    public Workflows fetchWorkflowInstances() {
         return (Workflows) getResponse();
     }
 

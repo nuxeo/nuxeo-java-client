@@ -18,6 +18,9 @@
  */
 package org.nuxeo.java.client;
 
+import static junit.framework.Assert.assertEquals;
+import static junit.framework.TestCase.assertNotNull;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -29,10 +32,6 @@ import org.nuxeo.java.client.api.objects.user.User;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.Jetty;
-
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.TestCase.assertNotNull;
-import static org.junit.Assert.assertTrue;
 
 /**
  * @since 0.1

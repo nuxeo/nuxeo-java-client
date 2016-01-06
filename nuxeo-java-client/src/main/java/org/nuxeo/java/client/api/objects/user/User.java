@@ -18,12 +18,13 @@
  */
 package org.nuxeo.java.client.api.objects.user;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
+import java.util.List;
+
 import org.nuxeo.java.client.api.ConstantsV1;
 import org.nuxeo.java.client.api.NuxeoClient;
 import org.nuxeo.java.client.api.objects.NuxeoEntity;
 
-import java.util.List;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
  * @since 0.1

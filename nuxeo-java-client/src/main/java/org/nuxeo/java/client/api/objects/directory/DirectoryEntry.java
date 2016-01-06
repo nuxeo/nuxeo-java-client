@@ -21,8 +21,6 @@ package org.nuxeo.java.client.api.objects.directory;
 import org.nuxeo.java.client.api.ConstantsV1;
 import org.nuxeo.java.client.api.objects.NuxeoEntity;
 
-import java.util.Map;
-
 /**
  * @since 0.1
  */

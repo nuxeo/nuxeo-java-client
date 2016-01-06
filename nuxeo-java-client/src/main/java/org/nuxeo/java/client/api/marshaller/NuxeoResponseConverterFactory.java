@@ -22,6 +22,8 @@ import java.io.Closeable;
 import java.io.IOException;
 import java.io.Reader;
 
+import okhttp3.ResponseBody;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -30,7 +32,6 @@ import retrofit2.Converter;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectReader;
-import okhttp3.ResponseBody;
 
 /**
  * @since 0.1

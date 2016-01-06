@@ -20,6 +20,8 @@ package org.nuxeo.java.client.api.marshaller;
 
 import java.io.IOException;
 
+import okhttp3.RequestBody;
+
 import org.nuxeo.java.client.api.ConstantsV1;
 
 import retrofit2.Converter;
@@ -29,7 +31,6 @@ import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.util.ByteArrayBuilder;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
-import okhttp3.RequestBody;
 
 /**
  * @since 0.1

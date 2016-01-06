@@ -18,6 +18,8 @@
  */
 package org.nuxeo.java.client.api.methods;
 
+import okhttp3.ResponseBody;
+
 import org.nuxeo.java.client.api.objects.Operation;
 import org.nuxeo.java.client.api.objects.operation.OperationBody;
 
@@ -26,8 +28,6 @@ import retrofit2.http.Body;
 import retrofit2.http.GET;
 import retrofit2.http.POST;
 import retrofit2.http.Path;
-
-import okhttp3.ResponseBody;
 
 /**
  * @since 0.1
@@ -38,6 +38,6 @@ public interface OperationAPI {
     Call<ResponseBody> execute(@Path("operationId") String operationId, @Body OperationBody body);
 
     @GET("automation/{operationId}")
-    Call<Operation> getOperation(@Path("operationId") String operationId);
+    Call<Operation> fetchOperation(@Path("operationId") String operationId);
 
 }

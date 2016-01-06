@@ -51,13 +51,13 @@ public class TestWorkflow extends TestBase {
 
     @Test
     public void itCanFetchWorkflowInstances() {
-        Workflows workflows = nuxeoClient.fetchCurrentUser().getWorkflowInstances();
+        Workflows workflows = nuxeoClient.fetchCurrentUser().fetchWorkflowInstances();
         assertNotNull(workflows);
     }
 
     @Test
     public void itCanFetchDocWorflowInstances(){
-        Workflows workflows = nuxeoClient.repository().getDocumentRoot().getWorkflowInstances();
+        Workflows workflows = nuxeoClient.repository().fetchDocumentRoot().fetchWorkflowInstances();
         assertNotNull(workflows);
     }
 }
