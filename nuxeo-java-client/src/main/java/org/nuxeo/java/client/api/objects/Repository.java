@@ -193,6 +193,16 @@ public class Repository extends NuxeoEntity {
     // methodResult.enqueue(callback);
     // }
 
+    /* Blobs */
+
+    public Blob fetchBlobByPath(String documentPath, String fieldPath){
+        return (Blob) getResponse(documentPath, fieldPath);
+    }
+
+    public Blob fetchBlobById(String documentId, String fieldPath) {
+        return (Blob) getResponse(documentId, fieldPath);
+    }
+
     /* Workflows */
 
     public Workflow startWorkflowInstanceWithDocPath(String documentPath, Workflow workflow){

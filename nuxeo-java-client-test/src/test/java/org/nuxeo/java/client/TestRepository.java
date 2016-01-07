@@ -23,7 +23,9 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.IdRef;
@@ -31,6 +33,7 @@ import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.restapi.test.RestServerFeature;
 import org.nuxeo.ecm.restapi.test.RestServerInit;
+import org.nuxeo.java.client.api.objects.Blob;
 import org.nuxeo.java.client.api.objects.Document;
 import org.nuxeo.java.client.api.objects.Documents;
 import org.nuxeo.java.client.api.objects.RecordSet;
@@ -229,7 +232,15 @@ public class TestRepository extends TestBase {
         }
     }
 
-    // TODO JAVACLIENT-22 AND JAVACLIENT-20
+    @Ignore("JAVACLIENT-31")
+    @Test
+    public void itCanFetchBlob(){
+        Document file = nuxeoClient.repository().fetchDocumentByPath("folder_2/file");
+        Blob blob = file.fetchBlob();
+        assertNotNull(blob);
+    }
+
+    @Ignore("JAVACLIENT-22 AND JAVACLIENT-20")
     @Test
     public void itCanFetchDocumentWithCallback() throws InterruptedException {
 //        nuxeoClient.getRepository().getDocumentByPath("folder_2", new Callback<Document>() {

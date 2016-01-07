@@ -101,4 +101,6 @@ public class ConstantsV1 {
 
     public static final String UPLOAD_CHUNKED_TYPE = "chunked";
 
+    public static final String DEFAULT_FILE_CONTENT = "file:content";
+
 }

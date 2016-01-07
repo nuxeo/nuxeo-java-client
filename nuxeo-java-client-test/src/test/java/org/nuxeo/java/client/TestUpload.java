@@ -105,12 +105,11 @@ public class TestUpload extends TestBase {
         BatchUpload batchUpload = nuxeoClient.fetchUploadManager();
         assertNotNull(batchUpload);
         File file = FileUtils.getResourceFileFromContext("sample.jpg");
-        batchUpload = batchUpload.upload(file.getName(), file.length(),
-                "jpg", batchUpload.getBatchId(), "1",
-                file);
+        batchUpload = batchUpload.upload(file.getName(), file.length(), "jpg", batchUpload.getBatchId(), "1", file);
         assertNotNull(batchUpload);
         assertEquals(ConstantsV1.UPLOAD_CHUNKED_TYPE, batchUpload.getUploadType());
-        //assertEquals(file.length(), batchUpload.getUploadedSize());
+        // FIXME NXP-18247
+        // assertEquals(file.length(), batchUpload.getUploadedSize());
 
         // Check the file
         BatchFile batchFile = batchUpload.fetchBatchFile("1");
@@ -119,19 +118,16 @@ public class TestUpload extends TestBase {
         assertEquals(ConstantsV1.UPLOAD_CHUNKED_TYPE, batchFile.getUploadType());
         assertEquals(file.length(), batchFile.getSize());
         assertEquals(4, batchFile.getChunkCount());
-        assertEquals(batchFile.getChunkCount(), batchFile.getUploadedChunkIds
-                ().length);
+        assertEquals(batchFile.getChunkCount(), batchFile.getUploadedChunkIds().length);
     }
 
     @Test
-    public void itCanAttachABatchToADoc(){
+    public void itCanAttachABatchToADoc() {
         // Upload file chunks
         BatchUpload batchUpload = nuxeoClient.fetchUploadManager();
         assertNotNull(batchUpload);
         File file = FileUtils.getResourceFileFromContext("sample.jpg");
-        batchUpload = batchUpload.upload(file.getName(), file.length(),
-                "jpg", batchUpload.getBatchId(), "1",
-                file);
+        batchUpload = batchUpload.upload(file.getName(), file.length(), "jpg", batchUpload.getBatchId(), "1", file);
         assertNotNull(batchUpload);
 
         // Getting a doc and attaching the batch file
@@ -141,6 +137,6 @@ public class TestUpload extends TestBase {
         assertNotNull(doc);
         doc.set("file:content", batchUpload.getBatchBlob());
         doc = doc.updateDocument();
-        assertEquals("sample.jpg", ((Map)doc.get("file:content")).get("name"));
+        assertEquals("sample.jpg", ((Map) doc.get("file:content")).get("name"));
     }
 }

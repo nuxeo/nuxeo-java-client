@@ -20,10 +20,12 @@ package org.nuxeo.java.client.api.methods;
 
 import okhttp3.ResponseBody;
 
+import org.nuxeo.java.client.api.objects.Blob;
 import org.nuxeo.java.client.api.objects.Document;
 import org.nuxeo.java.client.api.objects.Documents;
 import org.nuxeo.java.client.api.objects.Workflow;
 import org.nuxeo.java.client.api.objects.Workflows;
+import org.nuxeo.java.client.api.objects.blob.FileBlob;
 import org.nuxeo.java.client.api.objects.workflow.Graph;
 
 import retrofit2.Call;
@@ -77,8 +79,8 @@ public interface RepositoryAPI {
     @POST("repo/{repositoryName}/path/{parentPath}")
     Call<Document> createDocumentByPath(@Path("parentPath") String parentPath, @Body Document document, @Path("repositoryName") String repositoryName);
 
-    @GET("path/{docPath}")
-    Call<Document> fetchDocumentByPath(@Path("docPath") String docPath);
+    @GET("path/{documentPath}")
+    Call<Document> fetchDocumentByPath(@Path("documentPath") String docPath);
 
     @POST("path/{parentPath}")
     Call<Document> createDocumentByPath(@Path("parentPath") String parentPath, @Body Document document);
@@ -99,6 +101,20 @@ public interface RepositoryAPI {
             @Query("currentPageIndex") String currentPageIndex, @Query("maxResults") String maxResults,
             @Query("sortBy") String sortBy, @Query("sortOrder") String sortOrder,
             @Query("queryParams") String queryParams);
+
+    /* Blobs */
+
+    @GET("path/{documentPath}/@blob/{fieldPath}")
+    Call<Blob> fetchBlobByPath(@Path("documentPath") String documentPath, @Path("fieldPath") String fieldPath);
+
+    @GET("id/{documentId}/@blob/{fieldPath}")
+    Call<Blob> fetchBlobById(@Path("documentId") String documentId, @Path("fieldPath") String fieldPath);
+
+    @GET("repo/{repositoryName}/path/{documentPath}/@blob/{fieldPath}")
+    Call<Blob> fetchBlobByPath(@Path("documentPath") String documentPath, @Path("fieldPath") String fieldPath, @Path("repositoryName") String repositoryName);
+
+    @GET("repo/{repositoryName}/id/{documentId}/@blob/{fieldPath}")
+    Call<FileBlob> fetchBlobById(@Path("documentId") String documentId, @Path("fieldPath") String fieldPath, @Path("repositoryName") String repositoryName);
 
 
     /* Workflows */

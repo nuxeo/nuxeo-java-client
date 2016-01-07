@@ -296,8 +296,22 @@ public class Document extends NuxeoEntity {
         return contextParameters;
     }
 
-    public Document updateDocument(){
+    public Document updateDocument() {
         return (Document) getResponse(uid, this);
+    }
+
+    /* Blobs */
+
+    public Blob fetchBlob(){
+        return fetchBlobById(uid, ConstantsV1.DEFAULT_FILE_CONTENT);
+    }
+
+    public Blob fetchBlob(String fieldPath) {
+        return fetchBlobById(uid, fieldPath);
+    }
+
+    protected Blob fetchBlobById(String uid, String fieldPath) {
+        return (Blob) getResponse(uid, fieldPath);
     }
 
     /* Workflows */
@@ -307,7 +321,7 @@ public class Document extends NuxeoEntity {
         return (Workflows) getResponse(uid);
     }
 
-    public Workflow startWorkflowInstance(Workflow workflow){
+    public Workflow startWorkflowInstance(Workflow workflow) {
         return (Workflow) getResponse(uid, workflow);
     }
 }
