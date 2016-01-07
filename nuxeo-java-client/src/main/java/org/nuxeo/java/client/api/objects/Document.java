@@ -26,6 +26,7 @@ import org.nuxeo.java.client.api.ConstantsV1;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.nuxeo.java.client.api.objects.acl.ACP;
+import org.nuxeo.java.client.api.objects.audit.Audit;
 import org.nuxeo.java.client.api.objects.blob.Blob;
 import org.nuxeo.java.client.api.objects.workflow.Workflow;
 import org.nuxeo.java.client.api.objects.workflow.Workflows;
@@ -304,14 +305,24 @@ public class Document extends NuxeoEntity {
         return (Document) getResponse(uid, this);
     }
 
+    /* Audit */
+
+    public Audit fetchAudit(){
+        return fetchAuditById(uid);
+    }
+
+    public Audit fetchAuditById(String documentId){
+        return (Audit) getResponse(documentId);
+    }
+
     /* ACP */
 
     public ACP fetchACP(){
         return fetchACPById(uid);
     }
 
-    public ACP fetchACPById(String parentId){
-        return (ACP) getResponse(parentId);
+    public ACP fetchACPById(String documentId){
+        return (ACP) getResponse(documentId);
     }
 
     /* Children */

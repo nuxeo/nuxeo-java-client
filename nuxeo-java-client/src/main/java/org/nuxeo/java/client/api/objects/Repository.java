@@ -22,6 +22,7 @@ import org.nuxeo.java.client.api.ConstantsV1;
 import org.nuxeo.java.client.api.NuxeoClient;
 import org.nuxeo.java.client.api.methods.RepositoryAPI;
 import org.nuxeo.java.client.api.objects.acl.ACP;
+import org.nuxeo.java.client.api.objects.audit.Audit;
 import org.nuxeo.java.client.api.objects.blob.Blob;
 import org.nuxeo.java.client.api.objects.workflow.Graph;
 import org.nuxeo.java.client.api.objects.workflow.Workflow;
@@ -197,14 +198,24 @@ public class Repository extends NuxeoEntity {
     // methodResult.enqueue(callback);
     // }
 
-    /* ACP */
+    /* Audit */
 
-    public ACP fetchACPByPath(String parentPath){
-        return (ACP) getResponse(parentPath);
+    public Audit fetchAuditByPath(String documentPath){
+        return (Audit) getResponse(documentPath);
     }
 
-    public ACP fetchACPById(String parentId){
-        return (ACP) getResponse(parentId);
+    public Audit fetchAuditById(String documentId){
+        return (Audit) getResponse(documentId);
+    }
+
+    /* ACP */
+
+    public ACP fetchACPByPath(String documentPath){
+        return (ACP) getResponse(documentPath);
+    }
+
+    public ACP fetchACPById(String documentId){
+        return (ACP) getResponse(documentId);
     }
 
     /* Children */

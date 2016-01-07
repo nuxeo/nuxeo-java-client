@@ -30,8 +30,10 @@ import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
+import org.nuxeo.ecm.platform.audit.AuditFeature;
 import org.nuxeo.ecm.restapi.test.RestServerFeature;
 import org.nuxeo.ecm.restapi.test.RestServerInit;
+import org.nuxeo.java.client.api.objects.audit.Audit;
 import org.nuxeo.java.client.api.objects.blob.Blob;
 import org.nuxeo.java.client.api.objects.Document;
 import org.nuxeo.java.client.api.objects.Documents;
@@ -47,7 +49,7 @@ import org.nuxeo.runtime.test.runner.Jetty;
  * @since 0.1
  */
 @RunWith(FeaturesRunner.class)
-@Features({ RestServerFeature.class })
+@Features({ RestServerFeature.class, AuditFeature.class })
 @Jetty(port = 18090)
 @RepositoryConfig(cleanup = Granularity.METHOD, init = RestServerInit.class)
 public class TestRepository extends TestBase {
@@ -254,6 +256,14 @@ public class TestRepository extends TestBase {
         assertTrue(acp.getAcls().size() != 0);
         assertEquals("inherited", acp.getAcls().get(0).getName());
         assertEquals("Administrator", acp.getAcls().get(0).getAces().get(0).getUsername());
+    }
+
+    @Test
+    public void itCanFetchAudit() {
+        Document root = nuxeoClient.repository().fetchDocumentRoot();
+        Audit audit = root.fetchAudit();
+        assertTrue(audit.getLogEntries().size() != 0);
+        assertEquals("eventDocumentCategory", audit.getLogEntries().get(0).getCategory());
     }
 
     @Ignore("JAVACLIENT-22 AND JAVACLIENT-20")

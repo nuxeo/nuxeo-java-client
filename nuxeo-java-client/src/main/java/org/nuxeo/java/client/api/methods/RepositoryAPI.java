@@ -20,6 +20,7 @@ package org.nuxeo.java.client.api.methods;
 
 import okhttp3.ResponseBody;
 
+import org.nuxeo.java.client.api.objects.audit.Audit;
 import org.nuxeo.java.client.api.objects.acl.ACP;
 import org.nuxeo.java.client.api.objects.blob.Blob;
 import org.nuxeo.java.client.api.objects.Document;
@@ -103,19 +104,33 @@ public interface RepositoryAPI {
             @Query("sortBy") String sortBy, @Query("sortOrder") String sortOrder,
             @Query("queryParams") String queryParams);
 
+    /* Audit */
+
+    @GET("path/{documentPath}/@audit")
+    Call<Audit> fetchAuditByPath(@Path("documentPath") String documentPath);
+
+    @GET("id/{documentId}/@audit")
+    Call<Audit> fetchAuditById(@Path("documentId") String documentId);
+
+    @GET("repo/{repositoryName}/path/{documentPath}/@audit")
+    Call<Audit> fetchAuditByPath(@Path("documentPath") String documentPath, @Path("repositoryName") String repositoryName);
+
+    @GET("repo/{repositoryName}/id/{documentId}/@audit")
+    Call<Audit> fetchAuditById(@Path("documentId") String documentId, @Path("repositoryName") String repositoryName);
+
     /* ACP */
 
-    @GET("path/{parentPath}/@acl")
-    Call<ACP> fetchACPByPath(@Path("parentPath") String parentPath);
+    @GET("path/{documentPath}/@acl")
+    Call<ACP> fetchACPByPath(@Path("documentPath") String documentPath);
 
-    @GET("id/{parentId}/@acl")
-    Call<ACP> fetchACPById(@Path("parentId") String parentId);
+    @GET("id/{documentId}/@acl")
+    Call<ACP> fetchACPById(@Path("documentId") String documentId);
 
-    @GET("repo/{repositoryName}/path/{parentPath}/@acl")
-    Call<ACP> fetchACPByPath(@Path("parentPath") String parentPath, @Path("repositoryName") String repositoryName);
+    @GET("repo/{repositoryName}/path/{documentPath}/@acl")
+    Call<ACP> fetchACPByPath(@Path("documentPath") String documentPath, @Path("repositoryName") String repositoryName);
 
-    @GET("repo/{repositoryName}/id/{parentId}/@acl")
-    Call<ACP> fetchACPById(@Path("parentId") String parentId, @Path("repositoryName") String repositoryName);
+    @GET("repo/{repositoryName}/id/{documentId}/@acl")
+    Call<ACP> fetchACPById(@Path("documentId") String documentId, @Path("repositoryName") String repositoryName);
 
     /* Children */
 
