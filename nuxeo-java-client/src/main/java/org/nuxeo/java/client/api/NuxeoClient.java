@@ -96,6 +96,11 @@ public class NuxeoClient implements Client {
         return this;
     }
 
+    public NuxeoClient clearMarshaller() {
+        converterFactory.clearMarshaller();
+        return this;
+    }
+
     public NuxeoClient enableDefaultCache() {
         nuxeoCache = new ResultCacheInMemory();
         return this;

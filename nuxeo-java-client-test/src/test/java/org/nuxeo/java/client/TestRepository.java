@@ -210,6 +210,7 @@ public class TestRepository extends TestBase {
         assertEquals(folder.getPath(), "/folder_1");
         assertEquals(folder.getState(), "project");
         assertEquals(folder.getType(), "Folder");
+        nuxeoClient.clearMarshaller();
     }
 
     @Test

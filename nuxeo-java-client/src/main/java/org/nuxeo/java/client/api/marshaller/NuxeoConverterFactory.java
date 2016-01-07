@@ -90,6 +90,10 @@ public class NuxeoConverterFactory extends Converter.Factory {
         marshallers.put(marshaller.getJavaType(), marshaller);
     }
 
+    public void clearMarshaller(){
+        marshallers.clear();
+    }
+
     public Object readJSON(String json, Class javaType) {
         try {
             return mapper.readValue(json, javaType);
