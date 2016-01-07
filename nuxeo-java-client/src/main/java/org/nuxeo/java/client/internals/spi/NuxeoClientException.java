@@ -120,12 +120,16 @@ public class NuxeoClientException extends RuntimeException {
 
     }
 
+    @Override
     public void printStackTrace(PrintStream s) {
+        super.printStackTrace(s);
         s.println("Exception:");
         s.print(getRemoteStackTrace());
     }
 
+    @Override
     public void printStackTrace(PrintWriter s) {
+        super.printStackTrace(s);
         s.println("Exception:");
         s.print(getRemoteStackTrace());
     }

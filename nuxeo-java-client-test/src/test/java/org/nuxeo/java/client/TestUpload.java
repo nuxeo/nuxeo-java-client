@@ -22,6 +22,9 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import java.io.File;
+import java.util.List;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -30,13 +33,13 @@ import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.restapi.test.RestServerFeature;
 import org.nuxeo.ecm.restapi.test.RestServerInit;
+import org.nuxeo.java.client.api.ConstantsV1;
+import org.nuxeo.java.client.api.objects.upload.BatchFile;
 import org.nuxeo.java.client.api.objects.upload.BatchUpload;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.Jetty;
 import org.nuxeo.transientstore.test.TransientStoreFeature;
-
-import java.io.File;
 
 /**
  * @since 0.1
@@ -62,14 +65,54 @@ public class TestUpload extends TestBase {
     }
 
     @Test
-    public void itCanUploadFile() {
+    public void itCanUploadFiles() {
+        // Upload the file
         BatchUpload batchUpload = nuxeoClient.fetchUploadManager();
         assertNotNull(batchUpload);
         assertNotNull(batchUpload.getBatchId());
-        File file = FileUtils.getResourceFileFromContext("blob.json");
-        batchUpload = batchUpload.upload(file.getName(), file.length(), "json", batchUpload.getBatchId(), "1", file);
+        File file = FileUtils.getResourceFileFromContext("sample.jpg");
+        batchUpload = batchUpload.upload(file.getName(), file.length(), "jpg", batchUpload.getBatchId(), "1", file);
         assertNotNull(batchUpload);
-        assertEquals("normal", batchUpload.getUploadType());
-        //assertEquals(file.length(), batch.getUploadedSize());
+        assertEquals(ConstantsV1.UPLOAD_NORMAL_TYPE, batchUpload.getUploadType());
+        assertEquals(file.length(), batchUpload.getUploadedSize());
+
+        // Check the file in the ref batch
+        BatchFile batchFile = batchUpload.fetchBatchFile("1");
+        assertNotNull(batchFile);
+        assertEquals(file.getName(), batchFile.getName());
+        assertEquals(ConstantsV1.UPLOAD_NORMAL_TYPE, batchFile.getUploadType());
+        //assertEquals(file.length(), batchFile.getSize());
+
+        // Upload another file and check files
+        file = FileUtils.getResourceFileFromContext("blob.json");
+        batchUpload.upload(file.getName(), file.length(), "json", batchUpload.getBatchId(), "2", file);
+        List<BatchFile> batchFiles = batchUpload.fetchBatchFiles();
+        assertNotNull(batchFiles);
+        assertEquals(2, batchFiles.size());
+        assertEquals("sample.jpg", batchFiles.get(0).getName());
+        assertEquals("blob.json", batchFiles.get(1).getName());
+    }
+
+    @Test
+    public void itCanUploadChunks() {
+        // Upload file chunks
+        BatchUpload batchUpload = nuxeoClient.fetchUploadManager();
+        assertNotNull(batchUpload);
+        File file = FileUtils.getResourceFileFromContext("sample.jpg");
+        batchUpload = batchUpload.uploadChunks(file.getName(), file.length(), "jpg", batchUpload.getBatchId(), "1",
+                file);
+        assertNotNull(batchUpload);
+        assertEquals(ConstantsV1.UPLOAD_CHUNKED_TYPE, batchUpload.getUploadType());
+        //assertEquals(file.length(), batchUpload.getUploadedSize());
+
+        // Check the file
+        BatchFile batchFile = batchUpload.fetchBatchFile("1");
+        assertNotNull(batchFile);
+        assertEquals(file.getName(), batchFile.getName());
+        assertEquals(ConstantsV1.UPLOAD_CHUNKED_TYPE, batchFile.getUploadType());
+        assertEquals(file.length(), batchFile.getSize());
+        assertEquals(4, batchFile.getChunkCount());
+        assertEquals(batchFile.getChunkCount(), batchFile.getUploadedChunkIds
+                ().length);
     }
 }

@@ -89,9 +89,9 @@ public abstract class NuxeoEntity {
         return entityType;
     }
 
-//    public NuxeoEntity header(String key, String value){
-//
-//    }
+    // public NuxeoEntity header(String key, String value){
+    //
+    // }
 
     /**
      * Handle cache and invocation of API methods.
@@ -122,7 +122,8 @@ public abstract class NuxeoEntity {
         }
         try {
             Response<?> response = methodResult.execute();
-            if (!response.isSuccess()) {
+            // TODO 308 status
+            if (!response.isSuccess() && response.code() != 308) {
                 NuxeoClientException nuxeoClientException;
                 String errorBody = response.errorBody().string();
                 if (errorBody.equals(Strings.EMPTY)) {
@@ -144,7 +145,7 @@ public abstract class NuxeoEntity {
             } else if (body == null) {
                 return response;
             } else {
-                return reconnectObject((NuxeoEntity) body, api, nuxeoClient);
+                return reconnectObject(body, api, nuxeoClient);
             }
         } catch (IOException reason) {
             throw new NuxeoClientException(reason);
@@ -207,9 +208,17 @@ public abstract class NuxeoEntity {
                     }
                 }
             }
+            if (method == null) {
+                throw new NuxeoClientException(String.format(
+                        "No method found for API %s and method name '%s'. Check method name and parameters.", apiClass,
+                        methodName));
+            }
             return (Call<?>) method.invoke(api, parametersArray);
         } catch (IllegalArgumentException | IllegalAccessException reason) {
-            throw new NuxeoClientException(reason);
+            throw new NuxeoClientException(
+                    String.format(
+                            "An issue has occured in the method found for API %s and method name '%s'. Check method and parameters types.",
+                            apiClass, methodName), reason);
         } catch (InvocationTargetException reason) {
             throw new NuxeoClientException(reason.getTargetException().getMessage(), reason);
         }
@@ -224,10 +233,25 @@ public abstract class NuxeoEntity {
         return repositoryName;
     }
 
-    public NuxeoEntity reconnectObject(NuxeoEntity nuxeoEntity, Object api, NuxeoClient nuxeoClient) {
-        nuxeoEntity.nuxeoClient = nuxeoClient;
-        nuxeoEntity.api = api;
-        nuxeoEntity.apiClass = apiClass;
-        return nuxeoEntity;
+    public Object reconnectObject(Object entity, Object api, NuxeoClient nuxeoClient) {
+        if (entity instanceof NuxeoEntity) {
+            ((NuxeoEntity) entity).nuxeoClient = nuxeoClient;
+            ((NuxeoEntity) entity).api = api;
+            ((NuxeoEntity) entity).apiClass = apiClass;
+            return entity;
+        } else if (entity instanceof List<?>) {
+            List<NuxeoEntity> entities = new ArrayList<>();
+            List<?> l = (List<?>) entity;
+            for (Object item : l) {
+                if (item instanceof NuxeoEntity) {
+                    ((NuxeoEntity) item).nuxeoClient = nuxeoClient;
+                    ((NuxeoEntity) item).api = api;
+                    ((NuxeoEntity) item).apiClass = apiClass;
+                    entities.add((NuxeoEntity) item);
+                }
+            }
+            return entities;
+        }
+        return entity;
     }
 }

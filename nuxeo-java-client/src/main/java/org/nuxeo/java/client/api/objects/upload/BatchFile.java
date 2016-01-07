@@ -18,26 +18,44 @@
  */
 package org.nuxeo.java.client.api.objects.upload;
 
+import org.nuxeo.java.client.api.objects.NuxeoEntity;
+
 /**
  * @since 0.1
  */
-public class BatchFile {
+public class BatchFile extends NuxeoEntity {
 
     protected String name;
 
-    protected Long size;
+    protected long size;
 
     protected String uploadType;
+
+    protected int[] uploadedChunkIds;
+
+    protected int chunkCount;
+
+    public BatchFile() {
+        super(null);
+    }
 
     public String getName() {
         return name;
     }
 
-    public Long getSize() {
+    public long getSize() {
         return size;
     }
 
     public String getUploadType() {
         return uploadType;
+    }
+
+    public int[] getUploadedChunkIds() {
+        return uploadedChunkIds;
+    }
+
+    public int getChunkCount() {
+        return chunkCount;
     }
 }
