@@ -95,7 +95,6 @@ public class BatchUpload extends NuxeoEntity {
                 totalChunkCount, batchId, fileIdx, fbody);
     }
 
-
     public BatchUpload uploadChunks(String name, long length, String fileType, String batchId, String fileIdx, File file) {
         int partCounter = 1;
         int sizeOfFiles = ConstantsV1.CHUNK_SIZE; // 1MB
@@ -119,10 +118,10 @@ public class BatchUpload extends NuxeoEntity {
         }
         tmp = 0;
         for (File chunk : files) {
-            if(tmp==files.size()-1){
-                batchUpload = (BatchUpload) uploadChunks(name, length, fileType, ConstantsV1.UPLOAD_CHUNKED_TYPE, Objects.toString(tmp),
-                        Objects.toString(files.size()), batchId, fileIdx, chunk);
-            }else {
+            if (tmp == files.size() - 1) {
+                batchUpload = (BatchUpload) uploadChunks(name, length, fileType, ConstantsV1.UPLOAD_CHUNKED_TYPE,
+                        Objects.toString(tmp), Objects.toString(files.size()), batchId, fileIdx, chunk);
+            } else {
                 uploadChunks(name, length, fileType, ConstantsV1.UPLOAD_CHUNKED_TYPE, Objects.toString(tmp),
                         Objects.toString(files.size()), batchId, fileIdx, chunk);
                 tmp++;
