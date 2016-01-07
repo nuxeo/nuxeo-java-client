@@ -18,9 +18,9 @@
  */
 package org.nuxeo.java.client.api.methods;
 
-import org.nuxeo.java.client.api.objects.CurrentUser;
-import org.nuxeo.java.client.api.objects.Workflow;
-import org.nuxeo.java.client.api.objects.Workflows;
+import org.nuxeo.java.client.api.objects.user.CurrentUser;
+import org.nuxeo.java.client.api.objects.workflow.Workflow;
+import org.nuxeo.java.client.api.objects.workflow.Workflows;
 
 import retrofit2.Call;
 import retrofit2.http.Body;

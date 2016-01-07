@@ -16,14 +16,15 @@
  * Contributors:
  *         Vladimir Pasquier <vpasquier@nuxeo.com>
  */
-package org.nuxeo.java.client.api.objects;
+package org.nuxeo.java.client.api.objects.user;
 
 import java.util.List;
 
 import org.nuxeo.java.client.api.ConstantsV1;
 import org.nuxeo.java.client.api.NuxeoClient;
 import org.nuxeo.java.client.api.methods.CurrentUserAPI;
-import org.nuxeo.java.client.api.objects.user.User;
+import org.nuxeo.java.client.api.objects.workflow.Workflow;
+import org.nuxeo.java.client.api.objects.workflow.Workflows;
 
 /**
  * @since 0.1

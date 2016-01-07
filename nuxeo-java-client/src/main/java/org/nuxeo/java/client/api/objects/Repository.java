@@ -22,7 +22,10 @@ import org.nuxeo.java.client.api.ConstantsV1;
 import org.nuxeo.java.client.api.NuxeoClient;
 import org.nuxeo.java.client.api.methods.RepositoryAPI;
 import org.nuxeo.java.client.api.objects.acl.ACP;
+import org.nuxeo.java.client.api.objects.blob.Blob;
 import org.nuxeo.java.client.api.objects.workflow.Graph;
+import org.nuxeo.java.client.api.objects.workflow.Workflow;
+import org.nuxeo.java.client.api.objects.workflow.Workflows;
 
 /**
  * @since 0.1

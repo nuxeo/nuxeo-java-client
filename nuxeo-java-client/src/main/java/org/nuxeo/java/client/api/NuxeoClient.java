@@ -29,7 +29,7 @@ import org.nuxeo.java.client.api.cache.NuxeoResponseCache;
 import org.nuxeo.java.client.api.cache.ResultCacheInMemory;
 import org.nuxeo.java.client.api.marshaller.NuxeoConverterFactory;
 import org.nuxeo.java.client.api.marshaller.NuxeoMarshaller;
-import org.nuxeo.java.client.api.objects.CurrentUser;
+import org.nuxeo.java.client.api.objects.user.CurrentUser;
 import org.nuxeo.java.client.api.objects.Operation;
 import org.nuxeo.java.client.api.objects.Repository;
 import org.nuxeo.java.client.api.objects.directory.DirectoryManager;

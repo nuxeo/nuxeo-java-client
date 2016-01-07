@@ -16,13 +16,14 @@
  * Contributors:
  *         Vladimir Pasquier <vpasquier@nuxeo.com>
  */
-package org.nuxeo.java.client.api.objects;
+package org.nuxeo.java.client.api.objects.workflow;
 
 import java.util.List;
 
 import org.nuxeo.java.client.api.ConstantsV1;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import org.nuxeo.java.client.api.objects.NuxeoEntity;
 
 /**
  * @since 0.1

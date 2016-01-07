@@ -28,7 +28,7 @@ import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.platform.routing.test.WorkflowFeature;
 import org.nuxeo.ecm.restapi.test.RestServerFeature;
 import org.nuxeo.ecm.restapi.test.RestServerInit;
-import org.nuxeo.java.client.api.objects.Workflows;
+import org.nuxeo.java.client.api.objects.workflow.Workflows;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;

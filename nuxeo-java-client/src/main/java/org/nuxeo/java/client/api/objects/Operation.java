@@ -27,6 +27,7 @@ import okhttp3.ResponseBody;
 import org.nuxeo.java.client.api.ConstantsV1;
 import org.nuxeo.java.client.api.NuxeoClient;
 import org.nuxeo.java.client.api.methods.OperationAPI;
+import org.nuxeo.java.client.api.objects.blob.Blob;
 import org.nuxeo.java.client.api.objects.blob.FileBlob;
 import org.nuxeo.java.client.api.objects.operation.OperationBody;
 import org.nuxeo.java.client.internals.spi.NuxeoClientException;

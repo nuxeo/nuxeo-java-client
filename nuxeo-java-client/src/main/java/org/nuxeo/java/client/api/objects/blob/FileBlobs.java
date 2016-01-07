@@ -21,7 +21,6 @@ package org.nuxeo.java.client.api.objects.blob;
 import java.util.List;
 
 import org.nuxeo.java.client.api.ConstantsV1;
-import org.nuxeo.java.client.api.objects.Blob;
 import org.nuxeo.java.client.api.objects.NuxeoEntity;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
