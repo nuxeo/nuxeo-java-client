@@ -122,7 +122,7 @@ public abstract class NuxeoEntity {
         }
         try {
             Response<?> response = methodResult.execute();
-            // TODO 308 status
+            // For redirect 308 -> the response should be success
             if (!response.isSuccess() && response.code() != 308) {
                 NuxeoClientException nuxeoClientException;
                 String errorBody = response.errorBody().string();
@@ -143,6 +143,9 @@ public abstract class NuxeoEntity {
             if (body instanceof ResponseBody) {
                 return body;
             } else if (body == null) {
+                if (response.code() == 204) {
+                    return null;
+                }
                 return response;
             } else {
                 return reconnectObject(body, api, nuxeoClient);

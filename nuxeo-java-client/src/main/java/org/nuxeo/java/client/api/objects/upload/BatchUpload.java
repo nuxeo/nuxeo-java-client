@@ -134,6 +134,10 @@ public class BatchUpload extends NuxeoEntity {
         return (BatchUpload) getResponse(batchId);
     }
 
+    public BatchUpload cancel() {
+        return cancel(batchId);
+    }
+
     public List<BatchFile> fetchBatchFiles(String batchId) {
         return (List<BatchFile>) getResponse(batchId);
     }
