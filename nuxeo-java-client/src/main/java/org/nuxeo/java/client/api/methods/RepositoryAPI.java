@@ -102,6 +102,20 @@ public interface RepositoryAPI {
             @Query("sortBy") String sortBy, @Query("sortOrder") String sortOrder,
             @Query("queryParams") String queryParams);
 
+    /* Children */
+
+    @GET("path/{parentPath}/@children")
+    Call<Documents> fetchChildrenByPath(@Path("parentPath") String parentPath);
+
+    @GET("id/{parentId}/@children")
+    Call<Documents> fetchChildrenById(@Path("parentId") String parentId);
+
+    @GET("repo/{repositoryName}/path/{parentPath}/@children")
+    Call<Documents> fetchChildrenByPath(@Path("parentPath") String parentPath, @Path("repositoryName") String repositoryName);
+
+    @GET("repo/{repositoryName}/id/{parentId}/@children")
+    Call<Documents> fetchChildrenById(@Path("parentId") String parentId, @Path("repositoryName") String repositoryName);
+
     /* Blobs */
 
     @GET("path/{documentPath}/@blob/{fieldPath}")

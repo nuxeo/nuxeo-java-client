@@ -300,6 +300,16 @@ public class Document extends NuxeoEntity {
         return (Document) getResponse(uid, this);
     }
 
+    /* Children */
+
+    public Documents fetchChildren(){
+        return fetchChildrenById(uid);
+    }
+
+    public Documents fetchChildrenById(String parentId){
+        return (Documents) getResponse(parentId);
+    }
+
     /* Blobs */
 
     public Blob fetchBlob(){

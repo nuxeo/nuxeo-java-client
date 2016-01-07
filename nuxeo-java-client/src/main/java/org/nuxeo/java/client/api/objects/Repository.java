@@ -193,6 +193,16 @@ public class Repository extends NuxeoEntity {
     // methodResult.enqueue(callback);
     // }
 
+    /* Children */
+
+    public Documents fetchChildrenByPath(String parentPath){
+        return (Documents) getResponse(parentPath);
+    }
+
+    public Documents fetchChildrenById(String parentId){
+        return (Documents) getResponse(parentId);
+    }
+
     /* Blobs */
 
     public Blob fetchBlobByPath(String documentPath, String fieldPath){

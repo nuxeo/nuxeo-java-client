@@ -240,6 +240,13 @@ public class TestRepository extends TestBase {
         assertNotNull(blob);
     }
 
+    @Test
+    public void itCanFetchChildren() {
+        Document folder = nuxeoClient.repository().fetchDocumentByPath("folder_2");
+        Documents children = folder.fetchChildren();
+        assertTrue(children.getDocuments().size() != 0);
+    }
+
     @Ignore("JAVACLIENT-22 AND JAVACLIENT-20")
     @Test
     public void itCanFetchDocumentWithCallback() throws InterruptedException {
