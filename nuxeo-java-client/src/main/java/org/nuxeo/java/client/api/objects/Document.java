@@ -296,6 +296,10 @@ public class Document extends NuxeoEntity {
         return contextParameters;
     }
 
+    public Document updateDocument(){
+        return (Document) getResponse(uid, this);
+    }
+
     /* Workflows */
 
     @JsonIgnore

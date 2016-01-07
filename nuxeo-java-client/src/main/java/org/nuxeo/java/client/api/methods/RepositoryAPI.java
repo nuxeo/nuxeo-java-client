@@ -78,7 +78,7 @@ public interface RepositoryAPI {
     Call<Document> createDocumentByPath(@Path("parentPath") String parentPath, @Body Document document, @Path("repositoryName") String repositoryName);
 
     @GET("path/{docPath}")
-    Call<Document> fetchDocumentByPath(@Path(value = "docPath", encoded = false) String docPath);
+    Call<Document> fetchDocumentByPath(@Path("docPath") String docPath);
 
     @POST("path/{parentPath}")
     Call<Document> createDocumentByPath(@Path("parentPath") String parentPath, @Body Document document);
