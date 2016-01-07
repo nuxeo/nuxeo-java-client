@@ -21,6 +21,7 @@ package org.nuxeo.java.client.api.objects;
 import org.nuxeo.java.client.api.ConstantsV1;
 import org.nuxeo.java.client.api.NuxeoClient;
 import org.nuxeo.java.client.api.methods.RepositoryAPI;
+import org.nuxeo.java.client.api.objects.acl.ACP;
 import org.nuxeo.java.client.api.objects.workflow.Graph;
 
 /**
@@ -192,6 +193,16 @@ public class Repository extends NuxeoEntity {
     // Call<?> methodResult = getCall(method, parametersArray);
     // methodResult.enqueue(callback);
     // }
+
+    /* ACP */
+
+    public ACP fetchACPByPath(String parentPath){
+        return (ACP) getResponse(parentPath);
+    }
+
+    public ACP fetchACPById(String parentId){
+        return (ACP) getResponse(parentId);
+    }
 
     /* Children */
 

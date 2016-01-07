@@ -20,6 +20,7 @@ package org.nuxeo.java.client.api.methods;
 
 import okhttp3.ResponseBody;
 
+import org.nuxeo.java.client.api.objects.acl.ACP;
 import org.nuxeo.java.client.api.objects.Blob;
 import org.nuxeo.java.client.api.objects.Document;
 import org.nuxeo.java.client.api.objects.Documents;
@@ -101,6 +102,20 @@ public interface RepositoryAPI {
             @Query("currentPageIndex") String currentPageIndex, @Query("maxResults") String maxResults,
             @Query("sortBy") String sortBy, @Query("sortOrder") String sortOrder,
             @Query("queryParams") String queryParams);
+
+    /* ACP */
+
+    @GET("path/{parentPath}/@acl")
+    Call<ACP> fetchACPByPath(@Path("parentPath") String parentPath);
+
+    @GET("id/{parentId}/@acl")
+    Call<ACP> fetchACPById(@Path("parentId") String parentId);
+
+    @GET("repo/{repositoryName}/path/{parentPath}/@acl")
+    Call<ACP> fetchACPByPath(@Path("parentPath") String parentPath, @Path("repositoryName") String repositoryName);
+
+    @GET("repo/{repositoryName}/id/{parentId}/@acl")
+    Call<ACP> fetchACPById(@Path("parentId") String parentId, @Path("repositoryName") String repositoryName);
 
     /* Children */
 

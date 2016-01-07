@@ -61,6 +61,8 @@ public class ConstantsV1 {
 
     public static final String ENTITY_TYPE_BLOB = "blob";
 
+    public static final String ENTITY_TYPE_ACP = "acls";
+
     public static final String ENTITY_TYPE_USER = "user";
 
     public static final String ENTITY_TYPE_USERS = "users";

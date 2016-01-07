@@ -23,7 +23,6 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -37,6 +36,7 @@ import org.nuxeo.java.client.api.objects.Blob;
 import org.nuxeo.java.client.api.objects.Document;
 import org.nuxeo.java.client.api.objects.Documents;
 import org.nuxeo.java.client.api.objects.RecordSet;
+import org.nuxeo.java.client.api.objects.acl.ACP;
 import org.nuxeo.java.client.internals.spi.NuxeoClientException;
 import org.nuxeo.java.client.marshallers.DocumentMarshaller;
 import org.nuxeo.runtime.test.runner.Features;
@@ -245,6 +245,15 @@ public class TestRepository extends TestBase {
         Document folder = nuxeoClient.repository().fetchDocumentByPath("folder_2");
         Documents children = folder.fetchChildren();
         assertTrue(children.getDocuments().size() != 0);
+    }
+
+    @Test
+    public void itCanFetchACP() {
+        Document folder = nuxeoClient.repository().fetchDocumentByPath("folder_2");
+        ACP acp = folder.fetchACP();
+        assertTrue(acp.getAcls().size() != 0);
+        assertEquals("inherited", acp.getAcls().get(0).getName());
+        assertEquals("Administrator", acp.getAcls().get(0).getAces().get(0).getUsername());
     }
 
     @Ignore("JAVACLIENT-22 AND JAVACLIENT-20")

@@ -25,6 +25,7 @@ import java.util.Map;
 import org.nuxeo.java.client.api.ConstantsV1;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.nuxeo.java.client.api.objects.acl.ACP;
 
 /**
  * @since 0.1
@@ -298,6 +299,16 @@ public class Document extends NuxeoEntity {
 
     public Document updateDocument() {
         return (Document) getResponse(uid, this);
+    }
+
+    /* ACP */
+
+    public ACP fetchACP(){
+        return fetchACPById(uid);
+    }
+
+    public ACP fetchACPById(String parentId){
+        return (ACP) getResponse(parentId);
     }
 
     /* Children */
