@@ -20,8 +20,6 @@ package org.nuxeo.java.client;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.io.File;
@@ -38,7 +36,6 @@ import org.nuxeo.ecm.restapi.test.RestServerFeature;
 import org.nuxeo.ecm.restapi.test.RestServerInit;
 import org.nuxeo.java.client.api.ConstantsV1;
 import org.nuxeo.java.client.api.objects.Document;
-import org.nuxeo.java.client.api.objects.upload.BatchBlob;
 import org.nuxeo.java.client.api.objects.upload.BatchFile;
 import org.nuxeo.java.client.api.objects.upload.BatchUpload;
 import org.nuxeo.java.client.internals.spi.NuxeoClientException;
@@ -142,8 +139,7 @@ public class TestUpload extends TestBase {
         doc.set("dc:title", "new title");
         doc = nuxeoClient.repository().createDocumentByPath("folder_1", doc);
         assertNotNull(doc);
-        BatchBlob blob = new BatchBlob(batchUpload.getBatchId(), "1");
-        doc.set("file:content", blob);
+        doc.set("file:content", batchUpload.getBatchBlob());
         doc = doc.updateDocument();
         assertEquals("sample.jpg", ((Map)doc.get("file:content")).get("name"));
     }
