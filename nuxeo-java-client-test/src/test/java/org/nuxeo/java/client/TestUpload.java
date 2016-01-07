@@ -20,7 +20,9 @@ package org.nuxeo.java.client;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.io.File;
 import java.util.List;
@@ -39,6 +41,7 @@ import org.nuxeo.java.client.api.objects.Document;
 import org.nuxeo.java.client.api.objects.upload.BatchBlob;
 import org.nuxeo.java.client.api.objects.upload.BatchFile;
 import org.nuxeo.java.client.api.objects.upload.BatchUpload;
+import org.nuxeo.java.client.internals.spi.NuxeoClientException;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.Jetty;
@@ -63,9 +66,13 @@ public class TestUpload extends TestBase {
         BatchUpload batchUpload = nuxeoClient.fetchUploadManager();
         assertNotNull(batchUpload);
         assertNotNull(batchUpload.getBatchId());
-        // FIXME bug (working with a live server)
-        //batchUpload = batchUpload.cancel();
-        //assertTrue(Boolean.parseBoolean(batchUpload.getDropped()));
+        batchUpload.cancel();
+        try {
+            batchUpload.fetchBatchFiles();
+            fail("Should be not found");
+        } catch (NuxeoClientException reason) {
+            assertEquals(404, reason.getStatus());
+        }
     }
 
     @Test
