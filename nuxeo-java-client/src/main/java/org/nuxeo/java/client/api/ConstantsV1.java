@@ -99,8 +99,6 @@ public class ConstantsV1 {
 
     public static final int CHUNK_SIZE = 1024 * 1024;
 
-    public static final String UPLOAD_NORMAL_TYPE = "normal";
-
     public static final String UPLOAD_CHUNKED_TYPE = "chunked";
 
 }

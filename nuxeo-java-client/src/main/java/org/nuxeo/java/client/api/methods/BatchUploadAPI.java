@@ -44,12 +44,6 @@ public interface BatchUploadAPI {
     @POST("upload")
     Call<BatchUpload> createBatch();
 
-    @Headers(ConstantsV1.CONTENT_TYPE_APPLICATION_OCTET_STREAM)
-    @POST("upload/{batchId}/{fileIdx}")
-    Call<BatchUpload> upload(@Header("X-File-Name") String fileName, @Header("X-File-Size") String fileSize,
-            @Header("X-File-Type") String fileType, @Path("batchId") String batchId, @Path("fileIdx") String fileIdx,
-            @Body RequestBody file);
-
     @GET("upload/{batchId}")
     Call<List<BatchFile>> fetchBatchFiles(@Path("batchId") String batchId);
 
@@ -61,7 +55,7 @@ public interface BatchUploadAPI {
 
     @Headers(ConstantsV1.CONTENT_TYPE_APPLICATION_OCTET_STREAM)
     @POST("upload/{batchId}/{fileIdx}")
-    Call<BatchUpload> uploadChunks(@Header("X-File-Name") String fileName, @Header("X-File-Size") String fileSize,
+    Call<BatchUpload> upload(@Header("X-File-Name") String fileName, @Header("X-File-Size") String fileSize,
             @Header("X-File-Type") String fileType, @Header("X-Upload-Type") String uploadType,
             @Header("X-Upload-Chunk-Index") String uploadChunkIndex,
             @Header("X-Upload-Chunk-Count") String totalChunkCount, @Path("batchId") String batchId,

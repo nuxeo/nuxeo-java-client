@@ -81,15 +81,13 @@ public class TestUpload extends TestBase {
         File file = FileUtils.getResourceFileFromContext("sample.jpg");
         batchUpload = batchUpload.upload(file.getName(), file.length(), "jpg", batchUpload.getBatchId(), "1", file);
         assertNotNull(batchUpload);
-        assertEquals(ConstantsV1.UPLOAD_NORMAL_TYPE, batchUpload.getUploadType());
-        assertEquals(file.length(), batchUpload.getUploadedSize());
+        assertEquals(ConstantsV1.UPLOAD_CHUNKED_TYPE, batchUpload.getUploadType());
 
         // Check the file in the ref batch
         BatchFile batchFile = batchUpload.fetchBatchFile("1");
         assertNotNull(batchFile);
         assertEquals(file.getName(), batchFile.getName());
-        assertEquals(ConstantsV1.UPLOAD_NORMAL_TYPE, batchFile.getUploadType());
-        //assertEquals(file.length(), batchFile.getSize());
+        assertEquals(ConstantsV1.UPLOAD_CHUNKED_TYPE, batchFile.getUploadType());
 
         // Upload another file and check files
         file = FileUtils.getResourceFileFromContext("blob.json");
@@ -107,7 +105,8 @@ public class TestUpload extends TestBase {
         BatchUpload batchUpload = nuxeoClient.fetchUploadManager();
         assertNotNull(batchUpload);
         File file = FileUtils.getResourceFileFromContext("sample.jpg");
-        batchUpload = batchUpload.uploadChunks(file.getName(), file.length(), "jpg", batchUpload.getBatchId(), "1",
+        batchUpload = batchUpload.upload(file.getName(), file.length(),
+                "jpg", batchUpload.getBatchId(), "1",
                 file);
         assertNotNull(batchUpload);
         assertEquals(ConstantsV1.UPLOAD_CHUNKED_TYPE, batchUpload.getUploadType());
@@ -130,7 +129,8 @@ public class TestUpload extends TestBase {
         BatchUpload batchUpload = nuxeoClient.fetchUploadManager();
         assertNotNull(batchUpload);
         File file = FileUtils.getResourceFileFromContext("sample.jpg");
-        batchUpload = batchUpload.uploadChunks(file.getName(), file.length(), "jpg", batchUpload.getBatchId(), "1",
+        batchUpload = batchUpload.upload(file.getName(), file.length(),
+                "jpg", batchUpload.getBatchId(), "1",
                 file);
         assertNotNull(batchUpload);
 
