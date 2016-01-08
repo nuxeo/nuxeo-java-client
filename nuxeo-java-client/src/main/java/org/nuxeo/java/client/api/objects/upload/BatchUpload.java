@@ -43,7 +43,7 @@ import org.nuxeo.java.client.internals.spi.NuxeoClientException;
 public class BatchUpload extends NuxeoEntity {
 
     @JsonIgnore
-    protected final int chunkSize;
+    protected int chunkSize;
 
     protected String batchId;
 
@@ -55,12 +55,10 @@ public class BatchUpload extends NuxeoEntity {
 
     public BatchUpload(NuxeoClient nuxeoClient) {
         super(null, nuxeoClient, BatchUploadAPI.class);
-        chunkSize = nuxeoClient.getChunkSize();
     }
 
     public BatchUpload() {
         super(null);
-        chunkSize = ConstantsV1.CHUNK_SIZE;
     }
 
     public String getBatchId() {
@@ -93,6 +91,10 @@ public class BatchUpload extends NuxeoEntity {
     }
 
     public BatchUpload upload(String name, long length, String fileType, String batchId, String fileIdx, File file) {
+        if (chunkSize == 0) {
+            return (BatchUpload) upload(name, length, fileType, ConstantsV1.UPLOAD_NORMAL_TYPE, "0", "1", batchId,
+                    fileIdx, file);
+        }
         int partCounter = 1;
         int sizeOfFiles = chunkSize;
         List<File> files = new ArrayList<>();
@@ -161,5 +163,15 @@ public class BatchUpload extends NuxeoEntity {
 
     private BatchBlob getBatchBlob(String batchId, String fileIdx) {
         return new BatchBlob(batchId, fileIdx);
+    }
+
+    public BatchUpload enableChunkSize(int chunkSize) {
+        this.chunkSize = chunkSize;
+        return this;
+    }
+
+    public BatchUpload enableChunkSize() {
+        this.chunkSize = ConstantsV1.CHUNK_SIZE;
+        return this;
     }
 }

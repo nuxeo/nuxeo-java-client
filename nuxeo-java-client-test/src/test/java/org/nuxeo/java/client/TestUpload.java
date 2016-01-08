@@ -81,13 +81,13 @@ public class TestUpload extends TestBase {
         File file = FileUtils.getResourceFileFromContext("sample.jpg");
         batchUpload = batchUpload.upload(file.getName(), file.length(), "jpg", batchUpload.getBatchId(), "1", file);
         assertNotNull(batchUpload);
-        assertEquals(ConstantsV1.UPLOAD_CHUNKED_TYPE, batchUpload.getUploadType());
+        assertEquals(ConstantsV1.UPLOAD_NORMAL_TYPE, batchUpload.getUploadType());
 
         // Check the file in the ref batch
         BatchFile batchFile = batchUpload.fetchBatchFile("1");
         assertNotNull(batchFile);
         assertEquals(file.getName(), batchFile.getName());
-        assertEquals(ConstantsV1.UPLOAD_CHUNKED_TYPE, batchFile.getUploadType());
+        assertEquals(ConstantsV1.UPLOAD_NORMAL_TYPE, batchFile.getUploadType());
 
         // Upload another file and check files
         file = FileUtils.getResourceFileFromContext("blob.json");
@@ -102,7 +102,7 @@ public class TestUpload extends TestBase {
     @Test
     public void itCanUploadChunks() {
         // Upload file chunks
-        BatchUpload batchUpload = nuxeoClient.fetchUploadManager();
+        BatchUpload batchUpload = nuxeoClient.fetchUploadManager().enableChunkSize();
         assertNotNull(batchUpload);
         File file = FileUtils.getResourceFileFromContext("sample.jpg");
         batchUpload = batchUpload.upload(file.getName(), file.length(), "jpg", batchUpload.getBatchId(), "1", file);

@@ -61,8 +61,6 @@ public class NuxeoClient implements Client {
 
     protected final Retrofit.Builder retrofitBuilder;
 
-    protected int chunkSize = ConstantsV1.CHUNK_SIZE;
-
     protected CurrentUser currentUser;
 
     protected NuxeoResponseCache nuxeoCache;
@@ -91,11 +89,6 @@ public class NuxeoClient implements Client {
         userManager = new UserManager(this);
         directoryManager = new DirectoryManager(this);
         batchUpload = new BatchUpload(this);
-    }
-
-    public NuxeoClient chunkSize(int chunkSize) {
-        this.chunkSize = chunkSize;
-        return this;
     }
 
     public NuxeoClient registerMarshaller(NuxeoMarshaller<?> marshaller) {
@@ -325,7 +318,4 @@ public class NuxeoClient implements Client {
         return batchUpload;
     }
 
-    public int getChunkSize() {
-        return chunkSize;
-    }
 }
