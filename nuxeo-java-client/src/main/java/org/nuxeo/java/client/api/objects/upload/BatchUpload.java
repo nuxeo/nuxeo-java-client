@@ -53,8 +53,6 @@ public class BatchUpload extends NuxeoEntity {
 
     protected long uploadedSize;
 
-    protected String dropped;
-
     public BatchUpload(NuxeoClient nuxeoClient) {
         super(null, nuxeoClient, BatchUploadAPI.class);
         chunkSize = nuxeoClient.getChunkSize();
@@ -63,10 +61,6 @@ public class BatchUpload extends NuxeoEntity {
     public BatchUpload() {
         super(null);
         chunkSize = ConstantsV1.CHUNK_SIZE;
-    }
-
-    public String getDropped() {
-        return dropped;
     }
 
     public String getBatchId() {

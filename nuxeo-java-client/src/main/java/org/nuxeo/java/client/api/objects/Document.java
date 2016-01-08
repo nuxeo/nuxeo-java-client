@@ -321,7 +321,7 @@ public class Document extends NuxeoEntity {
         return fetchACPById(uid);
     }
 
-    public ACP fetchACPById(String documentId){
+    protected ACP fetchACPById(String documentId){
         return (ACP) getResponse(documentId);
     }
 
@@ -331,7 +331,7 @@ public class Document extends NuxeoEntity {
         return fetchChildrenById(uid);
     }
 
-    public Documents fetchChildrenById(String parentId){
+    protected Documents fetchChildrenById(String parentId){
         return (Documents) getResponse(parentId);
     }
 

@@ -108,9 +108,6 @@ public class TestUpload extends TestBase {
         batchUpload = batchUpload.upload(file.getName(), file.length(), "jpg", batchUpload.getBatchId(), "1", file);
         assertNotNull(batchUpload);
         assertEquals(ConstantsV1.UPLOAD_CHUNKED_TYPE, batchUpload.getUploadType());
-        // FIXME NXP-18247
-        // assertEquals(file.length(), batchUpload.getUploadedSize());
-
         // Check the file
         BatchFile batchFile = batchUpload.fetchBatchFile("1");
         assertNotNull(batchFile);
