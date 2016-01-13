@@ -23,13 +23,13 @@ import java.util.List;
 import java.util.Map;
 
 import org.nuxeo.java.client.api.ConstantsV1;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.nuxeo.java.client.api.objects.acl.ACP;
 import org.nuxeo.java.client.api.objects.audit.Audit;
 import org.nuxeo.java.client.api.objects.blob.Blob;
 import org.nuxeo.java.client.api.objects.workflow.Workflow;
 import org.nuxeo.java.client.api.objects.workflow.Workflows;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 /**
  * @since 0.1

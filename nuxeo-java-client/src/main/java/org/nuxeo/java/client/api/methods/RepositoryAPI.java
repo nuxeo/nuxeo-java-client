@@ -20,15 +20,15 @@ package org.nuxeo.java.client.api.methods;
 
 import okhttp3.ResponseBody;
 
-import org.nuxeo.java.client.api.objects.audit.Audit;
-import org.nuxeo.java.client.api.objects.acl.ACP;
-import org.nuxeo.java.client.api.objects.blob.Blob;
 import org.nuxeo.java.client.api.objects.Document;
 import org.nuxeo.java.client.api.objects.Documents;
-import org.nuxeo.java.client.api.objects.workflow.Workflow;
-import org.nuxeo.java.client.api.objects.workflow.Workflows;
+import org.nuxeo.java.client.api.objects.acl.ACP;
+import org.nuxeo.java.client.api.objects.audit.Audit;
+import org.nuxeo.java.client.api.objects.blob.Blob;
 import org.nuxeo.java.client.api.objects.blob.FileBlob;
 import org.nuxeo.java.client.api.objects.workflow.Graph;
+import org.nuxeo.java.client.api.objects.workflow.Workflow;
+import org.nuxeo.java.client.api.objects.workflow.Workflows;
 
 import retrofit2.Call;
 import retrofit2.http.Body;

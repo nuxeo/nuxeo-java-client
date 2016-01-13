@@ -20,12 +20,13 @@ package org.nuxeo.java.client.internals.spi.auth;
 
 import java.io.IOException;
 
-import org.nuxeo.java.client.internals.util.Base64;
-
-import com.google.common.net.HttpHeaders;
 import okhttp3.Interceptor;
 import okhttp3.Request;
 import okhttp3.Response;
+
+import org.nuxeo.java.client.internals.util.Base64;
+
+import com.google.common.net.HttpHeaders;
 
 /**
  * @since 0.1

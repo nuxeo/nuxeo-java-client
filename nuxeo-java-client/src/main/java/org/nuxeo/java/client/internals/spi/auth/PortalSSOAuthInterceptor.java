@@ -24,12 +24,12 @@ import java.security.NoSuchAlgorithmException;
 import java.util.Date;
 import java.util.Random;
 
-import org.nuxeo.java.client.internals.util.Base64;
-
 import okhttp3.Headers;
 import okhttp3.Interceptor;
 import okhttp3.Request;
 import okhttp3.Response;
+
+import org.nuxeo.java.client.internals.util.Base64;
 
 /**
  * @since 0.1
