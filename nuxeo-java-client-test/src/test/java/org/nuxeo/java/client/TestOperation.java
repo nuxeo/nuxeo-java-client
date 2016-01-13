@@ -41,6 +41,8 @@ import org.nuxeo.java.client.api.objects.Documents;
 import org.nuxeo.java.client.api.objects.Operation;
 import org.nuxeo.java.client.api.objects.blob.Blob;
 import org.nuxeo.java.client.api.objects.blob.FileBlob;
+import org.nuxeo.java.client.api.objects.operation.DocRef;
+import org.nuxeo.java.client.api.objects.operation.DocRefs;
 import org.nuxeo.java.client.internals.spi.NuxeoClientException;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -116,5 +118,17 @@ public class TestOperation extends TestBase {
         } catch (NuxeoClientException reason) {
             fail("Void operation failing");
         }
+    }
+
+    // FIXME
+    @Ignore
+    @Test
+    public void itCanExecuteOperationWithDocumentRefs() {
+        Document result = (Document) nuxeoClient.automation().param("value", "/").execute("Repository.GetDocument");
+        assertNotNull(result);
+        DocRefs docRefs = new DocRefs();
+        docRefs.addDoc(new DocRef(result.getId()));
+        result = (Document) nuxeoClient.automation().input(docRefs).param("properties", null).execute("Document.Update");
+        assertNotNull(result);
     }
 }

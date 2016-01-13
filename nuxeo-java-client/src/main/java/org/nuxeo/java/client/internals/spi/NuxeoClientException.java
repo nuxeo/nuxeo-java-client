@@ -32,6 +32,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  */
 public class NuxeoClientException extends RuntimeException {
 
+    public static final int INTERNAL_ERROR_STATUS = 666;
+
     protected final int status;
 
     protected String code;
@@ -59,7 +61,7 @@ public class NuxeoClientException extends RuntimeException {
 
     public NuxeoClientException(String message, Throwable e) {
         throwable = e;
-        status = 666;
+        status = INTERNAL_ERROR_STATUS;
         type = "Error";
         info = e == null ? null : e.getMessage();
         entityType = ConstantsV1.ENTITY_TYPE_EXCEPTION;
@@ -76,7 +78,7 @@ public class NuxeoClientException extends RuntimeException {
     }
 
     public NuxeoClientException(String message) {
-        this(message,null);
+        this(message, null);
     }
 
     public int getStatus() {
@@ -122,14 +124,18 @@ public class NuxeoClientException extends RuntimeException {
 
     @Override
     public void printStackTrace(PrintStream s) {
-        super.printStackTrace(s);
+        if (status == INTERNAL_ERROR_STATUS) {
+            super.printStackTrace(s);
+        }
         s.println("Exception:");
         s.print(getRemoteStackTrace());
     }
 
     @Override
     public void printStackTrace(PrintWriter s) {
-        super.printStackTrace(s);
+        if (status == INTERNAL_ERROR_STATUS) {
+            super.printStackTrace(s);
+        }
         s.println("Exception:");
         s.print(getRemoteStackTrace());
     }
