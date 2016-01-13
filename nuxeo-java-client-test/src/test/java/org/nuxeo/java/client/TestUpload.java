@@ -36,6 +36,8 @@ import org.nuxeo.ecm.restapi.test.RestServerFeature;
 import org.nuxeo.ecm.restapi.test.RestServerInit;
 import org.nuxeo.java.client.api.ConstantsV1;
 import org.nuxeo.java.client.api.objects.Document;
+import org.nuxeo.java.client.api.objects.Operation;
+import org.nuxeo.java.client.api.objects.blob.Blob;
 import org.nuxeo.java.client.api.objects.upload.BatchFile;
 import org.nuxeo.java.client.api.objects.upload.BatchUpload;
 import org.nuxeo.java.client.internals.spi.NuxeoClientException;
@@ -102,7 +104,7 @@ public class TestUpload extends TestBase {
     @Test
     public void itCanUploadChunks() {
         // Upload file chunks
-        BatchUpload batchUpload = nuxeoClient.fetchUploadManager().enableChunkSize();
+        BatchUpload batchUpload = nuxeoClient.fetchUploadManager().enableChunk();
         assertNotNull(batchUpload);
         File file = FileUtils.getResourceFileFromContext("sample.jpg");
         batchUpload = batchUpload.upload(file.getName(), file.length(), "jpg", batchUpload.getBatchId(), "1", file);
@@ -135,5 +137,24 @@ public class TestUpload extends TestBase {
         doc.set("file:content", batchUpload.getBatchBlob());
         doc = doc.updateDocument();
         assertEquals("sample.jpg", ((Map) doc.get("file:content")).get("name"));
+    }
+
+    @Test
+    public void itCanExecuteOp() {
+        // Upload file
+        BatchUpload batchUpload = nuxeoClient.fetchUploadManager();
+        assertNotNull(batchUpload);
+        File file = FileUtils.getResourceFileFromContext("sample.jpg");
+        batchUpload = batchUpload.upload(file.getName(), file.length(), "jpg", batchUpload.getBatchId(), "1", file);
+        assertNotNull(batchUpload);
+
+        // Getting a doc and attaching the batch file
+        Document doc = new Document("file", "File");
+        doc.set("dc:title", "new title");
+        doc = nuxeoClient.repository().createDocumentByPath("folder_1", doc);
+        assertNotNull(doc);
+        Operation operation = nuxeoClient.automation("Blob.AttachOnDocument").param("document", doc);
+        Blob blob = (Blob) batchUpload.execute(operation);
+        assertNotNull(blob);
     }
 }

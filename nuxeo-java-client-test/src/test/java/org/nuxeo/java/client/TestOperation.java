@@ -36,9 +36,10 @@ import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.restapi.test.RestServerFeature;
 import org.nuxeo.ecm.restapi.test.RestServerInit;
-import org.nuxeo.java.client.api.objects.blob.Blob;
 import org.nuxeo.java.client.api.objects.Document;
 import org.nuxeo.java.client.api.objects.Documents;
+import org.nuxeo.java.client.api.objects.Operation;
+import org.nuxeo.java.client.api.objects.blob.Blob;
 import org.nuxeo.java.client.api.objects.blob.FileBlob;
 import org.nuxeo.java.client.internals.spi.NuxeoClientException;
 import org.nuxeo.runtime.test.runner.Features;
@@ -63,15 +64,16 @@ public class TestOperation extends TestBase {
 
     @Test
     public void itCanExecuteOperationOnDocument() {
-        Document result = (Document) nuxeoClient.automation().param("value", "/").execute("Repository.GetDocument");
+        Document result = (Document) nuxeoClient.automation().param("value",
+                "/").execute("Repository.GetDocument");
         assertNotNull(result);
     }
 
     @Test
     public void itCanExecuteOperationOnDocuments() {
-        Documents result = (Documents) nuxeoClient.automation()
-                                                  .param("query", "SELECT * " + "FROM Document")
-                                                  .execute("Repository.Query");
+        Operation operation = nuxeoClient.automation("Repository.Query")
+                                                  .param("query", "SELECT * " + "FROM Document");
+        Documents result = (Documents) operation.execute();
         assertNotNull(result);
         assertTrue(result.getTotalSize() != 0);
     }

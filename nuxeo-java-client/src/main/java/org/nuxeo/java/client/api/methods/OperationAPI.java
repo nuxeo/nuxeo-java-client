@@ -37,6 +37,10 @@ public interface OperationAPI {
     @POST("automation/{operationId}")
     Call<ResponseBody> execute(@Path("operationId") String operationId, @Body OperationBody body);
 
+    @POST("upload/{batchId}/{fileIdx}/execute/{operationId}")
+    Call<ResponseBody> execute(@Path("batchId") String batchId, @Path("fileIdx") String fileIdx,
+            @Path("operationId") String operationId, @Body OperationBody body);
+
     @GET("automation/{operationId}")
     Call<Operation> fetchOperation(@Path("operationId") String operationId);
 

@@ -50,8 +50,25 @@ public class Operation extends NuxeoEntity {
         body = new OperationBody();
     }
 
+    public void setOperationId(String operationId) {
+        this.operationId = operationId;
+    }
+
     public Object execute(String operationId, OperationBody body) {
         ResponseBody responseBody = (ResponseBody) getResponse(operationId, body);
+        return execute(responseBody);
+    }
+
+    public Object execute(String operationId) {
+        return execute(operationId, this.body);
+    }
+
+    public Object execute(String batchId, String fileIdx, String operationId, OperationBody body) {
+        ResponseBody responseBody = (ResponseBody) getResponse(batchId, fileIdx, operationId, body);
+        return execute(responseBody);
+    }
+
+    protected Object execute(ResponseBody responseBody) {
         try {
             MediaType mediaType = responseBody.contentType();
             if (!mediaType.equals(ConstantsV1.APPLICATION_JSON)
@@ -78,10 +95,6 @@ public class Operation extends NuxeoEntity {
         } catch (IOException reason) {
             throw new NuxeoClientException("Error while unmarshalling Automation response", reason);
         }
-    }
-
-    public Object execute(String operationId) {
-        return execute(operationId, this.body);
     }
 
     public Object execute() {
@@ -118,4 +131,11 @@ public class Operation extends NuxeoEntity {
         return this;
     }
 
+    public OperationBody getBody() {
+        return body;
+    }
+
+    public String getOperationId() {
+        return operationId;
+    }
 }
