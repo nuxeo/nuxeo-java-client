@@ -39,6 +39,7 @@ import org.nuxeo.ecm.restapi.test.RestServerInit;
 import org.nuxeo.java.client.api.objects.Document;
 import org.nuxeo.java.client.api.objects.Documents;
 import org.nuxeo.java.client.api.objects.Operation;
+import org.nuxeo.java.client.api.objects.RecordSet;
 import org.nuxeo.java.client.api.objects.blob.Blob;
 import org.nuxeo.java.client.api.objects.blob.FileBlob;
 import org.nuxeo.java.client.api.objects.operation.DocRef;
@@ -66,15 +67,13 @@ public class TestOperation extends TestBase {
 
     @Test
     public void itCanExecuteOperationOnDocument() {
-        Document result = (Document) nuxeoClient.automation().param("value",
-                "/").execute("Repository.GetDocument");
+        Document result = (Document) nuxeoClient.automation().param("value", "/").execute("Repository.GetDocument");
         assertNotNull(result);
     }
 
     @Test
     public void itCanExecuteOperationOnDocuments() {
-        Operation operation = nuxeoClient.automation("Repository.Query")
-                                                  .param("query", "SELECT * " + "FROM Document");
+        Operation operation = nuxeoClient.automation("Repository.Query").param("query", "SELECT * " + "FROM Document");
         Documents result = (Documents) operation.execute();
         assertNotNull(result);
         assertTrue(result.getTotalSize() != 0);
@@ -92,12 +91,34 @@ public class TestOperation extends TestBase {
         assertEquals("    \"fieldType\": \"string\",", lines.get(2));
     }
 
+    @Test
+    public void testMultiThread() throws InterruptedException {
+        Thread t = new Thread(() -> {
+            try {
+                Document result = (Document) nuxeoClient.automation().param("value", "/").execute("Repository.GetDocument");
+                assertNotNull(result);
+            } catch (Exception e) {
+            }
+        });
+        Thread t2 = new Thread(() -> {
+            try {
+                Document result = (Document) nuxeoClient.automation().param("value", "/").execute("Repository.GetDocument");
+                assertNotNull(result);
+            } catch (Exception e) {
+            }
+        });
+        t.start();
+        t2.start();
+        t.join();
+        t2.join();
+    }
+
     @Ignore("JAVACLIENT-31")
     @Test
     public void itCanExecuteOperationOnBlobs() {
         FileBlob fileBlob = new FileBlob(new File("tmp"));
         Blob blob = (Blob) nuxeoClient.automation()
-                                      .newRequest("Blob.AttachOnDocument")
+                                      .newRequest("Blob" + ".AttachOnDocument")
                                       .param("xpath", "files:files")
                                       .param("doc", "/folder_2/file")
                                       .input(fileBlob)
@@ -128,7 +149,10 @@ public class TestOperation extends TestBase {
         assertNotNull(result);
         DocRefs docRefs = new DocRefs();
         docRefs.addDoc(new DocRef(result.getId()));
-        result = (Document) nuxeoClient.automation().input(docRefs).param("properties", null).execute("Document.Update");
+        result = (Document) nuxeoClient.automation()
+                                       .input(docRefs)
+                                       .param("properties", null)
+                                       .execute("Document.Update");
         assertNotNull(result);
     }
 }

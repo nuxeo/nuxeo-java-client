@@ -27,6 +27,7 @@ import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
@@ -44,6 +45,9 @@ import org.nuxeo.java.client.marshallers.DocumentMarshaller;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.Jetty;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @since 0.1
@@ -264,6 +268,28 @@ public class TestRepository extends TestBase {
         Audit audit = root.fetchAudit();
         assertTrue(audit.getLogEntries().size() != 0);
         assertEquals("eventDocumentCategory", audit.getLogEntries().get(0).getCategory());
+    }
+
+    @Test
+    public void testMultiThread() throws InterruptedException {
+        Thread t = new Thread(() -> {
+            try {
+                RecordSet documents = (RecordSet) nuxeoClient.automation().param("query", "SELECT * FROM Document").execute("Repository.ResultSetQuery");
+                assertTrue(documents.getUuids().size() != 0);
+            } catch (Exception e) {
+            }
+        });
+        Thread t2 = new Thread(() -> {
+            try {
+                RecordSet documents = (RecordSet) nuxeoClient.automation().param("query", "SELECT * FROM Document").execute("Repository.ResultSetQuery");
+                assertTrue(documents.getUuids().size() != 0);
+            } catch (Exception e) {
+            }
+        });
+        t.start();
+        t2.start();
+        t.join();
+        t2.join();
     }
 
     @Ignore("JAVACLIENT-22 AND JAVACLIENT-20")
