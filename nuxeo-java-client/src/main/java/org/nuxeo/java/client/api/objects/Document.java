@@ -307,37 +307,37 @@ public class Document extends NuxeoEntity {
 
     /* Audit */
 
-    public Audit fetchAudit(){
+    public Audit fetchAudit() {
         return fetchAuditById(uid);
     }
 
-    public Audit fetchAuditById(String documentId){
+    public Audit fetchAuditById(String documentId) {
         return (Audit) getResponse(documentId);
     }
 
     /* ACP */
 
-    public ACP fetchACP(){
+    public ACP fetchACP() {
         return fetchACPById(uid);
     }
 
-    protected ACP fetchACPById(String documentId){
+    protected ACP fetchACPById(String documentId) {
         return (ACP) getResponse(documentId);
     }
 
     /* Children */
 
-    public Documents fetchChildren(){
+    public Documents fetchChildren() {
         return fetchChildrenById(uid);
     }
 
-    protected Documents fetchChildrenById(String parentId){
+    protected Documents fetchChildrenById(String parentId) {
         return (Documents) getResponse(parentId);
     }
 
     /* Blobs */
 
-    public Blob fetchBlob(){
+    public Blob fetchBlob() {
         return fetchBlobById(uid, ConstantsV1.DEFAULT_FILE_CONTENT);
     }
 

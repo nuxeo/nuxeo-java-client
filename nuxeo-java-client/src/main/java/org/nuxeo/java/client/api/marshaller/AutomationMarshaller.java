@@ -36,7 +36,7 @@ public class AutomationMarshaller implements NuxeoMarshaller<Object> {
     @Override
     public Object read(JsonParser jp) throws IOException {
         String json = jp.readValueAsTree().toString();
-return null;
+        return null;
     }
 
     @Override

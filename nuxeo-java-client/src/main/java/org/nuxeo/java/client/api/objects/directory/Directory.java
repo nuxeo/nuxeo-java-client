@@ -46,7 +46,7 @@ public class Directory extends NuxeoEntity {
         this.directoryEntries = directoryEntries;
     }
 
-    public void addDirectoryEntry(DirectoryEntry directoryEntry){
+    public void addDirectoryEntry(DirectoryEntry directoryEntry) {
         this.directoryEntries.add(directoryEntry);
     }
 }

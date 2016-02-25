@@ -60,7 +60,7 @@ public class TestCurrentUser extends TestBase {
         try {
             nuxeoClient.fetchCurrentUser();
             fail("Should be non authorized");
-        }catch(NuxeoClientException reason){
+        } catch (NuxeoClientException reason) {
             assertEquals(401, reason.getStatus());
         }
     }
@@ -71,7 +71,7 @@ public class TestCurrentUser extends TestBase {
         try {
             nuxeoClient.fetchCurrentUser();
             fail("Should be non authorized");
-        }catch(NuxeoClientException reason){
+        } catch (NuxeoClientException reason) {
             assertEquals(401, reason.getStatus());
         }
     }

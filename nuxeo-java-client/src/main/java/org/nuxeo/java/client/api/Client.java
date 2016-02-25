@@ -85,6 +85,7 @@ public interface Client {
 
     /**
      * GET simple method.
+     * 
      * @param url should contains parameters if needed.
      * @return okhttp response (response.body().string() -> to get the payload).
      */
@@ -92,6 +93,7 @@ public interface Client {
 
     /**
      * DELETE simple method.
+     * 
      * @param url should contains parameters if needed.
      * @param json - can be null.
      * @return okhttp response.
@@ -100,6 +102,7 @@ public interface Client {
 
     /**
      * PUT simple method.
+     * 
      * @param url should contains parameters if needed.
      * @param json - can be null.
      * @return okhttp response (response.body().string() -> to get the payload).
@@ -108,6 +111,7 @@ public interface Client {
 
     /**
      * POST simple method.
+     * 
      * @param url should contains parameters if needed.
      * @param json - can be null.
      * @return okhttp response (response.body().string() -> to get the payload).

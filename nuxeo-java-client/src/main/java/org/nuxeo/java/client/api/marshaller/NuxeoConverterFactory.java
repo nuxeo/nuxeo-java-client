@@ -90,7 +90,7 @@ public class NuxeoConverterFactory extends Converter.Factory {
         marshallers.put(marshaller.getJavaType(), marshaller);
     }
 
-    public void clearMarshaller(){
+    public void clearMarshaller() {
         marshallers.clear();
     }
 

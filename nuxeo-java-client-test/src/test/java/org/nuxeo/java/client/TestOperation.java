@@ -99,10 +99,10 @@ public class TestOperation extends TestBase {
         Blob fileBlob = new Blob(temp1);
         int length = fileBlob.getLength();
         blob = (Blob) nuxeoClient.automation()
-                .newRequest("Blob.AttachOnDocument")
-                .param("document", "/folder_2/file")
-                .input(fileBlob)
-                .execute();
+                                 .newRequest("Blob.AttachOnDocument")
+                                 .param("document", "/folder_2/file")
+                                 .input(fileBlob)
+                                 .execute();
         assertNotNull(blob);
         assertEquals(length, blob.getLength());
         Blob resultBlob = (Blob) nuxeoClient.automation().input("/folder_2/file").execute("Document.GetBlob");
@@ -127,14 +127,17 @@ public class TestOperation extends TestBase {
         Blob fileBlob = new Blob(temp1);
         int length = fileBlob.getLength();
         Blob blob = (Blob) nuxeoClient.automation()
-                .newRequest("Blob.AttachOnDocument")
-                .param("document", "/folder_2/file")
-                .input(fileBlob)
-                .execute();
+                                      .newRequest("Blob.AttachOnDocument")
+                                      .param("document", "/folder_2/file")
+                                      .input(fileBlob)
+                                      .execute();
         assertNotNull(blob);
         assertEquals(length, blob.getLength());
         // TODO handle multiple parts reading
-        List<Blob> resultBlobs = (List<Blob>) nuxeoClient.automation().input("/folder_2/file").execute("Document.GetBlobs");
+        List<Blob> resultBlobs = (List<Blob>) nuxeoClient.automation()
+                                                         .input("/folder_2" +
+                                                                 "/file")
+                                                         .execute("Document.GetBlobs");
         assertNotNull(resultBlobs);
         assertEquals(2, resultBlobs.size());
     }
@@ -143,14 +146,18 @@ public class TestOperation extends TestBase {
     public void testMultiThread() throws InterruptedException {
         Thread t = new Thread(() -> {
             try {
-                Document result = (Document) nuxeoClient.automation().param("value", "/").execute("Repository.GetDocument");
+                Document result = (Document) nuxeoClient.automation()
+                                                        .param("value", "/")
+                                                        .execute("Repository.GetDocument");
                 assertNotNull(result);
             } catch (Exception e) {
             }
         });
         Thread t2 = new Thread(() -> {
             try {
-                Document result = (Document) nuxeoClient.automation().param("value", "/").execute("Repository.GetDocument");
+                Document result = (Document) nuxeoClient.automation()
+                                                        .param("value", "/")
+                                                        .execute("Repository.GetDocument");
                 assertNotNull(result);
             } catch (Exception e) {
             }

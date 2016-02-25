@@ -100,7 +100,7 @@ public class ResultCacheInMemory implements NuxeoResponseCache {
     }
 
     @Override
-    public void invalidateAll(){
+    public void invalidateAll() {
         cache.invalidateAll();
     }
 }

@@ -27,7 +27,6 @@ import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
@@ -45,9 +44,6 @@ import org.nuxeo.java.client.marshallers.DocumentMarshaller;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.Jetty;
-
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * @since 0.1
@@ -162,8 +158,7 @@ public class TestRepository extends TestBase {
         assertEquals("note updated", documentUpdated.get("dc:title"));
 
         // Retrieve again this document within cache
-        document = nuxeoClient.repository().fetchDocumentByPath("folder_1" +
-                "/note_3");
+        document = nuxeoClient.repository().fetchDocumentByPath("folder_1" + "/note_3");
         assertEquals("Note 3", document.get("dc:title"));
         assertTrue(nuxeoClient.getNuxeoCache().size() == 2);
 
@@ -223,23 +218,26 @@ public class TestRepository extends TestBase {
     }
 
     @Test
-    public void itCanUseQueriesAndResultSet(){
-        RecordSet documents = (RecordSet) nuxeoClient.automation().param("query", "SELECT * FROM Document").execute("Repository.ResultSetQuery");
+    public void itCanUseQueriesAndResultSet() {
+        RecordSet documents = (RecordSet) nuxeoClient.automation()
+                                                     .param("query", "SELECT " +
+                                                             "* FROM Document")
+                                                     .execute("Repository.ResultSetQuery");
         assertTrue(documents.getUuids().size() != 0);
     }
 
     @Test
-    public void itCanFail(){
+    public void itCanFail() {
         try {
             nuxeoClient.repository().fetchDocumentByPath("folder_1/wrong");
             fail("Should be not found");
-        }catch(NuxeoClientException reason){
+        } catch (NuxeoClientException reason) {
             assertEquals(404, reason.getStatus());
         }
     }
 
     @Test
-    public void itCanFetchBlob(){
+    public void itCanFetchBlob() {
         Document file = nuxeoClient.repository().fetchDocumentByPath("folder_2/file");
         Blob blob = file.fetchBlob();
         assertNotNull(blob);
@@ -273,14 +271,18 @@ public class TestRepository extends TestBase {
     public void testMultiThread() throws InterruptedException {
         Thread t = new Thread(() -> {
             try {
-                RecordSet documents = (RecordSet) nuxeoClient.automation().param("query", "SELECT * FROM Document").execute("Repository.ResultSetQuery");
+                RecordSet documents = (RecordSet) nuxeoClient.automation()
+                                                             .param("query", "SELECT * FROM Document")
+                                                             .execute("Repository.ResultSetQuery");
                 assertTrue(documents.getUuids().size() != 0);
             } catch (Exception e) {
             }
         });
         Thread t2 = new Thread(() -> {
             try {
-                RecordSet documents = (RecordSet) nuxeoClient.automation().param("query", "SELECT * FROM Document").execute("Repository.ResultSetQuery");
+                RecordSet documents = (RecordSet) nuxeoClient.automation()
+                                                             .param("query", "SELECT * FROM Document")
+                                                             .execute("Repository.ResultSetQuery");
                 assertTrue(documents.getUuids().size() != 0);
             } catch (Exception e) {
             }
@@ -295,32 +297,32 @@ public class TestRepository extends TestBase {
     @Ignore("JAVACLIENT-22 AND JAVACLIENT-20")
     @Test
     public void itCanFetchDocumentWithCallback() throws InterruptedException {
-//        nuxeoClient.getRepository().getDocumentByPath("folder_2", new Callback<Document>() {
-//            @Override
-//            public void onResponse(Response<Document> response, Retrofit retrofit) {
-//                if (!response.isSuccess()) {
-//                    ObjectMapper objectMapper = new ObjectMapper();
-//                    NuxeoClientException nuxeoClientException;
-//                    try {
-//                        nuxeoClientException = objectMapper.readValue(response.errorBody().string(),
-//                                NuxeoClientException.class);
-//                    } catch (IOException reason) {
-//                        throw new NuxeoClientException(reason);
-//                    }
-//                    fail(nuxeoClientException.getRemoteStackTrace());
-//                }
-//                Document folder = response.body();
-//                assertNotNull(folder);
-//                assertEquals("Folder", folder.getType());
-//                assertEquals("document", folder.getEntityType());
-//                assertEquals("/folder_2", folder.getPath());
-//                assertEquals("Folder 2", folder.getTitle());
-//            }
-//
-//            @Override
-//            public void onFailure(Throwable reason) {
-//                fail(reason.getMessage());
-//            }
-//        });
+        // nuxeoClient.getRepository().getDocumentByPath("folder_2", new Callback<Document>() {
+        // @Override
+        // public void onResponse(Response<Document> response, Retrofit retrofit) {
+        // if (!response.isSuccess()) {
+        // ObjectMapper objectMapper = new ObjectMapper();
+        // NuxeoClientException nuxeoClientException;
+        // try {
+        // nuxeoClientException = objectMapper.readValue(response.errorBody().string(),
+        // NuxeoClientException.class);
+        // } catch (IOException reason) {
+        // throw new NuxeoClientException(reason);
+        // }
+        // fail(nuxeoClientException.getRemoteStackTrace());
+        // }
+        // Document folder = response.body();
+        // assertNotNull(folder);
+        // assertEquals("Folder", folder.getType());
+        // assertEquals("document", folder.getEntityType());
+        // assertEquals("/folder_2", folder.getPath());
+        // assertEquals("Folder 2", folder.getTitle());
+        // }
+        //
+        // @Override
+        // public void onFailure(Throwable reason) {
+        // fail(reason.getMessage());
+        // }
+        // });
     }
 }

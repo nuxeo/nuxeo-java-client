@@ -18,24 +18,21 @@
  */
 package org.nuxeo.java.client.api.methods;
 
-import okhttp3.RequestBody;
-import okhttp3.ResponseBody;
+import java.util.Map;
 
-import org.nuxeo.java.client.api.ConstantsV1;
+import okhttp3.RequestBody;
+
 import org.nuxeo.java.client.api.objects.Operation;
 import org.nuxeo.java.client.api.objects.operation.OperationBody;
 
 import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.GET;
-import retrofit2.http.Headers;
 import retrofit2.http.Multipart;
 import retrofit2.http.POST;
 import retrofit2.http.Part;
 import retrofit2.http.PartMap;
 import retrofit2.http.Path;
-
-import java.util.Map;
 
 /**
  * @since 0.1

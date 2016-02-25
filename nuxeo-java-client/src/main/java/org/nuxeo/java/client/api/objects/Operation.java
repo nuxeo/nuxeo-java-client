@@ -21,6 +21,7 @@ package org.nuxeo.java.client.api.objects;
 import java.util.HashMap;
 import java.util.Map;
 
+import okhttp3.MediaType;
 import okhttp3.RequestBody;
 
 import org.nuxeo.java.client.api.ConstantsV1;
@@ -29,7 +30,6 @@ import org.nuxeo.java.client.api.methods.OperationAPI;
 import org.nuxeo.java.client.api.objects.blob.Blob;
 import org.nuxeo.java.client.api.objects.blob.Blobs;
 import org.nuxeo.java.client.api.objects.operation.OperationBody;
-import okhttp3.MediaType;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 

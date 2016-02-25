@@ -44,7 +44,7 @@ public class DocRefs {
         return buf.toString();
     }
 
-    public void addDoc(DocRef doc){
+    public void addDoc(DocRef doc) {
         docs.add(doc);
     }
 }

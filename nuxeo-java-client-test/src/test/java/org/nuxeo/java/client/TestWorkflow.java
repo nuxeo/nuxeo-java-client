@@ -39,7 +39,7 @@ import org.nuxeo.runtime.test.runner.Jetty;
  */
 @RunWith(FeaturesRunner.class)
 @Features({ RestServerFeature.class, WorkflowFeature.class })
-@Deploy({ "org.nuxeo.ecm.platform.restapi.server.routing"})
+@Deploy({ "org.nuxeo.ecm.platform.restapi.server.routing" })
 @Jetty(port = 18090)
 @RepositoryConfig(cleanup = Granularity.METHOD, init = RestServerInit.class)
 public class TestWorkflow extends TestBase {
@@ -56,7 +56,7 @@ public class TestWorkflow extends TestBase {
     }
 
     @Test
-    public void itCanFetchDocWorflowInstances(){
+    public void itCanFetchDocWorflowInstances() {
         Workflows workflows = nuxeoClient.repository().fetchDocumentRoot().fetchWorkflowInstances();
         assertNotNull(workflows);
     }

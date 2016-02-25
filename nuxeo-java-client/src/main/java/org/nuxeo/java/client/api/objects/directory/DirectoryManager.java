@@ -35,8 +35,7 @@ public class DirectoryManager extends NuxeoEntity {
         return (Directory) getResponse(directoryName);
     }
 
-    public Directory fetchDirectory(String directoryName, String
-            currentPageIndex, String pageSize, String maxResults,
+    public Directory fetchDirectory(String directoryName, String currentPageIndex, String pageSize, String maxResults,
             String sortBy, String sortOrder) {
         return (Directory) getResponse(directoryName, currentPageIndex, pageSize, maxResults, sortBy, sortOrder);
     }

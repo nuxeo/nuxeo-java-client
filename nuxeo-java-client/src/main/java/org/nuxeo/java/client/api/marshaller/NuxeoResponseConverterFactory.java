@@ -123,8 +123,8 @@ public final class NuxeoResponseConverterFactory<T> implements Converter<Respons
                 String response = value.string();
                 Object objectResponse = readJSON(response, Object.class);
                 switch ((String) ((Map<String, Object>) objectResponse).get(ConstantsV1.ENTITY_TYPE)) {
-                    case ConstantsV1.ENTITY_TYPE_RECORDSET:
-                        return (T) readJSON(response, RecordSet.class);
+                case ConstantsV1.ENTITY_TYPE_RECORDSET:
+                    return (T) readJSON(response, RecordSet.class);
                 default:
                     return (T) value;
                 }

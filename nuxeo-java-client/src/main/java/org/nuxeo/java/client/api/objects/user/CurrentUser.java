@@ -59,7 +59,7 @@ public class CurrentUser extends User {
         return (Workflows) getResponse();
     }
 
-    public Workflow startWorkflowInstance(Workflow workflow){
+    public Workflow startWorkflowInstance(Workflow workflow) {
         return (Workflow) getResponse(workflow);
     }
 

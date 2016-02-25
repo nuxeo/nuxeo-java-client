@@ -20,10 +20,10 @@ package org.nuxeo.java.client.api.objects.blob;
 
 import java.util.List;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.nuxeo.java.client.api.ConstantsV1;
 import org.nuxeo.java.client.api.objects.NuxeoEntity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
@@ -48,7 +48,7 @@ public class Blobs extends NuxeoEntity {
     }
 
     @JsonIgnore
-    public int size(){
+    public int size() {
         return blobs.size();
     }
 }

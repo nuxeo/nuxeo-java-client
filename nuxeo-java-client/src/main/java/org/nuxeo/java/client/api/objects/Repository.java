@@ -70,38 +70,38 @@ public class Repository extends NuxeoEntity {
 
     /* By Id - Async */
 
-//    public void getDocumentById(String documentId, Callback<Document> callback) {
-//        if (repositoryName == null) {
-//            repositoryAPI.getDocumentById(documentId).enqueue(callback);
-//        } else {
-//            repositoryAPI.getDocumentById(documentId, repositoryName).enqueue(callback);
-//        }
-//    }
-//
-//    public void createDocumentById(String parentId, Document document, Callback<Document> callback) {
-//        if (repositoryName == null) {
-//            repositoryAPI.createDocumentById(parentId, document).enqueue(callback);
-//        } else {
-//            repositoryAPI.createDocumentById(parentId, document).enqueue(callback);
-//        }
-//    }
-//
-//    public void updateDocument(Document document, Callback<Document> callback) {
-//        document.setProperties(document.getDirtyProperties());
-//        if (repositoryName == null) {
-//            repositoryAPI.updateDocument(document.getId(), document).enqueue(callback);
-//        } else {
-//            repositoryAPI.updateDocument(document.getId(), document, repositoryName).enqueue(callback);
-//        }
-//    }
-//
-//    public void deleteDocument(Document document, Callback<ResponseBody> callback) {
-//        if (repositoryName == null) {
-//            repositoryAPI.deleteDocument(document.getId()).enqueue(callback);
-//        } else {
-//            repositoryAPI.deleteDocument(document.getId(), repositoryName).enqueue(callback);
-//        }
-//    }
+    // public void getDocumentById(String documentId, Callback<Document> callback) {
+    // if (repositoryName == null) {
+    // repositoryAPI.getDocumentById(documentId).enqueue(callback);
+    // } else {
+    // repositoryAPI.getDocumentById(documentId, repositoryName).enqueue(callback);
+    // }
+    // }
+    //
+    // public void createDocumentById(String parentId, Document document, Callback<Document> callback) {
+    // if (repositoryName == null) {
+    // repositoryAPI.createDocumentById(parentId, document).enqueue(callback);
+    // } else {
+    // repositoryAPI.createDocumentById(parentId, document).enqueue(callback);
+    // }
+    // }
+    //
+    // public void updateDocument(Document document, Callback<Document> callback) {
+    // document.setProperties(document.getDirtyProperties());
+    // if (repositoryName == null) {
+    // repositoryAPI.updateDocument(document.getId(), document).enqueue(callback);
+    // } else {
+    // repositoryAPI.updateDocument(document.getId(), document, repositoryName).enqueue(callback);
+    // }
+    // }
+    //
+    // public void deleteDocument(Document document, Callback<ResponseBody> callback) {
+    // if (repositoryName == null) {
+    // repositoryAPI.deleteDocument(document.getId()).enqueue(callback);
+    // } else {
+    // repositoryAPI.deleteDocument(document.getId(), repositoryName).enqueue(callback);
+    // }
+    // }
 
     /* By Path - Sync */
 
@@ -128,31 +128,31 @@ public class Repository extends NuxeoEntity {
 
     /* By Path - Async */
 
-//    public void getDocumentRoot(Callback<Document> callback) {
-//        // TODO: JAVACLIENT-20
-//        // executeAsync(getCurrentMethodName(), callback);
-//        if (repositoryName == null) {
-//            repositoryAPI.getDocumentRoot().enqueue(callback);
-//        } else {
-//            repositoryAPI.getDocumentRoot(repositoryName).enqueue(callback);
-//        }
-//    }
-//
-//    public void getDocumentByPath(String documentPath, Callback<Document> callback) {
-//        if (repositoryName == null) {
-//            repositoryAPI.getDocumentByPath(documentPath).enqueue(callback);
-//        } else {
-//            repositoryAPI.getDocumentByPath(documentPath, repositoryName).enqueue(callback);
-//        }
-//    }
-//
-//    public void createDocumentByPath(String parentPath, Document document, Callback<Document> callback) {
-//        if (repositoryName == null) {
-//            repositoryAPI.createDocumentByPath(parentPath, document).enqueue(callback);
-//        } else {
-//            repositoryAPI.createDocumentByPath(parentPath, document).enqueue(callback);
-//        }
-//    }
+    // public void getDocumentRoot(Callback<Document> callback) {
+    // // TODO: JAVACLIENT-20
+    // // executeAsync(getCurrentMethodName(), callback);
+    // if (repositoryName == null) {
+    // repositoryAPI.getDocumentRoot().enqueue(callback);
+    // } else {
+    // repositoryAPI.getDocumentRoot(repositoryName).enqueue(callback);
+    // }
+    // }
+    //
+    // public void getDocumentByPath(String documentPath, Callback<Document> callback) {
+    // if (repositoryName == null) {
+    // repositoryAPI.getDocumentByPath(documentPath).enqueue(callback);
+    // } else {
+    // repositoryAPI.getDocumentByPath(documentPath, repositoryName).enqueue(callback);
+    // }
+    // }
+    //
+    // public void createDocumentByPath(String parentPath, Document document, Callback<Document> callback) {
+    // if (repositoryName == null) {
+    // repositoryAPI.createDocumentByPath(parentPath, document).enqueue(callback);
+    // } else {
+    // repositoryAPI.createDocumentByPath(parentPath, document).enqueue(callback);
+    // }
+    // }
 
     /* Query - Sync */
 
@@ -162,33 +162,32 @@ public class Repository extends NuxeoEntity {
 
     public Documents query(String query, String pageSize, String currentPageIndex, String maxResults, String sortBy,
             String sortOrder, String queryParams) {
-        return (Documents) getResponse(query, pageSize, currentPageIndex,
-                maxResults, sortBy, sortOrder, queryParams);
+        return (Documents) getResponse(query, pageSize, currentPageIndex, maxResults, sortBy, sortOrder, queryParams);
     }
 
     public Documents queryByProvider(String providerName, String pageSize, String currentPageIndex, String maxResults,
             String sortBy, String sortOrder, String queryParams) {
-        return (Documents) getResponse(providerName, pageSize, currentPageIndex,
-                maxResults, sortBy, sortOrder, queryParams);
+        return (Documents) getResponse(providerName, pageSize, currentPageIndex, maxResults, sortBy, sortOrder,
+                queryParams);
     }
 
     /* Query - Async */
 
-//    public void query(String query, Callback<Documents> callback) {
-//        repositoryAPI.query(query).enqueue(callback);
-//    }
-//
-//    public void query(String query, String pageSize, String currentPageIndex, String maxResults, String sortBy,
-//            String sortOrder, String queryParams, Callback<Documents> callback) {
-//        repositoryAPI.query(query, pageSize, currentPageIndex, maxResults, sortBy, sortOrder, queryParams).enqueue(
-//                callback);
-//    }
-//
-//    public void queryByProvider(String providerName, String pageSize, String currentPageIndex, String maxResults,
-//            String sortBy, String sortOrder, String queryParams, Callback<Documents> callback) {
-//        repositoryAPI.queryByProvider(providerName, pageSize, currentPageIndex, maxResults, sortBy, sortOrder,
-//                queryParams).enqueue(callback);
-//    }
+    // public void query(String query, Callback<Documents> callback) {
+    // repositoryAPI.query(query).enqueue(callback);
+    // }
+    //
+    // public void query(String query, String pageSize, String currentPageIndex, String maxResults, String sortBy,
+    // String sortOrder, String queryParams, Callback<Documents> callback) {
+    // repositoryAPI.query(query, pageSize, currentPageIndex, maxResults, sortBy, sortOrder, queryParams).enqueue(
+    // callback);
+    // }
+    //
+    // public void queryByProvider(String providerName, String pageSize, String currentPageIndex, String maxResults,
+    // String sortBy, String sortOrder, String queryParams, Callback<Documents> callback) {
+    // repositoryAPI.queryByProvider(providerName, pageSize, currentPageIndex, maxResults, sortBy, sortOrder,
+    // queryParams).enqueue(callback);
+    // }
 
     /* Internal */
 
@@ -200,37 +199,37 @@ public class Repository extends NuxeoEntity {
 
     /* Audit */
 
-    public Audit fetchAuditByPath(String documentPath){
+    public Audit fetchAuditByPath(String documentPath) {
         return (Audit) getResponse(documentPath);
     }
 
-    public Audit fetchAuditById(String documentId){
+    public Audit fetchAuditById(String documentId) {
         return (Audit) getResponse(documentId);
     }
 
     /* ACP */
 
-    public ACP fetchACPByPath(String documentPath){
+    public ACP fetchACPByPath(String documentPath) {
         return (ACP) getResponse(documentPath);
     }
 
-    public ACP fetchACPById(String documentId){
+    public ACP fetchACPById(String documentId) {
         return (ACP) getResponse(documentId);
     }
 
     /* Children */
 
-    public Documents fetchChildrenByPath(String parentPath){
+    public Documents fetchChildrenByPath(String parentPath) {
         return (Documents) getResponse(parentPath);
     }
 
-    public Documents fetchChildrenById(String parentId){
+    public Documents fetchChildrenById(String parentId) {
         return (Documents) getResponse(parentId);
     }
 
     /* Blobs */
 
-    public Blob fetchBlobByPath(String documentPath, String fieldPath){
+    public Blob fetchBlobByPath(String documentPath, String fieldPath) {
         return (Blob) getResponse(documentPath, fieldPath);
     }
 
@@ -240,7 +239,7 @@ public class Repository extends NuxeoEntity {
 
     /* Workflows */
 
-    public Workflow startWorkflowInstanceWithDocPath(String documentPath, Workflow workflow){
+    public Workflow startWorkflowInstanceWithDocPath(String documentPath, Workflow workflow) {
         return (Workflow) getResponse(documentPath, workflow);
     }
 

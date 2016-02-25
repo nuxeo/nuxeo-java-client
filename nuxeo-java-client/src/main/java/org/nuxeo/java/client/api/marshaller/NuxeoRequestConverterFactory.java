@@ -20,17 +20,17 @@ package org.nuxeo.java.client.api.marshaller;
 
 import java.io.IOException;
 
-import com.fasterxml.jackson.databind.JavaType;
 import okhttp3.RequestBody;
 
 import org.nuxeo.java.client.api.ConstantsV1;
-
 import org.nuxeo.java.client.internals.spi.NuxeoClientException;
+
 import retrofit2.Converter;
 
 import com.fasterxml.jackson.core.JsonEncoding;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.util.ByteArrayBuilder;
+import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 

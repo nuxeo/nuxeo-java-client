@@ -18,12 +18,12 @@
  */
 package org.nuxeo.java.client.api.objects.blob;
 
+import java.io.File;
+
 import org.nuxeo.java.client.api.ConstantsV1;
 import org.nuxeo.java.client.api.objects.NuxeoEntity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-
-import java.io.File;
 
 /**
  * @since 0.1

@@ -39,7 +39,7 @@ public class TestBase {
 
     public void login() {
         String url = "http://localhost:18090";
-        //String url = "http://localhost:8080/nuxeo";
+        // String url = "http://localhost:8080/nuxeo";
         this.baseURL = url;
         nuxeoClient = new NuxeoClient(url, "Administrator", "Administrator").timeout(60).header(
                 ConstantsV1.HEADER_PROPERTIES, "*");
