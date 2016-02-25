@@ -25,7 +25,6 @@ import org.nuxeo.java.client.api.objects.Documents;
 import org.nuxeo.java.client.api.objects.acl.ACP;
 import org.nuxeo.java.client.api.objects.audit.Audit;
 import org.nuxeo.java.client.api.objects.blob.Blob;
-import org.nuxeo.java.client.api.objects.blob.FileBlob;
 import org.nuxeo.java.client.api.objects.workflow.Graph;
 import org.nuxeo.java.client.api.objects.workflow.Workflow;
 import org.nuxeo.java.client.api.objects.workflow.Workflows;
@@ -158,7 +157,7 @@ public interface RepositoryAPI {
     Call<Blob> fetchBlobByPath(@Path("documentPath") String documentPath, @Path("fieldPath") String fieldPath, @Path("repositoryName") String repositoryName);
 
     @GET("repo/{repositoryName}/id/{documentId}/@blob/{fieldPath}")
-    Call<FileBlob> fetchBlobById(@Path("documentId") String documentId, @Path("fieldPath") String fieldPath, @Path("repositoryName") String repositoryName);
+    Call<Blob> fetchBlobById(@Path("documentId") String documentId, @Path("fieldPath") String fieldPath, @Path("repositoryName") String repositoryName);
 
 
     /* Workflows */

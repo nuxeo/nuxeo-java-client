@@ -23,10 +23,12 @@ import org.nuxeo.java.client.api.objects.NuxeoEntity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
+import java.io.File;
+
 /**
  * @since 0.1
  */
-public abstract class Blob extends NuxeoEntity {
+public class Blob extends NuxeoEntity {
 
     @JsonIgnore
     protected String mimeType;
@@ -34,18 +36,40 @@ public abstract class Blob extends NuxeoEntity {
     @JsonIgnore
     protected String fileName;
 
+    @JsonIgnore
+    protected File file;
+
+    public Blob() {
+        super(ConstantsV1.ENTITY_TYPE_BLOB);
+    }
+
     public Blob(String fileName) {
         this(fileName, null);
     }
 
+    public Blob(File file) {
+        this(file.getName(), ConstantsV1.APPLICATION_OCTET_STREAM);
+        this.file = file;
+    }
+
     public Blob(String fileName, String mimeType) {
-        super(ConstantsV1.ENTITY_TYPE_BLOB);
+        super(null);
         this.fileName = fileName;
+        this.file = null;
         setMimeType(mimeType);
     }
 
-    public Blob() {
-        super(ConstantsV1.ENTITY_TYPE_BLOB);
+    @JsonIgnore
+    public int getLength() {
+        long length = file.length();
+        if (length > (long) Integer.MAX_VALUE) {
+            return -1;
+        }
+        return (int) length;
+    }
+
+    public File getFile() {
+        return file;
     }
 
     public String getMimeType() {
@@ -65,10 +89,6 @@ public abstract class Blob extends NuxeoEntity {
     }
 
     @JsonIgnore
-    public int getLength() {
-        return -1;
-    }
-
     protected String formatLength(int len) {
         int k = len / 1024;
         if (k <= 0) {

@@ -18,41 +18,37 @@
  */
 package org.nuxeo.java.client.api.objects.blob;
 
-import java.io.File;
-
-import org.nuxeo.java.client.api.ConstantsV1;
+import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.nuxeo.java.client.api.ConstantsV1;
+import org.nuxeo.java.client.api.objects.NuxeoEntity;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
  * @since 0.1
  */
-public class FileBlob extends Blob {
+public class Blobs extends NuxeoEntity {
 
-    protected final File file;
-
-    public FileBlob() {
-        super();
-        file = null;
+    public Blobs() {
+        super(ConstantsV1.ENTITY_TYPE_BLOBS);
     }
 
-    public FileBlob(File file) {
-        super(file.getName(), ConstantsV1.APPLICATION_OCTET_STREAM);
-        this.file = file;
+    @JsonProperty("entries")
+    protected List<Blob> blobs;
+
+    public Blobs(List<Blob> blobs) {
+        super(ConstantsV1.ENTITY_TYPE_BLOBS);
+        this.blobs = blobs;
+    }
+
+    public List<Blob> getBlobs() {
+        return blobs;
     }
 
     @JsonIgnore
-    @Override
-    public int getLength() {
-        long length = file.length();
-        if (length > (long) Integer.MAX_VALUE) {
-            return -1;
-        }
-        return (int) length;
+    public int size(){
+        return blobs.size();
     }
-
-    public File getFile() {
-        return file;
-    }
-
 }
