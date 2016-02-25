@@ -10,8 +10,8 @@
   </parent>
 
   <artifactId>nuxeo-java-client</artifactId>
-  <name>Nuxeo Java Client Library</name>
-  <description>Nuxeo Java Client Library</description>
+  <name>Nuxeo Java Client</name>
+  <description>Nuxeo Java Client</description>
 
   <dependencies>
     <dependency>
