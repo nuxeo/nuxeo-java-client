@@ -18,20 +18,18 @@
  */
 package org.nuxeo.java.client.api.objects;
 
-import java.io.IOException;
+import java.util.HashMap;
 import java.util.Map;
 
-import okhttp3.MediaType;
-import okhttp3.ResponseBody;
+import okhttp3.RequestBody;
 
 import org.nuxeo.java.client.api.ConstantsV1;
 import org.nuxeo.java.client.api.NuxeoClient;
 import org.nuxeo.java.client.api.methods.OperationAPI;
 import org.nuxeo.java.client.api.objects.blob.Blob;
-import org.nuxeo.java.client.api.objects.blob.FileBlob;
+import org.nuxeo.java.client.api.objects.blob.Blobs;
 import org.nuxeo.java.client.api.objects.operation.OperationBody;
-import org.nuxeo.java.client.internals.spi.NuxeoClientException;
-import org.nuxeo.java.client.internals.util.IOUtils;
+import okhttp3.MediaType;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
@@ -85,37 +83,7 @@ public class Operation extends NuxeoEntity {
     }
 
     public Object execute(String batchId, String fileIdx, String operationId, OperationBody body) {
-        ResponseBody responseBody = (ResponseBody) getResponse(batchId, fileIdx, operationId, body);
-        return execute(responseBody);
-    }
-
-    protected Object execute(ResponseBody responseBody) {
-        try {
-            MediaType mediaType = responseBody.contentType();
-            if (!mediaType.equals(ConstantsV1.APPLICATION_JSON)
-                    && !mediaType.equals(ConstantsV1.APPLICATION_JSON_NXENTITY)) {
-                return new FileBlob(IOUtils.copyToTempFile(responseBody.byteStream()));
-            }
-            String response = responseBody.string();
-            Object objectResponse = nuxeoClient.getConverterFactory().readJSON(response, Object.class);
-            switch ((String) ((Map<String, Object>) objectResponse).get(ConstantsV1.ENTITY_TYPE)) {
-            case ConstantsV1.ENTITY_TYPE_DOCUMENT:
-                return nuxeoClient.getConverterFactory().readJSON(response, Document.class);
-            case ConstantsV1.ENTITY_TYPE_DOCUMENTS:
-                return nuxeoClient.getConverterFactory().readJSON(response, Documents.class);
-            case ConstantsV1.ENTITY_TYPE_RECORDSET:
-                return nuxeoClient.getConverterFactory().readJSON(response, RecordSet.class);
-                // TODO:JAVACLIENT-31
-            case ConstantsV1.ENTITY_TYPE_BLOB:
-                return nuxeoClient.getConverterFactory().readJSON(response, Blob.class);
-            case ConstantsV1.ENTITY_TYPE_BLOBS:
-                return nuxeoClient.getConverterFactory().readJSON(response, Blob.class);
-            default:
-                return objectResponse;
-            }
-        } catch (IOException reason) {
-            throw new NuxeoClientException("Error while unmarshalling Automation response", reason);
-        }
+        return getResponse(batchId, fileIdx, operationId, body);
     }
 
     public Object execute() {

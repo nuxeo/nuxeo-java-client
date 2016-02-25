@@ -21,15 +21,25 @@ package org.nuxeo.java.client.api.marshaller;
 import java.io.Closeable;
 import java.io.IOException;
 import java.io.Reader;
+import java.util.Map;
 
 import okhttp3.ResponseBody;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.nuxeo.java.client.api.ConstantsV1;
+import org.nuxeo.java.client.api.objects.Document;
+import org.nuxeo.java.client.api.objects.Documents;
+import org.nuxeo.java.client.api.objects.RecordSet;
+import org.nuxeo.java.client.api.objects.blob.Blob;
+import org.nuxeo.java.client.internals.spi.NuxeoClientException;
+import org.nuxeo.java.client.internals.util.IOUtils;
+import org.nuxeo.java.client.internals.util.MediaType;
 
 import retrofit2.Converter;
 
 import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectReader;
 
@@ -40,14 +50,18 @@ public final class NuxeoResponseConverterFactory<T> implements Converter<Respons
 
     private static final Logger logger = LogManager.getLogger(NuxeoResponseConverterFactory.class);
 
+    protected JavaType javaType;
+
     protected NuxeoMarshaller<T> nuxeoMarshaller;
 
-    protected ObjectMapper objectMapper;
+    protected final ObjectMapper objectMapper;
 
     protected ObjectReader adapter;
 
-    NuxeoResponseConverterFactory(ObjectReader adapter) {
+    NuxeoResponseConverterFactory(ObjectReader adapter, ObjectMapper objectMapper, JavaType javaType) {
         this.adapter = adapter;
+        this.objectMapper = objectMapper;
+        this.javaType = javaType;
     }
 
     NuxeoResponseConverterFactory(NuxeoMarshaller<T> nuxeoMarshaller, ObjectMapper objectMapper) {
@@ -63,9 +77,64 @@ public final class NuxeoResponseConverterFactory<T> implements Converter<Respons
             JsonParser jsonParser = objectMapper.getFactory().createParser(response);
             return nuxeoMarshaller.read(jsonParser);
         }
+        MediaType mediaType = MediaType.parse(value.contentType().toString());
+        if (!(mediaType.type().equals(ConstantsV1.APPLICATION) && mediaType.subtype().equals(ConstantsV1.JSON))
+                && !(mediaType.type().equals(ConstantsV1.APPLICATION) && mediaType.subtype().equals(
+                        ConstantsV1.JSON_NXENTITY))) {
+            if (mediaType.type().equals(ConstantsV1.MULTIPART)) {
+                // TODO Handle multiple parts read
+                // FileBlobs blobs = new FileBlobs();
+                // // save the stream to a temporary file
+                // FileInputStream fin = new FileInputStream(IOUtils.copyToTempFile(responseBody.byteStream()));
+                // try {
+                // MimeMultipart mp = new MimeMultipart(new InputStreamDataSource(fin, ctype));
+                // int size = mp.getCount();
+                // for (int i = 0; i < size; i++) {
+                // BodyPart part = mp.getBodyPart(i);
+                // String fname = part.getFileName();
+                // files.add(readBlob(part.getContentType(), fname, part.getInputStream()));
+                // }
+                // } catch (MessagingException e) {
+                // throw new IOException(e);
+                // } finally {
+                // try {
+                // fin.close();
+                // } catch (IOException e) {
+                // }
+                // file.delete();
+                // }
+                // return new blobs;
+            } else {
+                return (T) new Blob(IOUtils.copyToTempFile(value.byteStream()));
+            }
+        }
+        String nuxeoEntity = mediaType.nuxeoEntity();
+        if (javaType.getRawClass().equals(Object.class)) {
+            if (nuxeoEntity != null) {
+                switch (nuxeoEntity) {
+                case ConstantsV1.ENTITY_TYPE_DOCUMENT:
+                    return (T) readJSON(value.charStream(), Document.class);
+                case ConstantsV1.ENTITY_TYPE_DOCUMENTS:
+                    return (T) readJSON(value.charStream(), Documents.class);
+                default:
+                    return (T) value;
+                }
+            } else {
+                String response = value.string();
+                Object objectResponse = readJSON(response, Object.class);
+                switch ((String) ((Map<String, Object>) objectResponse).get(ConstantsV1.ENTITY_TYPE)) {
+                    case ConstantsV1.ENTITY_TYPE_RECORDSET:
+                        return (T) readJSON(response, RecordSet.class);
+                default:
+                    return (T) value;
+                }
+            }
+        }
         Reader reader = value.charStream();
         try {
             return adapter.readValue(reader);
+        } catch (IOException reason) {
+            throw new NuxeoClientException(reason);
         } finally {
             closeQuietly(reader);
         }
@@ -77,6 +146,22 @@ public final class NuxeoResponseConverterFactory<T> implements Converter<Respons
         try {
             closeable.close();
         } catch (IOException ignored) {
+        }
+    }
+
+    public Object readJSON(Reader reader, Class javaType) {
+        try {
+            return objectMapper.readValue(reader, javaType);
+        } catch (IOException reason) {
+            throw new NuxeoClientException("Converter Read Issue. See NuxeoResponseConverterFactory#readJSON", reason);
+        }
+    }
+
+    public Object readJSON(String json, Class javaType) {
+        try {
+            return objectMapper.readValue(json, javaType);
+        } catch (IOException reason) {
+            throw new NuxeoClientException("Converter Read Issue. See NuxeoResponseConverterFactory#readJSON", reason);
         }
     }
 }

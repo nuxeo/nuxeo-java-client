@@ -20,10 +20,12 @@ package org.nuxeo.java.client.api.marshaller;
 
 import java.io.IOException;
 
+import com.fasterxml.jackson.databind.JavaType;
 import okhttp3.RequestBody;
 
 import org.nuxeo.java.client.api.ConstantsV1;
 
+import org.nuxeo.java.client.internals.spi.NuxeoClientException;
 import retrofit2.Converter;
 
 import com.fasterxml.jackson.core.JsonEncoding;
@@ -37,14 +39,18 @@ import com.fasterxml.jackson.databind.ObjectWriter;
  */
 public final class NuxeoRequestConverterFactory<T> implements Converter<T, RequestBody> {
 
+    protected JavaType javaType;
+
     protected ObjectWriter adapter;
 
-    protected ObjectMapper objectMapper;
+    protected final ObjectMapper objectMapper;
 
     protected NuxeoMarshaller<T> nuxeoMarshaller;
 
-    NuxeoRequestConverterFactory(ObjectWriter adapter) {
+    NuxeoRequestConverterFactory(ObjectWriter adapter, ObjectMapper objectMapper, JavaType javaType) {
         this.adapter = adapter;
+        this.objectMapper = objectMapper;
+        this.javaType = javaType;
     }
 
     NuxeoRequestConverterFactory(NuxeoMarshaller<T> nuxeoMarshaller, ObjectMapper objectMapper) {
@@ -64,5 +70,13 @@ public final class NuxeoRequestConverterFactory<T> implements Converter<T, Reque
             bytes = adapter.writeValueAsBytes(value);
         }
         return RequestBody.create(ConstantsV1.APPLICATION_JSON_CHARSET_UTF_8, bytes);
+    }
+
+    public String writeJSON(Object object) {
+        try {
+            return objectMapper.writeValueAsString(object);
+        } catch (IOException reason) {
+            throw new NuxeoClientException("Converter Write Issue. See NuxeoRequestConverterFactory#writeJSON", reason);
+        }
     }
 }

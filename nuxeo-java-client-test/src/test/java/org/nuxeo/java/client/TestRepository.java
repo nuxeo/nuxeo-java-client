@@ -238,7 +238,6 @@ public class TestRepository extends TestBase {
         }
     }
 
-    @Ignore("JAVACLIENT-31")
     @Test
     public void itCanFetchBlob(){
         Document file = nuxeoClient.repository().fetchDocumentByPath("folder_2/file");
@@ -292,6 +291,7 @@ public class TestRepository extends TestBase {
         t2.join();
     }
 
+    // FIXME JAVACLIENT-22
     @Ignore("JAVACLIENT-22 AND JAVACLIENT-20")
     @Test
     public void itCanFetchDocumentWithCallback() throws InterruptedException {

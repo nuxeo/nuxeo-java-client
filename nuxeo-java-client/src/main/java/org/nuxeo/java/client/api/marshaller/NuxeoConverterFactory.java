@@ -72,7 +72,7 @@ public class NuxeoConverterFactory extends Converter.Factory {
             return new NuxeoResponseConverterFactory<>(nuxeoMarshaller, mapper);
         }
         ObjectReader reader = mapper.readerFor(javaType);
-        return new NuxeoResponseConverterFactory<>(reader);
+        return new NuxeoResponseConverterFactory<>(reader, mapper, javaType);
     }
 
     @Override
@@ -83,7 +83,7 @@ public class NuxeoConverterFactory extends Converter.Factory {
             return new NuxeoRequestConverterFactory<>(nuxeoMarshaller, mapper);
         }
         ObjectWriter writer = mapper.writerFor(javaType);
-        return new NuxeoRequestConverterFactory<>(writer);
+        return new NuxeoRequestConverterFactory<>(writer, mapper, javaType);
     }
 
     public void registerMarshaller(NuxeoMarshaller<?> marshaller) {

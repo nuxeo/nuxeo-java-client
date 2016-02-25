@@ -91,7 +91,13 @@ public class ConstantsV1 {
 
     public static final MediaType APPLICATION_JSON = MediaType.parse("application/json");
 
-    public static final MediaType APPLICATION_JSON_NXENTITY = MediaType.parse("application/json+nxentity");
+    public static final String APPLICATION = "application";
+
+    public static final String JSON = "json";
+
+    public static final String MULTIPART = "multipart";
+
+    public static final String JSON_NXENTITY = "json+nxentity";
 
     public static final String APPLICATION_OCTET_STREAM = "application/octet-stream";
 
