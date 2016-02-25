@@ -40,6 +40,10 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
  */
 public class Operation extends NuxeoEntity {
 
+    public static final String INPUT_PART = "input";
+
+    public static final String INPUT_PARTS = "input#";
+
     @JsonIgnore
     protected OperationBody body;
 
@@ -55,8 +59,25 @@ public class Operation extends NuxeoEntity {
     }
 
     public Object execute(String operationId, OperationBody body) {
-        ResponseBody responseBody = (ResponseBody) getResponse(operationId, body);
-        return execute(responseBody);
+        Object input = body.getInput();
+        if (input instanceof Blob) { // If input is blob or blobs -> use multipart
+            Map<String, RequestBody> fbodys = new HashMap<>();
+            RequestBody fbody = RequestBody.create(MediaType.parse(((Blob) input).getMimeType()),
+                    ((Blob) input).getFile());
+            fbodys.put(INPUT_PART, fbody);
+            return getResponse(operationId, body, fbodys);
+        } else if (input instanceof Blobs) { // If input is blob or blobs -> use multipart
+            Map<String, RequestBody> fbodys = new HashMap<>();
+            for (int i = 0; i < ((Blobs) input).size(); i++) {
+                Blob fileBlob = ((Blobs) input).getBlobs().get(i);
+                RequestBody fbody = RequestBody.create(MediaType.parse(((Blob) input).getMimeType()),
+                        fileBlob.getFile());
+                fbodys.put(INPUT_PARTS + String.valueOf(i), fbody);
+            }
+            return getResponse(operationId, body, fbodys);
+        } else {
+            return getResponse(operationId, body);
+        }
     }
 
     public Object execute(String operationId) {
