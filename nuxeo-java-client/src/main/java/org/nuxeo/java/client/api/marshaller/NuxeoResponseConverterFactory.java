@@ -23,6 +23,11 @@ import java.io.IOException;
 import java.io.Reader;
 import java.util.Map;
 
+import javax.mail.BodyPart;
+import javax.mail.MessagingException;
+import javax.mail.internet.MimeMultipart;
+import javax.mail.util.ByteArrayDataSource;
+
 import okhttp3.ResponseBody;
 
 import org.apache.logging.log4j.LogManager;
@@ -32,6 +37,7 @@ import org.nuxeo.java.client.api.objects.Document;
 import org.nuxeo.java.client.api.objects.Documents;
 import org.nuxeo.java.client.api.objects.RecordSet;
 import org.nuxeo.java.client.api.objects.blob.Blob;
+import org.nuxeo.java.client.api.objects.blob.Blobs;
 import org.nuxeo.java.client.internals.spi.NuxeoClientException;
 import org.nuxeo.java.client.internals.util.IOUtils;
 import org.nuxeo.java.client.internals.util.MediaType;
@@ -82,28 +88,18 @@ public final class NuxeoResponseConverterFactory<T> implements Converter<Respons
                 && !(mediaType.type().equals(ConstantsV1.APPLICATION) && mediaType.subtype().equals(
                         ConstantsV1.JSON_NXENTITY))) {
             if (mediaType.type().equals(ConstantsV1.MULTIPART)) {
-                // TODO Handle multiple parts read
-                // FileBlobs blobs = new FileBlobs();
-                // // save the stream to a temporary file
-                // FileInputStream fin = new FileInputStream(IOUtils.copyToTempFile(responseBody.byteStream()));
-                // try {
-                // MimeMultipart mp = new MimeMultipart(new InputStreamDataSource(fin, ctype));
-                // int size = mp.getCount();
-                // for (int i = 0; i < size; i++) {
-                // BodyPart part = mp.getBodyPart(i);
-                // String fname = part.getFileName();
-                // files.add(readBlob(part.getContentType(), fname, part.getInputStream()));
-                // }
-                // } catch (MessagingException e) {
-                // throw new IOException(e);
-                // } finally {
-                // try {
-                // fin.close();
-                // } catch (IOException e) {
-                // }
-                // file.delete();
-                // }
-                // return new blobs;
+                Blobs blobs = new Blobs();
+                try {
+                    MimeMultipart mp = new MimeMultipart(new ByteArrayDataSource(value.byteStream(), mediaType.toString()));
+                    int size = mp.getCount();
+                    for (int i = 0; i < size; i++) {
+                        BodyPart part = mp.getBodyPart(i);
+                        blobs.add(IOUtils.copyToTempFile(part.getInputStream()));
+                    }
+                } catch (MessagingException reason) {
+                    throw new IOException(reason);
+                }
+                return (T) blobs;
             } else {
                 return (T) new Blob(IOUtils.copyToTempFile(value.byteStream()));
             }

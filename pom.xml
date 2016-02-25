@@ -100,6 +100,7 @@
     <junit.version>4.12</junit.version>
     <java.version.source>1.8</java.version.source>
     <java.version.target>1.7</java.version.target>
+    <javax.mail.version>1.4.7</javax.mail.version>
     <compiler.version>3.3</compiler.version>
     <guava.version>18.0</guava.version>
     <mvn.prerequisites.version>3.1.1</mvn.prerequisites.version>
@@ -162,6 +163,11 @@
         <groupId>commons-io</groupId>
         <artifactId>commons-io</artifactId>
         <version>${commons-io.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>javax.mail</groupId>
+        <artifactId>mail</artifactId>
+        <version>${javax.mail.version}</version>
       </dependency>
 
       <!-- TEST -->

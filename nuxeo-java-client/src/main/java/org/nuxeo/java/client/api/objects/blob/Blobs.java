@@ -18,6 +18,8 @@
  */
 package org.nuxeo.java.client.api.objects.blob;
 
+import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.nuxeo.java.client.api.ConstantsV1;
@@ -32,11 +34,11 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public class Blobs extends NuxeoEntity {
 
     public Blobs() {
-        super(ConstantsV1.ENTITY_TYPE_BLOBS);
+        super(null);
     }
 
     @JsonProperty("entries")
-    protected List<Blob> blobs;
+    protected List<Blob> blobs = new ArrayList<>();
 
     public Blobs(List<Blob> blobs) {
         super(ConstantsV1.ENTITY_TYPE_BLOBS);
@@ -50,5 +52,11 @@ public class Blobs extends NuxeoEntity {
     @JsonIgnore
     public int size() {
         return blobs.size();
+    }
+
+    @JsonIgnore
+    public void add(File file) {
+        Blob blob = new Blob(file);
+        blobs.add(blob);
     }
 }

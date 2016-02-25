@@ -42,6 +42,7 @@ import org.nuxeo.java.client.api.objects.Document;
 import org.nuxeo.java.client.api.objects.Documents;
 import org.nuxeo.java.client.api.objects.Operation;
 import org.nuxeo.java.client.api.objects.blob.Blob;
+import org.nuxeo.java.client.api.objects.blob.Blobs;
 import org.nuxeo.java.client.api.objects.operation.DocRef;
 import org.nuxeo.java.client.api.objects.operation.DocRefs;
 import org.nuxeo.java.client.internals.spi.NuxeoClientException;
@@ -59,6 +60,8 @@ import com.google.common.io.Files;
 @Jetty(port = 18090)
 @RepositoryConfig(cleanup = Granularity.METHOD, init = RestServerInit.class)
 public class TestOperation extends TestBase {
+
+    public static final String FOLDER_2_FILE = "/folder_2/file";
 
     @Before
     public void authentication() {
@@ -80,10 +83,10 @@ public class TestOperation extends TestBase {
     }
 
     @Test
-    public void itCanExecuteOperationOnBlob() throws IOException {
+    public void itCanExecuteOperationWithBlobs() throws IOException {
         // Get a blob
         Document result = (Document) nuxeoClient.automation()
-                                                .param("value", "/folder_2/file")
+                                                .param("value", FOLDER_2_FILE)
                                                 .execute("Repository.GetDocument");
         Blob blob = (Blob) nuxeoClient.automation().input(result).execute("Document.GetBlob");
         assertNotNull(blob);
@@ -100,46 +103,38 @@ public class TestOperation extends TestBase {
         int length = fileBlob.getLength();
         blob = (Blob) nuxeoClient.automation()
                                  .newRequest("Blob.AttachOnDocument")
-                                 .param("document", "/folder_2/file")
+                                 .param("document", FOLDER_2_FILE)
                                  .input(fileBlob)
                                  .execute();
         assertNotNull(blob);
         assertEquals(length, blob.getLength());
-        Blob resultBlob = (Blob) nuxeoClient.automation().input("/folder_2/file").execute("Document.GetBlob");
+        Blob resultBlob = (Blob) nuxeoClient.automation().input(FOLDER_2_FILE).execute("Document.GetBlob");
         assertNotNull(resultBlob);
         assertEquals(length, resultBlob.getLength());
+        // Attach a blobs and get them
+        File temp2 = File.createTempFile("pattern", ".suffix");
+        temp2.deleteOnExit();
+        BufferedWriter out2 = new BufferedWriter(new FileWriter(temp2));
+        out2.write("2String");
+        out2.close();
+        Blobs inputBlobs = new Blobs();
+        inputBlobs.add(temp1);
+        inputBlobs.add(temp2);
+        Blobs blobs = (Blobs) nuxeoClient.automation()
+                                         .newRequest("Blob.AttachOnDocument")
+                                         .param("document", FOLDER_2_FILE)
+                                         .param("xpath", "files:files")
+                                         .input(inputBlobs)
+                                         .execute();
+        assertNotNull(blobs);
+        Blobs resultBlobs = (Blobs) nuxeoClient.automation().input(FOLDER_2_FILE).execute("Document.GetBlobs");
+        assertNotNull(resultBlobs);
+        assertEquals(3, resultBlobs.size());
     }
 
-    @Ignore("TODO")
     @Test
     public void itCanExecuteOperationOnBlobs() throws IOException {
-        // Attach a blobs and get them
-        File temp1 = File.createTempFile("pattern", ".suffix");
-        File temp2 = File.createTempFile("pattern", ".suffix");
-        temp1.deleteOnExit();
-        temp2.deleteOnExit();
-        BufferedWriter out1 = new BufferedWriter(new FileWriter(temp1));
-        BufferedWriter out2 = new BufferedWriter(new FileWriter(temp2));
-        out1.write("1String");
-        out2.write("2String");
-        out1.close();
-        out2.close();
-        Blob fileBlob = new Blob(temp1);
-        int length = fileBlob.getLength();
-        Blob blob = (Blob) nuxeoClient.automation()
-                                      .newRequest("Blob.AttachOnDocument")
-                                      .param("document", "/folder_2/file")
-                                      .input(fileBlob)
-                                      .execute();
-        assertNotNull(blob);
-        assertEquals(length, blob.getLength());
-        // TODO handle multiple parts reading
-        List<Blob> resultBlobs = (List<Blob>) nuxeoClient.automation()
-                                                         .input("/folder_2" +
-                                                                 "/file")
-                                                         .execute("Document.GetBlobs");
-        assertNotNull(resultBlobs);
-        assertEquals(2, resultBlobs.size());
+
     }
 
     @Test

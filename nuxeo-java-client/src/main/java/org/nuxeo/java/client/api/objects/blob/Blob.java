@@ -40,7 +40,7 @@ public class Blob extends NuxeoEntity {
     protected File file;
 
     public Blob() {
-        super(ConstantsV1.ENTITY_TYPE_BLOB);
+        super(null);
     }
 
     public Blob(String fileName) {

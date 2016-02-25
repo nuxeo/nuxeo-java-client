@@ -68,7 +68,7 @@ public class Operation extends NuxeoEntity {
             Map<String, RequestBody> fbodys = new HashMap<>();
             for (int i = 0; i < ((Blobs) input).size(); i++) {
                 Blob fileBlob = ((Blobs) input).getBlobs().get(i);
-                RequestBody fbody = RequestBody.create(MediaType.parse(((Blob) input).getMimeType()),
+                RequestBody fbody = RequestBody.create(MediaType.parse(fileBlob.getMimeType()),
                         fileBlob.getFile());
                 fbodys.put(INPUT_PARTS + String.valueOf(i), fbody);
             }
