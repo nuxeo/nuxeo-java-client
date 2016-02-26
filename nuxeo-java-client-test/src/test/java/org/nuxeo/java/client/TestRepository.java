@@ -23,6 +23,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -44,6 +45,11 @@ import org.nuxeo.java.client.marshallers.DocumentMarshaller;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.Jetty;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
+
+import java.io.IOException;
 
 /**
  * @since 0.1
@@ -293,36 +299,36 @@ public class TestRepository extends TestBase {
         t2.join();
     }
 
-    // FIXME JAVACLIENT-22
-    @Ignore("JAVACLIENT-22 AND JAVACLIENT-20")
     @Test
     public void itCanFetchDocumentWithCallback() throws InterruptedException {
-        // nuxeoClient.getRepository().getDocumentByPath("folder_2", new Callback<Document>() {
-        // @Override
-        // public void onResponse(Response<Document> response, Retrofit retrofit) {
-        // if (!response.isSuccess()) {
-        // ObjectMapper objectMapper = new ObjectMapper();
-        // NuxeoClientException nuxeoClientException;
-        // try {
-        // nuxeoClientException = objectMapper.readValue(response.errorBody().string(),
-        // NuxeoClientException.class);
-        // } catch (IOException reason) {
-        // throw new NuxeoClientException(reason);
-        // }
-        // fail(nuxeoClientException.getRemoteStackTrace());
-        // }
-        // Document folder = response.body();
-        // assertNotNull(folder);
-        // assertEquals("Folder", folder.getType());
-        // assertEquals("document", folder.getEntityType());
-        // assertEquals("/folder_2", folder.getPath());
-        // assertEquals("Folder 2", folder.getTitle());
-        // }
-        //
-        // @Override
-        // public void onFailure(Throwable reason) {
-        // fail(reason.getMessage());
-        // }
-        // });
+        nuxeoClient.repository().fetchDocumentRoot(new
+                Callback<Document>() {
+            @Override
+            public void onResponse(Response<Document> response) {
+                if (!response.isSuccess()) {
+                    ObjectMapper objectMapper = new ObjectMapper();
+                    NuxeoClientException nuxeoClientException;
+                    try {
+                        nuxeoClientException = objectMapper.readValue
+                                (response.errorBody().string(),
+                                NuxeoClientException.class);
+                    } catch (IOException reason) {
+                        throw new NuxeoClientException(reason);
+                    }
+                    fail(nuxeoClientException.getRemoteStackTrace());
+                }
+                Document folder = response.body();
+                assertNotNull(folder);
+                assertEquals("Folder", folder.getType());
+                assertEquals("document", folder.getEntityType());
+                assertEquals("/folder_2", folder.getPath());
+                assertEquals("Folder 2", folder.getTitle());
+            }
+
+            @Override
+            public void onFailure(Throwable reason) {
+                fail(reason.getMessage());
+            }
+        });
     }
 }

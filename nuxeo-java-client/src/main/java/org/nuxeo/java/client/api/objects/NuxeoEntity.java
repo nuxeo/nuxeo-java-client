@@ -39,6 +39,7 @@ import org.nuxeo.java.client.api.NuxeoClient;
 import org.nuxeo.java.client.internals.spi.NuxeoClientException;
 
 import retrofit2.Call;
+import retrofit2.Callback;
 import retrofit2.Response;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -47,7 +48,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 /**
  * @since 0.1
  */
-public abstract class NuxeoEntity {
+public abstract class NuxeoEntity<T> {
 
     private static final Logger logger = LogManager.getLogger(NuxeoEntity.class);
 
@@ -89,9 +90,24 @@ public abstract class NuxeoEntity {
         return entityType;
     }
 
-    // public NuxeoEntity header(String key, String value){
-    //
-    // }
+    public String getRepositoryName() {
+        return repositoryName;
+    }
+
+    /**
+     * Handle invocation of API Methods Asynchronously. Results will be returned in the given callback.
+     */
+    public void execute(Callback<T> callback, Object... parametersArray) {
+        if (api == null) {
+            api = nuxeoClient.getRetrofit().create(apiClass);
+        }
+        if (nuxeoClient == null) {
+            throw new NuxeoClientException("You should pass to your Nuxeo object the client instance");
+        }
+        String method = getCurrentMethodName();
+        Call<T> methodResult = getCall(api, method, parametersArray);
+        methodResult.enqueue(callback);
+    }
 
     /**
      * Handle cache and invocation of API methods.
@@ -195,7 +211,7 @@ public abstract class NuxeoEntity {
     /**
      * Invoking the method of each class "API"
      */
-    protected Call<?> getCall(Object api, String methodName, Object... parametersArray) {
+    protected Call<T> getCall(Object api, String methodName, Object... parametersArray) {
         try {
             Method[] methods = api.getClass().getInterfaces()[0].getMethods();
             List<Object> parameters = new ArrayList<>(Arrays.asList(parametersArray));
@@ -216,7 +232,7 @@ public abstract class NuxeoEntity {
                         "No method found for API %s and method name '%s'. Check method name and parameters.", apiClass,
                         methodName));
             }
-            return (Call<?>) method.invoke(api, parametersArray);
+            return (Call<T>) method.invoke(api, parametersArray);
         } catch (IllegalArgumentException | IllegalAccessException reason) {
             throw new NuxeoClientException(
                     String.format(
@@ -232,11 +248,7 @@ public abstract class NuxeoEntity {
         return stackTraceElements[2].getMethodName();
     }
 
-    public String getRepositoryName() {
-        return repositoryName;
-    }
-
-    public Object reconnectObject(Object entity, Object api, NuxeoClient nuxeoClient) {
+    protected Object reconnectObject(Object entity, Object api, NuxeoClient nuxeoClient) {
         if (entity instanceof NuxeoEntity) {
             ((NuxeoEntity) entity).nuxeoClient = nuxeoClient;
             ((NuxeoEntity) entity).api = api;

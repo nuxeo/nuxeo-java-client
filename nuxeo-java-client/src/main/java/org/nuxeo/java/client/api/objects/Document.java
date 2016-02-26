@@ -29,6 +29,8 @@ import org.nuxeo.java.client.api.objects.blob.Blob;
 import org.nuxeo.java.client.api.objects.workflow.Workflow;
 import org.nuxeo.java.client.api.objects.workflow.Workflows;
 
+import retrofit2.Callback;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 /**
@@ -305,7 +307,7 @@ public class Document extends NuxeoEntity {
         return (Document) getResponse(uid, this);
     }
 
-    /* Audit */
+    /* Audit Sync */
 
     public Audit fetchAudit() {
         return fetchAuditById(uid);
@@ -315,27 +317,57 @@ public class Document extends NuxeoEntity {
         return (Audit) getResponse(documentId);
     }
 
-    /* ACP */
+    /* Audit Async */
+
+    public void fetchAudit(Callback<Audit> callback) {
+        execute(callback, uid);
+    }
+
+    public void fetchAuditById(String documentId, Callback<Audit> callback) {
+        execute(callback, documentId);
+    }
+
+    /* ACP Sync */
 
     public ACP fetchACP() {
         return fetchACPById(uid);
     }
 
-    protected ACP fetchACPById(String documentId) {
+    public ACP fetchACPById(String documentId) {
         return (ACP) getResponse(documentId);
     }
 
-    /* Children */
+    /* ACP Async */
+
+    public void fetchACP(Callback<ACP> callback) {
+        execute(callback, uid);
+    }
+
+    public void fetchACPById(String documentId, Callback<ACP> callback) {
+        execute(callback, documentId);
+    }
+
+    /* Children Sync */
 
     public Documents fetchChildren() {
         return fetchChildrenById(uid);
     }
 
-    protected Documents fetchChildrenById(String parentId) {
+    public Documents fetchChildrenById(String parentId) {
         return (Documents) getResponse(parentId);
     }
 
-    /* Blobs */
+    /* Children Async */
+
+    public void fetchChildren(Callback<Documents> callback) {
+        execute(callback, uid);
+    }
+
+    public void fetchChildrenById(String parentId, Callback<Documents> callback) {
+        execute(callback, parentId);
+    }
+
+    /* Blobs Sync */
 
     public Blob fetchBlob() {
         return fetchBlobById(uid, ConstantsV1.DEFAULT_FILE_CONTENT);
@@ -345,18 +377,41 @@ public class Document extends NuxeoEntity {
         return fetchBlobById(uid, fieldPath);
     }
 
-    protected Blob fetchBlobById(String uid, String fieldPath) {
+    public Blob fetchBlobById(String uid, String fieldPath) {
         return (Blob) getResponse(uid, fieldPath);
     }
 
-    /* Workflows */
+    /* Blobs Async */
 
-    @JsonIgnore
+    public void fetchBlob(Callback<Blob> callback) {
+        execute(callback, uid, ConstantsV1.DEFAULT_FILE_CONTENT);
+    }
+
+    public void fetchBlob(String fieldPath, Callback<Blob> callback) {
+        execute(callback, uid, fieldPath);
+    }
+
+    public void fetchBlobById(String uid, String fieldPath, Callback<Blob> callback) {
+        execute(callback, uid, fieldPath);
+    }
+
+    /* Workflows Sync */
+
     public Workflows fetchWorkflowInstances() {
         return (Workflows) getResponse(uid);
     }
 
     public Workflow startWorkflowInstance(Workflow workflow) {
         return (Workflow) getResponse(uid, workflow);
+    }
+
+    /* Workflows Async */
+
+    public void fetchWorkflowInstances(Callback<Workflows> callback) {
+        execute(callback, uid);
+    }
+
+    public void startWorkflowInstance(Workflow workflow, Callback<Workflow> callback) {
+        execute(callback, uid, workflow);
     }
 }

@@ -77,12 +77,15 @@ public final class NuxeoResponseConverterFactory<T> implements Converter<Respons
 
     @Override
     public T convert(ResponseBody value) throws IOException {
+        // Checking custom marshallers with the type of the method clientside.
         if (nuxeoMarshaller != null) {
             String response = value.string();
             logger.debug(response);
-            JsonParser jsonParser = objectMapper.getFactory().createParser(response);
+            JsonParser jsonParser = objectMapper.getFactory().createParser
+                    (response);
             return nuxeoMarshaller.read(jsonParser);
         }
+        // Checking if multipart outputs.
         MediaType mediaType = MediaType.parse(value.contentType().toString());
         if (!(mediaType.type().equals(ConstantsV1.APPLICATION) && mediaType.subtype().equals(ConstantsV1.JSON))
                 && !(mediaType.type().equals(ConstantsV1.APPLICATION) && mediaType.subtype().equals(
@@ -105,6 +108,7 @@ public final class NuxeoResponseConverterFactory<T> implements Converter<Respons
             }
         }
         String nuxeoEntity = mediaType.nuxeoEntity();
+        // Checking the type of the method clientside - aka object for Automation calls.
         if (javaType.getRawClass().equals(Object.class)) {
             if (nuxeoEntity != null) {
                 switch (nuxeoEntity) {
@@ -116,6 +120,7 @@ public final class NuxeoResponseConverterFactory<T> implements Converter<Respons
                     return (T) value;
                 }
             } else {
+                // This workaround is only for recordsets. There is not header nuxeo-entity set for now serverside.
                 String response = value.string();
                 Object objectResponse = readJSON(response, Object.class);
                 switch ((String) ((Map<String, Object>) objectResponse).get(ConstantsV1.ENTITY_TYPE)) {
@@ -149,7 +154,7 @@ public final class NuxeoResponseConverterFactory<T> implements Converter<Respons
         try {
             return objectMapper.readValue(reader, javaType);
         } catch (IOException reason) {
-            throw new NuxeoClientException("Converter Read Issue. See NuxeoResponseConverterFactory#readJSON", reason);
+            throw new NuxeoClientException("Converter Read Issue.", reason);
         }
     }
 
@@ -157,7 +162,7 @@ public final class NuxeoResponseConverterFactory<T> implements Converter<Respons
         try {
             return objectMapper.readValue(json, javaType);
         } catch (IOException reason) {
-            throw new NuxeoClientException("Converter Read Issue. See NuxeoResponseConverterFactory#readJSON", reason);
+            throw new NuxeoClientException("Converter Read Issue.", reason);
         }
     }
 }

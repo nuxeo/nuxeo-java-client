@@ -26,6 +26,8 @@ import org.nuxeo.java.client.api.methods.CurrentUserAPI;
 import org.nuxeo.java.client.api.objects.workflow.Workflow;
 import org.nuxeo.java.client.api.objects.workflow.Workflows;
 
+import retrofit2.Callback;
+
 /**
  * @since 0.1
  */
@@ -51,6 +53,8 @@ public class CurrentUser extends User {
         return username;
     }
 
+    /** Sync **/
+
     public CurrentUser getCurrentUser() {
         return (CurrentUser) getResponse();
     }
@@ -61,6 +65,20 @@ public class CurrentUser extends User {
 
     public Workflow startWorkflowInstance(Workflow workflow) {
         return (Workflow) getResponse(workflow);
+    }
+
+    /** Async **/
+
+    public void getCurrentUser(Callback<CurrentUser> callback) {
+        execute(callback);
+    }
+
+    public void fetchWorkflowInstances(Callback<Workflows> callback) {
+        execute(callback);
+    }
+
+    public void startWorkflowInstance(Workflow workflow, Callback<Workflow> callback) {
+        execute(callback, workflow);
     }
 
 }
