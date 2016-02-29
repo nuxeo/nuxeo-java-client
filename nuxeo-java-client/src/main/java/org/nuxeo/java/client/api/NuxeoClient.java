@@ -17,6 +17,7 @@
 package org.nuxeo.java.client.api;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.concurrent.TimeUnit;
 
 import okhttp3.Interceptor;
@@ -25,6 +26,7 @@ import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
 
+import org.apache.commons.lang3.StringUtils;
 import org.nuxeo.java.client.api.cache.NuxeoResponseCache;
 import org.nuxeo.java.client.api.cache.ResultCacheInMemory;
 import org.nuxeo.java.client.api.marshaller.NuxeoConverterFactory;
@@ -128,9 +130,7 @@ public class NuxeoClient implements Client {
     }
 
     public NuxeoClient enrichers(String... enrichers) {
-        for (String enricher : enrichers) {
-            header(ConstantsV1.HEADER_ENRICHERS, enricher);
-        }
+        header(ConstantsV1.HEADER_ENRICHERS, StringUtils.join(Arrays.asList(enrichers), ","));
         return this;
     }
 

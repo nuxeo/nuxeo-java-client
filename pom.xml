@@ -107,6 +107,7 @@
     <nuxeo.java.client.version>0.1-SNAPSHOT</nuxeo.java.client.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <commons-io.version>2.4</commons-io.version>
+    <apache.commons.version>3.3.2</apache.commons.version>
   </properties>
 
   <prerequisites>
@@ -169,6 +170,11 @@
         <artifactId>mail</artifactId>
         <version>${javax.mail.version}</version>
       </dependency>
+      <dependency>
+        <groupId>org.apache.commons</groupId>
+        <artifactId>commons-lang3</artifactId>
+        <version>${apache.commons.version}</version>
+      </dependency>
 
       <!-- TEST -->
       <dependency>
@@ -219,6 +225,12 @@
       <dependency>
         <groupId>org.nuxeo.ecm.core</groupId>
         <artifactId>nuxeo-core-mimetype</artifactId>
+        <version>${nuxeo.version}</version>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.core</groupId>
+        <artifactId>nuxeo-core-io</artifactId>
         <version>${nuxeo.version}</version>
         <scope>test</scope>
       </dependency>
@@ -291,6 +303,12 @@
       <dependency>
         <groupId>org.nuxeo.ecm.platform</groupId>
         <artifactId>nuxeo-platform-url-core</artifactId>
+        <version>${nuxeo.version}</version>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-permissions</artifactId>
         <version>${nuxeo.version}</version>
         <scope>test</scope>
       </dependency>
