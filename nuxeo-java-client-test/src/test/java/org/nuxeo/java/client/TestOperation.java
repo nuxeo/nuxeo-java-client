@@ -23,9 +23,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
-import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.List;
@@ -34,6 +32,7 @@ import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.restapi.test.RestServerFeature;
@@ -94,11 +93,7 @@ public class TestOperation extends TestBase {
         assertEquals("[", lines.get(0));
         assertEquals("    \"fieldType\": \"string\",", lines.get(2));
         // Attach a blob
-        File temp1 = File.createTempFile("pattern", ".suffix");
-        temp1.deleteOnExit();
-        BufferedWriter out1 = new BufferedWriter(new FileWriter(temp1));
-        out1.write("1String");
-        out1.close();
+        File temp1 = FileUtils.getResourceFileFromContext("sample.jpg");
         Blob fileBlob = new Blob(temp1);
         int length = fileBlob.getLength();
         blob = (Blob) nuxeoClient.automation()
@@ -112,11 +107,7 @@ public class TestOperation extends TestBase {
         assertNotNull(resultBlob);
         assertEquals(length, resultBlob.getLength());
         // Attach a blobs and get them
-        File temp2 = File.createTempFile("pattern", ".suffix");
-        temp2.deleteOnExit();
-        BufferedWriter out2 = new BufferedWriter(new FileWriter(temp2));
-        out2.write("2String");
-        out2.close();
+        File temp2 = FileUtils.getResourceFileFromContext("sample.jpg");
         Blobs inputBlobs = new Blobs();
         inputBlobs.add(temp1);
         inputBlobs.add(temp2);
