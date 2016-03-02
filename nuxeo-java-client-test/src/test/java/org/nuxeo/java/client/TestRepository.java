@@ -60,7 +60,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 @RunWith(FeaturesRunner.class)
 @Features({ RestServerFeature.class, AuditFeature.class })
 @Jetty(port = 18090)
-@Deploy({"org.nuxeo.ecm.core.io","org.nuxeo.ecm.permissions"})
+@Deploy({ "org.nuxeo.ecm.core.io", "org.nuxeo.ecm.permissions" })
 @RepositoryConfig(cleanup = Granularity.METHOD, init = RestServerInit.class)
 public class TestRepository extends TestBase {
 
@@ -93,8 +93,7 @@ public class TestRepository extends TestBase {
     @Test
     public void itCanFetchFolder() {
         Document root = nuxeoClient.repository().fetchDocumentRoot();
-        Document folder = nuxeoClient.repository().fetchDocumentByPath
-                ("folder_2");
+        Document folder = nuxeoClient.repository().fetchDocumentByPath("folder_2");
         assertNotNull(folder);
         assertEquals("Folder", folder.getType());
         assertEquals("document", folder.getEntityType());
@@ -231,8 +230,7 @@ public class TestRepository extends TestBase {
     @Test
     public void itCanUseQueriesAndResultSet() {
         RecordSet documents = (RecordSet) nuxeoClient.automation()
-                                                     .param("query", "SELECT " +
-                                                             "* FROM Document")
+                                                     .param("query", "SELECT " + "* FROM Document")
                                                      .execute("Repository.ResultSetQuery");
         assertTrue(documents.getUuids().size() != 0);
     }
@@ -306,39 +304,33 @@ public class TestRepository extends TestBase {
 
     @Test
     public void itCanFetchDocumentWithCallback() throws InterruptedException {
-        nuxeoClient.repository().fetchDocumentRoot(new
-                                                           Callback<Document>
-                                                                   () {
-                                                               @Override
-                                                               public void
-                                                               onResponse
-                                                                       (Response<Document> response) {
-                                                                   if (!response.isSuccess()) {
-                                                                       ObjectMapper objectMapper = new ObjectMapper();
-                                                                       NuxeoClientException nuxeoClientException;
-                                                                       try {
-                                                                           nuxeoClientException = objectMapper.readValue
-                                                                                   (response.errorBody().string(),
-                                                                                           NuxeoClientException.class);
-                                                                       }
-                                                                       catch (IOException reason) {
-                                                                           throw new NuxeoClientException(reason);
-                                                                       }
-                                                                       fail(nuxeoClientException.getRemoteStackTrace());
-                                                                   }
-                                                                   Document folder = response.body();
-                                                                   assertNotNull(folder);
-                                                                   assertEquals("Folder", folder.getType());
-                                                                   assertEquals("document", folder.getEntityType());
-                                                                   assertEquals("/folder_2", folder.getPath());
-                                                                   assertEquals("Folder 2", folder.getTitle());
-                                                               }
+        nuxeoClient.repository().fetchDocumentRoot(new Callback<Document>() {
+            @Override
+            public void onResponse(Response<Document> response) {
+                if (!response.isSuccess()) {
+                    ObjectMapper objectMapper = new ObjectMapper();
+                    NuxeoClientException nuxeoClientException;
+                    try {
+                        nuxeoClientException = objectMapper.readValue(response.errorBody().string(),
+                                NuxeoClientException.class);
+                    } catch (IOException reason) {
+                        throw new NuxeoClientException(reason);
+                    }
+                    fail(nuxeoClientException.getRemoteStackTrace());
+                }
+                Document folder = response.body();
+                assertNotNull(folder);
+                assertEquals("Folder", folder.getType());
+                assertEquals("document", folder.getEntityType());
+                assertEquals("/folder_2", folder.getPath());
+                assertEquals("Folder 2", folder.getTitle());
+            }
 
-                                                               @Override
-                                                               public void onFailure(Throwable reason) {
-                                                                   fail(reason.getMessage());
-                                                               }
-                                                           });
+            @Override
+            public void onFailure(Throwable reason) {
+                fail(reason.getMessage());
+            }
+        });
     }
 
     @Test
