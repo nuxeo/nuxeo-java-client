@@ -70,9 +70,90 @@ SBT:
 libraryDependencies += "org.nuxeo.java.client" % "nuxeo-java-client" % "0.1-SNAPSHOT"
 ```
 
-**Usage:**
+###Usage
 
-TBD
+**Creating a client**
+
+For a given `url`:
+
+```java
+String url = "http://localhost:8080/nuxeo";
+```
+
+And given credentials:
+
+```java
+import org.nuxeo.java.client.api.NuxeoClient;
+
+NuxeoClient nuxeoClient = new NuxeoClient(url, "Administrator", "Administrator");
+```
+
+Options:
+
+```java
+// For defining session and transaction timeout
+nuxeoClient = nuxeoClient.timeout(60).transactionTimeout(60);
+```
+
+```java
+// For defining global schemas, global enrichers and global headers in general
+nuxeoClient = nuxeoClient.schemas("dublincore", "common").enrichers("acls","preview").header(key1,value1).header(key2, value2);
+```
+
+```java
+// For defining all schemas
+nuxeoClient = nuxeoClient.schemas("*");
+```
+
+```java
+// To enable cache
+nuxeoClient = nuxeoClient.enableDefaultCache();
+```
+
+```java
+// To logout (shutdown the client, headers etc...)
+nuxeoClient = nuxeoClient.logout();
+```
+
+**Automation API**
+
+To use the Automation API, `org.nuxeo.java.client.api.NuxeoClient#automation()` is the entry point for all calls:
+
+```java
+import org.nuxeo.java.client.api.objects.Document;
+
+// Fetch the root document
+Document result = (Document) nuxeoClient.automation().param("value", "/").execute("Repository.GetDocument");
+```
+
+```java
+import org.nuxeo.java.client.api.objects.Operation;
+import org.nuxeo.java.client.api.objects.Documents;
+
+// Execute query
+Operation operation = nuxeoClient.automation("Repository.Query").param("query", "SELECT * " + "FROM Document");
+Documents result = (Documents) operation.execute();
+```
+
+```java
+import org.nuxeo.java.client.api.objects.blob.Blob;
+
+// To upload|download blob(s)
+
+Blob fileBlob = new Blob(java.io.File file);
+blob = (Blob) nuxeoClient.automation().newRequest("Blob.AttachOnDocument").param("document", "/folder/file").input(fileBlob).execute();
+
+Blobs inputBlobs = new Blobs();
+inputBlobs.add(java.io.File file1);
+inputBlobs.add(java.io.File file2);
+Blobs blobs = (Blob) nuxeoClient.automation().newRequest("Blob.AttachOnDocument").param("xpath", "files:files").param("document", "/folder/file").input(inputBlobs).execute();
+        
+Blob resultBlob = (Blob) nuxeoClient.automation().input("folder/file").execute("Document.GetBlob");
+```
+
+## Testing
+
+The Testing suite or TCK can be found in this project [`nuxeo-java-client-test`](https://github.com/nuxeo/nuxeo-java-client/tree/master/nuxeo-java-client-test).
 
 ## Goals
 
@@ -196,10 +277,6 @@ Depending on client:
 **Error & Logging**
 
 The `NuxeoClientException` within `nuxeo-java-client` is consuming the default and the extended rest exception response by the server. Here the [documentation](https://doc.nuxeo.com/x/JQI5AQ)
-
-## Testing
-
-TCK TBD
 
 ## Reporting Issues
 

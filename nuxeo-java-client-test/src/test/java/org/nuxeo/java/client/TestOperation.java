@@ -133,11 +133,6 @@ public class TestOperation extends TestBase {
     }
 
     @Test
-    public void itCanExecuteOperationOnBlobs() throws IOException {
-
-    }
-
-    @Test
     public void testMultiThread() throws InterruptedException {
         Thread t = new Thread(() -> {
             try {

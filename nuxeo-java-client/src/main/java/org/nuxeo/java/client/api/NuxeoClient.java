@@ -162,9 +162,7 @@ public class NuxeoClient implements Client {
     }
 
     public NuxeoClient schemas(String... properties) {
-        for (String property : properties) {
-            header(ConstantsV1.HEADER_PROPERTIES, property);
-        }
+        header(ConstantsV1.HEADER_PROPERTIES, StringUtils.join(Arrays.asList(properties), ","));
         return this;
     }
 
