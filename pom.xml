@@ -1,11 +1,9 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
   <groupId>org.nuxeo.client</groupId>
   <artifactId>nuxeo-java-client-parent</artifactId>
-  <version>0.1-SNAPSHOT</version>
+  <version>0.1</version>
   <name>Nuxeo Java Client Parent</name>
   <description>Java Client Parent for Nuxeo REST APIs.</description>
   <packaging>pom</packaging>
@@ -104,7 +102,7 @@
     <compiler.version>3.3</compiler.version>
     <guava.version>18.0</guava.version>
     <mvn.prerequisites.version>3.1.1</mvn.prerequisites.version>
-    <nuxeo.java.client.version>0.1-SNAPSHOT</nuxeo.java.client.version>
+    <nuxeo.java.client.version>0.1</nuxeo.java.client.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <commons-io.version>2.4</commons-io.version>
     <apache.commons.version>3.3.2</apache.commons.version>
