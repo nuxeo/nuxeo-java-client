@@ -1,4 +1,4 @@
-# Java Client Library for Nuxeo REST APIs
+# Java Client Library for the Nuxeo Platform REST APIs
 
 The Nuxeo Java Client is a Java client library (can be used for Android) for the Nuxeo Automation and REST API.
 
@@ -130,7 +130,7 @@ To use the Automation API, `org.nuxeo.java.client.api.NuxeoClient#automation()` 
 import org.nuxeo.java.client.api.objects.Document;
 
 // Fetch the root document
-Document result = (Document) nuxeoClient.automation().param("value", "/").execute("Repository.GetDocument");
+Document result = nuxeoClient.automation().param("value", "/").execute("Repository.GetDocument");
 ```
 
 ```java
@@ -139,7 +139,7 @@ import org.nuxeo.java.client.api.objects.Documents;
 
 // Execute query
 Operation operation = nuxeoClient.automation("Repository.Query").param("query", "SELECT * " + "FROM Document");
-Documents result = (Documents) operation.execute();
+Documents result = operation.execute();
 ```
 
 ```java
@@ -148,14 +148,14 @@ import org.nuxeo.java.client.api.objects.blob.Blob;
 // To upload|download blob(s)
 
 Blob fileBlob = new Blob(java.io.File file);
-blob = (Blob) nuxeoClient.automation().newRequest("Blob.AttachOnDocument").param("document", "/folder/file").input(fileBlob).execute();
+blob = nuxeoClient.automation().newRequest("Blob.AttachOnDocument").param("document", "/folder/file").input(fileBlob).execute();
 
 Blobs inputBlobs = new Blobs();
 inputBlobs.add(java.io.File file1);
 inputBlobs.add(java.io.File file2);
-Blobs blobs = (Blob) nuxeoClient.automation().newRequest("Blob.AttachOnDocument").param("xpath", "files:files").param("document", "/folder/file").input(inputBlobs).execute();
+Blobs blobs = nuxeoClient.automation().newRequest("Blob.AttachOnDocument").param("xpath", "files:files").param("document", "/folder/file").input(inputBlobs).execute();
         
-Blob resultBlob = (Blob) nuxeoClient.automation().input("folder/file").execute("Document.GetBlob");
+Blob resultBlob = nuxeoClient.automation().input("folder/file").execute("Document.GetBlob");
 ```
 
 **Repository API**
@@ -227,7 +227,7 @@ Documents documents = nuxeoClient.repository().query("SELECT * " + "From Note");
 
 import org.nuxeo.java.client.api.objects.RecordSet;
 // With RecordSets
-RecordSet documents = (RecordSet) nuxeoClient.automation().param("query", "SELECT * FROM Document").execute("Repository.ResultSetQuery");
+RecordSet documents = nuxeoClient.automation().param("query", "SELECT * FROM Document").execute("Repository.ResultSetQuery");
 ```
 
 ```java
@@ -318,7 +318,7 @@ Document doc = new Document("file", "File");
 doc.set("dc:title", "new title");
 doc = nuxeoClient.repository().createDocumentByPath("folder_1", doc);
 Operation operation = nuxeoClient.automation("Blob.AttachOnDocument").param("document", doc);
-Blob blob = (Blob) batchUpload.execute(operation);
+Blob blob = batchUpload.execute(operation);
 ```
 
 **Directories**
