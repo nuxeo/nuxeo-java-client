@@ -3,7 +3,7 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
-  <groupId>org.nuxeo.java.client</groupId>
+  <groupId>org.nuxeo.client</groupId>
   <artifactId>nuxeo-java-client-parent</artifactId>
   <version>0.1-SNAPSHOT</version>
   <name>Nuxeo Java Client Parent</name>
@@ -116,7 +116,7 @@
   <dependencyManagement>
     <dependencies>
       <dependency>
-        <groupId>org.nuxeo.java.client</groupId>
+        <groupId>org.nuxeo.client</groupId>
         <artifactId>nuxeo-java-client</artifactId>
         <version>${nuxeo.java.client.version}</version>
       </dependency>
