@@ -147,7 +147,7 @@ public abstract class NuxeoEntity<T> {
                 } else if (!response.raw().body().contentType().equals(ConstantsV1.APPLICATION_JSON)) {
                     nuxeoClientException = new NuxeoClientException(response.code(), errorBody);
                 } else {
-                    nuxeoClientException = (NuxeoClientException) nuxeoClient.getConverterFactory().readJSON(errorBody,
+                    nuxeoClientException = nuxeoClient.getConverterFactory().readJSON(errorBody,
                             NuxeoClientException.class);
                 }
                 throw nuxeoClientException;

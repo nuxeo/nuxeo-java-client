@@ -150,17 +150,17 @@ public final class NuxeoResponseConverterFactory<T> implements Converter<Respons
         }
     }
 
-    public Object readJSON(Reader reader, Class javaType) {
+    public <T> T readJSON(Reader reader, Class javaType) {
         try {
-            return objectMapper.readValue(reader, javaType);
+            return (T) objectMapper.readValue(reader, javaType);
         } catch (IOException reason) {
             throw new NuxeoClientException("Converter Read Issue.", reason);
         }
     }
 
-    public Object readJSON(String json, Class javaType) {
+    public <T> T readJSON(String json, Class javaType) {
         try {
-            return objectMapper.readValue(json, javaType);
+            return (T) objectMapper.readValue(json, javaType);
         } catch (IOException reason) {
             throw new NuxeoClientException("Converter Read Issue.", reason);
         }

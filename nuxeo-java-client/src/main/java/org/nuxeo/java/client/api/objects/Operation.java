@@ -98,14 +98,14 @@ public class Operation extends NuxeoEntity {
 
     /** Operation Execution Methods Sync **/
 
-    public Object execute(String operationId, OperationBody body) {
+    public <T> T execute(String operationId, OperationBody body) {
         Object input = body.getInput();
         if (input instanceof Blob) { // If input is blob or blobs -> use multipart
             Map<String, RequestBody> fbodys = new HashMap<>();
             RequestBody fbody = RequestBody.create(MediaType.parse(((Blob) input).getMimeType()),
                     ((Blob) input).getFile());
             fbodys.put(INPUT_PART, fbody);
-            return getResponse(operationId, body, fbodys);
+            return (T) getResponse(operationId, body, fbodys);
         } else if (input instanceof Blobs) { // If input is blob or blobs -> use multipart
             Map<String, RequestBody> fbodys = new HashMap<>();
             for (int i = 0; i < ((Blobs) input).size(); i++) {
@@ -113,21 +113,21 @@ public class Operation extends NuxeoEntity {
                 RequestBody fbody = RequestBody.create(MediaType.parse(fileBlob.getMimeType()), fileBlob.getFile());
                 fbodys.put(INPUT_PARTS + String.valueOf(i), fbody);
             }
-            return getResponse(operationId, body, fbodys);
+            return (T) getResponse(operationId, body, fbodys);
         } else {
-            return getResponse(operationId, body);
+            return (T) getResponse(operationId, body);
         }
     }
 
-    public Object execute(String operationId) {
+    public <T> T execute(String operationId) {
         return execute(operationId, this.body);
     }
 
-    public Object execute(String batchId, String fileIdx, String operationId, OperationBody body) {
-        return getResponse(batchId, fileIdx, operationId, body);
+    public <T> T execute(String batchId, String fileIdx, String operationId, OperationBody body) {
+        return (T) getResponse(batchId, fileIdx, operationId, body);
     }
 
-    public Object execute() {
+    public <T> T execute() {
         return execute(this.operationId, this.body);
     }
 

@@ -69,14 +69,14 @@ public class TestOperation extends TestBase {
 
     @Test
     public void itCanExecuteOperationOnDocument() {
-        Document result = (Document) nuxeoClient.automation().param("value", "/").execute("Repository.GetDocument");
+        Document result = nuxeoClient.automation().param("value", "/").execute("Repository.GetDocument");
         assertNotNull(result);
     }
 
     @Test
     public void itCanExecuteOperationOnDocuments() {
         Operation operation = nuxeoClient.automation("Repository.Query").param("query", "SELECT * " + "FROM Document");
-        Documents result = (Documents) operation.execute();
+        Documents result = operation.execute();
         assertNotNull(result);
         assertTrue(result.getTotalSize() != 0);
     }
@@ -84,10 +84,10 @@ public class TestOperation extends TestBase {
     @Test
     public void itCanExecuteOperationWithBlobs() throws IOException {
         // Get a blob
-        Document result = (Document) nuxeoClient.automation()
+        Document result = nuxeoClient.automation()
                                                 .param("value", FOLDER_2_FILE)
                                                 .execute("Repository.GetDocument");
-        Blob blob = (Blob) nuxeoClient.automation().input(result).execute("Document.GetBlob");
+        Blob blob = nuxeoClient.automation().input(result).execute("Document.GetBlob");
         assertNotNull(blob);
         List<String> lines = Files.readLines(blob.getFile(), Charset.defaultCharset());
         assertEquals("[", lines.get(0));
@@ -96,14 +96,14 @@ public class TestOperation extends TestBase {
         File temp1 = FileUtils.getResourceFileFromContext("sample.jpg");
         Blob fileBlob = new Blob(temp1);
         int length = fileBlob.getLength();
-        blob = (Blob) nuxeoClient.automation()
+        blob = nuxeoClient.automation()
                                  .newRequest("Blob.AttachOnDocument")
                                  .param("document", FOLDER_2_FILE)
                                  .input(fileBlob)
                                  .execute();
         assertNotNull(blob);
         assertEquals(length, blob.getLength());
-        Blob resultBlob = (Blob) nuxeoClient.automation().input(FOLDER_2_FILE).execute("Document.GetBlob");
+        Blob resultBlob = nuxeoClient.automation().input(FOLDER_2_FILE).execute("Document.GetBlob");
         assertNotNull(resultBlob);
         assertEquals(length, resultBlob.getLength());
         // Attach a blobs and get them
@@ -111,14 +111,14 @@ public class TestOperation extends TestBase {
         Blobs inputBlobs = new Blobs();
         inputBlobs.add(temp1);
         inputBlobs.add(temp2);
-        Blobs blobs = (Blobs) nuxeoClient.automation()
+        Blobs blobs = nuxeoClient.automation()
                                          .newRequest("Blob.AttachOnDocument")
                                          .param("document", FOLDER_2_FILE)
                                          .param("xpath", "files:files")
                                          .input(inputBlobs)
                                          .execute();
         assertNotNull(blobs);
-        Blobs resultBlobs = (Blobs) nuxeoClient.automation().input(FOLDER_2_FILE).execute("Document.GetBlobs");
+        Blobs resultBlobs = nuxeoClient.automation().input(FOLDER_2_FILE).execute("Document.GetBlobs");
         assertNotNull(resultBlobs);
         assertEquals(3, resultBlobs.size());
     }
@@ -127,7 +127,7 @@ public class TestOperation extends TestBase {
     public void testMultiThread() throws InterruptedException {
         Thread t = new Thread(() -> {
             try {
-                Document result = (Document) nuxeoClient.automation()
+                Document result = nuxeoClient.automation()
                                                         .param("value", "/")
                                                         .execute("Repository.GetDocument");
                 assertNotNull(result);
@@ -136,7 +136,7 @@ public class TestOperation extends TestBase {
         });
         Thread t2 = new Thread(() -> {
             try {
-                Document result = (Document) nuxeoClient.automation()
+                Document result = nuxeoClient.automation()
                                                         .param("value", "/")
                                                         .execute("Repository.GetDocument");
                 assertNotNull(result);
@@ -166,11 +166,11 @@ public class TestOperation extends TestBase {
     @Ignore
     @Test
     public void itCanExecuteOperationWithDocumentRefs() {
-        Document result = (Document) nuxeoClient.automation().param("value", "/").execute("Repository.GetDocument");
+        Document result = nuxeoClient.automation().param("value", "/").execute("Repository.GetDocument");
         assertNotNull(result);
         DocRefs docRefs = new DocRefs();
         docRefs.addDoc(new DocRef(result.getId()));
-        result = (Document) nuxeoClient.automation()
+        result = nuxeoClient.automation()
                                        .input(docRefs)
                                        .param("properties", null)
                                        .execute("Document.Update");

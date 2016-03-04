@@ -94,9 +94,9 @@ public class NuxeoConverterFactory extends Converter.Factory {
         marshallers.clear();
     }
 
-    public Object readJSON(String json, Class javaType) {
+    public <T> T readJSON(String json, Class javaType) {
         try {
-            return mapper.readValue(json, javaType);
+            return (T) mapper.readValue(json, javaType);
         } catch (IOException reason) {
             throw new NuxeoClientException("Converter Read Issue. See NuxeoConverterFactory#readJSON", reason);
         }

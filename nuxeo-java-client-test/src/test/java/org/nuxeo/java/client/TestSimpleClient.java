@@ -60,7 +60,7 @@ public class TestSimpleClient extends TestBase {
         assertEquals(true, response.isSuccessful());
         String json = response.body().string();
         assertFalse(Strings.EMPTY.equals(json));
-        Document document = (Document) nuxeoClient.getConverterFactory().readJSON(json, Document.class);
+        Document document = nuxeoClient.getConverterFactory().readJSON(json, Document.class);
         assertNotNull(document);
         assertEquals("Root", document.getType());
     }
@@ -73,7 +73,7 @@ public class TestSimpleClient extends TestBase {
         assertEquals(true, response.isSuccessful());
         String json = response.body().string();
         assertFalse(Strings.EMPTY.equals(json));
-        Document document = (Document) nuxeoClient.getConverterFactory().readJSON(json, Document.class);
+        Document document = nuxeoClient.getConverterFactory().readJSON(json, Document.class);
         assertNotNull(document);
         assertEquals("new title", document.getTitle());
     }
