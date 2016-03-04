@@ -53,7 +53,7 @@ Maven:
 </dependency>
 ```
 
-Repository:
+with repository:
 
 ```
 <repository>
