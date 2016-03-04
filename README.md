@@ -41,6 +41,8 @@ This is an on-going project, supported by Nuxeo. Here is the [Documentation Webs
 
 Here is the [Nuxeo Client Library 0.1](https://mavenin.nuxeo.com/nexus/service/local/repositories/public-releases/content/org/nuxeo/client/nuxeo-java-client/0.1/nuxeo-java-client-0.1.jar).
 
+Here is the [0.1 changeset](https://jira.nuxeo.com/secure/ReleaseNote.jspa?projectId=12812&version=17637).
+
 **Import Nuxeo Java Client with:**
 
 Maven:
