@@ -45,7 +45,7 @@ Maven:
 
 ```
 <dependency>
-  <groupId>org.nuxeo.java.client</groupId>
+  <groupId>org.nuxeo.client</groupId>
   <artifactId>nuxeo-java-client</artifactId>
   <version>0.1-SNAPSHOT</version>
 </dependency>
@@ -54,20 +54,20 @@ Maven:
 Gradle:
 
 ```
-compile 'org.nuxeo.java.client:nuxeo-java-client:0.1-SNAPSHOT'
+compile 'org.nuxeo.client:nuxeo-java-client:0.1-SNAPSHOT'
 ```
 
 Ivy:
 
 ```
-<dependency org="org.nuxeo.java.client" name="nuxeo-java-client" rev="0.1-SNAPSHOT" />
+<dependency org="org.nuxeo.client" name="nuxeo-java-client" rev="0.1-SNAPSHOT" />
 
 ```
 
 SBT:
 
 ```
-libraryDependencies += "org.nuxeo.java.client" % "nuxeo-java-client" % "0.1-SNAPSHOT"
+libraryDependencies += "org.nuxeo.client" % "nuxeo-java-client" % "0.1-SNAPSHOT"
 ```
 
 ###Usage
@@ -83,7 +83,7 @@ String url = "http://localhost:8080/nuxeo";
 And given credentials:
 
 ```java
-import org.nuxeo.java.client.api.NuxeoClient;
+import org.nuxeo.client.api.NuxeoClient;
 
 NuxeoClient nuxeoClient = new NuxeoClient(url, "Administrator", "Administrator");
 ```
@@ -124,18 +124,18 @@ General rule:
 
 **Automation API**
 
-To use the Automation API, `org.nuxeo.java.client.api.NuxeoClient#automation()` is the entry point for all calls:
+To use the Automation API, `org.nuxeo.client.api.NuxeoClient#automation()` is the entry point for all calls:
 
 ```java
-import org.nuxeo.java.client.api.objects.Document;
+import org.nuxeo.client.api.objects.Document;
 
 // Fetch the root document
 Document result = nuxeoClient.automation().param("value", "/").execute("Repository.GetDocument");
 ```
 
 ```java
-import org.nuxeo.java.client.api.objects.Operation;
-import org.nuxeo.java.client.api.objects.Documents;
+import org.nuxeo.client.api.objects.Operation;
+import org.nuxeo.client.api.objects.Documents;
 
 // Execute query
 Operation operation = nuxeoClient.automation("Repository.Query").param("query", "SELECT * " + "FROM Document");
@@ -143,16 +143,16 @@ Documents result = operation.execute();
 ```
 
 ```java
-import org.nuxeo.java.client.api.objects.blob.Blob;
+import org.nuxeo.client.api.objects.blob.Blob;
 
 // To upload|download blob(s)
 
-Blob fileBlob = new Blob(java.io.File file);
+Blob fileBlob = new Blob(io.File file);
 blob = nuxeoClient.automation().newRequest("Blob.AttachOnDocument").param("document", "/folder/file").input(fileBlob).execute();
 
 Blobs inputBlobs = new Blobs();
-inputBlobs.add(java.io.File file1);
-inputBlobs.add(java.io.File file2);
+inputBlobs.add(io.File file1);
+inputBlobs.add(io.File file2);
 Blobs blobs = nuxeoClient.automation().newRequest("Blob.AttachOnDocument").param("xpath", "files:files").param("document", "/folder/file").input(inputBlobs).execute();
         
 Blob resultBlob = nuxeoClient.automation().input("folder/file").execute("Document.GetBlob");
@@ -161,7 +161,7 @@ Blob resultBlob = nuxeoClient.automation().input("folder/file").execute("Documen
 **Repository API**
 
 ```java
-import org.nuxeo.java.client.api.objects.Document;
+import org.nuxeo.client.api.objects.Document;
 
 // Fetch the root document
 Document root = nuxeoClient.repository().fetchDocumentRoot();
@@ -215,7 +215,7 @@ Blob blob = file.fetchBlob();
 ```
 
 ```java
-import org.nuxeo.java.client.api.objects.audit.Audit;
+import org.nuxeo.client.api.objects.audit.Audit;
 // Fetch the document Audit
 Document root = nuxeoClient.repository().fetchDocumentRoot();
 Audit audit = root.fetchAudit();
@@ -225,7 +225,7 @@ Audit audit = root.fetchAudit();
 // Execute query
 Documents documents = nuxeoClient.repository().query("SELECT * " + "From Note");
 
-import org.nuxeo.java.client.api.objects.RecordSet;
+import org.nuxeo.client.api.objects.RecordSet;
 // With RecordSets
 RecordSet documents = nuxeoClient.automation().param("query", "SELECT * FROM Document").execute("Repository.ResultSetQuery");
 ```
@@ -264,7 +264,7 @@ nuxeoClient.repository().fetchDocumentRoot(new Callback<Document>() {
 
 **Batch Upload**
 
-Batch uploads are executed through the `org.nuxeo.java.client.api.objects.upload.BatchUpload`.
+Batch uploads are executed through the `org.nuxeo.client.api.objects.upload.BatchUpload`.
 
 ```java
 // Batch Upload Initialization
@@ -280,7 +280,7 @@ batchUpload = batchUpload.upload(file.getName(), file.length(), "jpg", batchUplo
 // Fetch this file
 BatchFile batchFile = batchUpload.fetchBatchFile("1");
 
-import org.nuxeo.java.client.api.objects.upload.BatchFile;
+import org.nuxeo.client.api.objects.upload.BatchFile;
 // Upload another file and check files
 file = FileUtils.getResourceFileFromContext("blob.json");
 batchUpload.upload(file.getName(), file.length(), "json", batchUpload.getBatchId(), "2", file);
@@ -324,7 +324,7 @@ Blob blob = batchUpload.execute(operation);
 **Directories**
 
 ```java
-import org.nuxeo.java.client.api.objects.directory.Directory;
+import org.nuxeo.client.api.objects.directory.Directory;
 // Fetch a directory
 Directory directory = nuxeoClient.getDirectoryManager().fetchDirectory("continent");
 ```
@@ -332,19 +332,19 @@ Directory directory = nuxeoClient.getDirectoryManager().fetchDirectory("continen
 **Users/Groups**
 
 ```java
-import org.nuxeo.java.client.api.objects.user.CurrentUser;
+import org.nuxeo.client.api.objects.user.CurrentUser;
 // Fetch current user
 CurrentUser currentUser = nuxeoClient.fetchCurrentUser();
 ```
 
 ```java
-import org.nuxeo.java.client.api.objects.user.User;
+import org.nuxeo.client.api.objects.user.User;
 // Fetch user
 User user = nuxeoClient.getUserManager().fetchUser("Administrator");
 ```
 
 ```java
-import org.nuxeo.java.client.api.objects.user.Group;
+import org.nuxeo.client.api.objects.user.Group;
 // Fetch group
 Group group = nuxeoClient.getUserManager().fetchGroup("administrators");
 ```
@@ -352,7 +352,7 @@ Group group = nuxeoClient.getUserManager().fetchGroup("administrators");
 **Workflow**
 
 ```java
-import org.nuxeo.java.client.api.objects.workflow.Workflows;
+import org.nuxeo.client.api.objects.workflow.Workflows;
 // Fetch current user workflow instances
 Workflows workflows = nuxeoClient.fetchCurrentUser().fetchWorkflowInstances();
 ```
