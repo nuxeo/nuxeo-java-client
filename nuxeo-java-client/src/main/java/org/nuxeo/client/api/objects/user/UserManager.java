@@ -69,6 +69,10 @@ public class UserManager extends NuxeoEntity {
         return (User) getResponse(userName, user);
     }
 
+    public User updateUser(User user) {
+        return (User) getResponse(user.getUserName(), user);
+    }
+
     public void deleteUser(String userName) {
         getResponse(userName);
     }

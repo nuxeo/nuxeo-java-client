@@ -59,4 +59,20 @@ public class Group extends NuxeoEntity {
     public List<String> getMemberGroups() {
         return memberGroups;
     }
+
+    public void setGroupName(String groupName) {
+        this.groupName = groupName;
+    }
+
+    public void setGroupLabel(String groupLabel) {
+        this.groupLabel = groupLabel;
+    }
+
+    public void setMemberUsers(List<String> memberUsers) {
+        this.memberUsers = memberUsers;
+    }
+
+    public void setMemberGroups(List<String> memberGroups) {
+        this.memberGroups = memberGroups;
+    }
 }

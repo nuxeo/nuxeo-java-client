@@ -18,6 +18,7 @@
  */
 package org.nuxeo.client.api.objects.user;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.nuxeo.client.api.ConstantsV1;
@@ -33,9 +34,9 @@ public class User extends NuxeoEntity {
 
     protected String id;
 
-    protected UserProperties properties;
+    protected final UserProperties properties = new UserProperties();
 
-    protected List<ExtendedGroup> extendedGroups;
+    protected List<ExtendedGroup> extendedGroups = new ArrayList<>();
 
     @JsonProperty("isAdministrator")
     protected boolean isAdministrator;
@@ -73,5 +74,65 @@ public class User extends NuxeoEntity {
 
     public List<ExtendedGroup> getExtendedGroups() {
         return extendedGroups;
+    }
+
+    public String getFirstName() {
+        return this.properties.getFirstName();
+    }
+
+    public String getLastName() {
+        return this.properties.getLastName();
+    }
+
+    public String getCompany() {
+        return this.properties.getCompany();
+    }
+
+    public String getEmail() {
+        return this.properties.getEmail();
+    }
+
+    public List<String> getGroups() {
+        return this.properties.getGroups();
+    }
+
+    public String getPassword() {
+        return this.properties.getPassword();
+    }
+
+    public String getUserName() {
+        return this.properties.getUsername();
+    }
+
+    public void setExtendedGroups(List<ExtendedGroup> extendedGroups) {
+        this.extendedGroups = extendedGroups;
+    }
+
+    public void setFirstName(String firstName) {
+        this.properties.setFirstName(firstName);
+    }
+
+    public void setLastName(String lastName) {
+        this.properties.setLastName(lastName);
+    }
+
+    public void setCompany(String company) {
+        this.properties.setCompany(company);
+    }
+
+    public void setEmail(String email) {
+        this.properties.setEmail(email);
+    }
+
+    public void setGroups(List<String> groups) {
+        this.properties.setGroups(groups);
+    }
+
+    public void setPassword(String password) {
+        this.properties.setPassword(password);
+    }
+
+    public void setUserName(String userName) {
+        this.properties.setUsername(userName);
     }
 }

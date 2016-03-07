@@ -32,7 +32,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  */
 public class NuxeoClientException extends RuntimeException {
 
-    public static final int INTERNAL_ERROR_STATUS = 666;
+    private static final int INTERNAL_ERROR_STATUS = 666;
 
     protected final int status;
 

@@ -18,8 +18,6 @@
  */
 package org.nuxeo.client.api.objects.user;
 
-import java.util.List;
-
 import org.nuxeo.client.api.ConstantsV1;
 import org.nuxeo.client.api.NuxeoClient;
 import org.nuxeo.client.api.methods.CurrentUserAPI;
@@ -35,18 +33,12 @@ public class CurrentUser extends User {
 
     protected String username;
 
-    protected List<String> groups;
-
     public CurrentUser() {
         super(ConstantsV1.ENTITY_TYPE_LOGIN);
     }
 
     public CurrentUser(NuxeoClient nuxeoClient) {
         super(ConstantsV1.ENTITY_TYPE_LOGIN, nuxeoClient, CurrentUserAPI.class);
-    }
-
-    public List<String> getGroups() {
-        return groups;
     }
 
     public String getUsername() {
