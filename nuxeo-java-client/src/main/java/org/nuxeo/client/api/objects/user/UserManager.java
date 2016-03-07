@@ -45,6 +45,10 @@ public class UserManager extends NuxeoEntity {
         return (Group) getResponse(groupName, group);
     }
 
+    public Group updateGroup(Group group) {
+        return (Group) getResponse(group.getGroupName(), group);
+    }
+
     public void deleteGroup(String groupName) {
         getResponse(groupName);
     }
@@ -57,7 +61,7 @@ public class UserManager extends NuxeoEntity {
         return (Groups) getResponse(query);
     }
 
-    public User addUserToGroup(String groupName, String userName) {
+    public User addUserToGroup(String userName, String groupName) {
         return (User) getResponse(groupName, userName);
     }
 
@@ -85,7 +89,7 @@ public class UserManager extends NuxeoEntity {
         return (Users) getResponse(query);
     }
 
-    public User attachGroupToUser(String userName, String groupName) {
+    public User attachGroupToUser(String groupName, String userName) {
         return (User) getResponse(userName, groupName);
     }
 
@@ -111,7 +115,7 @@ public class UserManager extends NuxeoEntity {
         execute(callback, query);
     }
 
-    public void addUserToGroup(String groupName, String userName, Callback<User> callback) {
+    public void addUserToGroup(String userName, String groupName, Callback<User> callback) {
         execute(callback, groupName, userName);
     }
 
@@ -135,7 +139,7 @@ public class UserManager extends NuxeoEntity {
         execute(callback, query);
     }
 
-    public void attachGroupToUser(String userName, String groupName, Callback<User> callback) {
+    public void attachGroupToUser(String groupName, String userName, Callback<User> callback) {
         execute(callback, userName, groupName);
     }
 }
