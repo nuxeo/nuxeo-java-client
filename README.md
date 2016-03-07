@@ -277,6 +277,40 @@ nuxeoClient.repository().fetchDocumentRoot(new Callback<Document>() {
         });
 ```
 
+**Permissions**
+
+To manage permission, please look inside package  `org.nuxeo.client.api.objects.acl` to handle ACP, ACL and ACE:
+
+```java
+// Fetch Permissions of the current document
+Document folder = nuxeoClient.repository().fetchDocumentByPath("folder_2");
+ACP acp = folder.fetchPermissions();
+assertTrue(acp.getAcls().size() != 0);
+assertEquals("inherited", acp.getAcls().get(0).getName());
+assertEquals("Administrator", acp.getAcls().get(0).getAces().get(0).getUsername());
+```
+
+```java
+// Create permission on the current document
+GregorianCalendar begin = new GregorianCalendar(2015, Calendar.JUNE, 20, 12, 34, 56);
+GregorianCalendar end = new GregorianCalendar(2015, Calendar.JULY, 14, 12, 34, 56);
+ACE ace = new ACE();
+ace.setUsername("user0");
+ace.setPermission("Write");
+ace.setCreator("Administrator");
+ace.setBegin(begin);
+ace.setEnd(end);
+ace.setBlockInheritance(true);
+folder.addPermission(ace);
+```
+
+```java
+// Remove permissions in 'local' on the current document for a given name
+folder.removePermission("user0");
+// Remove permissions on the current document for those given parameters
+folder.removePermission(idACE, "user0", "local");
+```
+
 **Batch Upload**
 
 Batch uploads are executed through the `org.nuxeo.client.api.objects.upload.BatchUpload`.
@@ -362,6 +396,50 @@ User user = nuxeoClient.getUserManager().fetchUser("Administrator");
 import org.nuxeo.client.api.objects.user.Group;
 // Fetch group
 Group group = nuxeoClient.getUserManager().fetchGroup("administrators");
+```
+
+```java
+// Create User/Group
+
+UserManager userManager = nuxeoClient.getUserManager();
+User newUser = new User();
+newUser.setUserName("toto");
+newUser.setCompany("Nuxeo");
+newUser.setEmail("toto@nuxeo.com");
+newUser.setFirstName("to");
+newUser.setLastName("to");
+newUser.setPassword("totopwd");
+List<String> groups = new ArrayList<>();
+groups.add("members");
+newUser.setGroups(groups);
+User user = userManager.createUser(newUser);
+
+UserManager userManager = nuxeoClient.getUserManager();
+Group group = new Group();
+group.setGroupName("totogroup");
+group.setGroupLabel("Toto Group");
+List<String> users = new ArrayList<>();
+users.add("Administrator");
+group.setMemberUsers(users);
+group = userManager.createGroup(group);
+```
+
+```java
+// Update User/Group
+User updatedUser = userManager.updateUser(user);
+Group updatedGroup = userManager.updateGroup(group);
+```
+
+```java
+// Remove User/Group
+userManager.deleteUser("toto");
+userManager.deleteGroup("totogroup");
+```
+
+```java
+// Add User to Group
+userManager.addUserToGroup("Administrator", "totogroup");
+userManager.attachGroupToUser("members", "Administrator");
 ```
 
 **Workflow**
