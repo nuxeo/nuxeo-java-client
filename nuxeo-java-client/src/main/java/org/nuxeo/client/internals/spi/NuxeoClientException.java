@@ -22,6 +22,7 @@ import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 
 import org.nuxeo.client.api.ConstantsV1;
 
@@ -49,7 +50,7 @@ public class NuxeoClientException extends RuntimeException {
     protected final Throwable throwable;
 
     @JsonProperty("entity-type")
-    protected final String entityType;
+    private final String entityType;
 
     public String getEntityType() {
         return entityType;
@@ -107,8 +108,11 @@ public class NuxeoClientException extends RuntimeException {
         Field[] fields = this.getClass().getDeclaredFields();
         StringBuilder result = new StringBuilder();
         for (Field field : fields) {
-            result.append("  ");
             try {
+                if (Modifier.isPrivate(field.getModifiers()) || field.get(this) == null) {
+                    continue;
+                }
+                result.append("  ");
                 result.append(field.getName());
                 result.append(": ");
                 result.append(field.get(this));
@@ -117,9 +121,7 @@ public class NuxeoClientException extends RuntimeException {
             }
             result.append(System.lineSeparator());
         }
-
         return result.toString();
-
     }
 
     @Override
