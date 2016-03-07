@@ -87,7 +87,7 @@ libraryDependencies += "org.nuxeo.client" % "nuxeo-java-client" % "0.1"
 
 ###Usage
 
-**Creating a client**
+####Creating a Client
 
 For a given `url`:
 
@@ -130,14 +130,14 @@ nuxeoClient = nuxeoClient.enableDefaultCache();
 nuxeoClient = nuxeoClient.logout();
 ```
 
-**APIs**
+####APIs
 
 General rule: 
 
 - when using `fetch` methods, `NuxeoClient` is making remote calls. 
 - when using `get` methods, objects are retrieved from memory.
 
-**Automation API**
+####Automation API
 
 To use the Automation API, `org.nuxeo.client.api.NuxeoClient#automation()` is the entry point for all calls:
 
@@ -173,7 +173,7 @@ Blobs blobs = nuxeoClient.automation().newRequest("Blob.AttachOnDocument").param
 Blob resultBlob = nuxeoClient.automation().input("folder/file").execute("Document.GetBlob");
 ```
 
-**Repository API**
+####Repository API
 
 ```java
 import org.nuxeo.client.api.objects.Document;
@@ -277,7 +277,7 @@ nuxeoClient.repository().fetchDocumentRoot(new Callback<Document>() {
         });
 ```
 
-**Permissions**
+####Permissions
 
 To manage permission, please look inside package  `org.nuxeo.client.api.objects.acl` to handle ACP, ACL and ACE:
 
@@ -311,7 +311,7 @@ folder.removePermission("user0");
 folder.removePermission(idACE, "user0", "local");
 ```
 
-**Batch Upload**
+####Batch Upload
 
 Batch uploads are executed through the `org.nuxeo.client.api.objects.upload.BatchUpload`.
 
@@ -370,7 +370,7 @@ Operation operation = nuxeoClient.automation("Blob.AttachOnDocument").param("doc
 Blob blob = batchUpload.execute(operation);
 ```
 
-**Directories**
+####Directories
 
 ```java
 import org.nuxeo.client.api.objects.directory.Directory;
@@ -378,7 +378,7 @@ import org.nuxeo.client.api.objects.directory.Directory;
 Directory directory = nuxeoClient.getDirectoryManager().fetchDirectory("continent");
 ```
 
-**Users/Groups**
+####Users/Groups
 
 ```java
 import org.nuxeo.client.api.objects.user.CurrentUser;
@@ -442,7 +442,7 @@ userManager.addUserToGroup("Administrator", "totogroup");
 userManager.attachGroupToUser("members", "Administrator");
 ```
 
-**Workflow**
+####Workflow
 
 ```java
 import org.nuxeo.client.api.objects.workflow.Workflows;
@@ -455,7 +455,7 @@ Workflows workflows = nuxeoClient.fetchCurrentUser().fetchWorkflowInstances();
 Workflows workflows = nuxeoClient.repository().fetchDocumentRoot().fetchWorkflowInstances();
 ```
 
-**Manual REST Calls**
+####Manual REST Calls
 
 `NuxeoClient` allows manual rest calls with the 4 main methods GET,POST,PUT,DELETE and provides json (de)serializer helpers:
 
@@ -477,7 +477,7 @@ String json = response.body().string();
 Document document = (Document) nuxeoClient.getConverterFactory().readJSON(json, Document.class);
 ```
 
-**Async/Callbacks**
+####Async/Callbacks
 
 All APIs from the client are executable in Asynchronous way.
 
@@ -485,15 +485,16 @@ All apis are duplicated with an additional parameter `retrofit2.Callback<T>`.
 
 When no response is needed (204 No Content Status for example), use `retrofit2.Callback<ResponseBody>` (`okhttp3.ResponseBody`). This object can be introspected like the response headers or status for instance.
 
-**Custom Endpoints**
 
-**Marshalling**
+WIP: 
 
+####Custom Endpoints
 
+####Marshalling
 
-**Cache**
+####Cache
 
-**Errors/Exceptions**
+####Errors/Exceptions
 
 ## Testing
 
