@@ -22,7 +22,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import okhttp3.ResponseBody;
+
 import org.nuxeo.client.api.ConstantsV1;
+import org.nuxeo.client.api.objects.acl.ACE;
+import org.nuxeo.client.api.objects.acl.ACL;
 import org.nuxeo.client.api.objects.acl.ACP;
 import org.nuxeo.client.api.objects.audit.Audit;
 import org.nuxeo.client.api.objects.blob.Blob;
@@ -329,12 +333,75 @@ public class Document extends NuxeoEntity {
 
     /* ACP Sync */
 
-    public ACP fetchACP() {
-        return fetchACPById(uid);
+    public ACP fetchPermissions() {
+        return fetchPermissionsById(uid);
     }
 
-    public ACP fetchACPById(String documentId) {
+    protected ACP fetchPermissionsById(String documentId) {
         return (ACP) getResponse(documentId);
+    }
+
+    /**
+     * Add permission on the current document.
+     *
+     * @since 0.2
+     * @param ace the permission.
+     */
+    public void addPermission(ACE ace) {
+        Map<String, Object> params = new HashMap<>();
+        params.put("user", ace.getUsername());
+        setPermissionAutomationParameters(ace, params);
+        nuxeoClient.automation("Document.AddPermission").input(this).parameters(params).execute();
+    }
+
+    protected void setPermissionAutomationParameters(ACE ace, Map<String, Object> params) {
+        params.put("permission", ace.getPermission());
+        params.put("begin", ace.getBeginAsString());
+        params.put("end", ace.getEndAsString());
+        params.put("creator", ace.getCreator());
+        params.put("blockInheritance", ace.isBlockInheritance());
+        params.put("comment", ace.getComment());
+        params.put("notify", ace.isNotify());
+    }
+
+    /**
+     * Add permission on the current document by passing the related email.
+     * 
+     * @since 0.2
+     * @param ace the permission.
+     * @param email the invited email.
+     */
+    public void addInvitation(ACE ace, String email) {
+        Map<String, Object> params = new HashMap<>();
+        params.put("email", email);
+        setPermissionAutomationParameters(ace, params);
+        nuxeoClient.automation("Document.AddPermission").input(this).parameters(params).execute();
+    }
+
+    /**
+     * Remove all permissions for a given username on the current document.
+     *
+     * @since 0.2
+     * @param username User Name.
+     */
+    public void removePermission(String username) {
+        removePermission(null, username, ACL.LOCAL_ACL);
+    }
+
+    /**
+     * Remove all permissions for a given username, ace id, acl name on the current document.
+     *
+     * @since 0.2
+     * @param aceId ACE ID.
+     * @param username User Name.
+     * @param ACLName Name of the ACL (local, inherited...).
+     */
+    public void removePermission(String aceId, String username, String ACLName) {
+        Map<String, Object> params = new HashMap<>();
+        params.put("id", aceId);
+        params.put("user", username);
+        params.put("acl", ACLName);
+        nuxeoClient.automation("Document.RemovePermission").input(this).parameters(params).execute();
     }
 
     /* ACP Async */
@@ -343,8 +410,37 @@ public class Document extends NuxeoEntity {
         execute(callback, uid);
     }
 
-    public void fetchACPById(String documentId, Callback<ACP> callback) {
+    protected void fetchACPById(String documentId, Callback<ACP> callback) {
         execute(callback, documentId);
+    }
+
+    /**
+     * Add permission on the current document.
+     *
+     * @since 0.2
+     * @param ace the permission.
+     * @param callback
+     */
+    public void addPermission(ACE ace, Callback<ResponseBody> callback) {
+        Map<String, Object> params = new HashMap<>();
+        params.put("user", ace.getUsername());
+        setPermissionAutomationParameters(ace, params);
+        nuxeoClient.automation("Document.AddPermission").input(this).parameters(params).execute(callback);
+    }
+
+    /**
+     * Add permission on the current document by passing the related email.
+     *
+     * @since 0.2
+     * @param ace the permission.
+     * @param email the invited email.
+     * @param callback
+     */
+    public void addInvitation(ACE ace, String email, Callback<ResponseBody> callback) {
+        Map<String, Object> params = new HashMap<>();
+        params.put("email", email);
+        setPermissionAutomationParameters(ace, params);
+        nuxeoClient.automation("Document.AddPermission").input(this).parameters(params).execute(callback);
     }
 
     /* Children Sync */

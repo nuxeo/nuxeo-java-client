@@ -14,34 +14,26 @@
  * limitations under the License.
  *
  * Contributors:
- *         Vladimir Pasquier <vpasquier@nuxeo.com>
+ *     Nuxeo - initial API and implementation
  */
-package org.nuxeo.client.api.objects.acl;
+package org.nuxeo.client.internals.util;
 
-import java.util.List;
-
-import org.nuxeo.client.api.ConstantsV1;
-import org.nuxeo.client.api.objects.NuxeoEntity;
-
-import com.fasterxml.jackson.annotation.JsonProperty;
+import java.util.Date;
 
 /**
- * @since 0.1
+ * @since 0.2
  */
-public class ACP extends NuxeoEntity {
+public class DateUtils {
 
-    public ACP() {
-        super(ConstantsV1.ENTITY_TYPE_ACP);
+    private DateUtils() {
     }
 
-    @JsonProperty("acl")
-    protected List<ACL> acls;
-
-    public List<ACL> getAcls() {
-        return acls;
+    public static Date parseDate(String date) {
+        return DateParser.parseW3CDateTime(date);
     }
 
-    public void setAcls(List<ACL> acls) {
-        this.acls = acls;
+    public static String formatDate(Date date) {
+        return DateParser.formatW3CDateTime(date);
     }
+
 }

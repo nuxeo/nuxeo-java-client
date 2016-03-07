@@ -24,15 +24,18 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.io.IOException;
+import java.util.Calendar;
+import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Map;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.nuxeo.client.api.objects.RecordSet;
 import org.nuxeo.client.api.objects.Document;
 import org.nuxeo.client.api.objects.Documents;
+import org.nuxeo.client.api.objects.RecordSet;
+import org.nuxeo.client.api.objects.acl.ACE;
 import org.nuxeo.client.api.objects.acl.ACP;
 import org.nuxeo.client.api.objects.audit.Audit;
 import org.nuxeo.client.api.objects.blob.Blob;
@@ -262,10 +265,49 @@ public class TestRepository extends TestBase {
     @Test
     public void itCanFetchACP() {
         Document folder = nuxeoClient.repository().fetchDocumentByPath("folder_2");
-        ACP acp = folder.fetchACP();
+        ACP acp = folder.fetchPermissions();
         assertTrue(acp.getAcls().size() != 0);
         assertEquals("inherited", acp.getAcls().get(0).getName());
         assertEquals("Administrator", acp.getAcls().get(0).getAces().get(0).getUsername());
+    }
+
+    @Test
+    public void itCanManagePermissions() {
+        // ** CREATION **/
+        // First Check
+        Document folder = nuxeoClient.repository().fetchDocumentByPath("folder_2");
+        ACP acp = folder.fetchPermissions();
+        assertTrue(acp.getAcls().size() != 0);
+        assertEquals(1, acp.getAcls().size());
+        assertEquals(2, acp.getAcls().get(0).getAces().size());
+        assertEquals("inherited", acp.getAcls().get(0).getName());
+        // Settings
+        GregorianCalendar begin = new GregorianCalendar(2015, Calendar.JUNE, 20, 12, 34, 56);
+        GregorianCalendar end = new GregorianCalendar(2015, Calendar.JULY, 14, 12, 34, 56);
+        ACE ace = new ACE();
+        ace.setUsername("user0");
+        ace.setPermission("Write");
+        ace.setCreator("Administrator");
+        ace.setBegin(begin);
+        ace.setEnd(end);
+        ace.setBlockInheritance(true);
+        folder.addPermission(ace);
+        // Final Check
+        folder = nuxeoClient.repository().fetchDocumentByPath("folder_2");
+        acp = folder.fetchPermissions();
+        assertTrue(acp.getAcls().size() != 0);
+        assertEquals(1, acp.getAcls().size());
+        assertEquals(4, acp.getAcls().get(0).getAces().size());
+        assertEquals("local", acp.getAcls().get(0).getName());
+        // ** DELETION **/
+        folder.removePermission("user0");
+        // Final Check
+        folder = nuxeoClient.repository().fetchDocumentByPath("folder_2");
+        acp = folder.fetchPermissions();
+        assertTrue(acp.getAcls().size() != 0);
+        assertEquals(1, acp.getAcls().size());
+        assertEquals(3, acp.getAcls().get(0).getAces().size());
+        assertEquals("local", acp.getAcls().get(0).getName());
     }
 
     @Test

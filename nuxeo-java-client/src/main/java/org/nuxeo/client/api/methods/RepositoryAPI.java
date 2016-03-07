@@ -120,16 +120,16 @@ public interface RepositoryAPI {
     /* ACP */
 
     @GET("path/{documentPath}/@acl")
-    Call<ACP> fetchACPByPath(@Path("documentPath") String documentPath);
+    Call<ACP> fetchPermissionsByPath(@Path("documentPath") String documentPath);
 
     @GET("id/{documentId}/@acl")
-    Call<ACP> fetchACPById(@Path("documentId") String documentId);
+    Call<ACP> fetchPermissionsById(@Path("documentId") String documentId);
 
     @GET("repo/{repositoryName}/path/{documentPath}/@acl")
-    Call<ACP> fetchACPByPath(@Path("documentPath") String documentPath, @Path("repositoryName") String repositoryName);
+    Call<ACP> fetchPermissionsByPath(@Path("documentPath") String documentPath, @Path("repositoryName") String repositoryName);
 
     @GET("repo/{repositoryName}/id/{documentId}/@acl")
-    Call<ACP> fetchACPById(@Path("documentId") String documentId, @Path("repositoryName") String repositoryName);
+    Call<ACP> fetchPermissionsById(@Path("documentId") String documentId, @Path("repositoryName") String repositoryName);
 
     /* Children */
 

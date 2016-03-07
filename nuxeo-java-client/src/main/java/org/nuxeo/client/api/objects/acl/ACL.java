@@ -27,6 +27,10 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  */
 public class ACL {
 
+    public static final String LOCAL_ACL = "local";
+
+    public static final String INHERITED_ACL = "inherited";
+
     protected String name;
 
     @JsonProperty("ace")
@@ -38,5 +42,13 @@ public class ACL {
 
     public List<ACE> getAces() {
         return aces;
+    }
+
+    public void setAces(List<ACE> aces) {
+        this.aces = aces;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 }
