@@ -101,7 +101,7 @@ public class User extends NuxeoEntity {
     }
 
     public String getUserName() {
-        return this.properties.getUsername();
+        return this.properties.getUserName();
     }
 
     public void setExtendedGroups(List<ExtendedGroup> extendedGroups) {
@@ -133,6 +133,6 @@ public class User extends NuxeoEntity {
     }
 
     public void setUserName(String userName) {
-        this.properties.setUsername(userName);
+        this.properties.setUserName(userName);
     }
 }

@@ -115,11 +115,11 @@ public abstract class NuxeoEntity<T> {
      * @return the response as business objects.
      */
     protected Object getResponse(Object... parametersArray) {
-        if (api == null) {
-            api = nuxeoClient.getRetrofit().create(apiClass);
-        }
         if (nuxeoClient == null) {
             throw new NuxeoClientException("You should pass to your Nuxeo object the client instance");
+        }
+        if (api == null) {
+            api = nuxeoClient.getRetrofit().create(apiClass);
         }
         String method = getCurrentMethodName();
         Call<?> methodResult = getCall(api, method, parametersArray);

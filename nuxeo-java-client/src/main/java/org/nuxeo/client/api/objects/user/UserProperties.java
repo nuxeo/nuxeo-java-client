@@ -18,6 +18,8 @@
  */
 package org.nuxeo.client.api.objects.user;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import java.util.List;
 
 /**
@@ -35,7 +37,8 @@ public class UserProperties {
 
     protected String email;
 
-    protected String username;
+    @JsonProperty("username")
+    protected String userName;
 
     protected List<String> groups;
 
@@ -79,12 +82,12 @@ public class UserProperties {
         this.email = email;
     }
 
-    public String getUsername() {
-        return username;
+    public String getUserName() {
+        return userName;
     }
 
-    public void setUsername(String username) {
-        this.username = username;
+    public void setUserName(String username) {
+        this.userName = username;
     }
 
     public List<String> getGroups() {
