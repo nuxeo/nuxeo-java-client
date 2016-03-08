@@ -79,6 +79,10 @@ public class Repository extends NuxeoEntity {
         getResponse(document.getId());
     }
 
+    public void deleteDocument(String docId) {
+        getResponse(docId);
+    }
+
     /* By Id - Async */
 
     public void fetchDocumentById(String documentId, Callback<Document> callback) {

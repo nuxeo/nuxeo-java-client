@@ -216,6 +216,12 @@ public class TestRepository extends TestBase {
         nuxeoClient.repository().deleteDocument(documentToDelete);
         fetchInvalidations();
         assertTrue(!session.exists(new IdRef(documentToDelete.getId())));
+        Document documentToDelete3 = nuxeoClient.repository().fetchDocumentByPath("folder_1/note_3");
+        assertNotNull(documentToDelete3);
+        assertTrue(session.exists(new IdRef(documentToDelete3.getId())));
+        nuxeoClient.repository().deleteDocument(documentToDelete3.getId());
+        fetchInvalidations();
+        assertTrue(!session.exists(new IdRef(documentToDelete3.getId())));
     }
 
     @Test
