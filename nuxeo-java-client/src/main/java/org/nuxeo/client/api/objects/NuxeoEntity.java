@@ -142,9 +142,9 @@ public abstract class NuxeoEntity<T> {
             if (!response.isSuccess() && response.code() != 308) {
                 NuxeoClientException nuxeoClientException;
                 String errorBody = response.errorBody().string();
-                if (errorBody.equals(Strings.EMPTY)) {
+                if (Strings.EMPTY.equals(errorBody)) {
                     nuxeoClientException = new NuxeoClientException(response.code(), response.message());
-                } else if (!response.raw().body().contentType().equals(ConstantsV1.APPLICATION_JSON)) {
+                } else if (!ConstantsV1.APPLICATION_JSON.equals(response.raw().body().contentType())) {
                     nuxeoClientException = new NuxeoClientException(response.code(), errorBody);
                 } else {
                     nuxeoClientException = nuxeoClient.getConverterFactory().readJSON(errorBody,
