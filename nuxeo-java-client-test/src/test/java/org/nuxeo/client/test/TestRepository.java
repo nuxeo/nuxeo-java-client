@@ -19,17 +19,22 @@
 package org.nuxeo.client.test;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.client.api.objects.Document;
@@ -41,6 +46,9 @@ import org.nuxeo.client.api.objects.audit.Audit;
 import org.nuxeo.client.api.objects.blob.Blob;
 import org.nuxeo.client.internals.spi.NuxeoClientException;
 import org.nuxeo.client.test.marshallers.DocumentMarshaller;
+import org.nuxeo.client.test.objects.DataSet;
+import org.nuxeo.client.test.objects.Field;
+import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
@@ -96,7 +104,8 @@ public class TestRepository extends TestBase {
     @Test
     public void itCanFetchFolder() {
         Document root = nuxeoClient.repository().fetchDocumentRoot();
-        Document folder = nuxeoClient.repository().fetchDocumentByPath("folder_2");
+        Document folder = nuxeoClient.repository().fetchDocumentByPath
+                ("folder_2");
         assertNotNull(folder);
         assertEquals("Folder", folder.getType());
         assertEquals("document", folder.getEntityType());
@@ -135,7 +144,7 @@ public class TestRepository extends TestBase {
     public void itCanCreateDocument() {
         Document folder = nuxeoClient.repository().fetchDocumentByPath("folder_1");
         Document document = new Document("file", "File");
-        document.set("dc:title", "new title");
+        document.setPropertyValue("dc:title", "new title");
         document = nuxeoClient.repository().createDocumentByPath("folder_1", document);
         assertNotNull(document);
         assertEquals("File", document.getType());
@@ -166,7 +175,7 @@ public class TestRepository extends TestBase {
         // Update this document
         Document documentUpdated = new Document("test update", "Note");
         documentUpdated.setId(document.getId());
-        documentUpdated.set("dc:title", "note updated");
+        documentUpdated.setPropertyValue("dc:title", "note updated");
         documentUpdated = nuxeoClient.repository().updateDocument(documentUpdated);
         assertEquals("note updated", documentUpdated.get("dc:title"));
 
@@ -192,9 +201,9 @@ public class TestRepository extends TestBase {
 
         Document documentUpdated = new Document("test update", "Note");
         documentUpdated.setId(document.getId());
-        documentUpdated.set("dc:title", "note updated");
+        documentUpdated.setPropertyValue("dc:title", "note updated");
         documentUpdated.setTitle("note updated");
-        documentUpdated.set("dc:nature", "test");
+        documentUpdated.setPropertyValue("dc:nature", "test");
 
         documentUpdated = nuxeoClient.repository().updateDocument(documentUpdated);
         assertNotNull(documentUpdated);
@@ -328,18 +337,19 @@ public class TestRepository extends TestBase {
     public void testMultiThread() throws InterruptedException {
         Thread t = new Thread(() -> {
             try {
-                RecordSet documents = (RecordSet) nuxeoClient.automation()
-                                                             .param("query", "SELECT * FROM Document")
-                                                             .execute("Repository.ResultSetQuery");
+                RecordSet documents = nuxeoClient.automation()
+                                                 .param("query", "SELECT * " +
+                                                         "FROM Document")
+                                                 .execute("Repository.ResultSetQuery");
                 assertTrue(documents.getUuids().size() != 0);
             } catch (Exception e) {
             }
         });
         Thread t2 = new Thread(() -> {
             try {
-                RecordSet documents = (RecordSet) nuxeoClient.automation()
-                                                             .param("query", "SELECT * FROM Document")
-                                                             .execute("Repository.ResultSetQuery");
+                RecordSet documents = nuxeoClient.automation()
+                                                 .param("query", "SELECT * FROM Document")
+                                                 .execute("Repository.ResultSetQuery");
                 assertTrue(documents.getUuids().size() != 0);
             } catch (Exception e) {
             }
@@ -359,7 +369,8 @@ public class TestRepository extends TestBase {
                     ObjectMapper objectMapper = new ObjectMapper();
                     NuxeoClientException nuxeoClientException;
                     try {
-                        nuxeoClientException = objectMapper.readValue(response.errorBody().string(),
+                        nuxeoClientException = objectMapper.readValue
+                                (response.errorBody().string(),
                                 NuxeoClientException.class);
                     } catch (IOException reason) {
                         throw new NuxeoClientException(reason);
@@ -385,7 +396,90 @@ public class TestRepository extends TestBase {
     public void itCanUseEnrichers() {
         Document document = nuxeoClient.enrichers("acls", "breadcrumb").repository().fetchDocumentByPath("folder_2");
         assertNotNull(document);
-        assertTrue(((List) document.getContextParameters().get("acls")).size() == 1);
+        assertTrue(((List) document.getContextParameters().get("acls")).size
+                () == 1);
         assertTrue(((Map) document.getContextParameters().get("breadcrumb")).size() == 2);
+    }
+
+    @Ignore("NXP-19295")
+    @Test
+    public void itCanHandleComplexPropertiesWithJson() throws IOException {
+        // DataSet doctype comes from nuxeo-automation-test
+        Document folder = nuxeoClient.repository().fetchDocumentByPath("folder_1");
+        Document document = new Document("file", "DataSet");
+        document.setPropertyValue("dc:title", "new title");
+
+        File fieldAsJsonFile = FileUtils.getResourceFileFromContext("blob.json");
+        assertNotNull(fieldAsJsonFile);
+        String fieldsDataAsJSon = FileUtils.readFile(fieldAsJsonFile);
+        fieldsDataAsJSon = fieldsDataAsJSon.replaceAll("\n", "");
+        fieldsDataAsJSon = fieldsDataAsJSon.replaceAll("\r", "");
+        Map<String, Object> creationProps = new HashMap<>();
+        creationProps.put("ds:tableName", "MyTable");
+        creationProps.put("ds:fields", fieldsDataAsJSon);
+        document.setProperties(creationProps);
+
+        document = nuxeoClient.repository().createDocumentByPath("folder_1", document);
+        assertNotNull(document);
+        assertEquals("DataSet", document.getType());
+        List list = (List) document.getProperties().get("ds:fields");
+        assertFalse(list.isEmpty());
+        assertEquals(5, list.size());
+        assertEquals("document", document.getEntityType());
+        assertEquals(folder.getUid(), document.getParentRef());
+        assertEquals("/folder_1/file", document.getPath());
+        assertEquals("file", document.getTitle());
+    }
+
+    @Test
+    public void itCanHandleComplexProperties() throws IOException,
+            NoSuchFieldException, IllegalAccessException {
+        // DataSet doctype comes from nuxeo-automation-test
+        Document folder = nuxeoClient.repository().fetchDocumentByPath("folder_1");
+        Document document = new Document("file", "DataSet");
+        document.setPropertyValue("dc:title", "new title");
+
+        List<Field> fields = new ArrayList<>();
+        List<String> roles = new ArrayList<>();
+        roles.add("BenchmarkIndicator");
+        roles.add("Decision");
+        Field field1 = new Field("string", "description", roles, "columnName", "sqlTypeHint", "name");
+        Field field2 = new Field("string", "description", roles, "columnName", "sqlTypeHint", "name");
+        fields.add(field1);
+        fields.add(field2);
+        Map<String, Object> creationProps = new HashMap<>();
+        creationProps.put("ds:tableName", "MyTable");
+        creationProps.put("ds:fields", fields);
+        document.setProperties(creationProps);
+
+        document = nuxeoClient.repository().createDocumentByPath("folder_1", document);
+        assertNotNull(document);
+        assertEquals("DataSet", document.getType());
+        List list = (List) document.getProperties().get("ds:fields");
+        assertFalse(list.isEmpty());
+        assertEquals(2, list.size());
+        assertEquals("document", document.getEntityType());
+        assertEquals(folder.getUid(), document.getParentRef());
+        assertEquals("/folder_1/file", document.getPath());
+        assertEquals("file", document.getTitle());
+
+        fields.clear();
+        roles.clear();
+        roles.add("BenchmarkIndicator");
+        Field field = new Field("string", "description", roles, "columnName", "sqlTypeHint", "name");
+        fields.add(field);
+        DataSet dataset = new DataSet("file", "DataSet");
+        dataset.setId(document.getId());
+        dataset.setPropertyValue("ds:fields", fields);
+
+        document = nuxeoClient.repository().updateDocument(dataset);
+        dataset = new DataSet(document);
+        assertNotNull(dataset);
+        fields = (List<Field>) dataset.getProperties().get("ds:fields");
+        assertNotNull(fields);
+        fields = dataset.getFields();
+        assertFalse(fields.isEmpty());
+        assertEquals(1, fields.size());
+        assertEquals(1, fields.get(0).getRoles().size());
     }
 }

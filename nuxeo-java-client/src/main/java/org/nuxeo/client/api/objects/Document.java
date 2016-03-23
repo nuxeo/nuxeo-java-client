@@ -18,6 +18,8 @@
  */
 package org.nuxeo.client.api.objects;
 
+import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -32,6 +34,7 @@ import org.nuxeo.client.api.objects.audit.Audit;
 import org.nuxeo.client.api.objects.blob.Blob;
 import org.nuxeo.client.api.objects.workflow.Workflow;
 import org.nuxeo.client.api.objects.workflow.Workflows;
+import org.nuxeo.client.internals.spi.NuxeoClientException;
 
 import retrofit2.Callback;
 
@@ -140,6 +143,27 @@ public class Document extends NuxeoEntity {
         contextParameters = new HashMap<>();
     }
 
+    /**
+     * This constructor is providing a way to create 'adapters' of a document. See
+     * {@link org.nuxeo.client.test.objects.DataSet} in nuxeo-java-client-test.
+     *
+     * @since 1.0
+     * @param document the document to copy from the sub class.
+     */
+    public Document(Document document) {
+        super(ConstantsV1.ENTITY_TYPE_DOCUMENT);
+        type = ConstantsV1.DEFAULT_DOC_TYPE;
+        for (Field field : document.getClass().getDeclaredFields()) {
+            if (!Modifier.isFinal(field.getModifiers())) {
+                try {
+                    this.getClass().getSuperclass().getDeclaredField(field.getName()).set(this, field.get(document));
+                } catch (NoSuchFieldException | IllegalAccessException reason) {
+                    throw new NuxeoClientException(reason);
+                }
+            }
+        }
+    }
+
     public String getRepositoryName() {
         return repositoryName;
     }
@@ -230,6 +254,15 @@ public class Document extends NuxeoEntity {
 
     public Map<String, Object> getProperties() {
         return properties;
+    }
+
+    public Object getPropertyValue(String key) {
+        return properties.get(key);
+    }
+
+    public void setPropertyValue(String key, Object value) {
+        properties.put(key, value);
+        dirtyProperties.put(key, value);
     }
 
     public void followLifeCycle(String state) {
@@ -344,7 +377,7 @@ public class Document extends NuxeoEntity {
     /**
      * Add permission on the current document.
      *
-     * @since 0.2
+     * @since 1.0
      * @param ace the permission.
      */
     public void addPermission(ACE ace) {
@@ -367,7 +400,7 @@ public class Document extends NuxeoEntity {
     /**
      * Add permission on the current document by passing the related email.
      * 
-     * @since 0.2
+     * @since 1.0
      * @param ace the permission.
      * @param email the invited email.
      */
@@ -381,7 +414,7 @@ public class Document extends NuxeoEntity {
     /**
      * Remove all permissions for a given username on the current document.
      *
-     * @since 0.2
+     * @since 1.0
      * @param username User Name.
      */
     public void removePermission(String username) {
@@ -391,7 +424,7 @@ public class Document extends NuxeoEntity {
     /**
      * Remove all permissions for a given username, ace id, acl name on the current document.
      *
-     * @since 0.2
+     * @since 1.0
      * @param aceId ACE ID.
      * @param username User Name.
      * @param ACLName Name of the ACL (local, inherited...).
@@ -417,7 +450,7 @@ public class Document extends NuxeoEntity {
     /**
      * Add permission on the current document.
      *
-     * @since 0.2
+     * @since 1.0
      * @param ace the permission.
      * @param callback
      */
@@ -431,7 +464,7 @@ public class Document extends NuxeoEntity {
     /**
      * Add permission on the current document by passing the related email.
      *
-     * @since 0.2
+     * @since 1.0
      * @param ace the permission.
      * @param email the invited email.
      * @param callback

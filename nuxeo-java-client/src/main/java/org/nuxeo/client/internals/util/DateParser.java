@@ -27,7 +27,7 @@ import java.util.TimeZone;
 /**
  * Parse / format ISO 8601 dates.
  *
- * @since 0.2
+ * @since 1.0
  */
 public class DateParser {
 

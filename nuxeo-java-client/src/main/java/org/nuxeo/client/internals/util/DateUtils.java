@@ -21,7 +21,7 @@ package org.nuxeo.client.internals.util;
 import java.util.Date;
 
 /**
- * @since 0.2
+ * @since 1.0
  */
 public class DateUtils {
 
