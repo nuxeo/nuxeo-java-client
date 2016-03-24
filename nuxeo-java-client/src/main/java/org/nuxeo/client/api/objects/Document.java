@@ -156,7 +156,11 @@ public class Document extends NuxeoEntity {
         for (Field field : document.getClass().getDeclaredFields()) {
             if (!Modifier.isFinal(field.getModifiers())) {
                 try {
-                    this.getClass().getSuperclass().getDeclaredField(field.getName()).set(this, field.get(document));
+                    Class<?> superclass = this.getClass().getSuperclass();
+                    if(superclass.equals(NuxeoEntity.class)){
+                        throw new NuxeoClientException("You should never use this constructor unless you're using a subclass of Document");
+                    }
+                    superclass.getDeclaredField(field.getName()).set(this, field.get(document));
                 } catch (NoSuchFieldException | IllegalAccessException reason) {
                     throw new NuxeoClientException(reason);
                 }

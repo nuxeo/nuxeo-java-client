@@ -401,7 +401,7 @@ public class TestRepository extends TestBase {
         assertTrue(((Map) document.getContextParameters().get("breadcrumb")).size() == 2);
     }
 
-    @Ignore("NXP-19295")
+    @Ignore("NXP-19295 - We don't want to use that use case anymore. But keeping the test for explanation")
     @Test
     public void itCanHandleComplexPropertiesWithJson() throws IOException {
         // DataSet doctype comes from nuxeo-automation-test
@@ -463,6 +463,7 @@ public class TestRepository extends TestBase {
         assertEquals("/folder_1/file", document.getPath());
         assertEquals("file", document.getTitle());
 
+        // Here we are using a sub class DataSet of Document which let the dev implementing business logic.
         fields.clear();
         roles.clear();
         roles.add("BenchmarkIndicator");
