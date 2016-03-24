@@ -23,8 +23,8 @@ import static android.Manifest.permission.READ_CONTACTS;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.nuxeo.java.client.api.NuxeoClient;
-import org.nuxeo.java.client.api.objects.Document;
+import org.nuxeo.client.api.NuxeoClient;
+import org.nuxeo.client.api.objects.Document;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
@@ -365,7 +365,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         protected void onPostExecute(final Boolean success) {
             mAuthTask = null;
 
-            Document root = nuxeoClient.header("X-NXproperties", "*").getRepository().getDocumentRoot();
+            Document root = nuxeoClient.header("X-NXproperties", "*").repository().getDocumentRoot();
             if (root!=null) {
                 mProgressView.setVisibility(View.GONE);
                 mLoginFormView.setVisibility(View.GONE);
