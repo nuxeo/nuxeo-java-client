@@ -3,6 +3,7 @@ package nuxeo.org.nuxeoshare;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.StrictMode;
 import android.support.annotation.NonNull;
@@ -43,6 +44,8 @@ import static android.Manifest.permission.READ_CONTACTS;
  */
 public class NuxeoShare extends AppCompatActivity implements LoaderCallbacks<Cursor> {
 
+    public static final String PREFS_NAME = "NuxeoPrefsFile";
+
     /**
      * Id to identity READ_CONTACTS permission request.
      */
@@ -55,14 +58,11 @@ public class NuxeoShare extends AppCompatActivity implements LoaderCallbacks<Cur
     private static final String[] DUMMY_CREDENTIALS = new String[]{
             "foo@example.com:hello", "bar@example.com:world"
     };
-    /**
-     * Keep track of the login task to ensure we can cancel it if requested.
-     */
-    private UserLoginTask mAuthTask = null;
 
     // UI references.
     private AutoCompleteTextView mEmailView;
     private EditText mPasswordView;
+    private EditText mUrlView;
     private View mProgressView;
     private View mLoginFormView;
     private NuxeoClient nuxeoClient;
@@ -88,7 +88,7 @@ public class NuxeoShare extends AppCompatActivity implements LoaderCallbacks<Cur
                 return false;
             }
         });
-
+        mUrlView = (EditText) findViewById(R.id.url);
         Button mEmailSignInButton = (Button) findViewById(R.id.email_sign_in_button);
         mEmailSignInButton.setOnClickListener(new OnClickListener() {
             @Override
@@ -151,9 +151,6 @@ public class NuxeoShare extends AppCompatActivity implements LoaderCallbacks<Cur
      * errors are presented and no actual login attempt is made.
      */
     private void attemptLogin() {
-        if (mAuthTask != null) {
-            return;
-        }
 
         // Reset errors.
         mEmailView.setError(null);
@@ -162,6 +159,7 @@ public class NuxeoShare extends AppCompatActivity implements LoaderCallbacks<Cur
         // Store values at the time of the login attempt.
         String email = mEmailView.getText().toString();
         String password = mPasswordView.getText().toString();
+        String url = mUrlView.getText().toString();
 
         boolean cancel = false;
         View focusView = null;
@@ -180,17 +178,13 @@ public class NuxeoShare extends AppCompatActivity implements LoaderCallbacks<Cur
             cancel = true;
         }
 
-        if (cancel) {
-            // There was an error; don't attempt login and focus the first
-            // form field with an error.
-            focusView.requestFocus();
-        } else {
-            // Show a progress spinner, and kick off a background task to
-            // perform the user login attempt.
-            showProgress(true);
-            mAuthTask = new UserLoginTask(email, password);
-            mAuthTask.execute((Void) null);
-        }
+        SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
+        SharedPreferences.Editor editor = settings.edit();
+        editor.putString("login", email);
+        editor.putString("pwd", password);
+        editor.putString("url", "https://" + url + "/nuxeo");
+        // Message done.
+        editor.commit();
     }
 
     private boolean isEmailValid(String email) {
@@ -293,67 +287,5 @@ public class NuxeoShare extends AppCompatActivity implements LoaderCallbacks<Cur
         int IS_PRIMARY = 1;
     }
 
-    /**
-     * Represents an asynchronous login/registration task used to authenticate
-     * the user.
-     */
-    public class UserLoginTask extends AsyncTask<Void, Void, Boolean> {
-
-        private final String mEmail;
-        private final String mPassword;
-
-        UserLoginTask(String email, String password) {
-            mEmail = email;
-            mPassword = password;
-        }
-
-        @Override
-        protected Boolean doInBackground(Void... params) {
-            // TODO: attempt authentication against a network service.
-
-            System.setProperty("log4j2.disable.jmx", "true");
-            nuxeoClient = new NuxeoClient("http://demo.nuxeo.com/nuxeo", mEmail, mPassword);
-            try {
-                // Simulate network access.
-                Thread.sleep(2000);
-            } catch (InterruptedException e) {
-                return false;
-            }
-
-            for (String credential : DUMMY_CREDENTIALS) {
-                String[] pieces = credential.split(":");
-                if (pieces[0].equals(mEmail)) {
-                    // Account exists, return true if the password matches.
-                    return pieces[1].equals(mPassword);
-                }
-            }
-
-            // TODO: register the new account here.
-            return true;
-        }
-
-        @Override
-        protected void onPostExecute(final Boolean success) {
-            mAuthTask = null;
-            showProgress(false);
-
-            Document root = nuxeoClient.header("X-NXproperties", "*").repository().fetchDocumentRoot();
-            if (root!=null) {
-                mProgressView.setVisibility(View.GONE);
-                mLoginFormView.setVisibility(View.GONE);
-                mEmailView.setError("It works");
-            } else {
-                showProgress(false);
-                mEmailView.setError("It doesn't work");
-                mEmailView.requestFocus();
-            }
-        }
-
-        @Override
-        protected void onCancelled() {
-            mAuthTask = null;
-            showProgress(false);
-        }
-    }
 }
 
