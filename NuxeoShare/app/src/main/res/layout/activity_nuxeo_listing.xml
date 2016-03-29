@@ -19,6 +19,8 @@
         android:layout_height="wrap_content"
         android:layout_width="wrap_content"
         android:text="Upload"
-        android:onClick="upload" />
+        android:onClick="upload"
+        android:layout_centerHorizontal="true"
+        android:layout_alignParentBottom="true"/>
 
 </RelativeLayout>

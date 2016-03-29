@@ -7,13 +7,16 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
 
+import org.nuxeo.client.api.objects.Document;
+import org.nuxeo.client.api.objects.Documents;
+
 class NuxeoItemAdapter extends BaseAdapter {
 
     Context context;
-    String[] data;
+    Documents data;
     private static LayoutInflater inflater = null;
 
-    public NuxeoItemAdapter(Context context, String[] data) {
+    public NuxeoItemAdapter(Context context, Documents data) {
         this.context = context;
         this.data = data;
         inflater = (LayoutInflater) context
@@ -22,13 +25,12 @@ class NuxeoItemAdapter extends BaseAdapter {
 
     @Override
     public int getCount() {
-        // TODO Auto-generated method stub
-        return data.length;
+        return data.getTotalSize();
     }
 
     @Override
     public Object getItem(int position) {
-        return data[position];
+        return data.getDocuments().get(position);
     }
 
     @Override
@@ -38,12 +40,11 @@ class NuxeoItemAdapter extends BaseAdapter {
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        // TODO Auto-generated method stub
         View vi = convertView;
         if (vi == null)
             vi = inflater.inflate(R.layout.activity_nuxeo_listing_item, null);
-        TextView text = (TextView) vi.findViewById(R.id.text);
-        text.setText(data[position]);
+        TextView text = (TextView) vi.findViewById(R.id.docTitle);
+        text.setText("    " + ((Document) getItem(position)).getTitle());
         return vi;
     }
 }

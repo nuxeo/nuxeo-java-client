@@ -10,23 +10,15 @@
     tools:context="nuxeo.org.nuxeoshare.NuxeoListing">
 
     <TextView
-        android:id="@+id/idRef"
-        android:layout_width="fill_parent"
-        android:layout_height="26dip"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentRight="true"
-        android:singleLine="true"
-        android:visibility="invisible"
-        android:textSize="12sp" />
-
-    <TextView
-        android:id="@+id/line"
+        android:id="@+id/docTitle"
         android:layout_width="fill_parent"
         android:layout_height="26dip"
         android:layout_alignParentBottom="true"
         android:layout_alignParentRight="true"
         android:singleLine="true"
         android:text="title"
-        android:textSize="12sp" />
+        android:textSize="25sp"
+        android:drawableLeft="@drawable/spash"
+        android:paddingLeft="10dp"/>
 
 </RelativeLayout>

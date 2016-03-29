@@ -6,6 +6,7 @@ import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.StrictMode;
 import android.provider.MediaStore;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
@@ -13,6 +14,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import org.nuxeo.client.api.NuxeoClient;
 import org.nuxeo.client.api.objects.Document;
@@ -32,17 +34,28 @@ public class NuxeoListing extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+        StrictMode.setThreadPolicy(policy);
         setContentView(R.layout.activity_nuxeo_listing);
         // Get intent, action and MIME type
         final Intent intent = getIntent();
         final String action = intent.getAction();
         final String type = intent.getType();
 
-        // Prepare nx connection
+        // Check data config
         SharedPreferences settings = getSharedPreferences(NuxeoShare.PREFS_NAME, 0);
-        String login = settings.getString("login", "Administrator");
-        String pwd = settings.getString("pwd", "Administrator");
-        String url = settings.getString("url", null);
+        String login = settings.getString("login", "");
+        String pwd = settings.getString("pwd", "");
+        String url = settings.getString("url", "");
+        if(login.isEmpty()||url.isEmpty()||pwd.isEmpty()){
+            Toast.makeText(getApplicationContext(), "You should first configure your data.", Toast.LENGTH_SHORT).show();
+            Intent newIntent = new Intent(this, NuxeoShare.class);
+            startActivity(newIntent);
+            finish();
+            return;
+        }
+
+        // Prepare nx connection
         System.setProperty("log4j2.disable.jmx", "true");
         nuxeoClient = new NuxeoClient(url, login, pwd);
         currentDocument = nuxeoClient.repository().fetchDocumentRoot();
@@ -50,17 +63,21 @@ public class NuxeoListing extends AppCompatActivity {
         // Handle listing
         Documents children = currentDocument.fetchChildren();
         final ListView listview = (ListView) findViewById(R.id.nxListView);
-        listview.setAdapter(new NuxeoItemAdapter(this, new String[]{"data1",
-                "data2"}));
+        NuxeoItemAdapter adapter = new NuxeoItemAdapter(this, children);
+        listview.setAdapter(adapter);
 
         listview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 
             @Override
             public void onItemClick(AdapterView<?> parent, final View view,
                                     int position, long id) {
-                final String item = (String) parent.getItemAtPosition(position);
+                final Document item = (Document) parent.getItemAtPosition(position);
+                Documents children = nuxeoClient.repository().fetchChildrenByPath(item.getPath());
+                currentDocument = item;
+                NuxeoItemAdapter adapter = new NuxeoItemAdapter(view.getContext(), children);
+                listview.setAdapter(adapter);
+                adapter.notifyDataSetChanged();
             }
-
         });
 
         final Button button = (Button) findViewById(R.id.nxbutton);
@@ -99,7 +116,9 @@ public class NuxeoListing extends AppCompatActivity {
             // With batchupload
             BatchUpload batchUpload = nuxeoClient.fetchUploadManager();
             batchUpload = batchUpload.upload(file.getName(), file.length(), "", batchUpload.getBatchId(), "1", file);
-            Document androidFile = nuxeoClient.repository().fetchDocumentByPath("default-domain/UserWorkspaces/vpasquier/android");
+            Document doc = new Document("file", "File");
+            doc.setPropertyValue("dc:title", file.getName());
+            Document androidFile = nuxeoClient.repository().createDocumentByPath(currentDocument.getPath(), doc);
             androidFile.setPropertyValue("file:content", batchUpload.getBatchBlob());
             androidFile.updateDocument();
 
