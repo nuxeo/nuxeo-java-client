@@ -12,6 +12,7 @@ import org.nuxeo.client.api.NuxeoClient;
 import org.nuxeo.client.api.objects.Document;
 import org.nuxeo.client.api.objects.Documents;
 import org.nuxeo.client.api.objects.blob.Blob;
+import org.nuxeo.client.api.objects.upload.BatchUpload;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -73,13 +74,17 @@ public class NuxeoListing extends AppCompatActivity {
         if (imageUri != null) {
             String path = getPath(imageUri);
             File file = new File(path);
+
+            // With batchupload
+            //BatchUpload batchUpload = nuxeoClient.fetchUploadManager();
+            //batchUpload = batchUpload.upload(file.getName(), file.length(), "", batchUpload.getBatchId(), "1", file);
+            //Document androidFile = nuxeoClient.repository().fetchDocumentByPath("default-domain/UserWorkspaces/vpasquier/android");
+            //androidFile.setPropertyValue("file:content", batchUpload.getBatchBlob());
+            //androidFile.updateDocument();
+
+            // With Automation
             Blob fileBlob = new Blob(file);
             fileBlob = nuxeoClient.automation().newRequest("Blob.AttachOnDocument").param("document", "/default-domain/UserWorkspaces/vpasquier/android").input(fileBlob).execute();
-            if(fileBlob!=null){
-                // send cool message
-            }else{
-                // send bad exception
-            }
         }
     }
 
