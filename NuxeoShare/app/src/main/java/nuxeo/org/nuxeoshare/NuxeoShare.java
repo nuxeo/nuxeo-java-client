@@ -124,11 +124,9 @@ public class NuxeoShare extends AppCompatActivity {
             return;
         }
 
-        String realUrl = url + "/nuxeo";
-
         try {
             System.setProperty("log4j2.disable.jmx", "true");
-            NuxeoClient nuxeoClient = new NuxeoClient(realUrl, email, password);
+            NuxeoClient nuxeoClient = new NuxeoClient(url, email, password);
             nuxeoClient.fetchCurrentUser();
         } catch (Exception reason) {
             Toast.makeText(getApplicationContext(), "Wrong information. Please change your credentials or url.", Toast.LENGTH_SHORT).show();
@@ -139,7 +137,7 @@ public class NuxeoShare extends AppCompatActivity {
         SharedPreferences.Editor editor = settings.edit();
         editor.putString("login", email);
         editor.putString("pwd", password);
-        editor.putString("url", realUrl);
+        editor.putString("url", url);
         // Message done.
         boolean success = editor.commit();
         if(success){

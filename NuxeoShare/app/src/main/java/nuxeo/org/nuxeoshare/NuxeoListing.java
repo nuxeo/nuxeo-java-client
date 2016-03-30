@@ -47,7 +47,7 @@ public class NuxeoListing extends AppCompatActivity {
         String login = settings.getString("login", "");
         String pwd = settings.getString("pwd", "");
         String url = settings.getString("url", "");
-        if(login.isEmpty()||url.isEmpty()||pwd.isEmpty()){
+        if (login.isEmpty() || url.isEmpty() || pwd.isEmpty()) {
             Toast.makeText(getApplicationContext(), "You should first configure your data.", Toast.LENGTH_SHORT).show();
             Intent newIntent = new Intent(this, NuxeoShare.class);
             startActivity(newIntent);
@@ -85,7 +85,7 @@ public class NuxeoListing extends AppCompatActivity {
             public void onClick(View v) {
                 if (Intent.ACTION_SEND.equals(action) && type != null) {
                     if ("text/plain".equals(type)) {
-                        handleSendText(intent); // Handle text being sent
+                        handleSendImage(intent); // Handle text being sent
                     } else if (type.startsWith("image/")) {
                         handleSendImage(intent); // Handle single image being sent
                     }
@@ -120,8 +120,14 @@ public class NuxeoListing extends AppCompatActivity {
             doc.setPropertyValue("dc:title", file.getName());
             Document androidFile = nuxeoClient.repository().createDocumentByPath(currentDocument.getPath(), doc);
             androidFile.setPropertyValue("file:content", batchUpload.getBatchBlob());
-            androidFile.updateDocument();
+            androidFile = androidFile.updateDocument();
 
+            if (androidFile != null) {
+                Toast.makeText(getApplicationContext(), "File uploaded.", Toast.LENGTH_SHORT).show();
+            } else {
+                Toast.makeText(getApplicationContext(), "An error occurs.", Toast.LENGTH_SHORT).show();
+            }
+            this.finish();
             // With Automation (but would be with a file already created - it's just for illustration)
             // Blob fileBlob = new Blob(file);
             // fileBlob = nuxeoClient.automation().newRequest("Blob.AttachOnDocument").param("document", "/default-domain/UserWorkspaces/vpasquier/android").input(fileBlob).execute();

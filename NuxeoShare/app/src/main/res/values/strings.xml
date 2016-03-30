@@ -4,7 +4,7 @@
     <!-- Strings related to login -->
     <string name="prompt_email">Login</string>
     <string name="prompt_password">Password</string>
-    <string name="prompt_url">Nuxeo Server URL (example: http://demo.nuxeo.com)</string>
+    <string name="prompt_url">Nuxeo Server URL (example: http://demo.nuxeo.com/nuxeo)</string>
     <string name="action_sign_in">Store Data</string>
     <string name="clear">Clear</string>
     <string name="action_sign_in_short">Sign in</string>
