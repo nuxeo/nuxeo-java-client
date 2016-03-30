@@ -364,14 +364,15 @@ public class TestRepository extends TestBase {
     public void itCanFetchDocumentWithCallback() throws InterruptedException {
         nuxeoClient.repository().fetchDocumentRoot(new Callback<Document>() {
             @Override
-            public void onResponse(Response<Document> response) {
+            public void onResponse(Call<Document> call, Response<Document>
+                    response) {
                 if (!response.isSuccess()) {
                     ObjectMapper objectMapper = new ObjectMapper();
                     NuxeoClientException nuxeoClientException;
                     try {
                         nuxeoClientException = objectMapper.readValue
                                 (response.errorBody().string(),
-                                NuxeoClientException.class);
+                                        NuxeoClientException.class);
                     } catch (IOException reason) {
                         throw new NuxeoClientException(reason);
                     }
@@ -386,8 +387,8 @@ public class TestRepository extends TestBase {
             }
 
             @Override
-            public void onFailure(Throwable reason) {
-                fail(reason.getMessage());
+            public void onFailure(Call<Document> call, Throwable t) {
+                fail(t.getMessage());
             }
         });
     }

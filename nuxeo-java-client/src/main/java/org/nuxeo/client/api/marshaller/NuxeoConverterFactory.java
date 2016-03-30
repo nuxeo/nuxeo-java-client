@@ -76,7 +76,8 @@ public class NuxeoConverterFactory extends Converter.Factory {
     }
 
     @Override
-    public Converter<?, RequestBody> requestBodyConverter(Type type, Annotation[] annotations, Retrofit client) {
+    public Converter<?, RequestBody> requestBodyConverter(Type type, Annotation[] parameterAnnotations,
+            Annotation[] methodAnnotations, Retrofit retrofit) {
         JavaType javaType = mapper.getTypeFactory().constructType(type);
         NuxeoMarshaller<?> nuxeoMarshaller = marshallers.get(javaType.getRawClass());
         if (nuxeoMarshaller != null) {
