@@ -19,9 +19,13 @@
 package org.nuxeo.client.api.objects.blob;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 
-import org.nuxeo.client.api.objects.NuxeoEntity;
+import org.apache.commons.io.FileCleaningTracker;
 import org.nuxeo.client.api.ConstantsV1;
+import org.nuxeo.client.api.objects.NuxeoEntity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
@@ -38,6 +42,9 @@ public class Blob extends NuxeoEntity {
 
     @JsonIgnore
     protected File file;
+
+    @JsonIgnore
+    protected FileCleaningTracker fileCleaningTracker;
 
     public Blob() {
         super(null);
@@ -66,6 +73,11 @@ public class Blob extends NuxeoEntity {
             return -1;
         }
         return (int) length;
+    }
+
+    @JsonIgnore
+    public InputStream getStream() throws IOException {
+        return new FileInputStream(file);
     }
 
     public File getFile() {
@@ -103,5 +115,12 @@ public class Blob extends NuxeoEntity {
     @Override
     public String toString() {
         return fileName + " - " + mimeType + " - " + formatLength(getLength());
+    }
+
+    public void track() {
+        if (file != null) {
+            fileCleaningTracker = new FileCleaningTracker();
+            fileCleaningTracker.track(this.file, this);
+        }
     }
 }
