@@ -36,6 +36,8 @@ import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.util.Strings;
 import org.nuxeo.client.api.ConstantsV1;
 import org.nuxeo.client.api.NuxeoClient;
+import org.nuxeo.client.api.objects.blob.Blob;
+import org.nuxeo.client.api.objects.blob.Blobs;
 import org.nuxeo.client.internals.spi.NuxeoClientException;
 
 import retrofit2.Call;
@@ -253,6 +255,19 @@ public abstract class NuxeoEntity<T> {
             ((NuxeoEntity) entity).nuxeoClient = nuxeoClient;
             ((NuxeoEntity) entity).api = api;
             ((NuxeoEntity) entity).apiClass = apiClass;
+            if (entity instanceof Documents) {
+                for (Document doc : ((Documents) entity).getDocuments()) {
+                    doc.nuxeoClient = nuxeoClient;
+                    doc.api = api;
+                    doc.apiClass = apiClass;
+                }
+            } else if (entity instanceof Blobs) {
+                for (Blob blob : ((Blobs) entity).getBlobs()) {
+                    blob.nuxeoClient = nuxeoClient;
+                    blob.api = api;
+                    blob.apiClass = apiClass;
+                }
+            }
             return entity;
         } else if (entity instanceof List<?>) {
             List<NuxeoEntity> entities = new ArrayList<>();

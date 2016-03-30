@@ -73,6 +73,22 @@ public class Documents extends NuxeoEntity {
         this.documents = documents;
     }
 
+    public void addDocument(Document document) {
+        documents.add(document);
+    }
+
+    public void removeDocument(Document document) {
+        documents.remove(document);
+    }
+
+    public Document getDocument(int position){
+        return documents.get(position);
+    }
+
+    public int size(){
+        return documents.size();
+    }
+
     public List<Document> getDocuments() {
         return documents;
     }

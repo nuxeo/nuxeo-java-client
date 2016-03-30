@@ -275,7 +275,16 @@ public class TestRepository extends TestBase {
     public void itCanFetchChildren() {
         Document folder = nuxeoClient.repository().fetchDocumentByPath("/folder_2");
         Documents children = folder.fetchChildren();
-        assertTrue(children.getDocuments().size() != 0);
+        assertTrue(children.size() != 0);
+    }
+
+    @Test
+    public void itCanPlayWithChildren() {
+        Document folder = nuxeoClient.repository().fetchDocumentByPath("/folder_2");
+        Documents children = folder.fetchChildren();
+        assertTrue(children.size() != 0);
+        children = children.getDocument(0).fetchChildren();
+        assertNotNull(children);
     }
 
     @Test
