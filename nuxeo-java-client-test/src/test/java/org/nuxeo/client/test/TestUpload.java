@@ -132,7 +132,7 @@ public class TestUpload extends TestBase {
         // Getting a doc and attaching the batch file
         Document doc = new Document("file", "File");
         doc.setPropertyValue("dc:title", "new title");
-        doc = nuxeoClient.repository().createDocumentByPath("folder_1", doc);
+        doc = nuxeoClient.repository().createDocumentByPath("/folder_1", doc);
         assertNotNull(doc);
         doc.setPropertyValue("file:content", batchUpload.getBatchBlob());
         doc = doc.updateDocument();
@@ -151,7 +151,7 @@ public class TestUpload extends TestBase {
         // Getting a doc and attaching the batch file
         Document doc = new Document("file", "File");
         doc.setPropertyValue("dc:title", "new title");
-        doc = nuxeoClient.repository().createDocumentByPath("folder_1", doc);
+        doc = nuxeoClient.repository().createDocumentByPath("/folder_1", doc);
         assertNotNull(doc);
         Operation operation = nuxeoClient.automation("Blob.AttachOnDocument").param("document", doc);
         Blob blob = (Blob) batchUpload.execute(operation);
