@@ -35,13 +35,13 @@ public class Graph extends NuxeoEntity {
 
     protected List<Map<String, Object>> nodes;
 
-    protected List<Map<String, String>> transitions;
+    protected List<Map<String, Object>> transitions;
 
     public List<Map<String, Object>> getNodes() {
         return nodes;
     }
 
-    public List<Map<String, String>> getTransitions() {
+    public List<Map<String, Object>> getTransitions() {
         return transitions;
     }
 }

@@ -190,7 +190,7 @@ public interface RepositoryAPI {
     Call<Workflow> fetchWorkflowInstance(@Path("workflowInstanceId") String workflowInstanceId);
 
     @DELETE("workflow/{workflowInstanceId}")
-    Call<ResponseBody> deleteWorkflowInstance(@Path("workflowInstanceId") String workflowInstanceId);
+    Call<ResponseBody> cancelWorkflowInstance(@Path("workflowInstanceId") String workflowInstanceId);
 
     @GET("workflow/{workflowInstanceId}/graph")
     Call<Graph> fetchWorkflowInstanceGraph(@Path("workflowInstanceId") String workflowInstanceId);

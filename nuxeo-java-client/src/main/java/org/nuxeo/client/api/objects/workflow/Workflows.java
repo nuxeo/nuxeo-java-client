@@ -40,4 +40,8 @@ public class Workflows extends NuxeoEntity {
     public List<Workflow> getWorkflows() {
         return workflows;
     }
+
+    public Workflow get(int id) {
+        return workflows.get(id);
+    }
 }

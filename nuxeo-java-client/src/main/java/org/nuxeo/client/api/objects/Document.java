@@ -535,6 +535,10 @@ public class Document extends NuxeoEntity {
     }
 
     public Workflow startWorkflowInstance(Workflow workflow) {
+        return startWorkflowInstanceWithDocId(workflow);
+    }
+
+    public Workflow startWorkflowInstanceWithDocId(Workflow workflow){
         return (Workflow) getResponse(uid, workflow);
     }
 

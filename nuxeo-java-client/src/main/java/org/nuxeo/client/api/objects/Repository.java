@@ -266,7 +266,7 @@ public class Repository extends NuxeoEntity {
         return (Workflow) getResponse(workflowInstanceId);
     }
 
-    public void deleteWorkflowInstance(String workflowInstanceId) {
+    public void cancelWorkflowInstance(String workflowInstanceId) {
         getResponse(workflowInstanceId);
     }
 
