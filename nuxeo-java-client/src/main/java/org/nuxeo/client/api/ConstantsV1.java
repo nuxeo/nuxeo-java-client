@@ -87,6 +87,10 @@ public class ConstantsV1 {
 
     public static final String ENTITY_TYPE_OPERATION = "operation";
 
+    public static final String ENTITY_TYPE_TASK = "task";
+
+    public static final String ENTITY_TYPE_TASKS = "tasks";
+
     public static final String ENTITY_TYPE = "entity-type";
 
     public static final MediaType APPLICATION_JSON = MediaType.parse("application/json");

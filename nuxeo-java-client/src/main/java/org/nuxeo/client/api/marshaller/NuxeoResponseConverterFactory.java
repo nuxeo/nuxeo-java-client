@@ -120,7 +120,8 @@ public final class NuxeoResponseConverterFactory<T> implements Converter<Respons
                     return (T) value;
                 }
             } else {
-                // This workaround is only for recordsets. There is not header nuxeo-entity set for now serverside.
+                // This workaround is only for recordsets. There is not
+                // header nuxeo-entity set for now serverside.
                 String response = value.string();
                 Object objectResponse = readJSON(response, Object.class);
                 switch ((String) ((Map<String, Object>) objectResponse).get(ConstantsV1.ENTITY_TYPE)) {

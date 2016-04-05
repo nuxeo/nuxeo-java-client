@@ -92,10 +92,6 @@ public abstract class NuxeoEntity<T> {
         return entityType;
     }
 
-    public String getRepositoryName() {
-        return repositoryName;
-    }
-
     /**
      * Handle invocation of API Methods Asynchronously. Results will be returned in the given callback.
      */

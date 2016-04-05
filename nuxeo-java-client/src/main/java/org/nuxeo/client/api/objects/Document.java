@@ -32,6 +32,7 @@ import org.nuxeo.client.api.objects.acl.ACL;
 import org.nuxeo.client.api.objects.acl.ACP;
 import org.nuxeo.client.api.objects.audit.Audit;
 import org.nuxeo.client.api.objects.blob.Blob;
+import org.nuxeo.client.api.objects.task.Task;
 import org.nuxeo.client.api.objects.workflow.Workflow;
 import org.nuxeo.client.api.objects.workflow.Workflows;
 import org.nuxeo.client.internals.spi.NuxeoClientException;
@@ -157,8 +158,9 @@ public class Document extends NuxeoEntity {
             if (!Modifier.isFinal(field.getModifiers())) {
                 try {
                     Class<?> superclass = this.getClass().getSuperclass();
-                    if(superclass.equals(NuxeoEntity.class)){
-                        throw new NuxeoClientException("You should never use this constructor unless you're using a subclass of Document");
+                    if (superclass.equals(NuxeoEntity.class)) {
+                        throw new NuxeoClientException(
+                                "You should never use this constructor unless you're using a subclass of Document");
                     }
                     superclass.getDeclaredField(field.getName()).set(this, field.get(document));
                 } catch (NoSuchFieldException | IllegalAccessException reason) {
@@ -170,6 +172,10 @@ public class Document extends NuxeoEntity {
 
     public String getRepositoryName() {
         return repositoryName;
+    }
+
+    public void setRepositoryName(String repositoryName) {
+        this.repositoryName = repositoryName;
     }
 
     public String getId() {
@@ -538,7 +544,7 @@ public class Document extends NuxeoEntity {
         return startWorkflowInstanceWithDocId(workflow);
     }
 
-    public Workflow startWorkflowInstanceWithDocId(Workflow workflow){
+    public Workflow startWorkflowInstanceWithDocId(Workflow workflow) {
         return (Workflow) getResponse(uid, workflow);
     }
 
@@ -551,4 +557,15 @@ public class Document extends NuxeoEntity {
     public void startWorkflowInstance(Workflow workflow, Callback<Workflow> callback) {
         execute(callback, uid, workflow);
     }
+
+    /* Task */
+
+    public Task fetchTask() {
+        return fetchTaskById(uid);
+    }
+
+    public Task fetchTaskById(String documentId) {
+        return (Task) getResponse(documentId);
+    }
+
 }

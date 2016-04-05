@@ -31,6 +31,7 @@ import org.nuxeo.client.api.marshaller.NuxeoConverterFactory;
 import org.nuxeo.client.api.marshaller.NuxeoMarshaller;
 import org.nuxeo.client.api.objects.directory.DirectoryManager;
 import org.nuxeo.client.api.objects.user.CurrentUser;
+import org.nuxeo.client.api.objects.task.TaskManager;
 import org.nuxeo.client.internals.spi.NuxeoClientException;
 import org.nuxeo.client.api.cache.NuxeoResponseCache;
 import org.nuxeo.client.api.cache.ResultCacheInMemory;
@@ -58,6 +59,8 @@ public class NuxeoClient implements Client {
     protected final UserManager userManager;
 
     protected final DirectoryManager directoryManager;
+
+    protected final TaskManager taskManager;
 
     protected final NuxeoConverterFactory converterFactory;
 
@@ -91,6 +94,7 @@ public class NuxeoClient implements Client {
         userManager = new UserManager(this);
         directoryManager = new DirectoryManager(this);
         batchUpload = new BatchUpload(this);
+        taskManager = new TaskManager(this);
     }
 
     public NuxeoClient registerMarshaller(NuxeoMarshaller<?> marshaller) {
@@ -253,6 +257,10 @@ public class NuxeoClient implements Client {
 
     public DirectoryManager getDirectoryManager() {
         return directoryManager;
+    }
+
+    public TaskManager getTaskManager() {
+        return taskManager;
     }
 
     @Override

@@ -24,10 +24,12 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.client.api.objects.Document;
 import org.nuxeo.client.api.objects.task.Task;
+import org.nuxeo.client.api.objects.task.TaskCompletionRequest;
 import org.nuxeo.client.api.objects.task.Tasks;
 import org.nuxeo.client.api.objects.workflow.Graph;
 import org.nuxeo.client.api.objects.workflow.Workflow;
@@ -42,6 +44,8 @@ import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.Jetty;
+
+import java.util.HashMap;
 
 /**
  * @since 0.1
@@ -116,23 +120,24 @@ public class TestWorkflowAndTask extends TestBase {
     @Test
     public void itCanFetchTaskFromDoc() {
         Task task = fetchAllTasks().get(0);
-        String name = task.getName();
         Document target = nuxeoClient.repository().fetchDocumentById(task.getTargetDocumentIds().get(0).get("id"));
         task = target.fetchTask();
         assertNotNull(task);
-        assertEquals(name, task.getName());
     }
 
+    @Ignore("JAVACLIENT-82")
     @Test
-    public void itCanReassign() {
+    public void itCanCompleteATask() {
         Task task = fetchAllTasks().get(0);
-        String name = task.getName();
-        Document target = nuxeoClient.repository().fetchDocumentById(task.getTargetDocumentIds().get(0).get("id"));
-        task = target.fetchTask();
+        TaskCompletionRequest taskCompletionRequest = new TaskCompletionRequest();
+        taskCompletionRequest.setComment("comment");
+        taskCompletionRequest.setVariables(new HashMap<>());
+        task = nuxeoClient.getTaskManager().complete(task.getId(),
+                "start_review", taskCompletionRequest);
         assertNotNull(task);
-        assertEquals(name, task.getName());
     }
 
+    @Ignore("JAVACLIENT-81")
     @Test
     public void itCanDelegate() {
         Task task = fetchAllTasks().get(0);

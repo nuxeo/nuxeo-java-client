@@ -16,7 +16,7 @@
  * Contributors:
  *         Vladimir Pasquier <vpasquier@nuxeo.com>
  */
-package org.nuxeo.client.api.objects.workflow;
+package org.nuxeo.client.api.objects.task;
 
 import java.util.List;
 
@@ -26,26 +26,26 @@ import org.nuxeo.client.api.objects.NuxeoEntity;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
- * @since 0.1
+ * @since 1.0
  */
-public class Workflows extends NuxeoEntity {
+public class Tasks extends NuxeoEntity {
+
+    public Tasks() {
+        super(ConstantsV1.ENTITY_TYPE_TASKS);
+    }
 
     @JsonProperty("entries")
-    protected List<Workflow> workflows;
+    protected List<Task> tasks;
 
-    public Workflows() {
-        super(ConstantsV1.ENTITY_TYPE_WORKFLOWS);
+    public List<Task> getTasks() {
+        return tasks;
     }
 
-    public List<Workflow> getWorkflows() {
-        return workflows;
-    }
-
-    public Workflow get(int id) {
-        return workflows.get(id);
+    public Task get(int id) {
+        return tasks.get(id);
     }
 
     public int size() {
-        return workflows.size();
+        return tasks.size();
     }
 }

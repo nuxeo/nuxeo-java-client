@@ -16,36 +16,40 @@
  * Contributors:
  *         Vladimir Pasquier <vpasquier@nuxeo.com>
  */
-package org.nuxeo.client.api.objects.workflow;
+package org.nuxeo.client.api.objects.task;
 
-import java.util.List;
+import java.util.Map;
 
 import org.nuxeo.client.api.ConstantsV1;
 import org.nuxeo.client.api.objects.NuxeoEntity;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-
 /**
- * @since 0.1
+ * @since 1.0
  */
-public class Workflows extends NuxeoEntity {
+public class TaskCompletionRequest extends NuxeoEntity {
 
-    @JsonProperty("entries")
-    protected List<Workflow> workflows;
+    protected String comment;
 
-    public Workflows() {
-        super(ConstantsV1.ENTITY_TYPE_WORKFLOWS);
+    private Map<String, Object> variables;
+
+    public TaskCompletionRequest() {
+        super(ConstantsV1.ENTITY_TYPE_TASK);
     }
 
-    public List<Workflow> getWorkflows() {
-        return workflows;
+    public String getComment() {
+        return comment;
     }
 
-    public Workflow get(int id) {
-        return workflows.get(id);
+    public void setComment(String comment) {
+        this.comment = comment;
     }
 
-    public int size() {
-        return workflows.size();
+    public void setVariables(Map<String, Object> variables) {
+        this.variables = variables;
     }
+
+    public Map<String, Object> getVariables() {
+        return variables;
+    }
+
 }

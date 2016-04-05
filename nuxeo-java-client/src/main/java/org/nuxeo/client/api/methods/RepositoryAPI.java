@@ -25,6 +25,7 @@ import org.nuxeo.client.api.objects.blob.Blob;
 import org.nuxeo.client.api.objects.Documents;
 import org.nuxeo.client.api.objects.acl.ACP;
 import org.nuxeo.client.api.objects.audit.Audit;
+import org.nuxeo.client.api.objects.task.Task;
 import org.nuxeo.client.api.objects.workflow.Graph;
 import org.nuxeo.client.api.objects.workflow.Workflow;
 import org.nuxeo.client.api.objects.workflow.Workflows;
@@ -203,5 +204,13 @@ public interface RepositoryAPI {
 
     @GET("workflowModel")
     Call<Workflows> fetchWorkflowModels();
+
+    /* Tasks */
+
+    @GET("id/{documentId}/@task")
+    Call<Task> fetchTaskById(@Path("documentId") String documentId);
+
+    @GET("repo/{repositoryName}/id/{documentId}/@task")
+    Call<Task> fetchTaskById(@Path("documentId") String documentId, @Path("repositoryName") String repositoryName);
 
 }
