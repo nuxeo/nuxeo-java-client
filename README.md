@@ -192,20 +192,20 @@ root = nuxeoClient.repository().repositoryName("other_repo").fetchDocumentRoot()
 
 ```java
 // Fetch document by path
-Document folder = nuxeoClient.repository().fetchDocumentByPath("folder_2");
+Document folder = nuxeoClient.repository().fetchDocumentByPath("/folder_2");
 ```
 
 ```java
 // Create a document
-Document folder = nuxeoClient.repository().fetchDocumentByPath("folder_1");
+Document folder = nuxeoClient.repository().fetchDocumentByPath("/folder_1");
 Document document = new Document("file", "File");
 document.set("dc:title", "new title");
-document = nuxeoClient.repository().createDocumentByPath("folder_1", document);
+document = nuxeoClient.repository().createDocumentByPath("/folder_1", document);
 ```
 
 ```java
 // Update a document
-Document document = nuxeoClient.repository().fetchDocumentByPath("folder_1/note_0");
+Document document = nuxeoClient.repository().fetchDocumentByPath("/folder_1/note_0");
 Document documentUpdated = new Document("test update", "Note");
 documentUpdated.setId(document.getId());
 documentUpdated.set("dc:title", "note updated");
@@ -216,19 +216,19 @@ documentUpdated = nuxeoClient.repository().updateDocument(documentUpdated);
 
 ```java
 // Delete a document
-Document documentToDelete = nuxeoClient.repository().fetchDocumentByPath("folder_1/note_1");
+Document documentToDelete = nuxeoClient.repository().fetchDocumentByPath("/folder_1/note_1");
 nuxeoClient.repository().deleteDocument(documentToDelete);
 ```
 
 ```java
 // Fetch children
-Document folder = nuxeoClient.repository().fetchDocumentByPath("folder_2");
+Document folder = nuxeoClient.repository().fetchDocumentByPath("/folder_2");
 Documents children = folder.fetchChildren();
 ```
 
 ```java
 // Fetch blob
-Document file = nuxeoClient.repository().fetchDocumentByPath("folder_2/file");
+Document file = nuxeoClient.repository().fetchDocumentByPath("/folder_2/file");
 Blob blob = file.fetchBlob();
 ```
 
@@ -286,7 +286,7 @@ To manage permission, please look inside package  `org.nuxeo.client.api.objects.
 
 ```java
 // Fetch Permissions of the current document
-Document folder = nuxeoClient.repository().fetchDocumentByPath("folder_2");
+Document folder = nuxeoClient.repository().fetchDocumentByPath("/folder_2");
 ACP acp = folder.fetchPermissions();
 assertTrue(acp.getAcls().size() != 0);
 assertEquals("inherited", acp.getAcls().get(0).getName());
@@ -358,7 +358,7 @@ Attach batch to a document:
 ```java
 Document doc = new Document("file", "File");
 doc.set("dc:title", "new title");
-doc = nuxeoClient.repository().createDocumentByPath("folder_1", doc);
+doc = nuxeoClient.repository().createDocumentByPath("/folder_1", doc);
 doc.set("file:content", batchUpload.getBatchBlob());
 doc = doc.updateDocument();
 ```
@@ -368,7 +368,7 @@ or via Automation:
 ```java
 Document doc = new Document("file", "File");
 doc.set("dc:title", "new title");
-doc = nuxeoClient.repository().createDocumentByPath("folder_1", doc);
+doc = nuxeoClient.repository().createDocumentByPath("/folder_1", doc);
 Operation operation = nuxeoClient.automation("Blob.AttachOnDocument").param("document", doc);
 Blob blob = batchUpload.execute(operation);
 ```
