@@ -1,16 +1,13 @@
-# Java Client Library for the Nuxeo Platform REST APIs
+# Java Client Library 1.0 for the Nuxeo Platform REST APIs
 
 The Nuxeo Java Client is a Java client library (can be used for Android) for the Nuxeo Automation and REST API.
 
-This is an on-going project, supported by Nuxeo. Here is the [Documentation Website](http://nuxeo.github.io/nuxeo-java-client).
+This is supported by Nuxeo and compatible with Nuxeo LTS 2015 and latest FastTracks. 
+
+Here is the [Documentation Website](http://nuxeo.github.io/nuxeo-java-client).
 
 ![Build Status](https://qa.nuxeo.org/jenkins/buildStatus/icon?job=nuxeo-java-client-master)
 
-## Sub-Modules Organization
-
-- `nuxeo-java-client`: Nuxeo Java Client Library.
-- `nuxeo-java-client-test`: Nuxeo Java Client Suite Test.
-- `NuxeoJavaClientSample`: Nuxeo Java Client Android Application Sample And Suite Test.
 
 ## Building
 
@@ -39,9 +36,9 @@ This is an on-going project, supported by Nuxeo. Here is the [Documentation Webs
 
 ### Client - Library Import
 
-Here is the [Nuxeo Client Library 0.1](https://mavenin.nuxeo.com/nexus/service/local/repositories/public-releases/content/org/nuxeo/client/nuxeo-java-client/0.1/nuxeo-java-client-0.1.jar).
+Here is the [Nuxeo Client Library 1.0](https://mavenin.nuxeo.com/nexus/service/local/repositories/public-releases/content/org/nuxeo/client/nuxeo-java-client/1.0/nuxeo-java-client-1.0.jar).
 
-Here is the [0.1 changeset](https://jira.nuxeo.com/secure/ReleaseNote.jspa?projectId=12812&version=17637).
+Here is the [1.0 changeset]().
 
 **Import Nuxeo Java Client with:**
 
@@ -51,7 +48,7 @@ Maven:
 <dependency>
   <groupId>org.nuxeo.client</groupId>
   <artifactId>nuxeo-java-client</artifactId>
-  <version>0.1</version>
+  <version>1.0</version>
 </dependency>
 ```
 
@@ -69,21 +66,27 @@ with repository:
 Gradle:
 
 ```
-compile 'org.nuxeo.client:nuxeo-java-client:0.1'
+compile 'org.nuxeo.client:nuxeo-java-client:1.0'
 ```
 
 Ivy:
 
 ```
-<dependency org="org.nuxeo.client" name="nuxeo-java-client" rev="0.1" />
+<dependency org="org.nuxeo.client" name="nuxeo-java-client" rev="1.0" />
 
 ```
 
 SBT:
 
 ```
-libraryDependencies += "org.nuxeo.client" % "nuxeo-java-client" % "0.1"
+libraryDependencies += "org.nuxeo.client" % "nuxeo-java-client" % "1.0"
 ```
+
+### Sub-Modules Organization
+
+- `nuxeo-java-client`: Nuxeo Java Client Library.
+- `nuxeo-java-client-test`: Nuxeo Java Client Suite Test.
+- `NuxeoJavaClientSample`: Nuxeo Java Client Android Application Sample And Suite Test.
 
 ###Usage
 
@@ -628,7 +631,7 @@ The `NuxeoClientException` within `nuxeo-java-client` is consuming the default a
 We are glad to welcome new developers on this initiative, and even simple usage feedback is great.
 
 - Ask your questions on [Nuxeo Answers](http://answers.nuxeo.com)
-- Report issues on this GitHub repository (see [issues link](http://github.com/nuxeo/nuxeo-box-api/issues) on the right)
+- Report issues on this GitHub repository (see [issues link](http://github.com/nuxeo/nuxeo-java-client/issues) on the right)
 - Contribute: Send pull requests!
 
 ##About third party libraries
