@@ -36,9 +36,7 @@ Here is the [Documentation Website](http://nuxeo.github.io/nuxeo-java-client).
 
 ### Client - Library Import
 
-Here is the [Nuxeo Client Library 1.0](https://mavenin.nuxeo.com/nexus/service/local/repositories/public-releases/content/org/nuxeo/client/nuxeo-java-client/1.0/nuxeo-java-client-1.0.jar).
-
-Here is the [1.0 changeset]().
+Here is the [Nuxeo Client Library 1.0](http://maven.nuxeo.com/nexus/service/local/repositories/public-releases/content/org/nuxeo/client/nuxeo-java-client/1.0/nuxeo-java-client-1.0.jar).
 
 **Import Nuxeo Java Client with:**
 
