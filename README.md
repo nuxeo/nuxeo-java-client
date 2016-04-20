@@ -36,7 +36,13 @@ Here is the [Documentation Website](http://nuxeo.github.io/nuxeo-java-client).
 
 ### Client - Library Import
 
+#### Compatible with Nuxeo Platform 7.10
+
 Here is the [Nuxeo Client Library 1.0](http://maven.nuxeo.com/nexus/service/local/repositories/public-releases/content/org/nuxeo/client/nuxeo-java-client/1.0/nuxeo-java-client-1.0.jar).
+
+#### Compatible with Nuxeo Platform 8.x
+
+Here is the [Nuxeo Client Library 2.0](http://maven.nuxeo.com/nexus/service/local/repositories/public-releases/content/org/nuxeo/client/nuxeo-java-client/2.0/nuxeo-java-client-2.0.jar).
 
 **Import Nuxeo Java Client with:**
 
@@ -46,7 +52,7 @@ Maven:
 <dependency>
   <groupId>org.nuxeo.client</groupId>
   <artifactId>nuxeo-java-client</artifactId>
-  <version>1.0</version>
+  <version>1.0</version> or <version>2.0</version>
 </dependency>
 ```
 
@@ -64,20 +70,20 @@ with repository:
 Gradle:
 
 ```
-compile 'org.nuxeo.client:nuxeo-java-client:1.0'
+compile 'org.nuxeo.client:nuxeo-java-client:1.0' (or 2.0)
 ```
 
 Ivy:
 
 ```
-<dependency org="org.nuxeo.client" name="nuxeo-java-client" rev="1.0" />
+<dependency org="org.nuxeo.client" name="nuxeo-java-client" rev="1.0" (or 2.0) />
 
 ```
 
 SBT:
 
 ```
-libraryDependencies += "org.nuxeo.client" % "nuxeo-java-client" % "1.0"
+libraryDependencies += "org.nuxeo.client" % "nuxeo-java-client" % "1.0" (or 2.0)
 ```
 
 ### Sub-Modules Organization
