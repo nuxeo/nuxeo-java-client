@@ -120,13 +120,20 @@ public final class NuxeoResponseConverterFactory<T> implements Converter<Respons
                     return (T) value;
                 }
             } else {
-                // This workaround is only for recordsets. There is not
-                // header nuxeo-entity set for now serverside.
+                // This workaround is only when the entity-type is not declared in the mediatype.
                 String response = value.string();
                 Object objectResponse = readJSON(response, Object.class);
                 switch ((String) ((Map<String, Object>) objectResponse).get(ConstantsV1.ENTITY_TYPE)) {
+                case ConstantsV1.ENTITY_TYPE_DOCUMENT:
+                    return (T) readJSON(response, Document.class);
+                case ConstantsV1.ENTITY_TYPE_DOCUMENTS:
+                    return (T) readJSON(response, Documents.class);
                 case ConstantsV1.ENTITY_TYPE_RECORDSET:
                     return (T) readJSON(response, RecordSet.class);
+                case ConstantsV1.ENTITY_TYPE_BLOB:
+                    return (T) readJSON(response, Blob.class);
+                case ConstantsV1.ENTITY_TYPE_BLOBS:
+                    return (T) readJSON(response, Blob.class);
                 default:
                     return (T) value;
                 }
