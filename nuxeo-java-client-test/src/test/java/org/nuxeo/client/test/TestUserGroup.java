@@ -88,7 +88,6 @@ public class TestUserGroup extends TestBase {
         newUser.setEmail("toto@nuxeo.com");
         newUser.setFirstName("to");
         newUser.setLastName("to");
-        newUser.setPassword("totopwd");
         List<String> groups = new ArrayList<>();
         groups.add("members");
         newUser.setGroups(groups);

@@ -96,10 +96,6 @@ public class User extends NuxeoEntity {
         return this.properties.getGroups();
     }
 
-    public String getPassword() {
-        return this.properties.getPassword();
-    }
-
     public String getUserName() {
         return this.properties.getUserName();
     }
@@ -126,10 +122,6 @@ public class User extends NuxeoEntity {
 
     public void setGroups(List<String> groups) {
         this.properties.setGroups(groups);
-    }
-
-    public void setPassword(String password) {
-        this.properties.setPassword(password);
     }
 
     public void setUserName(String userName) {
