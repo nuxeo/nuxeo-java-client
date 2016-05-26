@@ -137,7 +137,7 @@ public abstract class NuxeoEntity<T> {
         try {
             Response<?> response = methodResult.execute();
             // For redirect 308 -> the response should be success
-            if (!response.isSuccess() && response.code() != 308) {
+            if (!response.isSuccessful() && response.code() != 308) {
                 NuxeoClientException nuxeoClientException;
                 String errorBody = response.errorBody().string();
                 if (Strings.EMPTY.equals(errorBody)) {

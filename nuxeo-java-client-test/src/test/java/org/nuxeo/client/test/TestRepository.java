@@ -376,7 +376,7 @@ public class TestRepository extends TestBase {
             @Override
             public void onResponse(Call<Document> call, Response<Document>
                     response) {
-                if (!response.isSuccess()) {
+                if (!response.isSuccessful()) {
                     ObjectMapper objectMapper = new ObjectMapper();
                     NuxeoClientException nuxeoClientException;
                     try {
