@@ -19,7 +19,6 @@
 package org.nuxeo.client.api.objects;
 
 import java.io.IOException;
-import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.security.MessageDigest;
@@ -51,8 +50,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  * @since 0.1
  */
 public abstract class NuxeoEntity<T> {
-
-    private static final Logger logger = LogManager.getLogger(NuxeoEntity.class);
 
     @JsonProperty("entity-type")
     protected final String entityType;
@@ -173,25 +170,10 @@ public abstract class NuxeoEntity<T> {
      * Compute the cache key with request
      */
     protected String computeCacheKey(Call<?> methodResult) {
-        okhttp3.Call rawCall;
-        Request originalRequest;
-        try {
-            Method rawCallMethod = methodResult.getClass().getDeclaredMethod(ConstantsV1.CREATE_RAW_CALL);
-            rawCallMethod.setAccessible(true);
-            rawCall = (okhttp3.Call) rawCallMethod.invoke(methodResult);
-            Field originalRequestField = rawCall.getClass().getDeclaredField(ConstantsV1.ORIGINAL_REQUEST);
-            originalRequestField.setAccessible(true);
-            originalRequest = (Request) originalRequestField.get(rawCall);
-            logger.debug("Request:" + originalRequest.toString());
-        } catch (NoSuchFieldException | NoSuchMethodException | IllegalAccessException reason) {
-            throw new NuxeoClientException(reason);
-        } catch (InvocationTargetException reason) {
-            throw new NuxeoClientException(reason.getTargetException().getMessage(), reason);
-        }
+        Request originalRequest = methodResult.request();
         StringBuffer sb = new StringBuffer();
         sb.append(originalRequest.toString());
         sb.append(originalRequest.headers().toString());
-
         MessageDigest digest;
         try {
             digest = java.security.MessageDigest.getInstance(ConstantsV1.MD_5);

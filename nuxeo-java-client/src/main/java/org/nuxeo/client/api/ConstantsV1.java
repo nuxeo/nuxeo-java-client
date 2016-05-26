@@ -59,8 +59,6 @@ public class ConstantsV1 {
 
     public static final String ENTITY_TYPE_DOCUMENTS = "documents";
 
-    public static final String ENTITY_TYPE_BLOB = "blob";
-
     public static final String ENTITY_TYPE_AUDIT = "logEntries";
 
     public static final String ENTITY_TYPE_LOGENTRY = "logEntry";
@@ -107,10 +105,6 @@ public class ConstantsV1 {
 
     public static final String CONTENT_TYPE_APPLICATION_OCTET_STREAM = "Content-Type: " + APPLICATION_OCTET_STREAM;
 
-    public static final String CREATE_RAW_CALL = "createRawCall";
-
-    public static final String ORIGINAL_REQUEST = "originalRequest";
-
     public static final String MD_5 = "MD5";
 
     public static final int CHUNK_SIZE = 1024 * 1024;
@@ -121,4 +115,5 @@ public class ConstantsV1 {
 
     public static final String DEFAULT_FILE_CONTENT = "file:content";
 
+    public static final String ENTITY_TYPE_BLOB = "blob";
 }
