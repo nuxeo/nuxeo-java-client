@@ -146,7 +146,7 @@ public class Document extends NuxeoEntity {
 
     /**
      * This constructor is providing a way to create 'adapters' of a document. See
-     * {@link org.nuxeo.client.test.objects.DataSet} in nuxeo-java-client-test.
+     * org.nuxeo.client.test.objects.DataSet in nuxeo-java-client-test.
      *
      * @since 1.0
      * @param document the document to copy from the sub class.
