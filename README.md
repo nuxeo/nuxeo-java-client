@@ -34,13 +34,13 @@ Here is the [Documentation Website](http://nuxeo.github.io/nuxeo-java-client).
   - username: Administrator
   - password: Administrator
 
-### Client - Library Import
+### Library Import
 
-#### Compatible with Nuxeo Platform 7.10
+#### Compatible with Nuxeo Platform 7.10 - LTS 2015
 
 Here is the [Nuxeo Client Library 1.0](http://maven.nuxeo.com/nexus/service/local/repositories/public-releases/content/org/nuxeo/client/nuxeo-java-client/1.0/nuxeo-java-client-1.0.jar).
 
-#### Compatible with Nuxeo Platform 8.x
+#### Compatible with Nuxeo Platform 8.x - FastTracks
 
 Here is the [Nuxeo Client Library 2.0](http://maven.nuxeo.com/nexus/service/local/repositories/public-releases/content/org/nuxeo/client/nuxeo-java-client/2.0/nuxeo-java-client-2.0.jar).
 
@@ -52,17 +52,13 @@ Maven:
 <dependency>
   <groupId>org.nuxeo.client</groupId>
   <artifactId>nuxeo-java-client</artifactId>
-  <version>1.0</version> or <version>2.0</version>
+  <version>1.0</version> (or <version>2.0</version>)
 </dependency>
-```
-
-with repository:
-
-```
+...
 <repository>
   <id>public-releases</id>
   <url>
-    http://mavenin.nuxeo.com/nexus/content/repositories/public-releases
+    http://maven.nuxeo.com/nexus/content/repositories/public-releases/
   </url>
 </repository>
 ```
@@ -257,8 +253,9 @@ import retrofit2.Callback;
 // Fetch document asynchronously with callback
 nuxeoClient.repository().fetchDocumentRoot(new Callback<Document>() {
             @Override
-            public void onResponse(Response<Document> response) {
-                if (!response.isSuccess()) {
+            public void onResponse(Call<Document> call, Response<Document>
+                    response) {
+                if (!response.isSuccessful()) {
                     ObjectMapper objectMapper = new ObjectMapper();
                     NuxeoClientException nuxeoClientException;
                     try {
@@ -278,8 +275,8 @@ nuxeoClient.repository().fetchDocumentRoot(new Callback<Document>() {
             }
 
             @Override
-            public void onFailure(Throwable reason) {
-                fail(reason.getMessage());
+            public void onFailure(Call<Document> call, Throwable t) {
+                fail(t.getMessage());
             }
         });
 ```
@@ -492,26 +489,101 @@ All apis are duplicated with an additional parameter `retrofit2.Callback<T>`.
 
 When no response is needed (204 No Content Status for example), use `retrofit2.Callback<ResponseBody>` (`okhttp3.ResponseBody`). This object can be introspected like the response headers or status for instance.
 
+####Custom Endpoints/Marshallers
 
-WIP: 
+`nuxeo-java-client` is using [retrofit](https://github.com/square/retrofit) to deploy the endpoints and [FasterXML](https://github.com/FasterXML) to create marshallers.
 
-####Custom Endpoints
+Here an example:
 
-####Marshalling
+- Create a custom interface `com.CustomAPI`:
+
+```
+package com;
+
+import com.Custom
+
+import retrofit2.Call;
+import retrofit2.http.GET;
+import retrofit2.http.Path;
+
+public interface CustomAPI {
+
+    @GET("custom/path")
+    Call<Custom> fetchCustom(@Path("example") String example);
+    ...
+```
+
+- Then create the custom object to fetch `com.Custom`:
+
+```
+package com;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
+public class Custom {
+
+	protected String path;
+	
+	@JsonIgnore
+	protected transient String other;
+    ...
+```
+
+- Finally the fetch service by extending `org.nuxeo.client.api.objects.NuxeoEntity`:
+
+```
+package com;
+
+public class CustomService extends NuxeoEntity {
+
+	public Custom fetchCustom(String example) {
+		return (Custom) getResponse(example);
+    }
+	...
+```
+
+And it's done!
+
+Pay attention to:
+
+- get exactly the same method name, both on the API and Service
+
+- provide inside `getResponse(...)` the same parameters found on the API
 
 ####Cache
 
+The default built-in cache in `nuxeo-java-client` is "in memory" (`org.nuxeo.client.api.cache.ResultCacheInMemory`).
+
+- It can be activated by `nuxeoClient.enableDefaultCache()`
+
+- It will store all results from requests and will restore them regarding to their signatures.
+
+- The cache invalidation is triggered after 10 minutes and has a maximum capacity of 1 MB.
+
+######Customization
+
+- Customization can be done with different invalidation parameters by using `org.nuxeo.client.api.NuxeoClient#setCache`
+
+- `org.nuxeo.client.api.NuxeoClient#setCache` can be used to instantiate a custom cache implementing the interface `org.nuxeo.client.api.cache.NuxeoResponseCache`.
+
+*If you have specific needs, don't hesitate to create an issue on this repository, all feedbacks are welcome!*
+
 ####Errors/Exceptions
+
+The main exception manager for the `nuxeo-java-client` is `org.nuxeo.client.internals.spi.NuxeoClientException` and contains:
+
+- The http error status code (666 for internal errors)
+
+- An info message
+
+- The remote exception with stack trace (depending on the [exception mode](https://doc.nuxeo.com/x/JQI5AQ) activated on Nuxeo server side
+
 
 ## Testing
 
 The Testing suite or TCK can be found in this project [`nuxeo-java-client-test`](https://github.com/nuxeo/nuxeo-java-client/tree/master/nuxeo-java-client-test).
 
-## Goals
-
-Provide a java library to make developing with Nuxeo REST API easier.
-
-## History
+# History
 
 The initial `nuxeo-automation-client` is now old :
 
