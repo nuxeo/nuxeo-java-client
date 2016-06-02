@@ -90,7 +90,7 @@ public class DateParser {
      * 2011-10-23T12:00:00.00Z
      * 
      * @param date
-     * @return
+     * @return the formatted date.
      */
     public static String formatW3CDateTime(Date date) {
         if (date == null) {
