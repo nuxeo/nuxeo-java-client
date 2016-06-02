@@ -216,12 +216,6 @@
       </dependency>
       <dependency>
         <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-platform-filemanager-api</artifactId>
-        <version>${nuxeo.version}</version>
-        <scope>test</scope>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.platform</groupId>
         <artifactId>nuxeo-platform-filemanager-core</artifactId>
         <version>${nuxeo.version}</version>
         <scope>test</scope>
