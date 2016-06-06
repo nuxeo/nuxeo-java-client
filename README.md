@@ -6,7 +6,7 @@ This is supported by Nuxeo and compatible with Nuxeo LTS 2015 and latest FastTra
 
 Here is the [Documentation Website](http://nuxeo.github.io/nuxeo-java-client).
 
-![Build Status](https://qa.nuxeo.org/jenkins/buildStatus/icon?job=master/nuxeo-java-client-master/)
+[![Build Status](https://qa.nuxeo.org/jenkins/buildStatus/icon?job=master/nuxeo-java-client-master)](https://qa.nuxeo.org/jenkins/job/master/job/nuxeo-java-client-master)
 
 
 ## Building
@@ -52,7 +52,7 @@ Maven:
 <dependency>
   <groupId>org.nuxeo.client</groupId>
   <artifactId>nuxeo-java-client</artifactId>
-  <version>1.0</version> (or <version>2.0</version>)
+  <version>1.0</version> <!-- (or <version>2.0</version>) -->
 </dependency>
 ...
 <repository>
@@ -66,20 +66,20 @@ Maven:
 Gradle:
 
 ```
-compile 'org.nuxeo.client:nuxeo-java-client:1.0' (or 2.0)
+compile 'org.nuxeo.client:nuxeo-java-client:1.0' /** (or 2.0) */
 ```
 
 Ivy:
 
 ```
-<dependency org="org.nuxeo.client" name="nuxeo-java-client" rev="1.0" (or 2.0) />
+<dependency org="org.nuxeo.client" name="nuxeo-java-client" rev="1.0" /** (or 2.0) */ />
 
 ```
 
 SBT:
 
 ```
-libraryDependencies += "org.nuxeo.client" % "nuxeo-java-client" % "1.0" (or 2.0)
+libraryDependencies += "org.nuxeo.client" % "nuxeo-java-client" % "1.0" /** (or 2.0) */
 ```
 
 ### Sub-Modules Organization
