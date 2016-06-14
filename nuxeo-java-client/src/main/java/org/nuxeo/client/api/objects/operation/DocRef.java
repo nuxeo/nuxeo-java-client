@@ -18,29 +18,26 @@
  */
 package org.nuxeo.client.api.objects.operation;
 
-import org.nuxeo.client.api.objects.NuxeoEntity;
-
 /**
  * @since 0.1
  */
-public class DocRef extends NuxeoEntity {
+public class DocRef {
 
-    protected String ref;
-
-    public DocRef() {
-        super(null);
-    }
+    protected String doc;
 
     public DocRef(String ref) {
-        super(null);
-        this.ref = "doc:" + ref;
+        this.doc = ref;
     }
 
-    public String getRef() {
-        return ref;
+    public String getDoc() {
+        return doc;
     }
 
-    public void setRef(String ref) {
-        this.ref = ref;
+    public void setDoc(String doc) {
+        this.doc = doc;
+    }
+
+    public String toString() {
+        return "doc:" + doc;
     }
 }
