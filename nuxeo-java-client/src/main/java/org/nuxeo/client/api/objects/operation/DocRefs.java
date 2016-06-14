@@ -26,25 +26,23 @@ import java.util.List;
  */
 public class DocRefs {
 
-    protected List<DocRef> docs = new ArrayList<>();
+    protected final List<DocRef> docs = new ArrayList<>();
 
-    public DocRefs() {
+    public void addDoc(DocRef doc) {
+        docs.add(doc);
     }
 
-    public String getDocs() {
+    @Override
+    public String toString() {
         StringBuilder buf = new StringBuilder("");
         int size = docs.size();
         if (size == 0) {
             return buf.toString();
         }
-        buf.append(docs.get(0).ref);
+        buf.append(docs.get(0).doc);
         for (int i = 1; i < size; i++) {
-            buf.append(",").append(docs.get(i).ref);
+            buf.append(",").append(docs.get(i).doc);
         }
         return buf.toString();
-    }
-
-    public void addDoc(DocRef doc) {
-        docs.add(doc);
     }
 }

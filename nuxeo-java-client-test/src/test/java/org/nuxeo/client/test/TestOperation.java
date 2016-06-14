@@ -29,7 +29,6 @@ import java.nio.charset.Charset;
 import java.util.List;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.client.api.objects.Document;
@@ -156,16 +155,16 @@ public class TestOperation extends TestBase {
         }
     }
 
-    // FIXME
-    @Ignore
     @Test
     public void itCanExecuteOperationWithDocumentRefs() {
         Document result = nuxeoClient.automation().param("value", "/").execute("Repository.GetDocument");
         assertNotNull(result);
+        DocRef doc = new DocRef(result.getId());
+        result = nuxeoClient.automation().input(doc).param("properties", null).execute("Document.Update");
+        assertNotNull(result);
         DocRefs docRefs = new DocRefs();
-        docRefs.addDoc(new DocRef(result.getId()));
-        result = nuxeoClient.automation().input(docRefs).param("properties",
-                null).execute("Document.Update");
+        docRefs.addDoc(doc);
+        result = nuxeoClient.automation().input(docRefs).param("properties", null).execute("Document.Update");
         assertNotNull(result);
     }
 }

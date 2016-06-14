@@ -48,6 +48,9 @@ public class OperationBody {
 
     public void setInput(Object input) {
         this.input = input;
+        if (input instanceof DocRef || input instanceof DocRefs) {
+            this.input = input.toString();
+        }
     }
 
     public Map<String, Object> getContext() {
