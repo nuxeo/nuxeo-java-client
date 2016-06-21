@@ -1,8 +1,8 @@
 # Java Client Library 2.0 for the Nuxeo Platform REST APIs
 
-The Nuxeo Java Client is a Java client library (can be used for Android) for the Nuxeo Automation and REST API.
+The Nuxeo Java Client is a Java client library (can be used for Android) for Nuxeo Automation and REST API.
 
-This is supported by Nuxeo and compatible with Nuxeo LTS 2015 and latest FastTracks. 
+This is supported by Nuxeo and compatible with Nuxeo LTS 2015 and latest Fast Tracks. 
 
 Here is the [Documentation Website](http://nuxeo.github.io/nuxeo-java-client).
 
@@ -137,8 +137,8 @@ nuxeoClient = nuxeoClient.logout();
 
 General rule: 
 
-- when using `fetch` methods, `NuxeoClient` is making remote calls. 
-- when using `get` methods, objects are retrieved from memory.
+- When using `fetch` methods, `NuxeoClient` is making remote calls. 
+- When using `get` methods, objects are retrieved from memory.
 
 ####Automation API
 
@@ -283,7 +283,7 @@ nuxeoClient.repository().fetchDocumentRoot(new Callback<Document>() {
 
 ####Permissions
 
-To manage permission, please look inside package  `org.nuxeo.client.api.objects.acl` to handle ACP, ACL and ACE:
+To manage permission, please look inside package `org.nuxeo.client.api.objects.acl` to handle ACP, ACL and ACE:
 
 ```java
 // Fetch Permissions of the current document
@@ -461,7 +461,7 @@ Workflows workflows = nuxeoClient.repository().fetchDocumentRoot().fetchWorkflow
 
 ####Manual REST Calls
 
-`NuxeoClient` allows manual rest calls with the 4 main methods GET,POST,PUT,DELETE and provides json (de)serializer helpers:
+`NuxeoClient` allows manual REST calls with the 4 main methods GET, POST, PUT, DELETE and provides JSON (de)serializer helpers:
 
 ```java
 import okhttp3.Response;
@@ -485,7 +485,7 @@ Document document = (Document) nuxeoClient.getConverterFactory().readJSON(json, 
 
 All APIs from the client are executable in Asynchronous way.
 
-All apis are duplicated with an additional parameter `retrofit2.Callback<T>`.
+All APIs are duplicated with an additional parameter `retrofit2.Callback<T>`.
 
 When no response is needed (204 No Content Status for example), use `retrofit2.Callback<ResponseBody>` (`okhttp3.ResponseBody`). This object can be introspected like the response headers or status for instance.
 
@@ -572,7 +572,7 @@ The default built-in cache in `nuxeo-java-client` is "in memory" (`org.nuxeo.cli
 
 The main exception manager for the `nuxeo-java-client` is `org.nuxeo.client.internals.spi.NuxeoClientException` and contains:
 
-- The http error status code (666 for internal errors)
+- The HTTP error status code (666 for internal errors)
 
 - An info message
 
@@ -585,11 +585,11 @@ The Testing suite or TCK can be found in this project [`nuxeo-java-client-test`]
 
 # History
 
-The initial `nuxeo-automation-client` is now old :
+The initial `nuxeo-automation-client` is now old:
 
- - client design was based on Automation API before REST endpoints where available in Nuxeo
- - a lot of features around upload & download are missing
- - marshalling and exception management are sometimes bad  
+ - Client design was based on Automation API before REST endpoints where available in Nuxeo
+ - A lot of features around upload & download are missing
+ - Marshalling and exception management are sometimes bad  
 
 The `nuxeo-automation-client` was then forked to build a Android version with some caching.
 
@@ -602,7 +602,7 @@ The `nuxeo-java-client` must works on both a standard JVM and Android Dalvik VM.
 **Java 6 & Java 7**
 
 Library must work on older Java versions.
-The goal is to be able to use `nuxeo-java-client` from application running in Java6 or Java 7.
+The goal is to be able to use `nuxeo-java-client` from application running in Java 6 or Java 7.
 
 **Light dependencies** 
 
@@ -636,7 +636,7 @@ By default, the library fasterXML Jackson is used for objects marshalling in `nu
 Several usages:
 
 - POJOS and Annotations.
-- Custom Json generators and parsers.
+- Custom JSON generators and parsers.
 
 **Caching Interceptors**
 
@@ -681,13 +681,13 @@ All caches should be accessible via a generated cache key defined by the request
 
 #####Synchronisation
 
-- Should we apply those [rules](https://doc.nuxeo.com/display/NXDOC/Android+Connector+and+Caching#AndroidConnectorandCaching-TransientState) ?
-- Should we use ETag And/Or If-Modified-Since with HEAD method ?
+- Should we apply those [rules](https://doc.nuxeo.com/display/NXDOC/Android+Connector+and+Caching#AndroidConnectorandCaching-TransientState)?
+- Should we use ETag And/Or If-Modified-Since with HEAD method?
 
 #####Potential Stores
 
 Depending on client:
-- "In memory" - guava for java
+- "In memory" - Guava for Java
 - "Database" - SQlite for Android
 - Local storage for JS
 - On disk for both
