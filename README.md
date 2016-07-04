@@ -42,7 +42,7 @@ Here is the [Nuxeo Client Library 1.0](http://maven.nuxeo.com/nexus/service/loca
 
 #### Compatible with Nuxeo Platform 8.x - FastTracks
 
-Here is the [Nuxeo Client Library 2.0](http://maven.nuxeo.com/nexus/service/local/repositories/public-releases/content/org/nuxeo/client/nuxeo-java-client/2.0/nuxeo-java-client-2.0.jar).
+Here is the [Nuxeo Client Library 2.1](http://maven.nuxeo.com/nexus/service/local/repositories/public-releases/content/org/nuxeo/client/nuxeo-java-client/2.1/nuxeo-java-client-2.1.jar).
 
 **Import Nuxeo Java Client with:**
 
@@ -52,7 +52,7 @@ Maven:
 <dependency>
   <groupId>org.nuxeo.client</groupId>
   <artifactId>nuxeo-java-client</artifactId>
-  <version>1.0</version> <!-- (or <version>2.0</version>) -->
+  <version>1.0</version> <!-- (or <version>2.1</version>) -->
 </dependency>
 ...
 <repository>
@@ -66,20 +66,20 @@ Maven:
 Gradle:
 
 ```
-compile 'org.nuxeo.client:nuxeo-java-client:1.0' /** (or 2.0) */
+compile 'org.nuxeo.client:nuxeo-java-client:1.0' /** (or 2.1) */
 ```
 
 Ivy:
 
 ```
-<dependency org="org.nuxeo.client" name="nuxeo-java-client" rev="1.0" /** (or 2.0) */ />
+<dependency org="org.nuxeo.client" name="nuxeo-java-client" rev="1.0" /** (or 2.1) */ />
 
 ```
 
 SBT:
 
 ```
-libraryDependencies += "org.nuxeo.client" % "nuxeo-java-client" % "1.0" /** (or 2.0) */
+libraryDependencies += "org.nuxeo.client" % "nuxeo-java-client" % "1.0" /** (or 2.1) */
 ```
 
 ### Sub-Modules Organization
