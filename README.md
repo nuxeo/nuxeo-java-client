@@ -6,7 +6,7 @@ This is supported by Nuxeo and compatible with Nuxeo LTS 2015 and latest Fast Tr
 
 Here is the [Documentation Website](http://nuxeo.github.io/nuxeo-java-client).
 
-[![Build Status](https://qa.nuxeo.org/jenkins/buildStatus/icon?job=master/nuxeo-java-client-master)](https://qa.nuxeo.org/jenkins/job/master/job/nuxeo-java-client-master)
+[![Build Status](https://qa.nuxeo.org/jenkins/buildStatus/icon?job=Client/nuxeo-java-client-master)](https://qa.nuxeo.org/jenkins/job/Client/job/nuxeo-java-client-master)
 
 
 ## Building
