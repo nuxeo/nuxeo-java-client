@@ -1,4 +1,4 @@
-# Java Client Library 2.0 for the Nuxeo Platform REST APIs
+# Java Client Library 2.1 for the Nuxeo Platform REST APIs
 
 The Nuxeo Java Client is a Java client library (can be used for Android) for Nuxeo Automation and REST API.
 
