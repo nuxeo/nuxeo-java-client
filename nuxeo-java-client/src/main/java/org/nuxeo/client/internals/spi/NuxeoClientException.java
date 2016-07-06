@@ -20,7 +20,6 @@ package org.nuxeo.client.internals.spi;
 
 import java.io.PrintStream;
 import java.io.PrintWriter;
-import java.io.StringWriter;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 
@@ -52,8 +51,8 @@ public class NuxeoClientException extends RuntimeException {
     @JsonProperty("entity-type")
     private final String entityType;
 
-    public String getEntityType() {
-        return entityType;
+    public NuxeoClientException(String message) {
+        this(message, null);
     }
 
     public NuxeoClientException(Throwable e) {
@@ -61,6 +60,7 @@ public class NuxeoClientException extends RuntimeException {
     }
 
     public NuxeoClientException(String message, Throwable e) {
+        super(message, e);
         throwable = e;
         status = INTERNAL_ERROR_STATUS;
         type = "Error";
@@ -70,6 +70,7 @@ public class NuxeoClientException extends RuntimeException {
     }
 
     public NuxeoClientException(int code, String message) {
+        super("An error occurred, code=" + code);
         info = message;
         throwable = null;
         type = null;
@@ -78,8 +79,8 @@ public class NuxeoClientException extends RuntimeException {
         exception = null;
     }
 
-    public NuxeoClientException(String message) {
-        this(message, null);
+    public String getEntityType() {
+        return entityType;
     }
 
     public int getStatus() {
@@ -88,16 +89,6 @@ public class NuxeoClientException extends RuntimeException {
 
     public String getType() {
         return type;
-    }
-
-    protected static String extractInfo(Throwable t) {
-        if (t == null) {
-            return "";
-        }
-        StringWriter sw = new StringWriter();
-        PrintWriter pw = new PrintWriter(sw);
-        t.printStackTrace(pw);
-        return sw.getBuffer().toString();
     }
 
     public Throwable getThrowable() {
