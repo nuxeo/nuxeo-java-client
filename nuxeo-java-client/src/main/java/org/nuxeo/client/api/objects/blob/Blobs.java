@@ -59,4 +59,12 @@ public class Blobs extends NuxeoEntity {
         Blob blob = new Blob(file);
         blobs.add(blob);
     }
+
+    @JsonIgnore
+    public void add(String fileName, File file) {
+        Blob blob = new Blob(file);
+        blob.setFileName(fileName);
+        blobs.add(blob);
+    }
+
 }
