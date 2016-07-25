@@ -19,19 +19,16 @@
 package org.nuxeo.client.api.objects;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.net.URLDecoder;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import okhttp3.Request;
-import okhttp3.ResponseBody;
-
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.util.Strings;
 import org.nuxeo.client.api.ConstantsV1;
 import org.nuxeo.client.api.NuxeoClient;
@@ -39,12 +36,15 @@ import org.nuxeo.client.api.objects.blob.Blob;
 import org.nuxeo.client.api.objects.blob.Blobs;
 import org.nuxeo.client.internals.spi.NuxeoClientException;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
+import okhttp3.Headers;
+import okhttp3.Request;
+import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
  * @since 0.1
@@ -159,7 +159,7 @@ public abstract class NuxeoEntity<T> {
                 }
                 return response;
             } else {
-                return reconnectObject(body, api, nuxeoClient);
+                return reconnectObject(body, response.headers(), api, nuxeoClient);
             }
         } catch (IOException reason) {
             throw new NuxeoClientException(reason);
@@ -228,7 +228,7 @@ public abstract class NuxeoEntity<T> {
         return stackTraceElements[2].getMethodName();
     }
 
-    protected Object reconnectObject(Object entity, Object api, NuxeoClient nuxeoClient) {
+    protected Object reconnectObject(Object entity, Headers headers, Object api, NuxeoClient nuxeoClient) {
         if (entity instanceof NuxeoEntity) {
             ((NuxeoEntity) entity).nuxeoClient = nuxeoClient;
             ((NuxeoEntity) entity).api = api;
@@ -244,6 +244,17 @@ public abstract class NuxeoEntity<T> {
                     blob.nuxeoClient = nuxeoClient;
                     blob.api = api;
                     blob.apiClass = apiClass;
+                }
+            } else if (entity instanceof Blob) {
+                String contentDisposition = headers.get("Content-Disposition");
+                if (contentDisposition != null) {
+                    String fileName = contentDisposition.replaceFirst(".*filename\\*?=(UTF-8'')?(.*)", "$2");
+                    try {
+                        fileName = URLDecoder.decode(fileName, "UTF-8");
+                    } catch (UnsupportedEncodingException e) {
+                        // May not happen
+                    }
+                    ((Blob) entity).setFileName(fileName);
                 }
             }
             return entity;

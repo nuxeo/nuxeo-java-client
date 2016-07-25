@@ -28,8 +28,6 @@ import javax.mail.MessagingException;
 import javax.mail.internet.MimeMultipart;
 import javax.mail.util.ByteArrayDataSource;
 
-import okhttp3.ResponseBody;
-
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.nuxeo.client.api.ConstantsV1;
@@ -42,12 +40,13 @@ import org.nuxeo.client.internals.spi.NuxeoClientException;
 import org.nuxeo.client.internals.util.IOUtils;
 import org.nuxeo.client.internals.util.MediaType;
 
-import retrofit2.Converter;
-
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectReader;
+
+import okhttp3.ResponseBody;
+import retrofit2.Converter;
 
 /**
  * @since 0.1
@@ -97,7 +96,7 @@ public final class NuxeoResponseConverterFactory<T> implements Converter<Respons
                     int size = mp.getCount();
                     for (int i = 0; i < size; i++) {
                         BodyPart part = mp.getBodyPart(i);
-                        blobs.add(IOUtils.copyToTempFile(part.getInputStream()));
+                        blobs.add(part.getFileName(), IOUtils.copyToTempFile(part.getInputStream()));
                     }
                 } catch (MessagingException reason) {
                     throw new IOException(reason);
