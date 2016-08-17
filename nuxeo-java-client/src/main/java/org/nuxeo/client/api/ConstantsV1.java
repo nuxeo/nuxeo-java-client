@@ -99,6 +99,9 @@ public class ConstantsV1 {
 
     public static final String MULTIPART = "multipart";
 
+    /** @isnce 2.2 */
+    public static final String APPLICATION_NUXEO_EMPTY_LIST = "application/nuxeo-empty-list";
+
     public static final String JSON_NXENTITY = "json+nxentity";
 
     public static final String APPLICATION_OCTET_STREAM = "application/octet-stream";

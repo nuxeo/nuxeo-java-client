@@ -121,6 +121,14 @@ public class TestOperation extends TestBase {
     }
 
     @Test
+    public void itCanExecuteOperationReturningEmptyBlobs() throws IOException {
+        // Get blobs
+        Blobs resultBlobs = nuxeoClient.automation().input(FOLDER_2_FILE).execute("Document.GetBlobsByProperty");
+        assertNotNull(resultBlobs);
+        assertTrue(resultBlobs.getBlobs().isEmpty());
+    }
+
+    @Test
     public void testMultiThread() throws InterruptedException {
         Thread t = new Thread(() -> {
             try {

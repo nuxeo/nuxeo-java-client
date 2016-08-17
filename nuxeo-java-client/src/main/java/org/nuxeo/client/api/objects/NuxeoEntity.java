@@ -155,6 +155,9 @@ public abstract class NuxeoEntity<T> {
                 return body;
             } else if (body == null) {
                 if (response.code() == 204) {
+                    if (ConstantsV1.APPLICATION_NUXEO_EMPTY_LIST.equals(response.headers().get("Content-Type"))) {
+                        return new Blobs();
+                    }
                     return null;
                 }
                 return response;
