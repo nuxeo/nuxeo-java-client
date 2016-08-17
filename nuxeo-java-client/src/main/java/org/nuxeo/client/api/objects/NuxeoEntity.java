@@ -171,20 +171,18 @@ public abstract class NuxeoEntity<T> {
      */
     protected String computeCacheKey(Call<?> methodResult) {
         Request originalRequest = methodResult.request();
-        StringBuffer sb = new StringBuffer();
-        sb.append(originalRequest.toString());
-        sb.append(originalRequest.headers().toString());
         MessageDigest digest;
         try {
-            digest = java.security.MessageDigest.getInstance(ConstantsV1.MD_5);
+            digest = MessageDigest.getInstance(ConstantsV1.MD_5);
         } catch (NoSuchAlgorithmException e) {
             return null;
         }
-        digest.update(sb.toString().getBytes());
+        digest.update((originalRequest.toString() + originalRequest.headers().toString()).getBytes());
         byte messageDigest[] = digest.digest();
-        StringBuffer hexString = new StringBuffer();
-        for (int i = 0; i < messageDigest.length; i++)
-            hexString.append(Integer.toHexString(0xFF & messageDigest[i]));
+        StringBuilder hexString = new StringBuilder();
+        for (byte msg : messageDigest) {
+            hexString.append(Integer.toHexString(0xFF & msg));
+        }
         return hexString.toString();
     }
 
@@ -214,10 +212,9 @@ public abstract class NuxeoEntity<T> {
             }
             return (Call<T>) method.invoke(api, parametersArray);
         } catch (IllegalArgumentException | IllegalAccessException reason) {
-            throw new NuxeoClientException(
-                    String.format(
-                            "An issue has occured in the method found for API %s and method name '%s'. Check method and parameters types.",
-                            apiClass, methodName), reason);
+            throw new NuxeoClientException(String.format(
+                    "An issue has occured in the method found for API %s and method name '%s'. Check method and parameters types.",
+                    apiClass, methodName), reason);
         } catch (InvocationTargetException reason) {
             throw new NuxeoClientException(reason.getTargetException().getMessage(), reason);
         }
