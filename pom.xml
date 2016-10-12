@@ -1,12 +1,10 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
-
   <groupId>org.nuxeo.client</groupId>
-  <artifactId>nuxeo-java-client-parent</artifactId>
+  <artifactId>nuxeo-java-client</artifactId>
   <version>1.1-SNAPSHOT</version>
-  <name>Nuxeo Java Client Parent</name>
-  <description>Java Client Parent for Nuxeo REST APIs.</description>
-  <packaging>pom</packaging>
+  <name>Nuxeo Java Client</name>
+  <description>Nuxeo Java Client for Nuxeo REST APIs.</description>
 
   <url>http://www.nuxeo.com/en/products</url>
   <organization>
@@ -15,8 +13,8 @@
   </organization>
   <licenses>
     <license>
-      <name>GNU LESSER GENERAL PUBLIC LICENSE, Version 2.1</name>
-      <url>http://www.gnu.org/licenses/lgpl-2.1.html</url>
+      <name>Apache License, Version 2.0</name>
+      <url>http://www.apache.org/licenses/LICENSE-2.0</url>
     </license>
   </licenses>
 
@@ -83,23 +81,15 @@
     </notifiers>
   </ciManagement>
 
-  <modules>
-    <module>nuxeo-java-client</module>
-    <module>nuxeo-java-client-test</module>
-  </modules>
-
   <properties>
-    <nuxeo.version>7.10-HF11-SNAPSHOT</nuxeo.version>
     <fasterxml.version>2.6.3</fasterxml.version>
     <retrofit.version>2.0.2</retrofit.version>
     <okhttp.version>3.0.0-RC1</okhttp.version>
     <log4j.version>2.4.1</log4j.version>
-    <retrolambda.version>2.0.6</retrolambda.version>
     <junit.version>4.12</junit.version>
     <java.version.source>1.8</java.version.source>
     <java.version.target>1.7</java.version.target>
     <javax.mail.version>1.4.7</javax.mail.version>
-    <compiler.version>3.3</compiler.version>
     <guava.version>18.0</guava.version>
     <mvn.prerequisites.version>3.1.1</mvn.prerequisites.version>
     <nuxeo.java.client.version>1.1-SNAPSHOT</nuxeo.java.client.version>
@@ -108,210 +98,71 @@
     <apache.commons.version>3.3.2</apache.commons.version>
   </properties>
 
-  <prerequisites>
-    <maven>${mvn.prerequisites.version}</maven>
-  </prerequisites>
-  <dependencyManagement>
-    <dependencies>
-      <dependency>
-        <groupId>org.nuxeo.client</groupId>
-        <artifactId>nuxeo-java-client</artifactId>
-        <version>${nuxeo.java.client.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>com.squareup.retrofit2</groupId>
-        <artifactId>retrofit</artifactId>
-        <version>${retrofit.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>com.squareup.okhttp3</groupId>
-        <artifactId>okhttp</artifactId>
-        <version>${okhttp.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>com.fasterxml.jackson.core</groupId>
-        <artifactId>jackson-annotations</artifactId>
-        <version>${fasterxml.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>com.fasterxml.jackson.core</groupId>
-        <artifactId>jackson-core</artifactId>
-        <version>${fasterxml.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>com.fasterxml.jackson.core</groupId>
-        <artifactId>jackson-databind</artifactId>
-        <version>${fasterxml.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.logging.log4j</groupId>
-        <artifactId>log4j-api</artifactId>
-        <version>${log4j.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.logging.log4j</groupId>
-        <artifactId>log4j-core</artifactId>
-        <version>${log4j.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>com.google.guava</groupId>
-        <artifactId>guava</artifactId>
-        <version>${guava.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>commons-io</groupId>
-        <artifactId>commons-io</artifactId>
-        <version>${commons-io.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>javax.mail</groupId>
-        <artifactId>mail</artifactId>
-        <version>${javax.mail.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.commons</groupId>
-        <artifactId>commons-lang3</artifactId>
-        <version>${apache.commons.version}</version>
-      </dependency>
+  <dependencies>
+    <dependency>
+      <groupId>com.squareup.retrofit2</groupId>
+      <artifactId>retrofit</artifactId>
+      <version>${retrofit.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.squareup.okhttp3</groupId>
+      <artifactId>okhttp</artifactId>
+      <version>${okhttp.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-annotations</artifactId>
+      <version>${fasterxml.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-core</artifactId>
+      <version>${fasterxml.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-databind</artifactId>
+      <version>${fasterxml.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.logging.log4j</groupId>
+      <artifactId>log4j-api</artifactId>
+      <version>${log4j.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.logging.log4j</groupId>
+      <artifactId>log4j-core</artifactId>
+      <version>${log4j.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.google.guava</groupId>
+      <artifactId>guava</artifactId>
+      <version>${guava.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>commons-io</groupId>
+      <artifactId>commons-io</artifactId>
+      <version>${commons-io.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.commons</groupId>
+      <artifactId>commons-lang3</artifactId>
+      <version>${apache.commons.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>javax.mail</groupId>
+      <artifactId>mail</artifactId>
+      <version>${javax.mail.version}</version>
+    </dependency>
 
-      <!-- TEST -->
-      <dependency>
-        <groupId>org.nuxeo.ecm.routing</groupId>
-        <artifactId>nuxeo-routing-core</artifactId>
-        <version>${nuxeo.version}</version>
-      </dependency>
-
-      <!-- Test -->
-      <dependency>
-        <groupId>org.nuxeo.ecm.core</groupId>
-        <artifactId>nuxeo-core-cache</artifactId>
-        <version>${nuxeo.version}</version>
-        <type>test-jar</type>
-        <scope>test</scope>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.routing</groupId>
-        <artifactId>nuxeo-routing-core</artifactId>
-        <type>test-jar</type>
-        <version>${nuxeo.version}</version>
-        <scope>test</scope>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-platform-types-api</artifactId>
-        <version>${nuxeo.version}</version>
-        <scope>test</scope>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.routing</groupId>
-        <artifactId>nuxeo-routing-default</artifactId>
-        <version>${nuxeo.version}</version>
-        <scope>test</scope>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-platform-filemanager-api</artifactId>
-        <version>${nuxeo.version}</version>
-        <scope>test</scope>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-platform-filemanager-core</artifactId>
-        <version>${nuxeo.version}</version>
-        <scope>test</scope>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.core</groupId>
-        <artifactId>nuxeo-core-mimetype</artifactId>
-        <version>${nuxeo.version}</version>
-        <scope>test</scope>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.core</groupId>
-        <artifactId>nuxeo-core-io</artifactId>
-        <version>${nuxeo.version}</version>
-        <scope>test</scope>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-platform-userworkspace-types</artifactId>
-        <version>${nuxeo.version}</version>
-        <scope>test</scope>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-platform-audit-core</artifactId>
-        <version>${nuxeo.version}</version>
-        <type>test-jar</type>
-        <scope>test</scope>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-platform-audit-core</artifactId>
-        <version>${nuxeo.version}</version>
-        <scope>test</scope>
-      </dependency>
-      <dependency>
-        <groupId>junit</groupId>
-        <artifactId>junit</artifactId>
-        <version>${junit.version}</version>
-        <scope>test</scope>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.runtime</groupId>
-        <artifactId>nuxeo-runtime-test</artifactId>
-        <version>${nuxeo.version}</version>
-        <scope>test</scope>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.routing</groupId>
-        <artifactId>nuxeo-routing-rest-api</artifactId>
-        <version>${nuxeo.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-rest-api-test</artifactId>
-        <version>${nuxeo.version}</version>
-        <scope>test</scope>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.core</groupId>
-        <artifactId>nuxeo-core-test</artifactId>
-        <version>${nuxeo.version}</version>
-        <scope>test</scope>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-platform-test</artifactId>
-        <version>${nuxeo.version}</version>
-        <scope>test</scope>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-platform-tag-api</artifactId>
-        <version>${nuxeo.version}</version>
-        <scope>test</scope>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-platform-tag-core</artifactId>
-        <version>${nuxeo.version}</version>
-        <scope>test</scope>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-platform-url-core</artifactId>
-        <version>${nuxeo.version}</version>
-        <scope>test</scope>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-permissions</artifactId>
-        <version>${nuxeo.version}</version>
-        <scope>test</scope>
-      </dependency>
-    </dependencies>
-  </dependencyManagement>
+    <!-- Test -->
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <version>${junit.version}</version>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
 
   <build>
     <pluginManagement>
@@ -326,25 +177,27 @@
           <artifactId>maven-javadoc-plugin</artifactId>
           <version>2.10.3</version>
         </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-compiler-plugin</artifactId>
+          <version>3.3</version>
+        </plugin>
+        <plugin>
+          <groupId>net.orfjackal.retrolambda</groupId>
+          <artifactId>retrolambda-maven-plugin</artifactId>
+          <version>2.0.6</version>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-deploy-plugin</artifactId>
+          <version>2.8.1</version>
+        </plugin>
       </plugins>
     </pluginManagement>
     <plugins>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-source-plugin</artifactId>
-        <executions>
-          <execution>
-            <id>attach-sources</id>
-            <goals>
-              <goal>jar-no-fork</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
-        <version>${compiler.version}</version>
         <configuration>
           <source>${java.version.source}</source>
           <target>${java.version.source}</target>
@@ -353,7 +206,6 @@
       <plugin>
         <groupId>net.orfjackal.retrolambda</groupId>
         <artifactId>retrolambda-maven-plugin</artifactId>
-        <version>${retrolambda.version}</version>
         <executions>
           <execution>
             <goals>
@@ -377,6 +229,201 @@
       </plugin>
     </plugins>
   </reporting>
+
+  <profiles>
+    <profile>
+      <id>release</id>
+      <activation>
+        <property>
+          <name>performRelease</name>
+          <value>true</value>
+        </property>
+      </activation>
+      <build>
+        <plugins>
+          <plugin>
+            <inherited>true</inherited>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-deploy-plugin</artifactId>
+            <configuration>
+              <updateReleaseInfo>true</updateReleaseInfo>
+            </configuration>
+          </plugin>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-source-plugin</artifactId>
+            <executions>
+              <execution>
+                <id>attach-sources</id>
+                <goals>
+                  <goal>jar</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+    <profile>
+      <id>nightly</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-source-plugin</artifactId>
+            <executions>
+              <execution>
+                <id>attach-sources</id>
+                <goals>
+                  <goal>jar</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+      <repositories>
+        <repository>
+          <id>nightly-staging</id>
+          <url>http://mavenin.nuxeo.com/nexus/content/repositories/nightly-staging</url>
+          <releases>
+            <enabled>true</enabled>
+          </releases>
+          <snapshots>
+            <enabled>false</enabled>
+          </snapshots>
+        </repository>
+      </repositories>
+      <distributionManagement>
+        <repository>
+          <id>nightly-staging</id>
+          <url>http://mavenin.nuxeo.com/nexus/content/repositories/nightly-staging</url>
+          <uniqueVersion>true</uniqueVersion>
+        </repository>
+      </distributionManagement>
+    </profile>
+    <profile>
+      <id>javadoc</id>
+      <build>
+        <plugins>
+          <plugin>
+            <inherited>true</inherited>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-javadoc-plugin</artifactId>
+            <configuration>
+              <show>protected</show>
+              <additionalparam>-Xdoclint:none</additionalparam>
+              <!-- <includeDependencySources>true</includeDependencySources> -->
+              <!-- <includeTransitiveDependencySources>true</includeTransitiveDependencySources> -->
+              <linksource>true</linksource>
+            </configuration>
+            <executions>
+              <execution>
+                <id>attach-javadocs</id>
+                <goals>
+                  <goal>jar</goal>
+                </goals>
+              </execution>
+              <execution>
+                <id>aggregate</id>
+                <goals>
+                  <goal>aggregate</goal>
+                </goals>
+                <phase>site</phase>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+      <reporting>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-javadoc-plugin</artifactId>
+            <version>2.10.3</version>
+            <configuration>
+              <maxmemory>768m</maxmemory>
+              <!-- stylesheetfile>${basedir}/src/site/resources/css/jdstyle.css
+                </stylesheetfile -->
+              <windowtitle>${project.name} ${project.version} API Documentation</windowtitle>
+              <doctitle>${project.name} ${project.version} API Documentation</doctitle>
+              <header>${project.name} ${project.version}</header>
+            </configuration>
+          </plugin>
+        </plugins>
+      </reporting>
+    </profile>
+
+    <!-- For use by Nuxeo internal QA -->
+    <profile>
+      <id>qa</id>
+      <repositories>
+        <repository>
+          <id>internal-releases</id>
+          <url>
+            http://mavenin.nuxeo.com/nexus/content/groups/internal-releases
+          </url>
+          <releases>
+            <enabled>true</enabled>
+          </releases>
+          <snapshots>
+            <enabled>false</enabled>
+          </snapshots>
+        </repository>
+        <repository>
+          <id>internal-snapshots</id>
+          <url>
+            http://mavenin.nuxeo.com/nexus/content/groups/internal-snapshots
+          </url>
+          <releases>
+            <enabled>false</enabled>
+          </releases>
+          <snapshots>
+            <enabled>true</enabled>
+            <updatePolicy>always</updatePolicy>
+          </snapshots>
+        </repository>
+      </repositories>
+      <pluginRepositories>
+        <pluginRepository>
+          <id>internal-releases</id>
+          <url>
+            http://mavenin.nuxeo.com/nexus/content/groups/internal-releases
+          </url>
+          <name>Nuxeo virtual release repository</name>
+          <releases>
+            <enabled>true</enabled>
+          </releases>
+          <snapshots>
+            <enabled>false</enabled>
+          </snapshots>
+        </pluginRepository>
+        <pluginRepository>
+          <id>internal-snapshots</id>
+          <url>
+            http://mavenin.nuxeo.com/nexus/content/groups/internal-snapshots
+          </url>
+          <name>Nuxeo virtual snapshot repository</name>
+          <releases>
+            <enabled>false</enabled>
+          </releases>
+          <snapshots>
+            <updatePolicy>always</updatePolicy>
+            <enabled>true</enabled>
+          </snapshots>
+        </pluginRepository>
+      </pluginRepositories>
+      <distributionManagement>
+        <snapshotRepository>
+          <id>daily-snapshots</id>
+          <url>
+            http://mavenin.nuxeo.com/nexus/content/repositories/daily-snapshots
+          </url>
+          <uniqueVersion>true</uniqueVersion>
+        </snapshotRepository>
+      </distributionManagement>
+    </profile>
+  </profiles>
 
   <distributionManagement>
     <site>
