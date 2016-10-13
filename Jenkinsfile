@@ -9,12 +9,17 @@ node('SLAVE') {
 
             dir('nuxeo-java-client') {
                 stage 'build-client'
-                sh "${mvnHome}/bin/mvn clean deploy"
+                sh "${mvnHome}/bin/mvn clean install"
             }
 
             dir('nuxeo-java-client-test') {
                 stage 'run-test'
-                sh "${mvnHome}/bin/mvn clean deploy"
+                sh "${mvnHome}/bin/mvn clean install"
+            }
+
+            dir('nuxeo-java-client') {
+                stage 'deploy-on-nexus'
+                sh "${mvnHome}/bin/mvn deploy"
             }
         }
     } catch (e) {
