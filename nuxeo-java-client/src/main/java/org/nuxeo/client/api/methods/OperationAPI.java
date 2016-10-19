@@ -18,8 +18,10 @@
  */
 package org.nuxeo.client.api.methods;
 
+import java.util.List;
 import java.util.Map;
 
+import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
 
 import org.nuxeo.client.api.objects.Operation;
@@ -45,6 +47,13 @@ public interface OperationAPI {
     @Multipart
     @POST("automation/{operationId}")
     Call<Object> execute(@Path("operationId") String operationId, @Part("request") OperationBody body, @PartMap Map<String, RequestBody> inputs);
+
+    /**
+     * @since 2.2
+     */
+    @Multipart
+    @POST("automation/{operationId}")
+    Call<Object> execute(@Path("operationId") String operationId, @Part("request") OperationBody body, @Part List<MultipartBody.Part> filePart);
 
     @POST("upload/{batchId}/{fileIdx}/execute/{operationId}")
     Call<Object> execute(@Path("batchId") String batchId, @Path("fileIdx") String fileIdx,
