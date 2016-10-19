@@ -18,10 +18,13 @@
  */
 package org.nuxeo.client.api.objects;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import okhttp3.MediaType;
+import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
 
 import org.nuxeo.client.api.ConstantsV1;
@@ -101,19 +104,20 @@ public class Operation extends NuxeoEntity {
     public <T> T execute(String operationId, OperationBody body) {
         Object input = body.getInput();
         if (input instanceof Blob) { // If input is blob or blobs -> use multipart
-            Map<String, RequestBody> fbodys = new HashMap<>();
+            List<MultipartBody.Part> filePart = new ArrayList<>();
             RequestBody fbody = RequestBody.create(MediaType.parse(((Blob) input).getMimeType()),
                     ((Blob) input).getFile());
-            fbodys.put(INPUT_PART, fbody);
-            return (T) getResponse(operationId, body, fbodys);
+            filePart.add(MultipartBody.Part.createFormData(INPUT_PART, ((Blob) input).getFileName(), fbody));
+            return (T) getResponse(operationId, body, filePart);
         } else if (input instanceof Blobs) { // If input is blob or blobs -> use multipart
-            Map<String, RequestBody> fbodys = new HashMap<>();
+            List<MultipartBody.Part> fileParts = new ArrayList<>();
             for (int i = 0; i < ((Blobs) input).size(); i++) {
                 Blob fileBlob = ((Blobs) input).getBlobs().get(i);
                 RequestBody fbody = RequestBody.create(MediaType.parse(fileBlob.getMimeType()), fileBlob.getFile());
-                fbodys.put(INPUT_PARTS + String.valueOf(i), fbody);
+                fileParts.add(MultipartBody.Part.createFormData(INPUT_PARTS + String.valueOf(i), fileBlob.getFileName(),
+                        fbody));
             }
-            return (T) getResponse(operationId, body, fbodys);
+            return (T) getResponse(operationId, body, fileParts);
         } else {
             return (T) getResponse(operationId, body);
         }
