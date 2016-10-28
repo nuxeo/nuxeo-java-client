@@ -99,6 +99,7 @@ public class TestOperation extends TestBase {
                           .input(fileBlob)
                           .execute();
         assertNotNull(blob);
+        assertEquals("sample.jpg", blob.getFileName());
         assertEquals(length, blob.getLength());
         Blob resultBlob = nuxeoClient.automation().input(FOLDER_2_FILE).execute("Document.GetBlob");
         assertNotNull(resultBlob);
@@ -115,6 +116,8 @@ public class TestOperation extends TestBase {
                                  .input(inputBlobs)
                                  .execute();
         assertNotNull(blobs);
+        assertEquals("sample.jpg", blobs.getBlobs().get(0).getFileName());
+        assertEquals("sample.jpg", blobs.getBlobs().get(1).getFileName());
         Blobs resultBlobs = nuxeoClient.automation().input(FOLDER_2_FILE).execute("Document.GetBlobs");
         assertNotNull(resultBlobs);
         assertEquals(3, resultBlobs.size());

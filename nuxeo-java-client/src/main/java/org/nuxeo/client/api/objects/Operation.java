@@ -104,15 +104,16 @@ public class Operation extends NuxeoEntity {
     public <T> T execute(String operationId, OperationBody body) {
         Object input = body.getInput();
         if (input instanceof Blob) { // If input is blob or blobs -> use multipart
+            Blob blob = (Blob) input;
             List<MultipartBody.Part> filePart = new ArrayList<>();
-            RequestBody fbody = RequestBody.create(MediaType.parse(((Blob) input).getMimeType()),
-                    ((Blob) input).getFile());
-            filePart.add(MultipartBody.Part.createFormData(INPUT_PART, ((Blob) input).getFileName(), fbody));
+            RequestBody fbody = RequestBody.create(MediaType.parse(blob.getMimeType()), blob.getFile());
+            filePart.add(MultipartBody.Part.createFormData(INPUT_PART, blob.getFileName(), fbody));
             return (T) getResponse(operationId, body, filePart);
         } else if (input instanceof Blobs) { // If input is blob or blobs -> use multipart
+            Blobs blobs = (Blobs) input;
             List<MultipartBody.Part> fileParts = new ArrayList<>();
-            for (int i = 0; i < ((Blobs) input).size(); i++) {
-                Blob fileBlob = ((Blobs) input).getBlobs().get(i);
+            for (int i = 0; i < blobs.size(); i++) {
+                Blob fileBlob = blobs.getBlobs().get(i);
                 RequestBody fbody = RequestBody.create(MediaType.parse(fileBlob.getMimeType()), fileBlob.getFile());
                 fileParts.add(MultipartBody.Part.createFormData(INPUT_PARTS + String.valueOf(i), fileBlob.getFileName(),
                         fbody));
