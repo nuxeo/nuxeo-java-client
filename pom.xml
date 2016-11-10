@@ -89,7 +89,7 @@
   </modules>
 
   <properties>
-    <nuxeo.version>8.4-SNAPSHOT</nuxeo.version>
+    <nuxeo.version>8.10-SNAPSHOT</nuxeo.version>
     <fasterxml.version>2.7.4</fasterxml.version>
     <retrofit.version>2.0.2</retrofit.version>
     <okhttp.version>3.0.0-RC1</okhttp.version>
