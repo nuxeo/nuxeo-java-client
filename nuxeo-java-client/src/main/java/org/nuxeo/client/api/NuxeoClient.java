@@ -179,6 +179,9 @@ public class NuxeoClient implements Client {
     @Override
     public NuxeoClient setAuthenticationMethod(Interceptor interceptor) {
         okhttpBuilder.interceptors().add(interceptor);
+        if (retrofitBuilder != null) {
+            retrofit();
+        }
         return this;
     }
 

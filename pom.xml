@@ -310,6 +310,12 @@
         <version>${nuxeo.version}</version>
         <scope>test</scope>
       </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-platform-login-portal-sso</artifactId>
+        <version>${nuxeo.version}</version>
+        <scope>test</scope>
+      </dependency>
     </dependencies>
   </dependencyManagement>
 
