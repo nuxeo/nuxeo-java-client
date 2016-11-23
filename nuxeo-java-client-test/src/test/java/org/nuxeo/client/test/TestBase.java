@@ -20,6 +20,7 @@ package org.nuxeo.client.test;
 
 import javax.inject.Inject;
 
+import okhttp3.Interceptor;
 import org.nuxeo.client.api.NuxeoClient;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.runtime.transaction.TransactionHelper;
@@ -49,6 +50,10 @@ public class TestBase {
 
     public void logout() {
         nuxeoClient.logout();
+    }
+
+    public void setAuthenticationMethod(Interceptor interceptor) {
+        nuxeoClient.setAuthenticationMethod(interceptor);
     }
 
     protected void fetchInvalidations() {

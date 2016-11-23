@@ -26,13 +26,18 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.client.api.objects.user.CurrentUser;
+import org.nuxeo.client.api.objects.user.User;
+import org.nuxeo.client.api.objects.user.UserManager;
 import org.nuxeo.client.internals.spi.NuxeoClientException;
+import org.nuxeo.client.internals.spi.auth.PortalSSOAuthInterceptor;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.restapi.test.RestServerFeature;
-import org.nuxeo.runtime.test.runner.Features;
-import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.Jetty;
+import org.nuxeo.ecm.restapi.test.RestServerInit;
+import org.nuxeo.runtime.test.runner.*;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @since 0.1
@@ -40,7 +45,9 @@ import org.nuxeo.runtime.test.runner.Jetty;
 @RunWith(FeaturesRunner.class)
 @Features({ RestServerFeature.class })
 @Jetty(port = 18090)
-@RepositoryConfig(cleanup = Granularity.METHOD)
+@Deploy({ "org.nuxeo.ecm.platform.login.portal" })
+@LocalDeploy("org.nuxeo.java.client.test:test-portal-sso-login-contrib.xml")
+@RepositoryConfig(cleanup = Granularity.METHOD, init = RestServerInit.class)
 public class TestCurrentUser extends TestBase {
 
     @Test
@@ -75,6 +82,16 @@ public class TestCurrentUser extends TestBase {
         } catch (NuxeoClientException reason) {
             assertEquals(401, reason.getStatus());
         }
+    }
+
+    @Test
+    public void itCanChangeAuthMethod() {
+        login();
+        CurrentUser currentUser = nuxeoClient.fetchCurrentUser();
+        assertEquals("Administrator", currentUser.getUsername());
+        setAuthenticationMethod(new PortalSSOAuthInterceptor("nuxeo5secretkey", "user1"));
+        currentUser = nuxeoClient.fetchCurrentUser();
+        assertEquals("user1", currentUser.getUsername());
     }
 
 }
