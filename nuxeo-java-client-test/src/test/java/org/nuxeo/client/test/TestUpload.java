@@ -23,9 +23,13 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.fail;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.codec.digest.DigestUtils;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -37,10 +41,12 @@ import org.nuxeo.client.api.objects.upload.BatchFile;
 import org.nuxeo.client.api.objects.upload.BatchUpload;
 import org.nuxeo.client.internals.spi.NuxeoClientException;
 import org.nuxeo.common.utils.FileUtils;
+import org.nuxeo.ecm.automation.server.jaxrs.batch.BatchManager;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.restapi.test.RestServerFeature;
 import org.nuxeo.ecm.restapi.test.RestServerInit;
+import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.Jetty;
@@ -102,12 +108,13 @@ public class TestUpload extends TestBase {
     }
 
     @Test
-    public void itCanUploadChunks() {
+    public void itCanUploadChunks() throws IOException {
         // Upload file chunks
         BatchUpload batchUpload = nuxeoClient.fetchUploadManager().enableChunk();
         assertNotNull(batchUpload);
         File file = FileUtils.getResourceFileFromContext("sample.jpg");
-        batchUpload = batchUpload.upload(file.getName(), file.length(), "jpg", batchUpload.getBatchId(), "1", file);
+        batchUpload = batchUpload.upload(file.getName(), file.length(), "image/jpeg", batchUpload.getBatchId(), "1",
+                file);
         assertNotNull(batchUpload);
         assertEquals(ConstantsV1.UPLOAD_CHUNKED_TYPE, batchUpload.getUploadType());
         // Check the file
@@ -118,6 +125,14 @@ public class TestUpload extends TestBase {
         assertEquals(file.length(), batchFile.getSize());
         assertEquals(4, batchFile.getChunkCount());
         assertEquals(batchFile.getChunkCount(), batchFile.getUploadedChunkIds().length);
+        // Check the uploaded blob
+        org.nuxeo.ecm.core.api.Blob uploadedBlob = Framework.getService(BatchManager.class).getBlob(
+                batchUpload.getBatchId(), batchUpload.getFileIdx());
+        assertNotNull(uploadedBlob);
+        try (InputStream expectedIS = new FileInputStream(file);
+                InputStream uploadedBlobIS = uploadedBlob.getStream()) {
+            assertEquals(DigestUtils.md5Hex(expectedIS), DigestUtils.md5Hex(uploadedBlobIS));
+        }
     }
 
     @Test

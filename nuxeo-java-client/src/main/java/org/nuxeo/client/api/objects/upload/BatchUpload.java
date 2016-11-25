@@ -21,9 +21,7 @@ package org.nuxeo.client.api.objects.upload;
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -38,6 +36,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import okhttp3.MediaType;
 import okhttp3.RequestBody;
+
 /**
  * @since 0.1
  */
@@ -82,50 +81,31 @@ public class BatchUpload extends NuxeoEntity {
         return (BatchUpload) getResponse();
     }
 
-    protected Object upload(String fileName, long fileSize, String fileType, String uploadType,
-            String uploadChunkIndex, String totalChunkCount, String batchId, String fileIdx, File file) {
-        RequestBody fbody = RequestBody.create(MediaType.parse(fileType), file);
-        return getResponse(fileName, Objects.toString(fileSize), fileType, uploadType, uploadChunkIndex,
-                totalChunkCount, batchId, fileIdx, fbody);
-    }
-
     public BatchUpload upload(String name, long length, String fileType, String batchId, String fileIdx, File file) {
         if (chunkSize == 0) {
-            return (BatchUpload) upload(name, length, fileType, ConstantsV1.UPLOAD_NORMAL_TYPE, "0", "1", batchId,
-                    fileIdx, file);
+            // Post file
+            RequestBody fbody = RequestBody.create(MediaType.parse(fileType), file);
+            return (BatchUpload) getResponse(name, Objects.toString(length), fileType, ConstantsV1.UPLOAD_NORMAL_TYPE,
+                    "0", "1", batchId, fileIdx, fbody);
         }
-        int partCounter = 1;
-        int sizeOfFiles = chunkSize;
-        List<File> files = new ArrayList<>();
-        BatchUpload batchUpload = null;
-        byte[] buffer = new byte[sizeOfFiles];
-        int tmp = 0;
-        try {
-            try (BufferedInputStream bis = new BufferedInputStream(new FileInputStream(file))) {
-                while ((tmp = bis.read(buffer)) > 0) {
-                    // write each chunk of data into separate file with different number in name
-                    File newFile = new File(file.getParent(), name + "." + String.format("%03d", partCounter++));
-                    try (FileOutputStream out = new FileOutputStream(newFile)) {
-                        out.write(buffer, 0, tmp); // tmp is chunk size
-                        files.add(newFile);
-                    }
-                }
+        Object response = null;
+        int contentLength = 0;
+        byte[] buffer = new byte[chunkSize];
+        int chunkIndex = 0;
+        long chunkCount = (file.length() + chunkSize - 1) / chunkSize;
+        try (BufferedInputStream bis = new BufferedInputStream(new FileInputStream(file))) {
+            while ((contentLength = bis.read(buffer)) > 0) {
+                // Post chunk as a stream
+                RequestBody requestBody = RequestBody.create(MediaType.parse(ConstantsV1.APPLICATION_OCTET_STREAM),
+                        buffer, 0, contentLength);
+                response = getResponse(name, Objects.toString(length), fileType, ConstantsV1.UPLOAD_CHUNKED_TYPE,
+                        Objects.toString(chunkIndex), Objects.toString(chunkCount), batchId, fileIdx, requestBody);
+                chunkIndex++;
             }
+            return (BatchUpload) response;
         } catch (IOException reason) {
             throw new NuxeoClientException(reason);
         }
-        tmp = 0;
-        for (File chunk : files) {
-            if (tmp == files.size() - 1) {
-                batchUpload = (BatchUpload) upload(name, length, fileType, ConstantsV1.UPLOAD_CHUNKED_TYPE,
-                        Objects.toString(tmp), Objects.toString(files.size()), batchId, fileIdx, chunk);
-            } else {
-                upload(name, length, fileType, ConstantsV1.UPLOAD_CHUNKED_TYPE, Objects.toString(tmp),
-                        Objects.toString(files.size()), batchId, fileIdx, chunk);
-                tmp++;
-            }
-        }
-        return batchUpload;
     }
 
     public void cancel(String batchId) {
