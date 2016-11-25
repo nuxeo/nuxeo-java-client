@@ -27,9 +27,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-import okhttp3.MediaType;
-import okhttp3.RequestBody;
-
 import org.nuxeo.client.api.ConstantsV1;
 import org.nuxeo.client.api.NuxeoClient;
 import org.nuxeo.client.api.methods.BatchUploadAPI;
@@ -39,6 +36,8 @@ import org.nuxeo.client.internals.spi.NuxeoClientException;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
+import okhttp3.MediaType;
+import okhttp3.RequestBody;
 /**
  * @since 0.1
  */
