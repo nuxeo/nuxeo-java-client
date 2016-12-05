@@ -21,6 +21,8 @@ package org.nuxeo.client.test;
 import static junit.framework.TestCase.assertNotNull;
 import static org.junit.Assert.assertEquals;
 
+import java.util.List;
+
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -57,6 +59,16 @@ public class TestDirectory extends TestBase {
         Directory directory = nuxeoClient.getDirectoryManager().fetchDirectory("continent");
         assertNotNull(directory);
         assertEquals(7, directory.getDirectoryEntries().size());
+    }
+
+    //FIXME: JAVACLIENT-110
+    @Ignore
+    @Test
+    public void itCanGetDirectoryThroughAutomation() {
+        List<DirectoryEntryProperties> result = nuxeoClient.automation("Directory.Entries")
+                                                           .param("directoryName", "continent")
+                                                           .execute();
+        assertNotNull(result);
     }
 
     @Ignore("JAVACLIENT-41")
