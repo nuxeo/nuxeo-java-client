@@ -188,6 +188,14 @@ public class NuxeoClient implements Client {
     @Override
     public NuxeoClient timeout(long timeout) {
         okhttpBuilder.connectTimeout(timeout, TimeUnit.SECONDS);
+        okhttpBuilder.readTimeout(timeout, TimeUnit.SECONDS);
+        retrofit();
+        return this;
+    }
+
+    @Override
+    public NuxeoClient readTimeout(long timeout){
+        okhttpBuilder.readTimeout(timeout, TimeUnit.SECONDS);
         retrofit();
         return this;
     }

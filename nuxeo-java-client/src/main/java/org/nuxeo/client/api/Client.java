@@ -59,6 +59,11 @@ public interface Client {
     NuxeoClient timeout(long timeout);
 
     /**
+     * @since 2.3
+     */
+    NuxeoClient readTimeout(long timeout);
+
+    /**
      * Get base URL.
      */
     String getBaseUrl();
