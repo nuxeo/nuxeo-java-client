@@ -81,9 +81,28 @@ public class Document extends NuxeoEntity {
 
     protected String name;
 
+    /**
+     * @since 2.3
+     */
+    protected boolean isProxy;
+
+    /**
+     * @deprecated since 2.3
+     */
+    @Deprecated
     public Document(String id, String type, List<String> facets, String changeToken, String path, String state,
             String lockOwner, String lockCreated, String repositoryName, String versionLabel, String isCheckedOut,
             Map<String, Object> properties, Map<String, Object> contextParameters) {
+        this(id, type, facets, changeToken, path, state, lockOwner, lockCreated, repositoryName, versionLabel,
+                isCheckedOut, false, properties, contextParameters);
+    }
+
+    /**
+     * @since 2.3
+     */
+    public Document(String id, String type, List<String> facets, String changeToken, String path, String state,
+            String lockOwner, String lockCreated, String repositoryName, String versionLabel, String isCheckedOut,
+            boolean isProxy, Map<String, Object> properties, Map<String, Object> contextParameters) {
         super(ConstantsV1.ENTITY_TYPE_DOCUMENT);
         uid = id;
         this.changeToken = changeToken;
@@ -96,6 +115,7 @@ public class Document extends NuxeoEntity {
         super.repositoryName = repositoryName;
         this.versionLabel = versionLabel;
         this.isCheckedOut = isCheckedOut;
+        this.isProxy = isProxy;
         this.contextParameters = contextParameters == null ? new HashMap<>() : contextParameters;
         this.properties = properties == null ? new HashMap<>() : properties;
         this.dirtyProperties = new HashMap<>();
@@ -566,6 +586,20 @@ public class Document extends NuxeoEntity {
 
     public Task fetchTaskById(String documentId) {
         return (Task) getResponse(documentId);
+    }
+
+    /**
+     * @since 2.3
+     */
+    public boolean isProxy() {
+        return isProxy;
+    }
+
+    /**
+     * @since 2.3
+     */
+    public void setIsProxy(boolean isProxy) {
+        this.isProxy = isProxy;
     }
 
 }
