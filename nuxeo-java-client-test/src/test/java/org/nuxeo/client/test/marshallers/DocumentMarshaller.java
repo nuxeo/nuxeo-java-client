@@ -57,6 +57,7 @@ public class DocumentMarshaller implements NuxeoMarshaller<Document> {
         String lockOwner = null;
         String repository = null;
         String changeToken = null;
+        boolean isProxy = false;
         JsonToken tok = jp.nextToken();
         Map<String, Object> properties = new HashMap<>();
         while (tok != null && tok != JsonToken.END_OBJECT) {
@@ -91,10 +92,12 @@ public class DocumentMarshaller implements NuxeoMarshaller<Document> {
                 readProperties(jp, properties);
             } else if ("changeToken".equals(key)) {
                 changeToken = jp.getText();
+            } else if ("isProxy".equals(key)) {
+                isProxy = jp.getBooleanValue();
             }
         }
         return new Document(uid, type, null, changeToken, path, state, lockOwner, lockCreated, repository,
-                versionLabel, isCheckedOut, properties, null);
+                versionLabel, isCheckedOut, isProxy, properties, null);
     }
 
     protected static void readProperties(JsonParser jp, Map<String, Object> props) throws IOException {

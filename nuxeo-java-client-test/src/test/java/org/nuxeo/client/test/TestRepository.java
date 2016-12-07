@@ -37,6 +37,7 @@ import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.nuxeo.client.api.ConstantsV1;
 import org.nuxeo.client.api.objects.Document;
 import org.nuxeo.client.api.objects.Documents;
 import org.nuxeo.client.api.objects.RecordSet;
@@ -236,6 +237,7 @@ public class TestRepository extends TestBase {
 
     @Test
     public void itCanUseCustomMarshallers() {
+
         Document folder = nuxeoClient.registerMarshaller(new DocumentMarshaller())
                                      .repository()
                                      .fetchDocumentByPath("/folder_1");
@@ -243,6 +245,7 @@ public class TestRepository extends TestBase {
         assertEquals(folder.getPath(), "/folder_1");
         assertEquals(folder.getState(), "project");
         assertEquals(folder.getType(), "Folder");
+
         nuxeoClient.clearMarshaller();
     }
 
@@ -493,5 +496,25 @@ public class TestRepository extends TestBase {
         assertFalse(fields.isEmpty());
         assertEquals(1, fields.size());
         assertEquals(1, fields.get(0).getRoles().size());
+    }
+
+    /**
+     * @since 2.3
+     */
+    @Test
+    public void itCanCheckIfDocumentIsProxy() {
+
+        Document root = nuxeoClient.repository().fetchDocumentRoot();
+        Document folder = nuxeoClient.repository()
+                                     .repositoryName(root.getRepositoryName())
+                                     .fetchDocumentByPath("/folder_1");
+
+        assertEquals(folder.isProxy(), false);
+
+        Document proxy = nuxeoClient.automation()
+                                    .param("Destination Path", root.getPath())
+                                    .input(folder)
+                                    .execute("Document.CreateLiveProxy");
+        assertEquals(proxy.isProxy(), true);
     }
 }
