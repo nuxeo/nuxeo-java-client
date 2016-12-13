@@ -1,8 +1,8 @@
-# Java Client Library 2.1 for the Nuxeo Platform REST APIs
+# Java Client Library 2.3-SNAPSHOT for the Nuxeo Platform REST APIs
 
 The Nuxeo Java Client is a Java client library (can be used for Android) for Nuxeo Automation and REST API.
 
-This is supported by Nuxeo and compatible with Nuxeo LTS 2015 and latest Fast Tracks. 
+This is supported by Nuxeo and compatible with Nuxeo LTS 2016 and latest Fast Tracks. 
 
 Here is the [Documentation Website](http://nuxeo.github.io/nuxeo-java-client).
 
@@ -38,11 +38,11 @@ Here is the [Documentation Website](http://nuxeo.github.io/nuxeo-java-client).
 
 #### Compatible with Nuxeo Platform 7.10 - LTS 2015
 
-Here is the [Nuxeo Client Library 1.0](http://maven.nuxeo.com/nexus/service/local/repositories/public-releases/content/org/nuxeo/client/nuxeo-java-client/1.0/nuxeo-java-client-1.0.jar).
+See Nuxeo Java Client branch [1.0](https://github.com/nuxeo/nuxeo-java-client/tree/1.0)
 
-#### Compatible with Nuxeo Platform 8.x - FastTracks
+#### Compatible with Nuxeo Platform 8.10 - LTS 2016 and 9.x - FastTracks
 
-Here is the [Nuxeo Client Library 2.1](http://maven.nuxeo.com/nexus/service/local/repositories/public-releases/content/org/nuxeo/client/nuxeo-java-client/2.1/nuxeo-java-client-2.1.jar).
+You can download the client on our Nexus: [Nuxeo Client Library 2.3-SNAPSHOT](https://maven.nuxeo.org/nexus/#nexus-search;gav~org.nuxeo.client~nuxeo-java-client~2.3-SNAPSHOT~jar~)
 
 **Import Nuxeo Java Client with:**
 
@@ -52,7 +52,7 @@ Maven:
 <dependency>
   <groupId>org.nuxeo.client</groupId>
   <artifactId>nuxeo-java-client</artifactId>
-  <version>1.0</version> <!-- (or <version>2.1</version>) -->
+  <version>2.3-SNAPSHOT</version>
 </dependency>
 ...
 <repository>
@@ -61,25 +61,31 @@ Maven:
     http://maven.nuxeo.com/nexus/content/repositories/public-releases/
   </url>
 </repository>
+<repository>
+  <id>public-snapshots</id>
+  <url>
+    http://maven.nuxeo.com/nexus/content/repositories/public-snapshots/
+  </url>
+</repository>
 ```
 
 Gradle:
 
 ```
-compile 'org.nuxeo.client:nuxeo-java-client:1.0' /** (or 2.1) */
+compile 'org.nuxeo.client:nuxeo-java-client:2.3-SNAPSHOT'
 ```
 
 Ivy:
 
 ```
-<dependency org="org.nuxeo.client" name="nuxeo-java-client" rev="1.0" /** (or 2.1) */ />
+<dependency org="org.nuxeo.client" name="nuxeo-java-client" rev="2.3-SNAPSHOT" />
 
 ```
 
 SBT:
 
 ```
-libraryDependencies += "org.nuxeo.client" % "nuxeo-java-client" % "1.0" /** (or 2.1) */
+libraryDependencies += "org.nuxeo.client" % "nuxeo-java-client" % "2.3-SNAPSHOT" 
 ```
 
 ### Sub-Modules Organization
