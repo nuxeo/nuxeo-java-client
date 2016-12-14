@@ -67,7 +67,7 @@
 
   <issueManagement>
     <system>jira</system>
-    <url>http://jira.nuxeo.com/browse/NXP</url>
+    <url>http://jira.nuxeo.com/browse/JAVACLIENT</url>
   </issueManagement>
 
   <ciManagement>
@@ -101,22 +101,17 @@
     <javax.mail.version>1.4.7</javax.mail.version>
     <compiler.version>3.3</compiler.version>
     <guava.version>18.0</guava.version>
-    <mvn.prerequisites.version>3.1.1</mvn.prerequisites.version>
-    <nuxeo.java.client.version>1.1-SNAPSHOT</nuxeo.java.client.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <commons-io.version>2.4</commons-io.version>
     <apache.commons.version>3.3.2</apache.commons.version>
   </properties>
 
-  <prerequisites>
-    <maven>${mvn.prerequisites.version}</maven>
-  </prerequisites>
   <dependencyManagement>
     <dependencies>
       <dependency>
         <groupId>org.nuxeo.client</groupId>
         <artifactId>nuxeo-java-client</artifactId>
-        <version>${nuxeo.java.client.version}</version>
+        <version>${project.version}</version>
       </dependency>
       <dependency>
         <groupId>com.squareup.retrofit2</groupId>
@@ -319,6 +314,95 @@
     </dependencies>
   </dependencyManagement>
 
+  <profiles>
+    <profile>
+      <id>release</id>
+      <activation>
+        <property>
+          <name>performRelease</name>
+          <value>true</value>
+        </property>
+      </activation>
+      <build>
+        <plugins>
+          <plugin>
+            <inherited>true</inherited>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-deploy-plugin</artifactId>
+            <configuration>
+              <updateReleaseInfo>true</updateReleaseInfo>
+            </configuration>
+          </plugin>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-source-plugin</artifactId>
+            <executions>
+              <execution>
+                <id>attach-sources</id>
+                <goals>
+                  <goal>jar</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-javadoc-plugin</artifactId>
+            <executions>
+              <execution>
+                <id>attach-javadocs</id>
+                <goals>
+                  <goal>jar</goal>
+                </goals>
+                <configuration>
+                  <additionalparam>-Xdoclint:none</additionalparam>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+    <profile>
+      <id>nightly</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-source-plugin</artifactId>
+            <executions>
+              <execution>
+                <id>attach-sources</id>
+                <goals>
+                  <goal>jar</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+      <repositories>
+        <repository>
+          <id>nightly-staging</id>
+          <url>http://mavenin.nuxeo.com/nexus/content/repositories/nightly-staging</url>
+          <releases>
+            <enabled>true</enabled>
+          </releases>
+          <snapshots>
+            <enabled>false</enabled>
+          </snapshots>
+        </repository>
+      </repositories>
+      <distributionManagement>
+        <repository>
+          <id>nightly-staging</id>
+          <url>http://mavenin.nuxeo.com/nexus/content/repositories/nightly-staging</url>
+          <uniqueVersion>true</uniqueVersion>
+        </repository>
+      </distributionManagement>
+    </profile>
+  </profiles>
+
   <build>
     <pluginManagement>
       <plugins>
@@ -335,18 +419,6 @@
       </plugins>
     </pluginManagement>
     <plugins>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-source-plugin</artifactId>
-        <executions>
-          <execution>
-            <id>attach-sources</id>
-            <goals>
-              <goal>jar-no-fork</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
