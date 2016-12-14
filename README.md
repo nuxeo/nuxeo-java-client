@@ -6,7 +6,7 @@ This is supported by Nuxeo and compatible with Nuxeo LTS 2015.
 
 Here is the [Documentation Website](http://nuxeo.github.io/nuxeo-java-client).
 
-[![Build Status](https://qa.nuxeo.org/jenkins/buildStatus/icon?job=Client/nuxeo-java-client-master)](https://qa.nuxeo.org/jenkins/job/Client/job/nuxeo-java-client-master)
+[![Build Status](https://qa.nuxeo.org/jenkins/buildStatus/icon?job=Client/nuxeo-java-client-1.0)](https://qa.nuxeo.org/jenkins/job/Client/job/nuxeo-java-client-1.0)
 
 
 ## Building
@@ -505,7 +505,7 @@ WIP:
 
 ## Testing
 
-The Testing suite or TCK can be found in this project [`nuxeo-java-client-test`](https://github.com/nuxeo/nuxeo-java-client/tree/master/nuxeo-java-client-test).
+The Testing suite or TCK can be found in this project [`nuxeo-java-client-test`](https://github.com/nuxeo/nuxeo-java-client/tree/1.0/nuxeo-java-client-test).
 
 ## Goals
 
