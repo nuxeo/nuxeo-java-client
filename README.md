@@ -104,7 +104,7 @@ For a given `url`:
 String url = "http://localhost:8080/nuxeo";
 ```
 
-And given credentials:
+And given credentials (by default using the Basic Auth) :
 
 ```java
 import org.nuxeo.client.api.NuxeoClient;
@@ -486,6 +486,24 @@ assertEquals(true, response.isSuccessful());
 String json = response.body().string();
 Document document = (Document) nuxeoClient.getConverterFactory().readJSON(json, Document.class);
 ```
+
+####Authentication
+
+By default, Nuxeo java client is using the basic authentication via the okhttp interceptor `org.nuxeo.client.internals.spi.auth.BasicAuthInterceptor`.
+
+#####The other available interceptors are:
+
+- `org.nuxeo.client.internals.spi.auth.PortalSSOAuthInterceptor`
+- `org.nuxeo.client.internals.spi.auth.TokenAuthInterceptor`
+
+#####To add or use different interceptor(s):
+
+- Instantiate your `org.nuxeo.client.api.NuxeoClient` by passing null values in `username` and `password` parameters
+- Add an interceptor by using `org.nuxeo.client.api.NuxeoClient#setAuthenticationMethod` method.
+
+#####To create a new interceptor:
+
+Create a new java class implementing the interface `okhttp3.Interceptor` - see the okhttp [documentation](https://github.com/square/okhttp/wiki/Interceptors).
 
 ####Async/Callbacks
 
