@@ -36,7 +36,7 @@ Here is the [Documentation Website](http://nuxeo.github.io/nuxeo-java-client).
 
 ### Client - Library Import
 
-Here is the [Nuxeo Client Library 1.0](http://maven.nuxeo.com/nexus/service/local/repositories/public-releases/content/org/nuxeo/client/nuxeo-java-client/1.0/nuxeo-java-client-1.0.jar).
+You can download the client on our Nexus: [Nuxeo Client Library 1.1-SNAPSHOT](https://maven.nuxeo.org/nexus/#nexus-search;gav~org.nuxeo.client~nuxeo-java-client~1.1-SNAPSHOT~jar~).
 
 **Import Nuxeo Java Client with:**
 
@@ -50,13 +50,19 @@ Maven:
 </dependency>
 ```
 
-with repository:
+with repositories:
 
 ```
 <repository>
   <id>public-releases</id>
   <url>
-    http://mavenin.nuxeo.com/nexus/content/repositories/public-releases
+    http://maven.nuxeo.com/nexus/content/repositories/public-releases
+  </url>
+</repository>
+<repository>
+  <id>public-snapshots</id>
+  <url>
+    http://maven.nuxeo.com/nexus/content/repositories/public-snapshots
   </url>
 </repository>
 ```
