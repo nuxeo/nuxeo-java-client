@@ -15,7 +15,7 @@ Here is the [Documentation Website](http://nuxeo.github.io/nuxeo-java-client).
 
 ## Getting Started
 
-###Server
+### Server
 
 - [Download a Nuxeo server](http://www.nuxeo.com/en/downloads) (the zip version)
 
@@ -94,9 +94,9 @@ libraryDependencies += "org.nuxeo.client" % "nuxeo-java-client" % "2.4-SNAPSHOT"
 - `nuxeo-java-client-test`: Nuxeo Java Client Suite Test.
 - `NuxeoJavaClientSample`: Nuxeo Java Client Android Application Sample And Suite Test.
 
-###Usage
+### Usage
 
-####Creating a Client
+#### Creating a Client
 
 For a given `url`:
 
@@ -139,14 +139,14 @@ nuxeoClient = nuxeoClient.enableDefaultCache();
 nuxeoClient = nuxeoClient.logout();
 ```
 
-####APIs
+#### APIs
 
 General rule: 
 
 - When using `fetch` methods, `NuxeoClient` is making remote calls. 
 - When using `get` methods, objects are retrieved from memory.
 
-####Automation API
+#### Automation API
 
 To use the Automation API, `org.nuxeo.client.api.NuxeoClient#automation()` is the entry point for all calls:
 
@@ -452,7 +452,7 @@ userManager.addUserToGroup("Administrator", "totogroup");
 userManager.attachGroupToUser("members", "Administrator");
 ```
 
-####Workflow
+#### Workflow
 
 ```java
 import org.nuxeo.client.api.objects.workflow.Workflows;
@@ -465,7 +465,7 @@ Workflows workflows = nuxeoClient.fetchCurrentUser().fetchWorkflowInstances();
 Workflows workflows = nuxeoClient.repository().fetchDocumentRoot().fetchWorkflowInstances();
 ```
 
-####Manual REST Calls
+#### Manual REST Calls
 
 `NuxeoClient` allows manual REST calls with the 4 main methods GET, POST, PUT, DELETE and provides JSON (de)serializer helpers:
 
@@ -487,25 +487,25 @@ String json = response.body().string();
 Document document = (Document) nuxeoClient.getConverterFactory().readJSON(json, Document.class);
 ```
 
-####Authentication
+#### Authentication
 
 By default, Nuxeo java client is using the basic authentication via the okhttp interceptor `org.nuxeo.client.internals.spi.auth.BasicAuthInterceptor`.
 
-#####The other available interceptors are:
+##### The other available interceptors are:
 
 - `org.nuxeo.client.internals.spi.auth.PortalSSOAuthInterceptor`
 - `org.nuxeo.client.internals.spi.auth.TokenAuthInterceptor`
 
-#####To add or use different interceptor(s):
+##### To add or use different interceptor(s):
 
 - Instantiate your `org.nuxeo.client.api.NuxeoClient` by passing null values in `username` and `password` parameters
 - Add an interceptor by using `org.nuxeo.client.api.NuxeoClient#setAuthenticationMethod` method.
 
-#####To create a new interceptor:
+##### To create a new interceptor:
 
 Create a new java class implementing the interface `okhttp3.Interceptor` - see the okhttp [documentation](https://github.com/square/okhttp/wiki/Interceptors).
 
-####Async/Callbacks
+#### Async/Callbacks
 
 All APIs from the client are executable in Asynchronous way.
 
@@ -513,7 +513,7 @@ All APIs are duplicated with an additional parameter `retrofit2.Callback<T>`.
 
 When no response is needed (204 No Content Status for example), use `retrofit2.Callback<ResponseBody>` (`okhttp3.ResponseBody`). This object can be introspected like the response headers or status for instance.
 
-####Custom Endpoints/Marshallers
+#### Custom Endpoints/Marshallers
 
 `nuxeo-java-client` is using [retrofit](https://github.com/square/retrofit) to deploy the endpoints and [FasterXML](https://github.com/FasterXML) to create marshallers.
 
@@ -574,7 +574,7 @@ Pay attention to:
 
 - provide inside `getResponse(...)` the same parameters found on the API
 
-####Cache
+#### Cache
 
 The default built-in cache in `nuxeo-java-client` is "in memory" (`org.nuxeo.client.api.cache.ResultCacheInMemory`).
 
@@ -584,7 +584,7 @@ The default built-in cache in `nuxeo-java-client` is "in memory" (`org.nuxeo.cli
 
 - The cache invalidation is triggered after 10 minutes and has a maximum capacity of 1 MB.
 
-######Customization
+###### Customization
 
 - Customization can be done with different invalidation parameters by using `org.nuxeo.client.api.NuxeoClient#setCache`
 
@@ -592,7 +592,7 @@ The default built-in cache in `nuxeo-java-client` is "in memory" (`org.nuxeo.cli
 
 *If you have specific needs, don't hesitate to create an issue on this repository, all feedbacks are welcome!*
 
-####Errors/Exceptions
+#### Errors/Exceptions
 
 The main exception manager for the `nuxeo-java-client` is `org.nuxeo.client.internals.spi.NuxeoClientException` and contains:
 
@@ -693,7 +693,7 @@ All caches should be accessible via a generated cache key defined by the request
 
 [Scenarii](https://docs.google.com/a/nuxeo.com/spreadsheets/d/1rlzMyLk_LD4OvdbJ37DBZjD5LiH4i7sb4V2YAYjINcc/edit?usp=sharing)
 
-#####Pending questions: Invalidations
+##### Pending questions: Invalidations
 
 ----> What would be a default timeout for each cache?
 
@@ -703,12 +703,12 @@ All caches should be accessible via a generated cache key defined by the request
 - then check the document response store
 - then check the server response
 
-#####Synchronisation
+##### Synchronisation
 
 - Should we apply those [rules](https://doc.nuxeo.com/display/NXDOC/Android+Connector+and+Caching#AndroidConnectorandCaching-TransientState)?
 - Should we use ETag And/Or If-Modified-Since with HEAD method?
 
-#####Potential Stores
+##### Potential Stores
 
 Depending on client:
 - "In memory" - Guava for Java
@@ -717,7 +717,7 @@ Depending on client:
 - On disk for both
 - Others?
 
-#####Miscellaneous
+##### Miscellaneous
 
 - For the dirty properties of objects (like dirty properties of automation client for documents) - out of scope of caching
 
@@ -734,7 +734,7 @@ We are glad to welcome new developers on this initiative, and even simple usage 
 - Report issues on this GitHub repository (see [issues link](http://github.com/nuxeo/nuxeo-java-client/issues) on the right)
 - Contribute: Send pull requests!
 
-##About third party libraries
+## About third party libraries
 
 - Thanks a lot to the Square team for their [retrofit/okhttp](http://square.github.io/retrofit/) client libraries
 
