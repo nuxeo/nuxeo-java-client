@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2016 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2016-2017 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,6 +15,7 @@
  *
  * Contributors:
  *         Vladimir Pasquier <vpasquier@nuxeo.com>
+ *         Mincong Huang <mhuang@nuxeo.com>
  */
 package org.nuxeo.client.test;
 
@@ -158,7 +159,7 @@ public class TestRepository extends TestBase {
 
     @Test
     public void itCanQuery() {
-        Documents documents = nuxeoClient.repository().query("SELECT * " + "From Note");
+        Documents documents = nuxeoClient.repository().query("SELECT * From Note");
         assertTrue(documents.getDocuments().size() != 0);
         Document document = documents.getDocuments().get(0);
         assertEquals("Note", document.getType());
@@ -251,7 +252,7 @@ public class TestRepository extends TestBase {
     @Test
     public void itCanUseQueriesAndResultSet() {
         RecordSet documents = (RecordSet) nuxeoClient.automation()
-                                                     .param("query", "SELECT " + "* FROM Document")
+                                                     .param("query", "SELECT * FROM Document")
                                                      .execute("Repository.ResultSetQuery");
         assertTrue(documents.getUuids().size() != 0);
     }
@@ -350,8 +351,7 @@ public class TestRepository extends TestBase {
         Thread t = new Thread(() -> {
             try {
                 RecordSet documents = nuxeoClient.automation()
-                                                 .param("query", "SELECT * " +
-                                                         "FROM Document")
+                                                 .param("query", "SELECT * FROM Document")
                                                  .execute("Repository.ResultSetQuery");
                 assertTrue(documents.getUuids().size() != 0);
             } catch (Exception e) {
