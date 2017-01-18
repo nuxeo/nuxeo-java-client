@@ -20,12 +20,16 @@ package org.nuxeo.client.api.objects;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import okhttp3.ResponseBody;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.client.api.ConstantsV1;
 import org.nuxeo.client.api.objects.acl.ACE;
 import org.nuxeo.client.api.objects.acl.ACL;
@@ -45,6 +49,11 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
  * @since 0.1
  */
 public class Document extends NuxeoEntity {
+
+    private static final Logger logger = LogManager.getLogger(Document.class);
+
+    public static final String MSG_DATE_UNSUPPORTED = "Date values are not supported in Nuxeo Java Client. Please"
+            + "convert it to String with ISO 8601 format \"yyyy-MM-dd'T'HH:mm:ss.SSXXX\" before calling this method.";
 
     protected String path;
 
@@ -278,6 +287,9 @@ public class Document extends NuxeoEntity {
     }
 
     public void set(String key, Object value) {
+        if (value instanceof Calendar || value instanceof Date) {
+            throw new IllegalArgumentException(MSG_DATE_UNSUPPORTED);
+        }
         properties.put(key, value);
         dirtyProperties.put(key, value);
     }

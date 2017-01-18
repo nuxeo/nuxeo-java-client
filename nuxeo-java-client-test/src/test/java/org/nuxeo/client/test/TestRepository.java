@@ -27,12 +27,21 @@ import static org.junit.Assert.fail;
 
 import java.io.File;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.Month;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TimeZone;
 
 import org.junit.Before;
 import org.junit.Ignore;
@@ -442,6 +451,121 @@ public class TestRepository extends TestBase {
         assertEquals(folder.getUid(), document.getParentRef());
         assertEquals("/folder_1/file", document.getPath());
         assertEquals("file", document.getTitle());
+    }
+
+    @Test
+    // TODO NXP-21607 change SS to SSS
+    public void itCanHandleGregorianCalendarUTC() {
+        GregorianCalendar calendar = new GregorianCalendar(2017, Calendar.MAY, 4, 3, 2, 1);
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX");
+        calendar.setTimeZone(TimeZone.getTimeZone("UTC"));
+        formatter.setTimeZone(TimeZone.getTimeZone("UTC"));
+        String calendarStr = formatter.format(calendar.getTime());
+        assertEquals("2017-05-04T03:02:01.000Z", calendarStr);
+
+        Document file = new Document("My Title", "File");
+        file.set("dc:issued", calendarStr);
+        file = nuxeoClient.repository().createDocumentByPath("/", file);
+        assertEquals("2017-05-04T03:02:01.00Z", file.getPropertyValue("dc:issued"));
+
+        calendar.add(Calendar.MONTH, 1);
+        calendarStr = formatter.format(calendar.getTime());
+        assertEquals("2017-06-04T03:02:01.000Z", calendarStr);
+        file.set("dc:issued", calendarStr);
+        file = nuxeoClient.repository().updateDocument(file);
+        assertEquals("2017-06-04T03:02:01.00Z", file.getPropertyValue("dc:issued"));
+    }
+
+    @Test
+    // TODO NXP-21607 change SS to SSS
+    public void itCanHandleGregorianCalendarCET() {
+        GregorianCalendar calendar = new GregorianCalendar(2017, Calendar.MAY, 4, 3, 2, 1);
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX");
+        calendar.setTimeZone(TimeZone.getTimeZone("CET"));
+        formatter.setTimeZone(TimeZone.getTimeZone("CET"));
+        String calendarStr = formatter.format(calendar.getTime());
+        assertEquals("2017-05-04T03:02:01.000+02:00", calendarStr);
+
+        Document file = new Document("My Title", "File");
+        file.set("dc:issued", calendarStr);
+        file = nuxeoClient.repository().createDocumentByPath("/", file);
+        assertEquals("2017-05-04T01:02:01.00Z", file.getPropertyValue("dc:issued"));
+
+        calendar.add(Calendar.MONTH, 1);
+        calendarStr = formatter.format(calendar.getTime());
+        assertEquals("2017-06-04T03:02:01.000+02:00", calendarStr);
+        file.set("dc:issued", calendarStr);
+        file = nuxeoClient.repository().updateDocument(file);
+        assertEquals("2017-06-04T01:02:01.00Z", file.getPropertyValue("dc:issued"));
+    }
+
+    @Test
+    // TODO NXP-21607 change SS to SSS
+    public void itCanHandleZonedDateTimeUTC() {
+        ZonedDateTime dateTime = LocalDate.of(2017, Month.MAY, 4).atTime(3, 2, 1).atZone(ZoneId.of("UTC"));
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSXXX");
+        String dateTimeStr = dateTime.format(formatter);
+        assertEquals("2017-05-04T03:02:01.000Z", dateTimeStr);
+
+        Document file = new Document("My Title", "File");
+        file.set("dc:issued", dateTimeStr);
+        file = nuxeoClient.repository().createDocumentByPath("/", file);
+        assertEquals("File", file.getType());
+        assertEquals("2017-05-04T03:02:01.00Z", file.getPropertyValue("dc:issued"));
+
+        dateTime = dateTime.plus(1, ChronoUnit.MONTHS);
+        file.set("dc:issued", dateTime.format(formatter));
+        file = nuxeoClient.repository().updateDocument(file);
+        assertEquals("2017-06-04T03:02:01.00Z", file.getPropertyValue("dc:issued"));
+    }
+
+    @Test
+    // TODO NXP-21607 change SS to SSS
+    public void itCanHandleZonedDateTimeCET() {
+        ZonedDateTime dateTime = LocalDate.of(2017, Month.MAY, 4).atTime(3, 2, 1).atZone(ZoneId.of("CET"));
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSXXX");
+        String dateTimeStr = dateTime.format(formatter);
+        assertEquals("2017-05-04T03:02:01.000+02:00", dateTimeStr);
+
+        Document file = new Document("My Title", "File");
+        file.set("dc:issued", dateTimeStr);
+        file = nuxeoClient.repository().createDocumentByPath("/", file);
+        assertEquals("File", file.getType());
+        assertEquals("2017-05-04T01:02:01.00Z", file.getPropertyValue("dc:issued"));
+
+        dateTime = dateTime.plus(1, ChronoUnit.MONTHS);
+        file.set("dc:issued", dateTime.format(formatter));
+        file = nuxeoClient.repository().updateDocument(file);
+        assertEquals("2017-06-04T01:02:01.00Z", file.getPropertyValue("dc:issued"));
+    }
+
+    /**
+     * Dates can only be handled as {@link java.lang.String}. Otherwise, exception should be raised. There're several
+     * examples showing how to convert date correctly into ISO 8601 format:
+     * <ul>
+     * <li>Convert {@link java.util.GregorianCalendar} in UTC, see {@link #itCanHandleGregorianCalendarUTC}.
+     * <li>Convert {@link java.util.GregorianCalendar} in CET, see {@link #itCanHandleGregorianCalendarCET}.
+     * <li>Convert {@link java.time.ZonedDateTime} in UTC, see {@link #itCanHandleZonedDateTimeCET}.
+     * <li>Convert {@link java.time.ZonedDateTime} in CET, see {@link #itCanHandleZonedDateTimeCET}.
+     * </ul>
+     */
+    @Test
+    public void itCannotHandleDateByDefault() {
+        Document file = new Document("My Title", "File");
+
+        try {
+            file.set("dc:issued", new GregorianCalendar());
+            fail();
+        } catch (IllegalArgumentException e) {
+            assertEquals(e.getMessage(), Document.MSG_DATE_UNSUPPORTED, e.getMessage());
+        }
+
+        try {
+            file.set("dc:issued", new Date(System.currentTimeMillis()));
+            fail();
+        } catch (IllegalArgumentException e) {
+            assertEquals(e.getMessage(), Document.MSG_DATE_UNSUPPORTED, e.getMessage());
+        }
     }
 
     @Test
