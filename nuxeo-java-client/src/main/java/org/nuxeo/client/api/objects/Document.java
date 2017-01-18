@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2016 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2016-2017 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -165,8 +165,8 @@ public class Document extends NuxeoEntity {
     }
 
     /**
-     * This constructor is providing a way to create 'adapters' of a document. See
-     * org.nuxeo.client.test.objects.DataSet in nuxeo-java-client-test.
+     * This constructor is providing a way to create 'adapters' of a document. See org.nuxeo.client.test.objects.DataSet
+     * in nuxeo-java-client-test.
      *
      * @since 1.0
      * @param document the document to copy from the sub class.
@@ -429,7 +429,7 @@ public class Document extends NuxeoEntity {
 
     /**
      * Add permission on the current document by passing the related email.
-     * 
+     *
      * @since 1.0
      * @param ace the permission.
      * @param email the invited email.
