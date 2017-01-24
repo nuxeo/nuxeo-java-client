@@ -195,10 +195,11 @@ public abstract class NuxeoEntity<T> {
     protected Call<T> getCall(Object api, String methodName, Object... parametersArray) {
         try {
             Method[] methods = api.getClass().getInterfaces()[0].getMethods();
-            List<Object> parameters = new ArrayList<>(Arrays.asList(parametersArray));
-            if (repositoryName != null)
-                parameters.add(repositoryName);
-            parametersArray = parameters.toArray();
+            if (repositoryName != null) {
+                int len = parametersArray.length;
+                parametersArray = Arrays.copyOf(parametersArray, len + 1);
+                parametersArray[len] = repositoryName;
+            }
             Method method = null;
             for (Method currentMethod : methods) {
                 if (currentMethod.getName().equals(methodName)) {
