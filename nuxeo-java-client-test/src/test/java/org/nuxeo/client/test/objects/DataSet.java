@@ -2,6 +2,7 @@ package org.nuxeo.client.test.objects;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.nuxeo.client.api.objects.Document;
 
@@ -16,11 +17,11 @@ public class DataSet extends Document {
         super(file, dataSet);
     }
 
+    @SuppressWarnings("unchecked")
     public DataSet(Document document) {
         super(document);
-        for (Object field : (List) document.getPropertyValue("ds:fields")) {
-            Field field1 = new Field(field);
-            fields.add(field1);
+        for (Map<String, Object> fieldProps : (List<Map<String, Object>>) document.getPropertyValue("ds:fields")) {
+            fields.add(new Field(fieldProps));
         }
     }
 

@@ -48,13 +48,14 @@ public class Field {
         this.name = name;
     }
 
-    public Field(Object field) {
-        this.fieldType = (String) ((Map)field).get("fieldType");
-        this.description = (String) ((Map)field).get("description");
-        this.columnName = (String) ((Map)field).get("columnName");
-        this.sqlTypeHint = (String) ((Map)field).get("sqlTypeHint");
-        this.name = (String) ((Map)field).get("name");
-        this.roles = (List<String>) ((Map)field).get("roles");
+    @SuppressWarnings("unchecked")
+    public Field(Map<String, Object> fieldProps) {
+        this.fieldType = (String) fieldProps.get("fieldType");
+        this.description = (String) fieldProps.get("description");
+        this.columnName = (String) fieldProps.get("columnName");
+        this.sqlTypeHint = (String) fieldProps.get("sqlTypeHint");
+        this.name = (String) fieldProps.get("name");
+        this.roles = (List<String>) fieldProps.get("roles");
     }
 
     public String getFieldType() {
