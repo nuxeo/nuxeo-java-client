@@ -37,7 +37,6 @@ import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.nuxeo.client.api.ConstantsV1;
 import org.nuxeo.client.api.objects.Document;
 import org.nuxeo.client.api.objects.Documents;
 import org.nuxeo.client.api.objects.RecordSet;

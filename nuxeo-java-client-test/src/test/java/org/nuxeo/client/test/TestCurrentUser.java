@@ -26,8 +26,6 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.client.api.objects.user.CurrentUser;
-import org.nuxeo.client.api.objects.user.User;
-import org.nuxeo.client.api.objects.user.UserManager;
 import org.nuxeo.client.internals.spi.NuxeoClientException;
 import org.nuxeo.client.internals.spi.auth.PortalSSOAuthInterceptor;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
@@ -35,9 +33,6 @@ import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.restapi.test.RestServerFeature;
 import org.nuxeo.ecm.restapi.test.RestServerInit;
 import org.nuxeo.runtime.test.runner.*;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * @since 0.1
