@@ -105,13 +105,17 @@ public class DocumentMarshaller implements NuxeoMarshaller<Document> {
         while (tok != null && tok != JsonToken.END_OBJECT) {
             String key = jp.getCurrentName();
             tok = jp.nextToken();
-            if (tok == JsonToken.START_ARRAY) {
+            switch (tok) {
+            case START_ARRAY:
                 props.put(key, readArrayProperty(jp));
-            } else if (tok == JsonToken.START_OBJECT) {
+                break;
+            case START_OBJECT:
                 props.put(key, readObjectProperty(jp));
-            } else if (tok == JsonToken.VALUE_NULL) {
-                props.put(key, (String) null);
-            } else {
+                break;
+            case VALUE_NULL:
+                props.put(key, null);
+                break;
+            default:
                 props.put(key, jp.getText());
             }
             tok = jp.nextToken();
@@ -131,11 +135,14 @@ public class DocumentMarshaller implements NuxeoMarshaller<Document> {
         List<Object> list = new ArrayList<>();
         JsonToken tok = jp.nextToken();
         while (tok != JsonToken.END_ARRAY) {
-            if (tok == JsonToken.START_ARRAY) {
+            switch (tok) {
+            case START_ARRAY:
                 list.add(readArrayProperty(jp));
-            } else if (tok == JsonToken.START_OBJECT) {
+                break;
+            case START_OBJECT:
                 list.add(readObjectProperty(jp));
-            } else {
+                break;
+            default:
                 list.add(jp.getText());
             }
             tok = jp.nextToken();
