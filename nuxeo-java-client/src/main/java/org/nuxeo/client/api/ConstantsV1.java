@@ -99,7 +99,9 @@ public class ConstantsV1 {
 
     public static final String MULTIPART = "multipart";
 
-    /** @isnce 2.2 */
+    /**
+     * @since 2.2
+     */
     public static final String APPLICATION_NUXEO_EMPTY_LIST = "application/nuxeo-empty-list";
 
     public static final String JSON_NXENTITY = "json+nxentity";
@@ -118,4 +120,18 @@ public class ConstantsV1 {
 
     public static final String DEFAULT_FILE_CONTENT = "file:content";
 
+    /**
+     * @since 2.4
+     */
+    public static final String USER_FIRST_NAME = "firstName";
+
+    public static final String USER_LAST_NAME = "lastName";
+
+    public static final String USER_EMAIL = "email";
+
+    public static final String USER_GROUPS = "groups";
+
+    public static final String USER_USERNAME = "username";
+
+    public static final String USER_COMPANY = "company";
 }

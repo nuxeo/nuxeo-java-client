@@ -19,12 +19,15 @@
 package org.nuxeo.client.api.objects.user;
 
 import java.util.List;
+import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
  * @since 0.1
+ * @deprecated since 2.4, use {@link User#setProperties(Map)} instead to set user properties
  */
+@Deprecated
 public class UserProperties {
 
     protected String firstName;
