@@ -116,4 +116,19 @@ public class ConstantsV1 {
     public static final String DEFAULT_FILE_CONTENT = "file:content";
 
     public static final String ENTITY_TYPE_BLOB = "blob";
+
+    /**
+     * @since 2.4
+     */
+    public static final String USER_FIRST_NAME = "firstName";
+
+    public static final String USER_LAST_NAME = "lastName";
+
+    public static final String USER_EMAIL = "email";
+
+    public static final String USER_GROUPS = "groups";
+
+    public static final String USER_USERNAME = "username";
+
+    public static final String USER_COMPANY = "company";
 }

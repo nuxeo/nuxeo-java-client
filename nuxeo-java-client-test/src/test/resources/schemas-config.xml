@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.client.test.schemas">
+
+  <extension target="org.nuxeo.ecm.core.schema.TypeService"
+             point="schema">
+    <schema name="user" override="true" src="schemas/user.xsd"/>
+  </extension>
+
+</component>

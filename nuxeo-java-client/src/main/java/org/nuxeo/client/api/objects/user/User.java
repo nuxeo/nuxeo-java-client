@@ -19,7 +19,9 @@
 package org.nuxeo.client.api.objects.user;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.nuxeo.client.api.ConstantsV1;
 import org.nuxeo.client.api.NuxeoClient;
@@ -34,7 +36,10 @@ public class User extends NuxeoEntity {
 
     protected String id;
 
-    protected final UserProperties properties = new UserProperties();
+    /**
+     * @since 2.4 - UserProperties object has been removed for generic purpose
+     */
+    protected Map<String, Object> properties = new HashMap<>();
 
     protected List<ExtendedGroup> extendedGroups = new ArrayList<>();
 
@@ -60,10 +65,6 @@ public class User extends NuxeoEntity {
         return id;
     }
 
-    public UserProperties getProperties() {
-        return properties;
-    }
-
     public boolean isAdministrator() {
         return isAdministrator;
     }
@@ -77,27 +78,27 @@ public class User extends NuxeoEntity {
     }
 
     public String getFirstName() {
-        return this.properties.getFirstName();
+        return (String) this.properties.get(ConstantsV1.USER_FIRST_NAME);
     }
 
     public String getLastName() {
-        return this.properties.getLastName();
+        return (String) this.properties.get(ConstantsV1.USER_LAST_NAME);
     }
 
     public String getCompany() {
-        return this.properties.getCompany();
+        return (String) this.properties.get(ConstantsV1.USER_COMPANY);
     }
 
     public String getEmail() {
-        return this.properties.getEmail();
+        return (String) this.properties.get(ConstantsV1.USER_EMAIL);
     }
 
     public List<String> getGroups() {
-        return this.properties.getGroups();
+        return (List<String>) this.properties.get(ConstantsV1.USER_GROUPS);
     }
 
     public String getUserName() {
-        return this.properties.getUserName();
+        return (String) this.properties.get(ConstantsV1.USER_USERNAME);
     }
 
     public void setExtendedGroups(List<ExtendedGroup> extendedGroups) {
@@ -105,26 +106,38 @@ public class User extends NuxeoEntity {
     }
 
     public void setFirstName(String firstName) {
-        this.properties.setFirstName(firstName);
+        this.properties.put(ConstantsV1.USER_FIRST_NAME, firstName);
     }
 
     public void setLastName(String lastName) {
-        this.properties.setLastName(lastName);
+        this.properties.put(ConstantsV1.USER_LAST_NAME, lastName);
     }
 
     public void setCompany(String company) {
-        this.properties.setCompany(company);
+        this.properties.put(ConstantsV1.USER_COMPANY, company);
     }
 
     public void setEmail(String email) {
-        this.properties.setEmail(email);
+        this.properties.put(ConstantsV1.USER_EMAIL, email);
     }
 
     public void setGroups(List<String> groups) {
-        this.properties.setGroups(groups);
+        this.properties.put(ConstantsV1.USER_GROUPS, groups);
     }
 
     public void setUserName(String userName) {
-        this.properties.setUserName(userName);
+        this.properties.put(ConstantsV1.USER_USERNAME, userName);
     }
+
+    /**
+     * @since 2.4
+     */
+    public void setProperties(Map<String, Object> properties) {
+        this.properties = properties;
+    }
+
+    public Map<String, Object> getProperties() {
+        return properties;
+    }
+
 }

@@ -39,6 +39,7 @@ import org.nuxeo.ecm.restapi.test.RestServerFeature;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.Jetty;
+import org.nuxeo.runtime.test.runner.LocalDeploy;
 
 /**
  * @since 0.1
@@ -47,6 +48,7 @@ import org.nuxeo.runtime.test.runner.Jetty;
 @Features({ RestServerFeature.class })
 @Jetty(port = 18090)
 @RepositoryConfig(cleanup = Granularity.METHOD)
+@LocalDeploy({ "org.nuxeo.java.client.test:schemas-config.xml" })
 public class TestUserGroup extends TestBase {
 
     @Before
@@ -79,6 +81,7 @@ public class TestUserGroup extends TestBase {
         assertEquals("to", user.getLastName());
         assertEquals("toto@nuxeo.com", user.getEmail());
         assertEquals("toto@nuxeo.com", user.getEmail());
+        assertEquals("US", user.getProperties().get("country"));
     }
 
     protected User createUser() {
@@ -88,6 +91,7 @@ public class TestUserGroup extends TestBase {
         newUser.setEmail("toto@nuxeo.com");
         newUser.setFirstName("to");
         newUser.setLastName("to");
+        newUser.getProperties().put("country", "US");
         List<String> groups = new ArrayList<>();
         groups.add("members");
         newUser.setGroups(groups);
