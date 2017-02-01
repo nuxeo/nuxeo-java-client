@@ -101,6 +101,10 @@ public class User extends NuxeoEntity {
         return (String) this.properties.get(ConstantsV1.USER_USERNAME);
     }
 
+    public String getPassword() {
+        return (String) this.properties.get(ConstantsV1.USER_PASSWORD);
+    }
+
     public void setExtendedGroups(List<ExtendedGroup> extendedGroups) {
         this.extendedGroups = extendedGroups;
     }
@@ -127,6 +131,20 @@ public class User extends NuxeoEntity {
 
     public void setUserName(String userName) {
         this.properties.put(ConstantsV1.USER_USERNAME, userName);
+    }
+
+    /**
+     * @since 2.4
+     */
+    public void setPassword(String password) {
+        this.properties.put(ConstantsV1.USER_PASSWORD, password);
+    }
+
+    /**
+     * @since 2.4
+     */
+    public void setTenantId(String tenantId) {
+        this.properties.put(ConstantsV1.USER_TENANTID, tenantId);
     }
 
     /**
