@@ -20,6 +20,7 @@ package org.nuxeo.client.test;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.fail;
 
 import java.util.ArrayList;
@@ -80,8 +81,15 @@ public class TestUserGroup extends TestBase {
         assertEquals("toto", user.getId());
         assertEquals("to", user.getLastName());
         assertEquals("toto@nuxeo.com", user.getEmail());
-        assertEquals("toto@nuxeo.com", user.getEmail());
         assertEquals("US", user.getProperties().get("country"));
+
+        // Try to log with the login/password to check that the password was correctly set
+        try {
+            login("toto", "totopwd");
+            nuxeoClient.fetchCurrentUser();
+        } catch (NuxeoClientException reason) {
+            fail("User should be able to login, the password may have been reset");
+        }
     }
 
     protected User createUser() {
@@ -91,6 +99,8 @@ public class TestUserGroup extends TestBase {
         newUser.setEmail("toto@nuxeo.com");
         newUser.setFirstName("to");
         newUser.setLastName("to");
+        newUser.setPassword("totopwd");
+        newUser.setTenantId("mytenantid");
         newUser.getProperties().put("country", "US");
         List<String> groups = new ArrayList<>();
         groups.add("members");
@@ -194,5 +204,32 @@ public class TestUserGroup extends TestBase {
         user = userManager.fetchUser("Administrator");
         assertEquals(3, user.getGroups().size());
         assertEquals("members", user.getGroups().get(1));
+    }
+
+    @Test
+    public void itDoesNotResetPassword() {
+        // JAVACLIENT-87 : check that updating a user doesn't reset his password
+        UserManager userManager = nuxeoClient.getUserManager();
+        assertNotNull(userManager);
+        User newUser = createUser();
+        User user = userManager.createUser(newUser);
+        assertNotNull(user);
+        user = userManager.fetchUser("toto");
+        assertNotNull(user);
+        assertNull(user.getPassword());
+        assertEquals("toto@nuxeo.com", user.getEmail());
+
+        user.setEmail("tata@nuxeo.com");
+        user = userManager.updateUser(user);
+        assertEquals("tata@nuxeo.com", user.getEmail());
+
+        // Try to log with the login/password to check that the password was correctly set
+        try {
+            login("toto", "totopwd");
+            nuxeoClient.fetchCurrentUser();
+        } catch (NuxeoClientException reason) {
+            fail("User should be able to login, the password may have been reset");
+        }
+
     }
 }
