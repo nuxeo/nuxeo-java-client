@@ -53,7 +53,7 @@ public class Document extends NuxeoEntity {
     private static final Logger logger = LogManager.getLogger(Document.class);
 
     public static final String MSG_DATE_UNSUPPORTED = "Date values are not supported in Nuxeo Java Client. Please"
-            + "convert it to String with ISO 8601 format \"yyyy-MM-dd'T'HH:mm:ss.SSXXX\" before calling this method.";
+            + " convert it to String with ISO 8601 format \"yyyy-MM-dd'T'HH:mm:ss.SSSXXX\" before calling this method.";
 
     protected String path;
 
