@@ -35,6 +35,7 @@ import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -43,6 +44,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
 
+import java.util.function.Consumer;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -548,19 +550,97 @@ public class TestRepository extends TestBase {
     @Test
     public void itCannotHandleDateByDefault() {
         Document file = new Document("My Title", "File");
+        String expectedMsg1 = buildErrorMsgForDate("dc:issued", GregorianCalendar.class);
+        String expectedMsg2 = buildErrorMsgForDate("dc:issued", Date.class);
 
+        GregorianCalendar dateType1 = new GregorianCalendar();
+        Date dateType2 = new Date(System.currentTimeMillis());
+
+        assertExceptionFor(doc -> doc.set("dc:issued", dateType1), file, expectedMsg1);
+        assertExceptionFor(doc -> doc.set("dc:issued", dateType2), file, expectedMsg2);
+    }
+
+    @Test
+    public void itCannotHandlePropsIfDateFound() {
+        Document file = new Document("My Title", "File");
+        Map<String, Object> props = new HashMap<>();
+        props.put("dc:issued", new GregorianCalendar());
+        String expectedMsg = buildErrorMsgForDate("dc:issued", GregorianCalendar.class);
+
+        assertExceptionFor(doc -> doc.setProperties(props), file, expectedMsg);
+        assertExceptionFor(doc -> doc.setDirtyProperties(props), file, expectedMsg);
+    }
+
+    @Test
+    public void itCannotHandlePropsIfDateArrayFound() {
+        Document file = new Document("My Title", "File");
+        Map<String, Object> props = new HashMap<>();
+        props.put("sth:dateArray", new Object[] { "unused", new GregorianCalendar() });
+        String expectedMsg = buildErrorMsgForDate("sth:dateArray", GregorianCalendar.class);
+
+        assertExceptionFor(doc -> doc.setProperties(props), file, expectedMsg);
+        assertExceptionFor(doc -> doc.setDirtyProperties(props), file, expectedMsg);
+    }
+
+    @Test
+    public void itCannotHandlePropsIfDateListFound() {
+        Document file = new Document("My Title", "File");
+        Map<String, Object> props = new HashMap<>();
+        props.put("sth:dateList", Arrays.asList(new GregorianCalendar(), new GregorianCalendar()));
+        String expectedMsg = buildErrorMsgForDate("sth:dateList", GregorianCalendar.class);
+
+        assertExceptionFor(doc -> doc.setProperties(props), file, expectedMsg);
+        assertExceptionFor(doc -> doc.setDirtyProperties(props), file, expectedMsg);
+    }
+
+    @Test
+    public void itCannotHandlePropsIfDateFoundInComplexProps() {
+        Document file = new Document("My Title", "File");
+        Map<String, Object> props = new HashMap<>();
+        Map<String, Object> complexProps = new HashMap<>();
+
+        complexProps.put("complex:date", new Date(System.currentTimeMillis()));
+        props.put("sth:complex", complexProps);
+        String expectedMsg = buildErrorMsgForDate("complex:date", Date.class);
+
+        assertExceptionFor(doc -> doc.setProperties(props), file, expectedMsg);
+        assertExceptionFor(doc -> doc.setDirtyProperties(props), file, expectedMsg);
+    }
+
+    private void assertExceptionFor(Consumer<Document> consumer, Document doc, String expectedMsg) {
         try {
-            file.set("dc:issued", new GregorianCalendar());
+            consumer.accept(doc);
             fail();
         } catch (IllegalArgumentException e) {
-            assertEquals(e.getMessage(), Document.MSG_DATE_UNSUPPORTED, e.getMessage());
+            assertEquals(e.getMessage(), expectedMsg, e.getMessage());
+        }
+    }
+
+    @Test
+    public void itCannotConstructDocumentIfDateFoundInProps() {
+        Map<String, Object> complexProps = new HashMap<>();
+        complexProps.put("complex:date", new Date(System.currentTimeMillis()));
+
+        Map<String, Object> withComplexProps = new HashMap<>();
+        withComplexProps.put("sth:complex", complexProps);
+        try {
+            new Document(null, null, null, null, null, null, null, null, null, null, null, false, withComplexProps,
+                    null);
+            fail();
+        } catch (IllegalArgumentException e) {
+            String expectedMsg = buildErrorMsgForDate("complex:date", Date.class);
+            assertEquals(e.getMessage(), expectedMsg, e.getMessage());
         }
 
+        Map<String, Object> withoutComplexProps = new HashMap<>();
+        withoutComplexProps.put("dc:issued", new GregorianCalendar());
         try {
-            file.set("dc:issued", new Date(System.currentTimeMillis()));
+            new Document(null, null, null, null, null, null, null, null, null, null, null, false, withoutComplexProps,
+                    null);
             fail();
         } catch (IllegalArgumentException e) {
-            assertEquals(e.getMessage(), Document.MSG_DATE_UNSUPPORTED, e.getMessage());
+            String expectedMsg = buildErrorMsgForDate("dc:issued", GregorianCalendar.class);
+            assertEquals(e.getMessage(), expectedMsg, e.getMessage());
         }
     }
 
@@ -635,5 +715,13 @@ public class TestRepository extends TestBase {
                                     .input(folder)
                                     .execute("Document.CreateLiveProxy");
         assertEquals(proxy.isProxy(), true);
+    }
+
+    private String buildErrorMsgForDate(String key, Class<?> valueType) {
+        return String.format(
+                "Property '%s' has value of type '%s'. However, date values are not supported in Nuxeo Java Client."
+                        + " Please convert it to String with ISO 8601 format \"yyyy-MM-dd'T'HH:mm:ss.SSSXXX\" before"
+                        + " setting it as property.",
+                key, valueType.getTypeName());
     }
 }
