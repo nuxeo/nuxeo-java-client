@@ -18,18 +18,19 @@
  */
 package org.nuxeo.client.api.objects;
 
+import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.Calendar;
+import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import java.util.Map.Entry;
 import okhttp3.ResponseBody;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.nuxeo.client.api.ConstantsV1;
 import org.nuxeo.client.api.objects.acl.ACE;
 import org.nuxeo.client.api.objects.acl.ACL;
@@ -49,11 +50,6 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
  * @since 0.1
  */
 public class Document extends NuxeoEntity {
-
-    private static final Logger logger = LogManager.getLogger(Document.class);
-
-    public static final String MSG_DATE_UNSUPPORTED = "Date values are not supported in Nuxeo Java Client. Please"
-            + " convert it to String with ISO 8601 format \"yyyy-MM-dd'T'HH:mm:ss.SSSXXX\" before calling this method.";
 
     protected String path;
 
@@ -106,7 +102,7 @@ public class Document extends NuxeoEntity {
         this.versionLabel = versionLabel;
         this.isCheckedOut = isCheckedOut;
         this.contextParameters = contextParameters == null ? new HashMap<>() : contextParameters;
-        this.properties = properties == null ? new HashMap<>() : properties;
+        setProperties(properties);
         this.dirtyProperties = new HashMap<>();
     }
 
@@ -267,9 +263,7 @@ public class Document extends NuxeoEntity {
     }
 
     public void set(String key, Object value) {
-        if (value instanceof Calendar || value instanceof Date) {
-            throw new IllegalArgumentException(MSG_DATE_UNSUPPORTED);
-        }
+        rejectIfDateFound(key, value);
         properties.put(key, value);
         dirtyProperties.put(key, value);
     }
@@ -283,6 +277,7 @@ public class Document extends NuxeoEntity {
     }
 
     public void setPropertyValue(String key, Object value) {
+        rejectIfDateFound(key, value);
         properties.put(key, value);
         dirtyProperties.put(key, value);
     }
@@ -312,11 +307,21 @@ public class Document extends NuxeoEntity {
     }
 
     public void setProperties(Map<String, Object> properties) {
-        this.properties = properties;
+        if (properties == null) {
+            this.properties = new HashMap<>();
+        } else {
+            rejectIfDateFound(null, properties);
+            this.properties = properties;
+        }
     }
 
     public void setDirtyProperties(Map<String, Object> dirtyProperties) {
-        this.dirtyProperties = dirtyProperties;
+        if (dirtyProperties == null) {
+            this.dirtyProperties = new HashMap<>();
+        } else {
+            rejectIfDateFound(null, dirtyProperties);
+            this.dirtyProperties = dirtyProperties;
+        }
     }
 
     public void setContextParameters(Map<String, Object> contextParameters) {
@@ -421,7 +426,7 @@ public class Document extends NuxeoEntity {
 
     /**
      * Add permission on the current document by passing the related email.
-     * 
+     *
      * @since 1.0
      * @param ace the permission.
      * @param email the invited email.
@@ -578,6 +583,28 @@ public class Document extends NuxeoEntity {
 
     public Task fetchTaskById(String documentId) {
         return (Task) getResponse(documentId);
+    }
+
+    private void rejectIfDateFound(String key, Object value) {
+        if (value instanceof Calendar || value instanceof Date) {
+            throw new IllegalArgumentException(String.format(
+                    "Property '%s' has value of type '%s'. However, date values are not supported in Nuxeo Java Client."
+                            + " Please convert it to String with ISO 8601 format \"yyyy-MM-dd'T'HH:mm:ss.SSSXXX\""
+                            + " before setting it as property.",
+                    key, value.getClass().getTypeName()));
+        } else if (value instanceof Collection) {
+            for (Object item : (Collection) value) {
+                rejectIfDateFound(key, item);
+            }
+        } else if (value instanceof Map) {
+            for (Entry<String, Object> entry : ((Map<String, Object>) value).entrySet()) {
+                rejectIfDateFound(entry.getKey(), entry.getValue());
+            }
+        } else if (value != null && value.getClass().isArray()) {
+            for (int i = 0; i < Array.getLength(value); i++) {
+                rejectIfDateFound(key, Array.get(value, i));
+            }
+        }
     }
 
 }
