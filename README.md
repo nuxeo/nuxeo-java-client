@@ -214,13 +214,8 @@ document.set("dc:issued", "2017-02-09T00:00:00.000+01:00");
 ```
 
 When handling date object, such as `java.time.ZonedDateTime` or `java.util.Calendar`, it should be converted to string
-as ISO 8601 date format "yyyy-MM-dd'T'HH:mm:ss.SSSXXX" before calling `Document#set(String, Object)`. Otherwise, an
-exception will be thrown by the document.
-
-However, if you try to set / reset the document properties using `Document#setProperties(Map)`, we don't have any check
-for its date objects and these dates won't be created / updated correctly after the exchange with Nuxeo Server. So, to
-ensure the correctness of date handling, please always convert date to ISO 8601 date format before using Nuxeo Java
-Client.
+as ISO 8601 date format "yyyy-MM-dd'T'HH:mm:ss.SSSXXX" before calling the constructor or any setter method, e.g.
+`Document#set(String, Object)`. Otherwise, an exception will be thrown by the document.
 
 ```java
 // Update a document
