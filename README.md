@@ -426,7 +426,6 @@ newUser.setEmail("toto@nuxeo.com");
 newUser.setFirstName("to");
 newUser.setLastName("to");
 newUser.setPassword("totopwd");
-newUser.setTenantId("mytenantid");
 List<String> groups = new ArrayList<>();
 groups.add("members");
 newUser.setGroups(groups);
