@@ -454,7 +454,6 @@ public class TestRepository extends TestBase {
     }
 
     @Test
-    // TODO NXP-21607 change SS to SSS
     public void itCanHandleGregorianCalendarUTC() {
         GregorianCalendar calendar = new GregorianCalendar(2017, Calendar.MAY, 4, 3, 2, 1);
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX");
@@ -466,18 +465,17 @@ public class TestRepository extends TestBase {
         Document file = new Document("My Title", "File");
         file.set("dc:issued", calendarStr);
         file = nuxeoClient.repository().createDocumentByPath("/", file);
-        assertEquals("2017-05-04T03:02:01.00Z", file.getPropertyValue("dc:issued"));
+        assertEquals("2017-05-04T03:02:01.000Z", file.getPropertyValue("dc:issued"));
 
         calendar.add(Calendar.MONTH, 1);
         calendarStr = formatter.format(calendar.getTime());
         assertEquals("2017-06-04T03:02:01.000Z", calendarStr);
         file.set("dc:issued", calendarStr);
         file = nuxeoClient.repository().updateDocument(file);
-        assertEquals("2017-06-04T03:02:01.00Z", file.getPropertyValue("dc:issued"));
+        assertEquals("2017-06-04T03:02:01.000Z", file.getPropertyValue("dc:issued"));
     }
 
     @Test
-    // TODO NXP-21607 change SS to SSS
     public void itCanHandleGregorianCalendarCET() {
         GregorianCalendar calendar = new GregorianCalendar(2017, Calendar.MAY, 4, 3, 2, 1);
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX");
@@ -489,18 +487,17 @@ public class TestRepository extends TestBase {
         Document file = new Document("My Title", "File");
         file.set("dc:issued", calendarStr);
         file = nuxeoClient.repository().createDocumentByPath("/", file);
-        assertEquals("2017-05-04T01:02:01.00Z", file.getPropertyValue("dc:issued"));
+        assertEquals("2017-05-04T01:02:01.000Z", file.getPropertyValue("dc:issued"));
 
         calendar.add(Calendar.MONTH, 1);
         calendarStr = formatter.format(calendar.getTime());
         assertEquals("2017-06-04T03:02:01.000+02:00", calendarStr);
         file.set("dc:issued", calendarStr);
         file = nuxeoClient.repository().updateDocument(file);
-        assertEquals("2017-06-04T01:02:01.00Z", file.getPropertyValue("dc:issued"));
+        assertEquals("2017-06-04T01:02:01.000Z", file.getPropertyValue("dc:issued"));
     }
 
     @Test
-    // TODO NXP-21607 change SS to SSS
     public void itCanHandleZonedDateTimeUTC() {
         ZonedDateTime dateTime = LocalDate.of(2017, Month.MAY, 4).atTime(3, 2, 1).atZone(ZoneId.of("UTC"));
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSXXX");
@@ -511,16 +508,15 @@ public class TestRepository extends TestBase {
         file.set("dc:issued", dateTimeStr);
         file = nuxeoClient.repository().createDocumentByPath("/", file);
         assertEquals("File", file.getType());
-        assertEquals("2017-05-04T03:02:01.00Z", file.getPropertyValue("dc:issued"));
+        assertEquals("2017-05-04T03:02:01.000Z", file.getPropertyValue("dc:issued"));
 
         dateTime = dateTime.plus(1, ChronoUnit.MONTHS);
         file.set("dc:issued", dateTime.format(formatter));
         file = nuxeoClient.repository().updateDocument(file);
-        assertEquals("2017-06-04T03:02:01.00Z", file.getPropertyValue("dc:issued"));
+        assertEquals("2017-06-04T03:02:01.000Z", file.getPropertyValue("dc:issued"));
     }
 
     @Test
-    // TODO NXP-21607 change SS to SSS
     public void itCanHandleZonedDateTimeCET() {
         ZonedDateTime dateTime = LocalDate.of(2017, Month.MAY, 4).atTime(3, 2, 1).atZone(ZoneId.of("CET"));
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSXXX");
@@ -531,12 +527,12 @@ public class TestRepository extends TestBase {
         file.set("dc:issued", dateTimeStr);
         file = nuxeoClient.repository().createDocumentByPath("/", file);
         assertEquals("File", file.getType());
-        assertEquals("2017-05-04T01:02:01.00Z", file.getPropertyValue("dc:issued"));
+        assertEquals("2017-05-04T01:02:01.000Z", file.getPropertyValue("dc:issued"));
 
         dateTime = dateTime.plus(1, ChronoUnit.MONTHS);
         file.set("dc:issued", dateTime.format(formatter));
         file = nuxeoClient.repository().updateDocument(file);
-        assertEquals("2017-06-04T01:02:01.00Z", file.getPropertyValue("dc:issued"));
+        assertEquals("2017-06-04T01:02:01.000Z", file.getPropertyValue("dc:issued"));
     }
 
     /**
