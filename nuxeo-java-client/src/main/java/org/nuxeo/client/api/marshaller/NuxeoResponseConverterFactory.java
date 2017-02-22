@@ -78,7 +78,7 @@ public final class NuxeoResponseConverterFactory<T> implements Converter<Respons
     public T convert(ResponseBody value) throws IOException {
         // Checking custom marshallers with the type of the method clientside.
         if (nuxeoMarshaller != null) {
-            String response = value.string();
+            String response = extractJson(value);
             logger.debug(response);
             JsonParser jsonParser = objectMapper.getFactory().createParser(response);
             return nuxeoMarshaller.read(jsonParser);
@@ -86,13 +86,13 @@ public final class NuxeoResponseConverterFactory<T> implements Converter<Respons
         // Checking if multipart outputs.
         MediaType mediaType = MediaType.parse(value.contentType().toString());
         if (!(mediaType.type().equals(ConstantsV1.APPLICATION) && mediaType.subtype().equals(ConstantsV1.JSON))
-                && !(mediaType.type().equals(ConstantsV1.APPLICATION) && mediaType.subtype().equals(
-                        ConstantsV1.JSON_NXENTITY))) {
+                && !(mediaType.type().equals(ConstantsV1.APPLICATION)
+                        && mediaType.subtype().equals(ConstantsV1.JSON_NXENTITY))) {
             if (mediaType.type().equals(ConstantsV1.MULTIPART)) {
                 Blobs blobs = new Blobs();
                 try {
-                    MimeMultipart mp = new MimeMultipart(new ByteArrayDataSource(value.byteStream(),
-                            mediaType.toString()));
+                    MimeMultipart mp = new MimeMultipart(
+                            new ByteArrayDataSource(value.byteStream(), mediaType.toString()));
                     int size = mp.getCount();
                     for (int i = 0; i < size; i++) {
                         BodyPart part = mp.getBodyPart(i);
@@ -112,22 +112,31 @@ public final class NuxeoResponseConverterFactory<T> implements Converter<Respons
             if (nuxeoEntity != null) {
                 switch (nuxeoEntity) {
                 case ConstantsV1.ENTITY_TYPE_DOCUMENT:
-                    return (T) readJSON(value.charStream(), Document.class);
+                    return (T) readJSON(extractJson(value), Document.class);
                 case ConstantsV1.ENTITY_TYPE_DOCUMENTS:
-                    return (T) readJSON(value.charStream(), Documents.class);
+                    return (T) readJSON(extractJson(value), Documents.class);
                 default:
                     return (T) value;
                 }
             } else {
-                // This workaround is only for recordsets. There is not
-                // header nuxeo-entity set for now serverside.
-                String response = value.string();
+                String response = extractJson(value);
                 Object objectResponse = readJSON(response, Object.class);
-                switch ((String) ((Map<String, Object>) objectResponse).get(ConstantsV1.ENTITY_TYPE)) {
-                case ConstantsV1.ENTITY_TYPE_RECORDSET:
-                    return (T) readJSON(response, RecordSet.class);
-                default:
-                    return (T) value;
+                if (objectResponse instanceof Map) {
+                    Object entityType = ((Map<String, Object>) objectResponse).get(ConstantsV1.ENTITY_TYPE);
+                    if (entityType != null) {
+                        // Handle the legacy case when no 'entity-type' header has been set in the response but
+                        // `entity-type` is written in the json payload as RecordSet objects
+                        switch ((String) entityType) {
+                        case ConstantsV1.ENTITY_TYPE_RECORDSET:
+                            return (T) readJSON(response, RecordSet.class);
+                        default:
+                            return (T) response;
+                        }
+                    }
+                    return (T) response;
+                } else {
+                    // Handle the cases when there is no `entity-type` in the json payload either in header
+                    return (T) response;
                 }
             }
         }
@@ -165,4 +174,5 @@ public final class NuxeoResponseConverterFactory<T> implements Converter<Respons
             throw new NuxeoClientException("Converter Read Issue.", reason);
         }
     }
+
 }

@@ -24,19 +24,18 @@ import java.lang.reflect.Type;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import okhttp3.RequestBody;
-import okhttp3.ResponseBody;
-
 import org.nuxeo.client.internals.spi.NuxeoClientException;
-
-import retrofit2.Converter;
-import retrofit2.Retrofit;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectReader;
 import com.fasterxml.jackson.databind.ObjectWriter;
+
+import okhttp3.RequestBody;
+import okhttp3.ResponseBody;
+import retrofit2.Converter;
+import retrofit2.Retrofit;
 
 /**
  * @since 0.1
@@ -95,11 +94,32 @@ public class NuxeoConverterFactory extends Converter.Factory {
         marshallers.clear();
     }
 
+    /**
+     * @param json the json to unmarshall
+     * @param javaType the pojo to use for unmarshalling
+     * @return the pojo generated from the json
+     */
     public <T> T readJSON(String json, Class<T> javaType) {
         try {
             return mapper.readValue(json, javaType);
         } catch (IOException reason) {
             throw new NuxeoClientException("Converter Read Issue. See NuxeoConverterFactory#readJSON", reason);
+        }
+    }
+
+    /**
+     * @since 2.5
+     * @param json the json to unmarshall
+     * @param javaTypeContainer the collection
+     * @param javaType the pojo to use for unmarshalling
+     * @return the collection of pojos generated from the json
+     */
+    public <T> T readJSON(String json, Class javaTypeContainer, Class javaType) {
+        try {
+            JavaType type = mapper.getTypeFactory().constructCollectionLikeType(javaTypeContainer, javaType);
+            return (T) mapper.readValue(json, type);
+        } catch (IOException reason) {
+            throw new NuxeoClientException("Converter Read Issue.", reason);
         }
     }
 
