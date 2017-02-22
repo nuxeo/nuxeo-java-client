@@ -3,7 +3,7 @@
 
   <groupId>org.nuxeo.client</groupId>
   <artifactId>nuxeo-java-client-parent</artifactId>
-  <version>1.2-SNAPSHOT</version>
+  <version>1.2</version>
   <name>Nuxeo Java Client Parent</name>
   <description>Java Client Parent for Nuxeo REST APIs.</description>
   <packaging>pom</packaging>
