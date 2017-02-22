@@ -1,0 +1,8 @@
+<component name="org.nuxeo.client.operation.test"
+           version="1.0">
+  <extension target="org.nuxeo.ecm.core.operation.OperationServiceComponent"
+             point="operations">
+    <operation
+            class="org.nuxeo.client.test.operations.CustomOperationJSONBlob"/>
+  </extension>
+</component>

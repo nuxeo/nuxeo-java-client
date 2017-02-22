@@ -39,6 +39,8 @@ import org.nuxeo.client.api.objects.blob.Blobs;
 import org.nuxeo.client.api.objects.operation.DocRef;
 import org.nuxeo.client.api.objects.operation.DocRefs;
 import org.nuxeo.client.internals.spi.NuxeoClientException;
+import org.nuxeo.client.test.objects.CustomJSONObject;
+import org.nuxeo.client.test.objects.DirectoryExample;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
@@ -47,6 +49,7 @@ import org.nuxeo.ecm.restapi.test.RestServerInit;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.Jetty;
+import org.nuxeo.runtime.test.runner.LocalDeploy;
 
 import com.google.common.io.Files;
 
@@ -55,6 +58,8 @@ import com.google.common.io.Files;
  */
 @RunWith(FeaturesRunner.class)
 @Features({ RestServerFeature.class })
+@LocalDeploy({ "org.nuxeo.ecm.automation.features:test-directories-sql-contrib.xml",
+        "org.nuxeo.java.client.test:operation-contrib-test.xml" })
 @Jetty(port = 18090)
 @RepositoryConfig(cleanup = Granularity.METHOD, init = RestServerInit.class)
 public class TestOperation extends TestBase {
@@ -178,4 +183,22 @@ public class TestOperation extends TestBase {
         result = nuxeoClient.automation().input(docRefs).param("properties", null).execute("Document.Update");
         assertNotNull(result);
     }
+
+    @Test
+    public void itCanFetchDirectoriesJsonBlob() throws IOException {
+        String result = nuxeoClient.automation().param("directoryName", "continent").execute("Directory.Entries");
+        List<DirectoryExample> directoryExamples = nuxeoClient.getConverterFactory().readJSON(result, List.class,
+                DirectoryExample.class);
+        assertNotNull(directoryExamples);
+        assertEquals("europe", directoryExamples.get(0).getId());
+    }
+
+    @Test
+    public void itCanFetchJSONBlob() {
+        String result = nuxeoClient.automation().execute("CustomOperationJSONBlob");
+        CustomJSONObject customJSONObject = nuxeoClient.getConverterFactory().readJSON(result, CustomJSONObject.class);
+        assertNotNull(customJSONObject);
+        assertEquals("1", customJSONObject.getUserId());
+    }
+
 }
