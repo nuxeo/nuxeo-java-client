@@ -150,6 +150,12 @@ public final class NuxeoResponseConverterFactory<T> implements Converter<Respons
         }
     }
 
+    protected String extractJson(ResponseBody value) throws IOException {
+        String response = value.string();
+        logger.debug(response);
+        return response;
+    }
+
     static void closeQuietly(Closeable closeable) {
         if (closeable == null)
             return;
