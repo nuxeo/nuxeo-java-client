@@ -45,7 +45,7 @@ public class DirectoryExample {
     private String label;
 
     @JsonIgnore
-    private Map<String, Object> additionalProperties = new HashMap<String, Object>();
+    private Map<String, Object> additionalProperties = new HashMap<>();
 
     @JsonProperty("ordering")
     public Integer getOrdering() {
