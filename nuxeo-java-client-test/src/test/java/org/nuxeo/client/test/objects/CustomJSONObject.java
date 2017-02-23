@@ -39,7 +39,7 @@ public class CustomJSONObject {
     private String token;
 
     @JsonIgnore
-    private Map<String, Object> additionalProperties = new HashMap<String, Object>();
+    private Map<String, Object> additionalProperties = new HashMap<>();
 
     @JsonProperty("userId")
     public String getUserId() {
