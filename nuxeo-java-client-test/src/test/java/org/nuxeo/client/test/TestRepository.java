@@ -55,6 +55,7 @@ import org.nuxeo.client.api.objects.acl.ACE;
 import org.nuxeo.client.api.objects.acl.ACP;
 import org.nuxeo.client.api.objects.audit.Audit;
 import org.nuxeo.client.api.objects.blob.Blob;
+import org.nuxeo.client.api.objects.blob.Blobs;
 import org.nuxeo.client.internals.spi.NuxeoClientException;
 import org.nuxeo.client.test.marshallers.DocumentMarshaller;
 import org.nuxeo.client.test.objects.DataSet;
@@ -279,6 +280,58 @@ public class TestRepository extends TestBase {
     public void itCanFetchBlob() {
         Document file = nuxeoClient.repository().fetchDocumentByPath("/folder_2/file");
         Blob blob = file.fetchBlob();
+        assertNotNull(blob);
+    }
+
+    @Test
+    public void itCanFetchBlobByPath() {
+        Document file = nuxeoClient.repository().fetchDocumentByPath("/folder_2/file");
+
+        // Attach a blob
+        File temp1 = FileUtils.getResourceFileFromContext("sample.jpg");
+        File temp2 = FileUtils.getResourceFileFromContext("sample.jpg");
+        Blobs inputBlobs = new Blobs();
+        inputBlobs.add(temp1);
+        inputBlobs.add(temp2);
+        Blobs blobs = nuxeoClient.automation()
+                                 .newRequest("Blob.AttachOnDocument")
+                                 .param("document", file.getPath())
+                                 .param("xpath", "files:files")
+                                 .input(inputBlobs)
+                                 .execute();
+        assertNotNull(blobs);
+        assertEquals("sample.jpg", blobs.getBlobs().get(0).getFileName());
+        assertEquals("sample.jpg", blobs.getBlobs().get(1).getFileName());
+
+        //Fetch blob by path
+        Blob blob = nuxeoClient.repository().fetchBlobByPath(file.getPath(), "files:files/0/file");
+        System.out.println(file.getProperties());
+        assertNotNull(blob);
+    }
+
+    @Test
+    public void itCanFetchBlobById() {
+        Document file = nuxeoClient.repository().fetchDocumentByPath("/folder_2/file");
+
+        // Attach a blob
+        File temp1 = FileUtils.getResourceFileFromContext("sample.jpg");
+        File temp2 = FileUtils.getResourceFileFromContext("sample.jpg");
+        Blobs inputBlobs = new Blobs();
+        inputBlobs.add(temp1);
+        inputBlobs.add(temp2);
+        Blobs blobs = nuxeoClient.automation()
+                                 .newRequest("Blob.AttachOnDocument")
+                                 .param("document", file.getPath())
+                                 .param("xpath", "files:files")
+                                 .input(inputBlobs)
+                                 .execute();
+        assertNotNull(blobs);
+        assertEquals("sample.jpg", blobs.getBlobs().get(0).getFileName());
+        assertEquals("sample.jpg", blobs.getBlobs().get(1).getFileName());
+
+        //Fetch blob by id
+        Blob blob = nuxeoClient.repository().fetchBlobById(file.getUid(),"files:files/0/file");
+        System.out.println(file.getProperties());
         assertNotNull(blob);
     }
 
