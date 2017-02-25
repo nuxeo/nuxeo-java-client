@@ -149,16 +149,16 @@ public interface RepositoryAPI {
     /* Blobs */
 
     @GET("path{documentPath}/@blob/{fieldPath}")
-    Call<Blob> fetchBlobByPath(@Path(value = "documentPath", encoded = true) String documentPath, @Path("fieldPath") String fieldPath);
+    Call<Blob> fetchBlobByPath(@Path(value = "documentPath", encoded = true) String documentPath, @Path(value = "fieldPath", encoded = true) String fieldPath);
 
     @GET("id/{documentId}/@blob/{fieldPath}")
-    Call<Blob> fetchBlobById(@Path("documentId") String documentId, @Path("fieldPath") String fieldPath);
+    Call<Blob> fetchBlobById(@Path("documentId") String documentId, @Path(value = "fieldPath", encoded = true) String fieldPath);
 
     @GET("repo/{repositoryName}/path{documentPath}/@blob/{fieldPath}")
-    Call<Blob> fetchBlobByPath(@Path(value = "documentPath", encoded = true) String documentPath, @Path("fieldPath") String fieldPath, @Path("repositoryName") String repositoryName);
+    Call<Blob> fetchBlobByPath(@Path(value = "documentPath", encoded = true) String documentPath, @Path(value = "fieldPath", encoded = true) String fieldPath, @Path("repositoryName") String repositoryName);
 
     @GET("repo/{repositoryName}/id/{documentId}/@blob/{fieldPath}")
-    Call<Blob> fetchBlobById(@Path("documentId") String documentId, @Path("fieldPath") String fieldPath, @Path("repositoryName") String repositoryName);
+    Call<Blob> fetchBlobById(@Path("documentId") String documentId, @Path(value = "fieldPath", encoded = true) String fieldPath, @Path("repositoryName") String repositoryName);
 
 
     /* Workflows */
