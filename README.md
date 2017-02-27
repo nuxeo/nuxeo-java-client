@@ -524,6 +524,94 @@ All APIs are duplicated with an additional parameter `retrofit2.Callback<T>`.
 
 When no response is needed (204 No Content Status for example), use `retrofit2.Callback<ResponseBody>` (`okhttp3.ResponseBody`). This object can be introspected like the response headers or status for instance.
 
+#### Automation & Business Objects
+
+In Automation, to use Plain Old Java Object client side for mapping custom objects server side (like document model adapter or simply a custom structure sent back by the server), it is possible to manage "business objects":
+
+- Server side, a custom JSON object will be built in the Automation operation and sent
+- Client side, a mapper will be available to match the custom response JSON payload to represent the structure by a POJO
+
+Example:
+
+Custom server side Automation operation:
+
+```
+@Operation(id = CustomOperationJSONBlob.ID, category = "Document", label = "CustomOperationJSONBlob")
+public class CustomOperationJSONBlob {
+
+    public static final String ID = "CustomOperationJSONBlob";
+
+    @OperationMethod
+    public Blob run() {
+
+        JSONObject attributes = new JSONObject();
+        attributes.put("userId", "1");
+        attributes.put("token", "token");
+
+        return Blobs.createBlob(attributes.toString(), "application/json");
+    }
+}
+```
+
+This operation will create this request json payload:
+
+```
+{
+  "userId": "1",
+  "token": "token"
+}
+```
+
+On the client side, we will have to provide:
+
+- This simple pojo:
+
+```
+public class CustomJSONObject {
+    private String userId;
+    private String token;
+
+    @JsonIgnore
+    private Map<String, Object> additionalProperties = new HashMap<>();
+
+    public String getUserId() {
+        return userId;
+    }
+    public void setUserId(String userId) {
+        this.userId = userId;
+    }
+    public String getToken() {
+        return token;
+    }
+    public void setToken(String token) {
+        this.token = token;
+    }
+    public Map<String, Object> getAdditionalProperties() {
+        return this.additionalProperties;
+    }
+    public void setAdditionalProperty(String name, Object value) {
+        this.additionalProperties.put(name, value);
+    }
+}
+```
+
+- This code to apply the mapping:
+
+```
+String result = nuxeoClient.automation().execute("CustomOperationJSONBlob");
+CustomJSONObject customJSONObject = nuxeoClient.getConverterFactory().readJSON(result, CustomJSONObject.class);
+```
+
+Here is a way to map as well collection of pojos (a list of DirectorySample pojos):
+
+```
+String result = nuxeoClient.automation().param("directoryName", "continent").execute("Directory.Entries");
+List<DirectoryExample> directoryExamples = nuxeoClient.getConverterFactory().readJSON(result, List.class,
+        DirectoryExample.class);
+```
+
+*This Business Object management is different than the [former Automation Java Client](https://doc.nuxeo.com/nxdoc/java-automation-client/#-anchor-managing-business-objects-managing-business-objects): there is no Entity annotation to declare the pojo client side or no requirement of contributing adapter server side*
+
 #### Custom Endpoints/Marshallers
 
 `nuxeo-java-client` is using [retrofit](https://github.com/square/retrofit) to deploy the endpoints and [FasterXML](https://github.com/FasterXML) to create marshallers.
@@ -595,7 +683,7 @@ The default built-in cache in `nuxeo-java-client` is "in memory" (`org.nuxeo.cli
 
 - The cache invalidation is triggered after 10 minutes and has a maximum capacity of 1 MB.
 
-###### Customization
+##### Customization
 
 - Customization can be done with different invalidation parameters by using `org.nuxeo.client.api.NuxeoClient#setCache`
 
