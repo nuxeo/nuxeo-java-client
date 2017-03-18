@@ -24,7 +24,9 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.util.function.UnaryOperator;
 import java.util.regex.Matcher;
@@ -75,6 +77,8 @@ public class NuxeoClient {
 
     protected final NuxeoConverterFactory converterFactory;
 
+    protected final Map<String, Interceptor> headerInterceptors = new HashMap<>();
+
     protected NuxeoResponseCache nuxeoCache;
 
     protected Retrofit retrofit;
@@ -102,11 +106,17 @@ public class NuxeoClient {
      ******************************/
 
     public NuxeoClient header(String header, String value) {
-        okhttpBuilder.interceptors().add(chain -> {
+        Interceptor previousInterceptor = headerInterceptors.remove(header);
+        if (previousInterceptor != null) {
+            okhttpBuilder.interceptors().remove(previousInterceptor);
+        }
+        Interceptor interceptor = chain -> {
             Request request = chain.request();
             request = request.newBuilder().addHeader(header, value).build();
             return chain.proceed(request);
-        });
+        };
+        headerInterceptors.put(header, interceptor);
+        okhttpBuilder.interceptors().add(interceptor);
         retrofit();
         return this;
     }

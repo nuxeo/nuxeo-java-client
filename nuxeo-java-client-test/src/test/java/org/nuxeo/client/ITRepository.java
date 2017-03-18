@@ -23,6 +23,7 @@ package org.nuxeo.client;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.junit.Assume.assumeTrue;
@@ -110,6 +111,30 @@ public class ITRepository extends AbstractITBase {
 
         assertEquals("/folder_1/note_0", note.getPath());
         assertEquals("Note 0", note.getTitle());
+    }
+
+    @Test
+    public void itCanFetchSpecifSchema() {
+        // Fetch only dublincore schema
+        nuxeoClient.schemas("dublincore");
+        Document note = nuxeoClient.repository().fetchDocumentByPath("/folder_1/note_0");
+        assertNotNull(note);
+        assertEquals("Note 0", note.getPropertyValue("dc:title"));
+        assertNull(note.getPropertyValue("note:note"));
+
+        // Fetch only note schema
+        nuxeoClient.schemas("note");
+        note = nuxeoClient.repository().fetchDocumentByPath("/folder_1/note_0");
+        assertNotNull(note);
+        assertNull(note.getPropertyValue("dc:title"));
+        assertEquals("Note 0", note.getPropertyValue("note:note"));
+
+        // Fetch several schemas
+        nuxeoClient.schemas("dublincore", "note");
+        note = nuxeoClient.repository().fetchDocumentByPath("/folder_1/note_0");
+        assertNotNull(note);
+        assertEquals("Note 0", note.getPropertyValue("dc:title"));
+        assertEquals("Note 0", note.getPropertyValue("note:note"));
     }
 
     @Test
