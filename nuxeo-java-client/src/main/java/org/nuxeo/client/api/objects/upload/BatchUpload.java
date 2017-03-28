@@ -136,6 +136,10 @@ public class BatchUpload extends NuxeoEntity {
         return getBatchBlob(batchId, fileIdx);
     }
 
+    public BatchBlob getBatchBlob(String batchId) {
+        return getBatchBlob(batchId, fileIdx);
+    }
+
     private BatchBlob getBatchBlob(String batchId, String fileIdx) {
         return new BatchBlob(batchId, fileIdx);
     }
