@@ -155,6 +155,27 @@ public class TestUpload extends TestBase {
     }
 
     @Test
+    public void itCantAttachAnExistingBatchToADoc() {
+        //Upload file
+        BatchUpload batchUpload = nuxeoClient.fetchUploadManager();
+        String batchID = batchUpload.getBatchId();
+        assertNotNull(batchID);
+        File file = FileUtils.getResourceFileFromContext("sample.jpg");
+        batchUpload = batchUpload.upload(file.getName(), file.length(), "jpg", batchID, "1", file);
+        assertNotNull(batchUpload);
+
+        // Getting a doc and attaching the existing batch file
+        Document doc = new Document("file", "File");
+        doc.setPropertyValue("dc:title", "new title");
+        doc = nuxeoClient.repository().createDocumentByPath("/folder_1", doc);
+        assertNotNull(doc);
+        doc.setPropertyValue("file:content", batchUpload.getBatchBlob(batchID));
+        doc = doc.updateDocument();
+        assertEquals("sample.jpg", ((Map) doc.get("file:content")).get("name"));
+
+    }
+
+    @Test
     public void itCanExecuteOp() {
         // Upload file
         BatchUpload batchUpload = nuxeoClient.fetchUploadManager();
