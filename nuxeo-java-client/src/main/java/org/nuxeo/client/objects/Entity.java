@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2016-2017 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2017 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,40 +14,24 @@
  * limitations under the License.
  *
  * Contributors:
- *     Vladimir Pasquier <vpasquier@nuxeo.com>
  *     Kevin Leturc <kleturc@nuxeo.com>
  */
-package org.nuxeo.client.objects.workflow;
-
-import java.util.List;
-
-import org.nuxeo.client.ConstantsV1;
-import org.nuxeo.client.objects.Entity;
+package org.nuxeo.client.objects;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
- * @since 0.1
+ * Entity with a entity-type element.
+ *
+ * @since 3.0
  */
-public class Workflows extends Entity {
+public class Entity {
 
-    @JsonProperty("entries")
-    protected List<Workflow> workflows;
+    @JsonProperty("entity-type")
+    protected final String entityType;
 
-    public Workflows() {
-        super(ConstantsV1.ENTITY_TYPE_WORKFLOWS);
-    }
-
-    public List<Workflow> getWorkflows() {
-        return workflows;
-    }
-
-    public Workflow get(int id) {
-        return workflows.get(id);
-    }
-
-    public int size() {
-        return workflows.size();
+    public Entity(String entityType) {
+        this.entityType = entityType;
     }
 
 }

@@ -29,6 +29,12 @@ public class TaskVariables {
 
     protected String comment;
 
+    protected List<String> assignees;
+
+    protected Calendar end_date;
+
+    protected List<String> participants;
+
     public String getComment() {
         return comment;
     }
@@ -60,11 +66,5 @@ public class TaskVariables {
     public void setParticipants(List<String> participants) {
         this.participants = participants;
     }
-
-    protected List<String> assignees;
-
-    protected Calendar end_date;
-
-    protected List<String> participants;
 
 }

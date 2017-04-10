@@ -54,7 +54,8 @@ public class TaskInfo {
         this.schemas = schemas;
     }
 
-    public class TaskInfoItem {
+    public static class TaskInfoItem {
+
         protected String name;
 
         protected String url;
@@ -84,6 +85,7 @@ public class TaskInfo {
         public void setName(String name) {
             this.name = name;
         }
+
     }
 
 }

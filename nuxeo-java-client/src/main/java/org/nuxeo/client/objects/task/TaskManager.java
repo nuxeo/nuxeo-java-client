@@ -32,7 +32,7 @@ import org.nuxeo.client.objects.NuxeoEntity;
 public class TaskManager extends NuxeoEntity {
 
     public TaskManager(NuxeoClient nuxeoClient) {
-        super(null, nuxeoClient, TaskManagerAPI.class);
+        super(null, TaskManagerAPI.class, nuxeoClient);
     }
 
     public Tasks fetchTasks(String userId, String workflowInstanceId, String workflowModelName) {

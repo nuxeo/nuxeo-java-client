@@ -20,12 +20,12 @@
 package org.nuxeo.client.objects.directory;
 
 import org.nuxeo.client.ConstantsV1;
-import org.nuxeo.client.objects.NuxeoEntity;
+import org.nuxeo.client.objects.Entity;
 
 /**
  * @since 0.1
  */
-public class DirectoryEntry extends NuxeoEntity {
+public class DirectoryEntry extends Entity {
 
     public DirectoryEntry() {
         super(ConstantsV1.ENTITY_TYPE_DIRECTORY_ENTRY);

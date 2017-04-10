@@ -22,12 +22,12 @@ package org.nuxeo.client.objects.audit;
 import java.util.Map;
 
 import org.nuxeo.client.ConstantsV1;
-import org.nuxeo.client.objects.NuxeoEntity;
+import org.nuxeo.client.objects.Entity;
 
 /**
  * @since 0.1
  */
-public class LogEntry extends NuxeoEntity {
+public class LogEntry extends Entity {
 
     public LogEntry() {
         super(ConstantsV1.ENTITY_TYPE_LOGENTRY);

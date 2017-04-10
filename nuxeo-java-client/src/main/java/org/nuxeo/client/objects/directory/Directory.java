@@ -23,14 +23,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.nuxeo.client.ConstantsV1;
-import org.nuxeo.client.objects.NuxeoEntity;
+import org.nuxeo.client.objects.Entity;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
  * @since 0.1
  */
-public class Directory extends NuxeoEntity {
+public class Directory extends Entity {
 
     public Directory() {
         super(ConstantsV1.ENTITY_TYPE_DIRECTORY);

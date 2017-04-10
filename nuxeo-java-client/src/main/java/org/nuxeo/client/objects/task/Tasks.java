@@ -22,14 +22,14 @@ package org.nuxeo.client.objects.task;
 import java.util.List;
 
 import org.nuxeo.client.ConstantsV1;
-import org.nuxeo.client.objects.NuxeoEntity;
+import org.nuxeo.client.objects.Entity;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
  * @since 1.0
  */
-public class Tasks extends NuxeoEntity {
+public class Tasks extends Entity {
 
     public Tasks() {
         super(ConstantsV1.ENTITY_TYPE_TASKS);

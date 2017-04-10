@@ -19,41 +19,28 @@
  */
 package org.nuxeo.client.objects;
 
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.net.URLDecoder;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
-import org.apache.logging.log4j.util.Strings;
-import org.nuxeo.client.ConstantsV1;
 import org.nuxeo.client.NuxeoClient;
-import org.nuxeo.client.objects.blob.Blob;
-import org.nuxeo.client.objects.blob.Blobs;
-import org.nuxeo.client.spi.NuxeoClientException;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import okhttp3.Headers;
-import okhttp3.Request;
-import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
-import retrofit2.Response;
 
 /**
+ * @param <A> The api interface type.
  * @since 0.1
  */
-public abstract class NuxeoEntity<T> {
+public abstract class NuxeoEntity<A> extends Entity implements Connectable {
 
-    @JsonProperty("entity-type")
-    protected final String entityType;
+    @JsonIgnore
+    protected Class<A> apiClass;
+
+    @JsonIgnore
+    protected NuxeoClient nuxeoClient;
+
+    @JsonIgnore
+    protected A api;
 
     @JsonProperty("repository")
     protected String repositoryName;
@@ -61,219 +48,45 @@ public abstract class NuxeoEntity<T> {
     @JsonIgnore
     protected boolean refreshCache = false;
 
-    @JsonIgnore
-    protected NuxeoClient nuxeoClient;
-
-    @JsonIgnore
-    protected Object api;
-
-    @JsonIgnore
-    protected Class<Object> apiClass;
-
     /**
      * For Serialization purpose.
+     *
+     * @deprecated check that deserialization is not an issue and if all entity need retrofit ie: it makes call to rest
+     *             api
      */
+    @Deprecated
     public NuxeoEntity(String entityType) {
-        this.entityType = entityType;
+        this(entityType, null);
+    }
+
+    /**
+     * Minimal constructor to use benefit of injection mechanism.
+     */
+    public NuxeoEntity(String entityType, Class<A> apiClass) {
+        super(entityType);
+        this.apiClass = apiClass;
     }
 
     /**
      * The constructor to use.
      */
-    public NuxeoEntity(String entityType, NuxeoClient nuxeoClient, Class apiClass) {
-        this.entityType = entityType;
+    protected NuxeoEntity(String entityType, Class<A> apiClass, NuxeoClient nuxeoClient) {
+        this(entityType, apiClass);
         this.nuxeoClient = nuxeoClient;
-        this.apiClass = apiClass;
+        this.api = nuxeoClient.getApi(apiClass);
     }
 
-    public String getEntityType() {
-        return entityType;
+    protected <T> T fetchResponse(Call<T> call) {
+        return nuxeoClient.fetchResponse(call);
     }
 
-    /**
-     * Handle invocation of API Methods Asynchronously. Results will be returned in the given callback.
-     */
-    public void execute(Callback<T> callback, Object... parametersArray) {
-        if (api == null) {
-            api = nuxeoClient.getRetrofit().create(apiClass);
-        }
-        if (nuxeoClient == null) {
-            throw new NuxeoClientException("You should pass to your Nuxeo object the client instance");
-        }
-        String method = getCurrentMethodName();
-        Call<T> methodResult = getCall(api, method, parametersArray);
-        methodResult.enqueue(callback);
+    protected <T> void fetchResponse(Call<T> call, Callback<T> callback) {
+        nuxeoClient.fetchResponse(call, callback);
     }
 
-    /**
-     * Handle cache and invocation of API methods.
-     *
-     * @return the response as business objects.
-     */
-    protected Object getResponse(Object... parametersArray) {
-        if (nuxeoClient == null) {
-            throw new NuxeoClientException("You should pass to your Nuxeo object the client instance");
-        }
-        if (api == null) {
-            api = nuxeoClient.getRetrofit().create(apiClass);
-        }
-        String method = getCurrentMethodName();
-        Call<?> methodResult = getCall(api, method, parametersArray);
-        String cacheKey = Strings.EMPTY;
-        if (nuxeoClient.isCacheEnabled()) {
-            if (refreshCache) {
-                this.refreshCache = false;
-                nuxeoClient.getNuxeoCache().invalidateAll();
-            } else {
-                cacheKey = computeCacheKey(methodResult);
-                NuxeoEntity result = (NuxeoEntity) nuxeoClient.getNuxeoCache().getBody(cacheKey);
-                if (result != null) {
-                    return result;
-                }
-            }
-        }
-        try {
-            Response<?> response = methodResult.execute();
-            // For redirect 308 -> the response should be success
-            if (!response.isSuccessful() && response.code() != 308) {
-                NuxeoClientException nuxeoClientException;
-                String errorBody = response.errorBody().string();
-                if (Strings.EMPTY.equals(errorBody)) {
-                    nuxeoClientException = new NuxeoClientException(response.code(), response.message());
-                } else if (!ConstantsV1.APPLICATION_JSON.equals(response.raw().body().contentType())) {
-                    nuxeoClientException = new NuxeoClientException(response.code(), errorBody);
-                } else {
-                    nuxeoClientException = nuxeoClient.getConverterFactory().readJSON(errorBody,
-                            NuxeoClientException.class);
-                }
-                throw nuxeoClientException;
-            }
-            if (nuxeoClient.isCacheEnabled()) {
-                nuxeoClient.getNuxeoCache().put(cacheKey, response);
-            }
-            Object body = response.body();
-            if (body instanceof ResponseBody) {
-                return body;
-            } else if (body == null) {
-                if (response.code() == 204) {
-                    if (ConstantsV1.APPLICATION_NUXEO_EMPTY_LIST.equals(response.headers().get("Content-Type"))) {
-                        return new Blobs();
-                    }
-                    return null;
-                }
-                return response;
-            } else {
-                return reconnectObject(body, response.headers(), api, nuxeoClient);
-            }
-        } catch (IOException reason) {
-            throw new NuxeoClientException(reason);
-        }
+    @Override
+    public void reconnectWith(NuxeoClient nuxeoClient) {
+        this.nuxeoClient = nuxeoClient;
+        this.api = nuxeoClient.getApi(apiClass);
     }
-
-    /**
-     * Compute the cache key with request
-     */
-    protected String computeCacheKey(Call<?> methodResult) {
-        Request originalRequest = methodResult.request();
-        MessageDigest digest;
-        try {
-            digest = MessageDigest.getInstance(ConstantsV1.MD_5);
-        } catch (NoSuchAlgorithmException e) {
-            return null;
-        }
-        digest.update((originalRequest.toString() + originalRequest.headers().toString()).getBytes());
-        byte messageDigest[] = digest.digest();
-        StringBuilder hexString = new StringBuilder();
-        for (byte msg : messageDigest) {
-            hexString.append(Integer.toHexString(0xFF & msg));
-        }
-        return hexString.toString();
-    }
-
-    /**
-     * Invoking the method of each class "API"
-     */
-    protected Call<T> getCall(Object api, String methodName, Object... parametersArray) {
-        try {
-            Method[] methods = api.getClass().getInterfaces()[0].getMethods();
-            if (repositoryName != null) {
-                int len = parametersArray.length;
-                parametersArray = Arrays.copyOf(parametersArray, len + 1);
-                parametersArray[len] = repositoryName;
-            }
-            Method method = null;
-            for (Method currentMethod : methods) {
-                if (currentMethod.getName().equals(methodName)) {
-                    if (currentMethod.getParameterTypes().length == parametersArray.length) {
-                        method = currentMethod;
-                        break;
-                    }
-                }
-            }
-            if (method == null) {
-                throw new NuxeoClientException(String.format(
-                        "No method found for API %s and method name '%s'. Check method name and parameters.", apiClass,
-                        methodName));
-            }
-            return (Call<T>) method.invoke(api, parametersArray);
-        } catch (IllegalArgumentException | IllegalAccessException reason) {
-            throw new NuxeoClientException(String.format(
-                    "An issue has occured in the method found for API %s and method name '%s'. Check method and parameters types.",
-                    apiClass, methodName), reason);
-        } catch (InvocationTargetException reason) {
-            throw new NuxeoClientException(reason.getTargetException().getMessage(), reason);
-        }
-    }
-
-    protected String getCurrentMethodName() {
-        StackTraceElement stackTraceElements[] = (new Throwable()).getStackTrace();
-        return stackTraceElements[2].getMethodName();
-    }
-
-    protected Object reconnectObject(Object entity, Headers headers, Object api, NuxeoClient nuxeoClient) {
-        if (entity instanceof NuxeoEntity) {
-            ((NuxeoEntity) entity).nuxeoClient = nuxeoClient;
-            ((NuxeoEntity) entity).api = api;
-            ((NuxeoEntity) entity).apiClass = apiClass;
-            if (entity instanceof Documents) {
-                for (Document doc : ((Documents) entity).getDocuments()) {
-                    doc.nuxeoClient = nuxeoClient;
-                    doc.api = api;
-                    doc.apiClass = apiClass;
-                }
-            } else if (entity instanceof Blobs) {
-                for (Blob blob : ((Blobs) entity).getBlobs()) {
-                    blob.nuxeoClient = nuxeoClient;
-                    blob.api = api;
-                    blob.apiClass = apiClass;
-                }
-            } else if (entity instanceof Blob) {
-                String contentDisposition = headers.get("Content-Disposition");
-                if (contentDisposition != null) {
-                    String fileName = contentDisposition.replaceFirst(".*filename\\*?=(UTF-8'')?(.*)", "$2");
-                    try {
-                        fileName = URLDecoder.decode(fileName, "UTF-8");
-                    } catch (UnsupportedEncodingException e) {
-                        // May not happen
-                    }
-                    ((Blob) entity).setFileName(fileName);
-                }
-            }
-            return entity;
-        } else if (entity instanceof List<?>) {
-            List<NuxeoEntity> entities = new ArrayList<>();
-            List<?> l = (List<?>) entity;
-            for (Object item : l) {
-                if (item instanceof NuxeoEntity) {
-                    ((NuxeoEntity) item).nuxeoClient = nuxeoClient;
-                    ((NuxeoEntity) item).api = api;
-                    ((NuxeoEntity) item).apiClass = apiClass;
-                    entities.add((NuxeoEntity) item);
-                }
-            }
-            return entities;
-        }
-        return entity;
-    }
-
 }

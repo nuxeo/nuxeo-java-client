@@ -24,12 +24,12 @@ import java.util.List;
 import java.util.Map;
 
 import org.nuxeo.client.ConstantsV1;
-import org.nuxeo.client.objects.NuxeoEntity;
+import org.nuxeo.client.objects.Entity;
 
 /**
  * @since 1.0
  */
-public class Task extends NuxeoEntity {
+public class Task extends Entity {
 
     public Task() {
         super(ConstantsV1.ENTITY_TYPE_TASK);
