@@ -22,13 +22,14 @@ package org.nuxeo.client.objects;
 import java.util.List;
 
 import org.nuxeo.client.ConstantsV1;
+import org.nuxeo.client.NuxeoClient;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
  * @since 0.1
  */
-public class Documents extends NuxeoEntity {
+public class Documents extends Entity implements Connectable {
 
     @JsonProperty("entries")
     protected List<Document> documents;
@@ -82,11 +83,11 @@ public class Documents extends NuxeoEntity {
         documents.remove(document);
     }
 
-    public Document getDocument(int position){
+    public Document getDocument(int position) {
         return documents.get(position);
     }
 
-    public int size(){
+    public int size() {
         return documents.size();
     }
 
@@ -156,6 +157,13 @@ public class Documents extends NuxeoEntity {
 
     public Boolean getHasError() {
         return hasError;
+    }
+
+    @Override
+    public void reconnectWith(NuxeoClient nuxeoClient) {
+        for (Document document : documents) {
+            document.reconnectWith(nuxeoClient);
+        }
     }
 
 }

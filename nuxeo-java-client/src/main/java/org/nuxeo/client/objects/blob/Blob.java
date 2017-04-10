@@ -26,14 +26,14 @@ import java.io.InputStream;
 
 import org.apache.commons.io.FileCleaningTracker;
 import org.nuxeo.client.ConstantsV1;
-import org.nuxeo.client.objects.NuxeoEntity;
+import org.nuxeo.client.objects.Entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 /**
  * @since 0.1
  */
-public class Blob extends NuxeoEntity {
+public class Blob extends Entity {
 
     @JsonIgnore
     protected String mimeType;

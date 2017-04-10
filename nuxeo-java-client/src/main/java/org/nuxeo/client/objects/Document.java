@@ -31,6 +31,8 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import org.nuxeo.client.ConstantsV1;
+import org.nuxeo.client.Operations;
+import org.nuxeo.client.methods.RepositoryAPI;
 import org.nuxeo.client.objects.acl.ACE;
 import org.nuxeo.client.objects.acl.ACL;
 import org.nuxeo.client.objects.acl.ACP;
@@ -49,11 +51,11 @@ import retrofit2.Callback;
 /**
  * @since 0.1
  */
-public class Document extends NuxeoEntity {
+public class Document extends RepositoryEntity<RepositoryAPI> {
 
     protected String path;
 
-    protected final String type;
+    protected String type;
 
     protected String state;
 
@@ -67,12 +69,12 @@ public class Document extends NuxeoEntity {
 
     protected String lastModified;
 
-    protected Map<String, Object> properties;
+    protected final Map<String, Object> properties = new HashMap<>();
 
     @JsonIgnore
-    protected transient Map<String, Object> dirtyProperties;
+    protected final transient Map<String, Object> dirtyProperties = new HashMap<>();
 
-    protected Map<String, Object> contextParameters;
+    protected final Map<String, Object> contextParameters = new HashMap<>();
 
     protected String changeToken;
 
@@ -108,7 +110,7 @@ public class Document extends NuxeoEntity {
     public Document(String id, String type, List<String> facets, String changeToken, String path, String state,
             String lockOwner, String lockCreated, String repositoryName, String versionLabel, String isCheckedOut,
             boolean isProxy, Map<String, Object> properties, Map<String, Object> contextParameters) {
-        super(ConstantsV1.ENTITY_TYPE_DOCUMENT);
+        super(ConstantsV1.ENTITY_TYPE_DOCUMENT, RepositoryAPI.class);
         uid = id;
         this.changeToken = changeToken;
         this.facets = facets;
@@ -121,13 +123,11 @@ public class Document extends NuxeoEntity {
         this.versionLabel = versionLabel;
         this.isCheckedOut = isCheckedOut;
         this.isProxy = isProxy;
-        this.contextParameters = contextParameters == null ? new HashMap<>() : contextParameters;
         setProperties(properties);
-        this.dirtyProperties = new HashMap<>();
     }
 
     public Document(String title, String type) {
-        super(ConstantsV1.ENTITY_TYPE_DOCUMENT);
+        super(ConstantsV1.ENTITY_TYPE_DOCUMENT, RepositoryAPI.class);
         uid = null;
         this.title = title;
         name = title;
@@ -141,16 +141,13 @@ public class Document extends NuxeoEntity {
         repositoryName = null;
         versionLabel = null;
         isCheckedOut = null;
-        properties = new HashMap<>();
-        dirtyProperties = new HashMap<>();
-        contextParameters = new HashMap<>();
     }
 
     /**
      * For internal marshalling purpose.
      */
     public Document() {
-        super(ConstantsV1.ENTITY_TYPE_DOCUMENT);
+        super(ConstantsV1.ENTITY_TYPE_DOCUMENT, RepositoryAPI.class);
         uid = null;
         title = ConstantsV1.DEFAULT_DOC_TYPE;
         name = ConstantsV1.DEFAULT_DOC_TYPE;
@@ -164,9 +161,7 @@ public class Document extends NuxeoEntity {
         repositoryName = null;
         versionLabel = null;
         isCheckedOut = null;
-        properties = new HashMap<>();
-        dirtyProperties = new HashMap<>();
-        contextParameters = new HashMap<>();
+        setContextParameters(contextParameters);
     }
 
     /**
@@ -177,26 +172,25 @@ public class Document extends NuxeoEntity {
      * @param document the document to copy from the sub class.
      */
     public Document(Document document) {
-        super(ConstantsV1.ENTITY_TYPE_DOCUMENT);
+        super(ConstantsV1.ENTITY_TYPE_DOCUMENT, RepositoryAPI.class);
         type = ConstantsV1.DEFAULT_DOC_TYPE;
-        for (Field field : document.getClass().getDeclaredFields()) {
-            if (!Modifier.isFinal(field.getModifiers())) {
-                try {
-                    Class<?> superclass = this.getClass().getSuperclass();
-                    if (superclass.equals(NuxeoEntity.class)) {
-                        throw new NuxeoClientException(
-                                "You should never use this constructor unless you're using a subclass of Document");
-                    }
-                    superclass.getDeclaredField(field.getName()).set(this, field.get(document));
-                } catch (NoSuchFieldException | IllegalAccessException reason) {
-                    throw new NuxeoClientException(reason);
+        try {
+            Class<?> superclass = this.getClass().getSuperclass();
+            while (!superclass.equals(Document.class)) {
+                superclass = superclass.getSuperclass();
+                if (superclass.equals(Object.class)) {
+                    throw new NuxeoClientException(
+                            "You should never use this constructor unless you're using a subclass of Document");
                 }
             }
+            for (Field field : document.getClass().getDeclaredFields()) {
+                if (!Modifier.isFinal(field.getModifiers())) {
+                    superclass.getDeclaredField(field.getName()).set(this, field.get(document));
+                }
+            }
+        } catch (NoSuchFieldException | IllegalAccessException reason) {
+            throw new NuxeoClientException(reason);
         }
-    }
-
-    public String getRepositoryName() {
-        return repositoryName;
     }
 
     public void setRepositoryName(String repositoryName) {
@@ -327,25 +321,26 @@ public class Document extends NuxeoEntity {
     }
 
     public void setProperties(Map<String, Object> properties) {
-        if (properties == null) {
-            this.properties = new HashMap<>();
-        } else {
+        this.properties.clear();
+        if (properties != null) {
             rejectIfDateFound(null, properties);
-            this.properties = properties;
+            this.properties.putAll(properties);
         }
     }
 
     public void setDirtyProperties(Map<String, Object> dirtyProperties) {
-        if (dirtyProperties == null) {
-            this.dirtyProperties = new HashMap<>();
-        } else {
+        this.dirtyProperties.clear();
+        if (dirtyProperties != null) {
             rejectIfDateFound(null, dirtyProperties);
-            this.dirtyProperties = dirtyProperties;
+            this.dirtyProperties.putAll(dirtyProperties);
         }
     }
 
     public void setContextParameters(Map<String, Object> contextParameters) {
-        this.contextParameters = contextParameters;
+        this.contextParameters.clear();
+        if (contextParameters != null) {
+            this.contextParameters.putAll(contextParameters);
+        }
     }
 
     public void setChangeToken(String changeToken) {
@@ -388,37 +383,45 @@ public class Document extends NuxeoEntity {
     }
 
     public Document updateDocument() {
-        return (Document) getResponse(uid, this);
+
+        if (repositoryName == null) {
+            return fetchResponse(api.updateDocument(uid, this));
+        }
+        return fetchResponse(api.updateDocument(uid, this, repositoryName));
+
     }
 
     /* Audit Sync */
 
     public Audit fetchAudit() {
-        return fetchAuditById(uid);
-    }
 
-    public Audit fetchAuditById(String documentId) {
-        return (Audit) getResponse(documentId);
+        if (repositoryName == null) {
+            return fetchResponse(api.fetchAuditById(uid));
+        }
+        return fetchResponse(api.fetchAuditById(uid, repositoryName));
+
     }
 
     /* Audit Async */
 
     public void fetchAudit(Callback<Audit> callback) {
-        execute(callback, uid);
-    }
 
-    public void fetchAuditById(String documentId, Callback<Audit> callback) {
-        execute(callback, documentId);
+        if (repositoryName == null) {
+            fetchResponse(api.fetchAuditById(uid), callback);
+        }
+        fetchResponse(api.fetchAuditById(uid, repositoryName), callback);
+
     }
 
     /* ACP Sync */
 
     public ACP fetchPermissions() {
-        return fetchPermissionsById(uid);
-    }
 
-    protected ACP fetchPermissionsById(String documentId) {
-        return (ACP) getResponse(documentId);
+        if (repositoryName == null) {
+            return fetchResponse(api.fetchPermissionsById(uid));
+        }
+        return fetchResponse(api.fetchPermissionsById(uid, repositoryName));
+
     }
 
     /**
@@ -428,13 +431,13 @@ public class Document extends NuxeoEntity {
      * @param ace the permission.
      */
     public void addPermission(ACE ace) {
-        Map<String, Object> params = new HashMap<>();
+        Map<String, Object> params = toAutomationParameters(ace);
         params.put("user", ace.getUsername());
-        setPermissionAutomationParameters(ace, params);
-        nuxeoClient.automation("Document.AddPermission").input(this).parameters(params).execute();
+        nuxeoClient.automation(Operations.DOCUMENT_ADD_PERMISSION).input(this).parameters(params).execute();
     }
 
-    protected void setPermissionAutomationParameters(ACE ace, Map<String, Object> params) {
+    protected Map<String, Object> toAutomationParameters(ACE ace) {
+        Map<String, Object> params = new HashMap<>();
         params.put("permission", ace.getPermission());
         params.put("begin", ace.getBeginAsString());
         params.put("end", ace.getEndAsString());
@@ -442,6 +445,8 @@ public class Document extends NuxeoEntity {
         params.put("blockInheritance", ace.isBlockInheritance());
         params.put("comment", ace.getComment());
         params.put("notify", ace.isNotify());
+        return params;
+
     }
 
     /**
@@ -452,10 +457,9 @@ public class Document extends NuxeoEntity {
      * @param email the invited email.
      */
     public void addInvitation(ACE ace, String email) {
-        Map<String, Object> params = new HashMap<>();
+        Map<String, Object> params = toAutomationParameters(ace);
         params.put("email", email);
-        setPermissionAutomationParameters(ace, params);
-        nuxeoClient.automation("Document.AddPermission").input(this).parameters(params).execute();
+        nuxeoClient.automation(Operations.DOCUMENT_ADD_PERMISSION).input(this).parameters(params).execute();
     }
 
     /**
@@ -481,17 +485,16 @@ public class Document extends NuxeoEntity {
         params.put("id", aceId);
         params.put("user", username);
         params.put("acl", ACLName);
-        nuxeoClient.automation("Document.RemovePermission").input(this).parameters(params).execute();
+        nuxeoClient.automation(Operations.DOCUMENT_REMOVE_PERMISSION).input(this).parameters(params).execute();
     }
 
     /* ACP Async */
 
-    public void fetchACP(Callback<ACP> callback) {
-        execute(callback, uid);
-    }
-
-    protected void fetchACPById(String documentId, Callback<ACP> callback) {
-        execute(callback, documentId);
+    public void fetchPermissions(Callback<ACP> callback) {
+        if (repositoryName == null) {
+            fetchResponse(api.fetchPermissionsById(uid), callback);
+        }
+        fetchResponse(api.fetchPermissionsById(uid, repositoryName), callback);
     }
 
     /**
@@ -499,13 +502,14 @@ public class Document extends NuxeoEntity {
      *
      * @since 1.0
      * @param ace the permission.
-     * @param callback
      */
+    // TODO check response type
     public void addPermission(ACE ace, Callback<ResponseBody> callback) {
-        Map<String, Object> params = new HashMap<>();
+        Map<String, Object> params = toAutomationParameters(ace);
         params.put("user", ace.getUsername());
-        setPermissionAutomationParameters(ace, params);
-        nuxeoClient.automation("Document.AddPermission").input(this).parameters(params).execute(callback);
+
+        nuxeoClient.automation(Operations.DOCUMENT_ADD_PERMISSION).input(this).parameters(params).execute(callback);
+
     }
 
     /**
@@ -514,95 +518,111 @@ public class Document extends NuxeoEntity {
      * @since 1.0
      * @param ace the permission.
      * @param email the invited email.
-     * @param callback
      */
+    // TODO check response type
     public void addInvitation(ACE ace, String email, Callback<ResponseBody> callback) {
-        Map<String, Object> params = new HashMap<>();
+        Map<String, Object> params = toAutomationParameters(ace);
         params.put("email", email);
-        setPermissionAutomationParameters(ace, params);
-        nuxeoClient.automation("Document.AddPermission").input(this).parameters(params).execute(callback);
+
+        nuxeoClient.automation(Operations.DOCUMENT_ADD_PERMISSION).input(this).parameters(params).execute(callback);
+
     }
 
     /* Children Sync */
 
     public Documents fetchChildren() {
-        return fetchChildrenById(uid);
-    }
 
-    public Documents fetchChildrenById(String parentId) {
-        return (Documents) getResponse(parentId);
+        if (repositoryName == null) {
+            return fetchResponse(api.fetchChildrenById(uid));
+        }
+        return fetchResponse(api.fetchChildrenById(uid, repositoryName));
+
     }
 
     /* Children Async */
 
     public void fetchChildren(Callback<Documents> callback) {
-        execute(callback, uid);
-    }
 
-    public void fetchChildrenById(String parentId, Callback<Documents> callback) {
-        execute(callback, parentId);
+        if (repositoryName == null) {
+            fetchResponse(api.fetchChildrenById(uid), callback);
+        }
+        fetchResponse(api.fetchChildrenById(uid, repositoryName), callback);
+
     }
 
     /* Blobs Sync */
 
     public Blob fetchBlob() {
-        return fetchBlobById(uid, ConstantsV1.DEFAULT_FILE_CONTENT);
+        return fetchBlob(ConstantsV1.DEFAULT_FILE_CONTENT);
     }
 
     public Blob fetchBlob(String fieldPath) {
-        return fetchBlobById(uid, fieldPath);
-    }
 
-    public Blob fetchBlobById(String uid, String fieldPath) {
-        return (Blob) getResponse(uid, fieldPath);
+        if (repositoryName == null) {
+            return fetchResponse(api.fetchBlobById(uid, fieldPath));
+        }
+        return fetchResponse(api.fetchBlobById(uid, fieldPath, repositoryName));
+
     }
 
     /* Blobs Async */
 
     public void fetchBlob(Callback<Blob> callback) {
-        execute(callback, uid, ConstantsV1.DEFAULT_FILE_CONTENT);
+        fetchBlob(ConstantsV1.DEFAULT_FILE_CONTENT, callback);
     }
 
     public void fetchBlob(String fieldPath, Callback<Blob> callback) {
-        execute(callback, uid, fieldPath);
-    }
 
-    public void fetchBlobById(String uid, String fieldPath, Callback<Blob> callback) {
-        execute(callback, uid, fieldPath);
+        if (repositoryName == null) {
+            fetchResponse(api.fetchBlobById(uid, fieldPath), callback);
+        }
+        fetchResponse(api.fetchBlobById(uid, fieldPath, repositoryName), callback);
+
     }
 
     /* Workflows Sync */
 
     public Workflows fetchWorkflowInstances() {
-        return (Workflows) getResponse(uid);
+
+        if (repositoryName == null) {
+            return fetchResponse(api.fetchWorkflowInstances(uid));
+        }
+        return fetchResponse(api.fetchWorkflowInstances(uid, repositoryName));
     }
 
     public Workflow startWorkflowInstance(Workflow workflow) {
-        return startWorkflowInstanceWithDocId(workflow);
-    }
+        if (repositoryName == null) {
+            return fetchResponse(api.startWorkflowInstanceWithDocId(uid, workflow));
+        }
+        return fetchResponse(api.startWorkflowInstanceWithDocId(uid, workflow, repositoryName));
 
-    public Workflow startWorkflowInstanceWithDocId(Workflow workflow) {
-        return (Workflow) getResponse(uid, workflow);
     }
 
     /* Workflows Async */
 
     public void fetchWorkflowInstances(Callback<Workflows> callback) {
-        execute(callback, uid);
+        if (repositoryName == null) {
+            fetchResponse(api.fetchWorkflowInstances(uid), callback);
+        }
+        fetchResponse(api.fetchWorkflowInstances(uid, repositoryName), callback);
     }
 
     public void startWorkflowInstance(Workflow workflow, Callback<Workflow> callback) {
-        execute(callback, uid, workflow);
+        if (repositoryName == null) {
+            fetchResponse(api.startWorkflowInstanceWithDocId(uid, workflow), callback);
+        }
+        fetchResponse(api.startWorkflowInstanceWithDocId(uid, workflow, repositoryName), callback);
     }
 
     /* Task */
 
     public Task fetchTask() {
-        return fetchTaskById(uid);
-    }
 
-    public Task fetchTaskById(String documentId) {
-        return (Task) getResponse(documentId);
+        if (repositoryName == null) {
+            return fetchResponse(api.fetchTaskById(uid));
+        }
+        return fetchResponse(api.fetchTaskById(uid, repositoryName));
+
     }
 
     /**

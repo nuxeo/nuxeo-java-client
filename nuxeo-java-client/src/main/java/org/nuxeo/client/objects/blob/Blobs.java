@@ -24,7 +24,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.nuxeo.client.ConstantsV1;
-import org.nuxeo.client.objects.NuxeoEntity;
+import org.nuxeo.client.objects.Entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -32,7 +32,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 /**
  * @since 0.1
  */
-public class Blobs extends NuxeoEntity {
+public class Blobs extends Entity {
 
     public Blobs() {
         super(null);

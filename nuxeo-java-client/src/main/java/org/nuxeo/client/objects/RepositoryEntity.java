@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2016-2017 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2017 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,40 +14,33 @@
  * limitations under the License.
  *
  * Contributors:
- *     Vladimir Pasquier <vpasquier@nuxeo.com>
  *     Kevin Leturc <kleturc@nuxeo.com>
  */
-package org.nuxeo.client.objects.workflow;
+package org.nuxeo.client.objects;
 
-import java.util.List;
-
-import org.nuxeo.client.ConstantsV1;
-import org.nuxeo.client.objects.Entity;
+import org.nuxeo.client.NuxeoClient;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
- * @since 0.1
+ * @param <A> The api interface type.
+ * @since 3.0
  */
-public class Workflows extends Entity {
+public class RepositoryEntity<A> extends NuxeoEntity<A> {
 
-    @JsonProperty("entries")
-    protected List<Workflow> workflows;
+    @JsonProperty("repository")
+    protected String repositoryName;
 
-    public Workflows() {
-        super(ConstantsV1.ENTITY_TYPE_WORKFLOWS);
+    public RepositoryEntity(String entityType, Class<A> apiClass) {
+        super(entityType, apiClass);
     }
 
-    public List<Workflow> getWorkflows() {
-        return workflows;
+    public RepositoryEntity(String entityType, Class<A> apiClass, NuxeoClient nuxeoClient) {
+        super(entityType, apiClass, nuxeoClient);
     }
 
-    public Workflow get(int id) {
-        return workflows.get(id);
-    }
-
-    public int size() {
-        return workflows.size();
+    public String getRepositoryName() {
+        return repositoryName;
     }
 
 }

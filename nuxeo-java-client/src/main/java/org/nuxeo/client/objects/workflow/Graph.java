@@ -23,12 +23,12 @@ import java.util.List;
 import java.util.Map;
 
 import org.nuxeo.client.ConstantsV1;
-import org.nuxeo.client.objects.NuxeoEntity;
+import org.nuxeo.client.objects.Entity;
 
 /**
  * @since 0.1
  */
-public class Graph extends NuxeoEntity {
+public class Graph extends Entity {
 
     public Graph() {
         super(ConstantsV1.ENTITY_TYPE_GRAPH);

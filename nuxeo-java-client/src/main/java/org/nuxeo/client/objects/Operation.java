@@ -41,7 +41,7 @@ import retrofit2.Callback;
 /**
  * @since 0.1
  */
-public class Operation extends NuxeoEntity {
+public class Operation extends NuxeoEntity<OperationAPI> {
 
     public static final String INPUT_PART = "input";
 
@@ -53,7 +53,7 @@ public class Operation extends NuxeoEntity {
     protected String operationId;
 
     public Operation(NuxeoClient nuxeoClient) {
-        super(ConstantsV1.ENTITY_TYPE_OPERATION, nuxeoClient, OperationAPI.class);
+        super(ConstantsV1.ENTITY_TYPE_OPERATION, OperationAPI.class, nuxeoClient);
         body = new OperationBody();
     }
 

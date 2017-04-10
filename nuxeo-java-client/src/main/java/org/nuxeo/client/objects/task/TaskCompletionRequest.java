@@ -22,12 +22,12 @@ package org.nuxeo.client.objects.task;
 import java.util.Map;
 
 import org.nuxeo.client.ConstantsV1;
-import org.nuxeo.client.objects.NuxeoEntity;
+import org.nuxeo.client.objects.Entity;
 
 /**
  * @since 1.0
  */
-public class TaskCompletionRequest extends NuxeoEntity {
+public class TaskCompletionRequest extends Entity {
 
     protected String comment;
 
