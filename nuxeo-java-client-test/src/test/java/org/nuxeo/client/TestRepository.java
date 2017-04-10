@@ -170,8 +170,8 @@ public class TestRepository extends TestBase {
 
     @Test
     public void itCanQuery() {
-        Documents documents = nuxeoClient.repository().query("SELECT * From Note");
-        assertTrue(documents.getDocuments().size() != 0);
+        Documents documents = nuxeoClient.repository().query("SELECT * From Note WHERE ecm:isVersion = 0");
+        assertEquals(1, documents.getDocuments().size());
         Document document = documents.getDocuments().get(0);
         assertEquals("Note", document.getType());
         assertEquals("test", document.getRepositoryName());

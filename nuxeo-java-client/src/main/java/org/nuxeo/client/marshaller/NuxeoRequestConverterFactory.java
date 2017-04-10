@@ -26,7 +26,6 @@ import org.nuxeo.client.spi.NuxeoClientException;
 
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.ObjectWriter;
 
 import okhttp3.RequestBody;
 import retrofit2.Converter;
@@ -36,21 +35,18 @@ import retrofit2.Converter;
  */
 public final class NuxeoRequestConverterFactory<T> implements Converter<T, RequestBody> {
 
-    protected JavaType javaType;
-
-    protected ObjectWriter adapter;
+    protected final JavaType javaType;
 
     protected final ObjectMapper objectMapper;
 
-    NuxeoRequestConverterFactory(ObjectWriter adapter, ObjectMapper objectMapper, JavaType javaType) {
-        this.adapter = adapter;
+    NuxeoRequestConverterFactory(ObjectMapper objectMapper, JavaType javaType) {
         this.objectMapper = objectMapper;
         this.javaType = javaType;
     }
 
     @Override
     public RequestBody convert(T value) throws IOException {
-        byte[] bytes = adapter.writeValueAsBytes(value);
+        byte[] bytes = objectMapper.writeValueAsBytes(value);
         return RequestBody.create(MediaTypes.APPLICATION_JSON_CHARSET_UTF_8.toOkHttpMediaType(), bytes);
     }
 
