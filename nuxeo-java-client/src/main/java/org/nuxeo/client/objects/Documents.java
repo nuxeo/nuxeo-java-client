@@ -23,47 +23,10 @@ import java.util.List;
 
 import org.nuxeo.client.NuxeoClient;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-
 /**
  * @since 0.1
  */
-public class Documents extends Entity implements Connectable {
-
-    @JsonProperty("entries")
-    protected List<Document> documents;
-
-    protected Boolean isPaginable;
-
-    protected int resultsCount;
-
-    protected int pageSize;
-
-    protected int maxPageSize;
-
-    protected int currentPageSize;
-
-    protected int currentPageIndex;
-
-    protected int numberOfPages;
-
-    protected Boolean isPreviousPageAvailable;
-
-    protected Boolean isNextPageAvailable;
-
-    protected Boolean isLastPageAvailable;
-
-    protected Boolean isSortable;
-
-    protected Boolean hasError;
-
-    protected String errorMessage;
-
-    protected int totalSize;
-
-    protected int pageIndex;
-
-    protected int pageCount;
+public class Documents extends PaginableEntity<Document> implements Connectable {
 
     public Documents() {
         super(EntityTypes.DOCUMENTS);
@@ -71,97 +34,29 @@ public class Documents extends Entity implements Connectable {
 
     public Documents(List<Document> documents) {
         this();
-        this.documents = documents;
+        this.entries = documents;
     }
 
     public void addDocument(Document document) {
-        documents.add(document);
+        entries.add(document);
     }
 
     public void removeDocument(Document document) {
-        documents.remove(document);
+        entries.remove(document);
     }
 
-    public Document getDocument(int position) {
-        return documents.get(position);
-    }
-
-    public int size() {
-        return documents.size();
+    public Document getDocument(int index) {
+        return getEntry(index);
     }
 
     public List<Document> getDocuments() {
-        return documents;
-    }
-
-    public int getResultsCount() {
-        return resultsCount;
-    }
-
-    public int getPageSize() {
-        return pageSize;
-    }
-
-    public int getMaxPageSize() {
-        return maxPageSize;
-    }
-
-    public int getCurrentPageSize() {
-        return currentPageSize;
-    }
-
-    public int getCurrentPageIndex() {
-        return currentPageIndex;
-    }
-
-    public int getNumberOfPages() {
-        return numberOfPages;
-    }
-
-    public String getErrorMessage() {
-        return errorMessage;
-    }
-
-    public int getTotalSize() {
-        return totalSize;
-    }
-
-    public int getPageIndex() {
-        return pageIndex;
-    }
-
-    public int getPageCount() {
-        return pageCount;
-    }
-
-    public Boolean getIsPaginable() {
-        return isPaginable;
-    }
-
-    public Boolean getIsPreviousPageAvailable() {
-        return isPreviousPageAvailable;
-    }
-
-    public Boolean getIsNextPageAvailable() {
-        return isNextPageAvailable;
-    }
-
-    public Boolean getIsLastPageAvailable() {
-        return isLastPageAvailable;
-    }
-
-    public Boolean getIsSortable() {
-        return isSortable;
-    }
-
-    public Boolean getHasError() {
-        return hasError;
+        return getEntries();
     }
 
     @Override
     public void reconnectWith(NuxeoClient nuxeoClient) {
-        for (Document document : documents) {
-            document.reconnectWith(nuxeoClient);
+        for (Document entry : entries) {
+            entry.reconnectWith(nuxeoClient);
         }
     }
 

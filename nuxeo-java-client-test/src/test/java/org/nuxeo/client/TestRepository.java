@@ -169,6 +169,18 @@ public class TestRepository extends TestBase {
     }
 
     @Test
+    public void itCanFetchSpecificProperty() {
+        nuxeoClient.fetch("dc:creator");
+        Document note = nuxeoClient.repository().fetchDocumentByPath("/folder_1/note_0");
+        assertNotNull(note);
+        assertEquals("Note 0", note.getPropertyValue("dc:title"));
+        // it should be a user
+        assertTrue(note.getPropertyValue("dc:creator") instanceof User);
+        User user = note.getPropertyValue("dc:creator");
+        assertEquals("Administrator", user.getUserName());
+    }
+
+    @Test
     public void itCanQuery() {
         Documents documents = nuxeoClient.repository().query("SELECT * From Note WHERE ecm:isVersion = 0");
         assertEquals(1, documents.getDocuments().size());
@@ -458,9 +470,32 @@ public class TestRepository extends TestBase {
     public void itCanUseEnrichers() {
         Document document = nuxeoClient.enrichers("acls", "breadcrumb").repository().fetchDocumentByPath("/folder_2");
         assertNotNull(document);
-        assertTrue(((List) document.getContextParameters().get("acls")).size
-                () == 1);
-        assertTrue(((Map) document.getContextParameters().get("breadcrumb")).size() == 2);
+        assertEquals(1, ((List) document.getContextParameters().get("acls")).size());
+        assertEquals(1, document.<Documents>getContextParameter("breadcrumb").size());
+    }
+
+    /**
+     * This test tests more aspect of enricher mechanism in nuxeo-java-client. In this tests, we will also test
+     * deserialization of documents in breadcrumb and if they are correctly connected.
+     */
+    @Test
+    public void itCanUseBreadcrumb() {
+        // Test deserialization
+        Document document = nuxeoClient.enrichers("breadcrumb").repository().fetchDocumentByPath("/folder_2/file");
+        assertNotNull(document);
+        Documents documents = document.getContextParameter("breadcrumb");
+        assertNotNull(documents);
+        assertEquals(2, documents.size());
+        Document folder2 = documents.getDocument(0);
+        Document file = documents.getDocument(1);
+        assertEquals("/folder_2", folder2.getPath());
+        assertEquals("/folder_2/file", file.getPath());
+
+        // Test connect
+        Documents children = folder2.fetchChildren();
+        assertNotNull(children);
+        assertEquals(1, children.size());
+        assertEquals("/folder_2/file", children.getDocument(0).getPath());
     }
 
     @Ignore("NXP-19295 - We don't want to use that use case anymore. But keeping the test for explanation")
