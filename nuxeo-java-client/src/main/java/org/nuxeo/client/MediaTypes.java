@@ -31,6 +31,7 @@ public class MediaTypes {
 
     public static final MediaType APPLICATION_JSON_NXENTITY = MediaType.parse(APPLICATION_JSON_NXENTITY_S);
 
+    // TODO maybe charset=utf-8
     public static final String APPLICATION_JSON_CHARSET_UTF_8_S = "application/json; charset=UTF-8";
 
     public static final MediaType APPLICATION_JSON_CHARSET_UTF_8 = MediaType.parse(APPLICATION_JSON_CHARSET_UTF_8_S);

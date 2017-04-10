@@ -19,20 +19,20 @@
  */
 package org.nuxeo.client.cache;
 
+import retrofit2.Response;
+
 /**
  * @since 0.1
  */
 public interface NuxeoResponseCache {
 
-    Object getResponse(Object key);
+    <T> Response<T> getResponse(String key);
 
-    void put(String key, Object value);
+    void put(String key, Response<?> value);
 
-    int size();
+    long size();
 
-    Object getRaw(Object key);
-
-    Object getBody(Object key);
+    <T> T getBody(String key);
 
     void invalidateAll();
 
