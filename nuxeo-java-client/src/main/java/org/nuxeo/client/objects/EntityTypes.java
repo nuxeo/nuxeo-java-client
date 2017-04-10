@@ -37,7 +37,13 @@ public class EntityTypes {
 
     public static final String DOCUMENTS = "documents";
 
+    public static final String DOC_TYPE = "docType";
+
+    public static final String DOC_TYPES = "docTypes";
+
     public static final String EXCEPTION = "exception";
+
+    public static final String FACET = "facet";
 
     public static final String GRAPH = "graph";
 
@@ -52,6 +58,8 @@ public class EntityTypes {
     public static final String OPERATION = "operation";
 
     public static final String RECORDSET = "recordSet";
+
+    public static final String SCHEMA = "schema";
 
     public static final String TASK = "task";
 
