@@ -29,9 +29,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.function.BiConsumer;
 
 import org.nuxeo.client.ConstantsV1;
+import org.nuxeo.client.NuxeoClient;
 import org.nuxeo.client.Operations;
+import org.nuxeo.client.marshaller.EntityValueDeserializer;
 import org.nuxeo.client.methods.RepositoryAPI;
 import org.nuxeo.client.objects.acl.ACE;
 import org.nuxeo.client.objects.acl.ACL;
@@ -44,8 +47,8 @@ import org.nuxeo.client.objects.workflow.Workflows;
 import org.nuxeo.client.spi.NuxeoClientException;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
-import okhttp3.ResponseBody;
 import retrofit2.Callback;
 
 /**
@@ -71,12 +74,14 @@ public class Document extends RepositoryEntity<RepositoryAPI> {
 
     protected String lastModified;
 
-    protected final Map<String, Object> properties = new HashMap<>();
+    @JsonDeserialize(contentUsing = EntityValueDeserializer.class)
+    protected Map<String, Object> properties = new HashMap<>();
 
     @JsonIgnore
-    protected final transient Map<String, Object> dirtyProperties = new HashMap<>();
+    protected transient Map<String, Object> dirtyProperties = new HashMap<>();
 
-    protected final Map<String, Object> contextParameters = new HashMap<>();
+    @JsonDeserialize(contentUsing = EntityValueDeserializer.class)
+    protected Map<String, Object> contextParameters = new HashMap<>();
 
     protected String changeToken;
 
@@ -96,14 +101,16 @@ public class Document extends RepositoryEntity<RepositoryAPI> {
     protected boolean isProxy;
 
     /**
-     * @deprecated since 2.3
+     * For internal marshalling purpose.
      */
-    @Deprecated
-    public Document(String id, String type, List<String> facets, String changeToken, String path, String state,
-            String lockOwner, String lockCreated, String repositoryName, String versionLabel, String isCheckedOut,
-            Map<String, Object> properties, Map<String, Object> contextParameters) {
-        this(id, type, facets, changeToken, path, state, lockOwner, lockCreated, repositoryName, versionLabel,
-                isCheckedOut, false, properties, contextParameters);
+    protected Document() {
+        this(ConstantsV1.DEFAULT_DOC_TYPE, ConstantsV1.DEFAULT_DOC_TYPE);
+    }
+
+    public Document(String title, String type) {
+        this(null, type, null, null, null, null, null, null, null, null, null, false, null, null);
+        this.title = title;
+        this.name = title;
     }
 
     /**
@@ -126,43 +133,6 @@ public class Document extends RepositoryEntity<RepositoryAPI> {
         this.isCheckedOut = isCheckedOut;
         this.isProxy = isProxy;
         setProperties(properties);
-    }
-
-    public Document(String title, String type) {
-        super(EntityTypes.DOCUMENT, RepositoryAPI.class);
-        uid = null;
-        this.title = title;
-        name = title;
-        this.type = type;
-        changeToken = null;
-        facets = null;
-        path = null;
-        state = null;
-        lockOwner = null;
-        lockCreated = null;
-        repositoryName = null;
-        versionLabel = null;
-        isCheckedOut = null;
-    }
-
-    /**
-     * For internal marshalling purpose.
-     */
-    public Document() {
-        super(ConstantsV1.ENTITY_TYPE_DOCUMENT, RepositoryAPI.class);
-        uid = null;
-        title = ConstantsV1.DEFAULT_DOC_TYPE;
-        name = ConstantsV1.DEFAULT_DOC_TYPE;
-        type = ConstantsV1.DEFAULT_DOC_TYPE;
-        changeToken = null;
-        facets = null;
-        path = null;
-        state = null;
-        lockOwner = null;
-        lockCreated = null;
-        repositoryName = null;
-        versionLabel = null;
-        isCheckedOut = null;
         setContextParameters(contextParameters);
     }
 
@@ -243,7 +213,7 @@ public class Document extends RepositoryEntity<RepositoryAPI> {
     }
 
     public Boolean isCheckedOut() {
-        return (isCheckedOut == null) ? null : Boolean.parseBoolean(isCheckedOut);
+        return (isCheckedOut == null) ? null : Boolean.valueOf(isCheckedOut);
     }
 
     public String getTitle() {
@@ -288,8 +258,9 @@ public class Document extends RepositoryEntity<RepositoryAPI> {
         return properties;
     }
 
-    public Object getPropertyValue(String key) {
-        return properties.get(key);
+    @SuppressWarnings("unchecked")
+    public <T> T getPropertyValue(String key) {
+        return (T) properties.get(key);
     }
 
     public void setPropertyValue(String key, Object value) {
@@ -380,50 +351,51 @@ public class Document extends RepositoryEntity<RepositoryAPI> {
         return dirtyProperties;
     }
 
+    /**
+     * @return The value associates to the input key from the context parameters.
+     * @since 3.0.0
+     */
+    @SuppressWarnings("unchecked")
+    public <T> T getContextParameter(String key) {
+        return (T) contextParameters.get(key);
+    }
+
     public Map<String, Object> getContextParameters() {
         return contextParameters;
     }
 
     public Document updateDocument() {
-
         if (repositoryName == null) {
             return fetchResponse(api.updateDocument(uid, this));
         }
         return fetchResponse(api.updateDocument(uid, this, repositoryName));
-
     }
 
     /* Audit Sync */
 
     public Audit fetchAudit() {
-
         if (repositoryName == null) {
             return fetchResponse(api.fetchAuditById(uid));
         }
         return fetchResponse(api.fetchAuditById(uid, repositoryName));
-
     }
 
     /* Audit Async */
 
     public void fetchAudit(Callback<Audit> callback) {
-
         if (repositoryName == null) {
             fetchResponse(api.fetchAuditById(uid), callback);
         }
         fetchResponse(api.fetchAuditById(uid, repositoryName), callback);
-
     }
 
     /* ACP Sync */
 
     public ACP fetchPermissions() {
-
         if (repositoryName == null) {
             return fetchResponse(api.fetchPermissionsById(uid));
         }
         return fetchResponse(api.fetchPermissionsById(uid, repositoryName));
-
     }
 
     /**
@@ -432,10 +404,10 @@ public class Document extends RepositoryEntity<RepositoryAPI> {
      * @since 1.0
      * @param ace the permission.
      */
-    public void addPermission(ACE ace) {
+    public Document addPermission(ACE ace) {
         Map<String, Object> params = toAutomationParameters(ace);
         params.put("user", ace.getUsername());
-        nuxeoClient.automation(Operations.DOCUMENT_ADD_PERMISSION).input(this).parameters(params).execute();
+        return nuxeoClient.automation(Operations.DOCUMENT_ADD_PERMISSION).input(this).parameters(params).execute();
     }
 
     protected Map<String, Object> toAutomationParameters(ACE ace) {
@@ -458,10 +430,10 @@ public class Document extends RepositoryEntity<RepositoryAPI> {
      * @param ace the permission.
      * @param email the invited email.
      */
-    public void addInvitation(ACE ace, String email) {
+    public Document addInvitation(ACE ace, String email) {
         Map<String, Object> params = toAutomationParameters(ace);
         params.put("email", email);
-        nuxeoClient.automation(Operations.DOCUMENT_ADD_PERMISSION).input(this).parameters(params).execute();
+        return nuxeoClient.automation(Operations.DOCUMENT_ADD_PERMISSION).input(this).parameters(params).execute();
     }
 
     /**
@@ -505,13 +477,10 @@ public class Document extends RepositoryEntity<RepositoryAPI> {
      * @since 1.0
      * @param ace the permission.
      */
-    // TODO check response type
-    public void addPermission(ACE ace, Callback<ResponseBody> callback) {
+    public void addPermission(ACE ace, Callback<Document> callback) {
         Map<String, Object> params = toAutomationParameters(ace);
         params.put("user", ace.getUsername());
-
         nuxeoClient.automation(Operations.DOCUMENT_ADD_PERMISSION).input(this).parameters(params).execute(callback);
-
     }
 
     /**
@@ -521,35 +490,28 @@ public class Document extends RepositoryEntity<RepositoryAPI> {
      * @param ace the permission.
      * @param email the invited email.
      */
-    // TODO check response type
-    public void addInvitation(ACE ace, String email, Callback<ResponseBody> callback) {
+    public void addInvitation(ACE ace, String email, Callback<Document> callback) {
         Map<String, Object> params = toAutomationParameters(ace);
         params.put("email", email);
-
         nuxeoClient.automation(Operations.DOCUMENT_ADD_PERMISSION).input(this).parameters(params).execute(callback);
-
     }
 
     /* Children Sync */
 
     public Documents fetchChildren() {
-
         if (repositoryName == null) {
             return fetchResponse(api.fetchChildrenById(uid));
         }
         return fetchResponse(api.fetchChildrenById(uid, repositoryName));
-
     }
 
     /* Children Async */
 
     public void fetchChildren(Callback<Documents> callback) {
-
         if (repositoryName == null) {
             fetchResponse(api.fetchChildrenById(uid), callback);
         }
         fetchResponse(api.fetchChildrenById(uid, repositoryName), callback);
-
     }
 
     /* Blobs Sync */
@@ -559,12 +521,10 @@ public class Document extends RepositoryEntity<RepositoryAPI> {
     }
 
     public Blob fetchBlob(String fieldPath) {
-
         if (repositoryName == null) {
             return fetchResponse(api.fetchBlobById(uid, fieldPath));
         }
         return fetchResponse(api.fetchBlobById(uid, fieldPath, repositoryName));
-
     }
 
     /* Blobs Async */
@@ -574,18 +534,15 @@ public class Document extends RepositoryEntity<RepositoryAPI> {
     }
 
     public void fetchBlob(String fieldPath, Callback<Blob> callback) {
-
         if (repositoryName == null) {
             fetchResponse(api.fetchBlobById(uid, fieldPath), callback);
         }
         fetchResponse(api.fetchBlobById(uid, fieldPath, repositoryName), callback);
-
     }
 
     /* Workflows Sync */
 
     public Workflows fetchWorkflowInstances() {
-
         if (repositoryName == null) {
             return fetchResponse(api.fetchWorkflowInstances(uid));
         }
@@ -597,7 +554,6 @@ public class Document extends RepositoryEntity<RepositoryAPI> {
             return fetchResponse(api.startWorkflowInstanceWithDocId(uid, workflow));
         }
         return fetchResponse(api.startWorkflowInstanceWithDocId(uid, workflow, repositoryName));
-
     }
 
     /* Workflows Async */
@@ -619,15 +575,15 @@ public class Document extends RepositoryEntity<RepositoryAPI> {
     /* Task */
 
     public Task fetchTask() {
-
         if (repositoryName == null) {
             return fetchResponse(api.fetchTaskById(uid));
         }
         return fetchResponse(api.fetchTaskById(uid, repositoryName));
-
     }
 
     /**
+     * CAUTION this method will only work on a Nuxeo server 8.10 and upon.
+     *
      * @since 2.3
      */
     public boolean isProxy() {
@@ -661,6 +617,19 @@ public class Document extends RepositoryEntity<RepositoryAPI> {
                 rejectIfDateFound(key, Array.get(value, i));
             }
         }
+    }
+
+    @Override
+    public void reconnectWith(NuxeoClient nuxeoClient) {
+        super.reconnectWith(nuxeoClient);
+        BiConsumer<String, Object> reconnect = (key, value) -> {
+            if (value instanceof Connectable) {
+                ((Connectable) value).reconnectWith(nuxeoClient);
+            }
+        };
+        // Re-connect possible objects
+        properties.forEach(reconnect);
+        contextParameters.forEach(reconnect);
     }
 
 }

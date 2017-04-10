@@ -149,9 +149,7 @@ public class NuxeoClient {
     }
 
     public NuxeoClient fetch(String... fetchs) {
-        for (String fetch : fetchs) {
-            header(HttpHeaders.X_FETCH, fetch);
-        }
+        header(HttpHeaders.X_FETCH, StringUtils.join(fetchs, ","));
         return this;
     }
 
