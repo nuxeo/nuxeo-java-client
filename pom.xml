@@ -1,9 +1,10 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
   <groupId>org.nuxeo.client</groupId>
   <artifactId>nuxeo-java-client-parent</artifactId>
-  <version>2.6-SNAPSHOT</version>
+  <version>3.0.0-SNAPSHOT</version>
   <name>Nuxeo Java Client Parent</name>
   <description>Java Client Parent for Nuxeo REST APIs.</description>
   <packaging>pom</packaging>
@@ -13,12 +14,6 @@
     <name>Nuxeo</name>
     <url>http://www.nuxeo.com</url>
   </organization>
-  <licenses>
-    <license>
-      <name>GNU LESSER GENERAL PUBLIC LICENSE, Version 2.1</name>
-      <url>http://www.gnu.org/licenses/lgpl-2.1.html</url>
-    </license>
-  </licenses>
 
   <mailingLists>
     <mailingList>
@@ -89,10 +84,9 @@
   </modules>
 
   <properties>
-    <nuxeo.version>9.1-SNAPSHOT</nuxeo.version>
     <fasterxml.version>2.7.4</fasterxml.version>
-    <retrofit.version>2.0.2</retrofit.version>
-    <okhttp.version>3.0.0-RC1</okhttp.version>
+    <retrofit.version>2.2.0</retrofit.version>
+    <okhttp.version>3.6.0</okhttp.version>
     <log4j.version>2.4.1</log4j.version>
     <retrolambda.version>2.0.6</retrolambda.version>
     <junit.version>4.12</junit.version>
@@ -100,9 +94,9 @@
     <java.version.target>1.7</java.version.target>
     <javax.mail.version>1.4.7</javax.mail.version>
     <compiler.version>3.3</compiler.version>
-    <guava.version>18.0</guava.version>
+    <guava.version>21.0</guava.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <commons-io.version>2.4</commons-io.version>
+    <commons-io.version>2.5</commons-io.version>
     <apache.commons.version>3.3.2</apache.commons.version>
   </properties>
 
@@ -168,148 +162,11 @@
         <artifactId>commons-lang3</artifactId>
         <version>${apache.commons.version}</version>
       </dependency>
-
-      <!-- TEST -->
-      <dependency>
-        <groupId>org.nuxeo.ecm.routing</groupId>
-        <artifactId>nuxeo-routing-core</artifactId>
-        <version>${nuxeo.version}</version>
-      </dependency>
-
-      <!-- Test -->
-      <dependency>
-        <groupId>org.nuxeo.ecm.core</groupId>
-        <artifactId>nuxeo-core-cache</artifactId>
-        <version>${nuxeo.version}</version>
-        <type>test-jar</type>
-        <scope>test</scope>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.routing</groupId>
-        <artifactId>nuxeo-routing-core</artifactId>
-        <type>test-jar</type>
-        <version>${nuxeo.version}</version>
-        <scope>test</scope>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-platform-types-api</artifactId>
-        <version>${nuxeo.version}</version>
-        <scope>test</scope>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.routing</groupId>
-        <artifactId>nuxeo-routing-default</artifactId>
-        <version>${nuxeo.version}</version>
-        <scope>test</scope>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-platform-filemanager-api</artifactId>
-        <version>${nuxeo.version}</version>
-        <scope>test</scope>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-platform-filemanager-core</artifactId>
-        <version>${nuxeo.version}</version>
-        <scope>test</scope>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.core</groupId>
-        <artifactId>nuxeo-core-mimetype</artifactId>
-        <version>${nuxeo.version}</version>
-        <scope>test</scope>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.core</groupId>
-        <artifactId>nuxeo-core-io</artifactId>
-        <version>${nuxeo.version}</version>
-        <scope>test</scope>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-platform-userworkspace-types</artifactId>
-        <version>${nuxeo.version}</version>
-        <scope>test</scope>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-platform-audit-core</artifactId>
-        <version>${nuxeo.version}</version>
-        <type>test-jar</type>
-        <scope>test</scope>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-platform-audit-core</artifactId>
-        <version>${nuxeo.version}</version>
-        <scope>test</scope>
-      </dependency>
       <dependency>
         <groupId>junit</groupId>
         <artifactId>junit</artifactId>
+        <scope>test</scope>
         <version>${junit.version}</version>
-        <scope>test</scope>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.runtime</groupId>
-        <artifactId>nuxeo-runtime-test</artifactId>
-        <version>${nuxeo.version}</version>
-        <scope>test</scope>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.routing</groupId>
-        <artifactId>nuxeo-routing-rest-api</artifactId>
-        <version>${nuxeo.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-rest-api-test</artifactId>
-        <version>${nuxeo.version}</version>
-        <scope>test</scope>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.core</groupId>
-        <artifactId>nuxeo-core-test</artifactId>
-        <version>${nuxeo.version}</version>
-        <scope>test</scope>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-platform-test</artifactId>
-        <version>${nuxeo.version}</version>
-        <scope>test</scope>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-platform-tag-api</artifactId>
-        <version>${nuxeo.version}</version>
-        <scope>test</scope>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-platform-tag-core</artifactId>
-        <version>${nuxeo.version}</version>
-        <scope>test</scope>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-platform-url-core</artifactId>
-        <version>${nuxeo.version}</version>
-        <scope>test</scope>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-permissions</artifactId>
-        <version>${nuxeo.version}</version>
-        <scope>test</scope>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-platform-login-portal-sso</artifactId>
-        <version>${nuxeo.version}</version>
-        <scope>test</scope>
       </dependency>
     </dependencies>
   </dependencyManagement>
@@ -475,5 +332,31 @@
       <uniqueVersion>true</uniqueVersion>
     </snapshotRepository>
   </distributionManagement>
+
+  <pluginRepositories>
+    <pluginRepository>
+      <id>public</id>
+      <url>http://maven.nuxeo.org/nexus/content/groups/public</url>
+      <name>Nuxeo virtual release repository</name>
+      <releases>
+        <enabled>true</enabled>
+      </releases>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
+    </pluginRepository>
+    <pluginRepository>
+      <id>public-snapshot</id>
+      <url>http://maven.nuxeo.org/nexus/content/groups/public-snapshot</url>
+      <name>Nuxeo virtual snapshot repository</name>
+      <releases>
+        <enabled>false</enabled>
+      </releases>
+      <snapshots>
+        <updatePolicy>always</updatePolicy>
+        <enabled>true</enabled>
+      </snapshots>
+    </pluginRepository>
+  </pluginRepositories>
 
 </project>
