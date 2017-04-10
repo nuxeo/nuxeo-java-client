@@ -19,6 +19,7 @@
  */
 package org.nuxeo.client;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
@@ -45,6 +46,7 @@ import org.nuxeo.client.objects.RecordSet;
 import org.nuxeo.client.objects.Repository;
 import org.nuxeo.client.objects.blob.Blobs;
 import org.nuxeo.client.objects.blob.FileBlob;
+import org.nuxeo.client.objects.config.ConfigManager;
 import org.nuxeo.client.objects.directory.DirectoryManager;
 import org.nuxeo.client.objects.task.TaskManager;
 import org.nuxeo.client.objects.upload.BatchUploadManager;
@@ -267,6 +269,10 @@ public class NuxeoClient {
         return new BatchUploadManager(this);
     }
 
+    public ConfigManager configManager() {
+        return new ConfigManager(this);
+    }
+
     /*******************************
      * HTTP Services *
      ******************************/
@@ -402,15 +408,28 @@ public class NuxeoClient {
                     }
                 }
             }
-            String contentDisposition = headers.get("Content-Disposition");
-            if (body instanceof FileBlob && contentDisposition != null) {
-                String filename = contentDisposition.replaceFirst(".*filename\\*?=(UTF-8'')?(.*)", "$2");
-                try {
-                    filename = URLDecoder.decode(filename, "UTF-8");
-                } catch (UnsupportedEncodingException e) {
-                    // May not happen
+            if (body instanceof FileBlob) {
+                FileBlob fbody = (FileBlob) body;
+
+                String filename = null;
+                String contentDisposition = headers.get("Content-Disposition");
+                if (contentDisposition != null) {
+                    filename = contentDisposition.replaceFirst(".*filename\\*?=(UTF-8'')?(.*)", "$2");
+                    try {
+                        filename = URLDecoder.decode(filename, "UTF-8");
+                    } catch (UnsupportedEncodingException e) {
+                        // May not happen
+                    }
                 }
-                FileBlob fileBlob = new FileBlob(filename, ((FileBlob) body).getFile())
+                if (filename == null) {
+                    filename = fbody.getFilename();
+                }
+
+                String mimeType = headers.get("Content-Type");
+                if (mimeType == null) {
+                    mimeType = MediaTypes.APPLICATION_OCTET_STREAM_S;
+                }
+                FileBlob fileBlob = new FileBlob(filename, mimeType, fbody.getFile());
                 return retrofit2.Response.success((T) fileBlob, response.raw());
             }
             // No need to wrap the response
