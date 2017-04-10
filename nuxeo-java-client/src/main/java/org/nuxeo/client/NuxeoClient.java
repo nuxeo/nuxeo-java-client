@@ -73,8 +73,6 @@ public class NuxeoClient {
 
     protected final OkHttpClient.Builder okhttpBuilder;
 
-    protected final Repository repository;
-
     protected final Operation automation;
 
     protected final BatchUpload batchUpload;
@@ -113,7 +111,6 @@ public class NuxeoClient {
         retrofit();
         // nuxeo builders
         automation = new Operation(this);
-        repository = new Repository(this);
         userManager = new UserManager(this);
         directoryManager = new DirectoryManager(this);
         batchUpload = new BatchUpload(this);
@@ -260,7 +257,11 @@ public class NuxeoClient {
      * @return A repository service linked to `default` repository in Nuxeo.
      */
     public Repository repository() {
-        return repository;
+        return new Repository(this);
+    }
+
+    public Repository repository(String repositoryName) {
+        return new Repository(this, repositoryName);
     }
 
     public CurrentUser getCurrentUser() {
@@ -270,15 +271,6 @@ public class NuxeoClient {
     public CurrentUser fetchCurrentUser() {
         this.currentUser = new CurrentUser(this);
         return currentUser.getCurrentUser();
-    }
-
-    public Repository repositoryName(String repositoryName) {
-        return repository(repositoryName);
-    }
-
-    public Repository repository(String repositoryName) {
-        repository.repositoryName(repositoryName);
-        return repository;
     }
 
     public Operation automation() {

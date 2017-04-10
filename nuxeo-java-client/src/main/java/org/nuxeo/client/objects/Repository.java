@@ -36,287 +36,418 @@ import retrofit2.Callback;
  */
 public class Repository extends RepositoryEntity<RepositoryAPI> {
 
-    protected Document root;
-
     public Repository(NuxeoClient nuxeoClient) {
         super(EntityTypes.DOCUMENT, RepositoryAPI.class, nuxeoClient);
     }
 
-    public Repository repositoryName(String repositoryName) {
-        super.repositoryName = repositoryName;
-        return this;
+    public Repository(NuxeoClient nuxeoClient, String repositoryName) {
+        this(nuxeoClient);
+        this.repositoryName = repositoryName;
     }
 
-    public Document getDocumentRoot() {
-        return root;
+    public Document fetchDocumentRoot() {
+        if (repositoryName == null) {
+            return fetchResponse(api.fetchDocumentRoot());
+        }
+        return fetchResponse(api.fetchDocumentRoot(repositoryName));
+    }
+
+    public void fetchDocumentRoot(Callback<Document> callback) {
+        if (repositoryName == null) {
+            fetchResponse(api.fetchDocumentRoot(), callback);
+        } else {
+            fetchResponse(api.fetchDocumentRoot(repositoryName), callback);
+        }
     }
 
     /* By Id - Sync */
 
     public Document fetchDocumentById(String documentId) {
-        return (Document) getResponse(documentId);
+        if (repositoryName == null) {
+            return fetchResponse(api.fetchDocumentById(documentId));
+        }
+        return fetchResponse(api.fetchDocumentById(documentId, repositoryName));
     }
 
     public Document createDocumentById(String parentId, Document document) {
-        return (Document) getResponse(parentId, document);
+        if (repositoryName == null) {
+            return fetchResponse(api.createDocumentById(parentId, document));
+        }
+        return fetchResponse(api.createDocumentById(parentId, document, repositoryName));
     }
 
     public Document updateDocument(Document document) {
         document.setProperties(document.getDirtyProperties());
-        return (Document) getResponse(document.getId(), document);
+        if (repositoryName == null) {
+            return fetchResponse(api.updateDocument(document.getId(), document));
+        }
+        return fetchResponse(api.updateDocument(document.getId(), document, repositoryName));
     }
 
     public void deleteDocument(Document document) {
-        getResponse(document.getId());
+        deleteDocument(document.getId());
     }
 
     public void deleteDocument(String docId) {
-        getResponse(docId);
+        if (repositoryName == null) {
+            fetchResponse(api.deleteDocument(docId));
+        } else {
+            fetchResponse(api.deleteDocument(docId, repositoryName));
+        }
     }
 
     /* By Id - Async */
 
     public void fetchDocumentById(String documentId, Callback<Document> callback) {
-        execute(callback, documentId);
+        if (repositoryName == null) {
+            fetchResponse(api.fetchDocumentById(documentId), callback);
+        } else {
+            fetchResponse(api.fetchDocumentById(documentId, repositoryName), callback);
+        }
     }
 
     public void createDocumentById(String parentId, Document document, Callback<Document> callback) {
-        execute(callback, parentId, document);
+        document.setProperties(document.getDirtyProperties());
+        if (repositoryName == null) {
+            fetchResponse(api.createDocumentById(parentId, document), callback);
+        } else {
+            fetchResponse(api.createDocumentById(parentId, document, repositoryName), callback);
+        }
     }
 
     public void updateDocument(Document document, Callback<Document> callback) {
         document.setProperties(document.getDirtyProperties());
-        execute(callback, document.getId(), document);
+        if (repositoryName == null) {
+            fetchResponse(api.updateDocument(document.getId(), document), callback);
+        } else {
+            fetchResponse(api.updateDocument(document.getId(), document, repositoryName), callback);
+        }
     }
 
     public void deleteDocument(Document document, Callback<ResponseBody> callback) {
-        execute(callback, document.getId());
+        if (repositoryName == null) {
+            fetchResponse(api.deleteDocument(document.getId()), callback);
+        } else {
+            fetchResponse(api.deleteDocument(document.getId(), repositoryName), callback);
+        }
     }
 
     /* By Path - Sync */
 
-    public Document fetchDocumentRoot() {
-        root = (Document) getResponse();
-        return root;
-    }
-
     public Document fetchDocumentByPath(String documentPath) {
-        return (Document) getResponse(documentPath);
+        if (repositoryName == null) {
+            return fetchResponse(api.fetchDocumentByPath(documentPath));
+        }
+        return fetchResponse(api.fetchDocumentByPath(documentPath, repositoryName));
     }
 
     public Document createDocumentByPath(String parentPath, Document document) {
-        return (Document) getResponse(parentPath, document);
+        if (repositoryName == null) {
+            return fetchResponse(api.createDocumentByPath(parentPath, document));
+        }
+        return fetchResponse(api.createDocumentByPath(parentPath, document, repositoryName));
     }
 
     /* By Path - Async */
 
-    public void fetchDocumentRoot(Callback<Document> callback) {
-        execute(callback);
-    }
-
     public void fetchDocumentByPath(String documentPath, Callback<Document> callback) {
-        execute(callback, documentPath);
+        if (repositoryName == null) {
+            fetchResponse(api.fetchDocumentByPath(documentPath), callback);
+        } else {
+            fetchResponse(api.fetchDocumentByPath(documentPath, repositoryName), callback);
+        }
     }
 
     public void createDocumentByPath(String parentPath, Document document, Callback<Document> callback) {
-        execute(callback, parentPath, document);
+        if (repositoryName == null) {
+            fetchResponse(api.createDocumentByPath(parentPath, document), callback);
+        } else {
+            fetchResponse(api.createDocumentByPath(parentPath, document, repositoryName), callback);
+        }
     }
 
     /* Query - Sync */
 
     public Documents query(String query) {
-        return (Documents) getResponse(query);
+        return fetchResponse(api.query(query));
     }
 
     public Documents query(String query, String pageSize, String currentPageIndex, String maxResults, String sortBy,
             String sortOrder, String queryParams) {
-        return (Documents) getResponse(query, pageSize, currentPageIndex, maxResults, sortBy, sortOrder, queryParams);
+        return fetchResponse(api.query(query, pageSize, currentPageIndex, maxResults, sortBy, sortOrder, queryParams));
     }
 
     public Documents queryByProvider(String providerName, String pageSize, String currentPageIndex, String maxResults,
             String sortBy, String sortOrder, String queryParams) {
-        return (Documents) getResponse(providerName, pageSize, currentPageIndex, maxResults, sortBy, sortOrder,
-                queryParams);
+        return fetchResponse(api.queryByProvider(providerName, pageSize, currentPageIndex, maxResults, sortBy,
+                sortOrder, queryParams));
     }
 
     /* Query - Async */
 
     public void query(String query, Callback<Documents> callback) {
-        execute(callback, query);
+        fetchResponse(api.query(query), callback);
     }
 
     public void query(String query, String pageSize, String currentPageIndex, String maxResults, String sortBy,
             String sortOrder, String queryParams, Callback<Documents> callback) {
-        execute(callback, query, pageSize, currentPageIndex, maxResults, sortBy, sortOrder, queryParams);
+        fetchResponse(api.query(query, pageSize, currentPageIndex, maxResults, sortBy, sortOrder, queryParams),
+                callback);
     }
 
     public void queryByProvider(String providerName, String pageSize, String currentPageIndex, String maxResults,
             String sortBy, String sortOrder, String queryParams, Callback<Documents> callback) {
-        execute(callback, providerName, pageSize, currentPageIndex, maxResults, sortBy, sortOrder, queryParams);
+        fetchResponse(api.queryByProvider(providerName, pageSize, currentPageIndex, maxResults, sortBy, sortOrder,
+                queryParams), callback);
     }
 
     /* Audit - Sync */
 
     public Audit fetchAuditByPath(String documentPath) {
-        return (Audit) getResponse(documentPath);
+        if (repositoryName == null) {
+            return fetchResponse(api.fetchAuditByPath(documentPath));
+        }
+        return fetchResponse(api.fetchAuditByPath(documentPath, repositoryName));
     }
 
     public Audit fetchAuditById(String documentId) {
-        return (Audit) getResponse(documentId);
+        if (repositoryName == null) {
+            return fetchResponse(api.fetchAuditById(documentId));
+        }
+        return fetchResponse(api.fetchAuditById(documentId, repositoryName));
     }
 
     /* Audit - Async */
 
     public void fetchAuditByPath(String documentPath, Callback<Audit> callback) {
-        execute(callback, documentPath);
+        if (repositoryName == null) {
+            fetchResponse(api.fetchAuditByPath(documentPath), callback);
+        } else {
+            fetchResponse(api.fetchAuditByPath(documentPath, repositoryName), callback);
+        }
     }
 
     public void fetchAuditById(String documentId, Callback<Audit> callback) {
-        execute(callback, documentId);
+        if (repositoryName == null) {
+            fetchResponse(api.fetchAuditById(documentId), callback);
+        } else {
+            fetchResponse(api.fetchAuditById(documentId, repositoryName), callback);
+        }
     }
 
     /* ACP - Sync */
 
     public ACP fetchACPByPath(String documentPath) {
-        return (ACP) getResponse(documentPath);
+        if (repositoryName == null) {
+            return fetchResponse(api.fetchPermissionsByPath(documentPath));
+        }
+        return fetchResponse(api.fetchPermissionsByPath(documentPath, repositoryName));
     }
 
     public ACP fetchACPById(String documentId) {
-        return (ACP) getResponse(documentId);
+        if (repositoryName == null) {
+            return fetchResponse(api.fetchPermissionsById(documentId));
+        }
+        return fetchResponse(api.fetchPermissionsById(documentId, repositoryName));
     }
 
     /* ACP - Async */
 
     public void fetchACPByPath(String documentPath, Callback<ACP> callback) {
-        execute(callback, documentPath);
+        if (repositoryName == null) {
+            fetchResponse(api.fetchPermissionsByPath(documentPath), callback);
+        } else {
+            fetchResponse(api.fetchPermissionsByPath(documentPath, repositoryName), callback);
+        }
     }
 
     public void fetchACPById(String documentId, Callback<ACP> callback) {
-        execute(callback, documentId);
+        if (repositoryName == null) {
+            fetchResponse(api.fetchPermissionsById(documentId), callback);
+        } else {
+            fetchResponse(api.fetchPermissionsById(documentId, repositoryName), callback);
+        }
     }
 
     /* Children - Sync */
 
     public Documents fetchChildrenByPath(String parentPath) {
-        return (Documents) getResponse(parentPath);
+        if (repositoryName == null) {
+            return fetchResponse(api.fetchChildrenByPath(parentPath));
+        }
+        return fetchResponse(api.fetchChildrenByPath(parentPath, repositoryName));
     }
 
     public Documents fetchChildrenById(String parentId) {
-        return (Documents) getResponse(parentId);
+        if (repositoryName == null) {
+            return fetchResponse(api.fetchChildrenById(parentId));
+        }
+        return fetchResponse(api.fetchChildrenById(parentId, repositoryName));
     }
 
     /* Children - Async */
 
     public void fetchChildrenByPath(String parentPath, Callback<Documents> callback) {
-        execute(callback, parentPath);
+        if (repositoryName == null) {
+            fetchResponse(api.fetchChildrenByPath(parentPath), callback);
+        } else {
+            fetchResponse(api.fetchChildrenByPath(parentPath, repositoryName), callback);
+        }
     }
 
     public void fetchChildrenById(String parentId, Callback<Documents> callback) {
-        execute(callback, parentId);
+        if (repositoryName == null) {
+            fetchResponse(api.fetchChildrenById(parentId), callback);
+        } else {
+            fetchResponse(api.fetchChildrenById(parentId, repositoryName), callback);
+        }
     }
 
     /* Blobs - Sync */
 
     public Blob fetchBlobByPath(String documentPath, String fieldPath) {
-        return (Blob) getResponse(documentPath, fieldPath);
+        if (repositoryName == null) {
+            return fetchResponse(api.fetchBlobByPath(documentPath, fieldPath));
+        }
+        return fetchResponse(api.fetchBlobByPath(documentPath, fieldPath, repositoryName));
     }
 
     public Blob fetchBlobById(String documentId, String fieldPath) {
-        return (Blob) getResponse(documentId, fieldPath);
+        if (repositoryName == null) {
+            return fetchResponse(api.fetchBlobById(documentId, fieldPath));
+        }
+        return fetchResponse(api.fetchBlobById(documentId, fieldPath, repositoryName));
     }
 
     /* Blobs - Async */
 
     public void fetchBlobByPath(String documentPath, String fieldPath, Callback<Blob> callback) {
-        execute(callback, documentPath, fieldPath);
+        if (repositoryName == null) {
+            fetchResponse(api.fetchBlobByPath(documentPath, fieldPath), callback);
+        } else {
+            fetchResponse(api.fetchBlobByPath(documentPath, fieldPath, repositoryName), callback);
+        }
     }
 
     public void fetchBlobById(String documentId, String fieldPath, Callback<Blob> callback) {
-        execute(callback, documentId, fieldPath);
+        if (repositoryName == null) {
+            fetchResponse(api.fetchBlobById(documentId, fieldPath), callback);
+        } else {
+            fetchResponse(api.fetchBlobById(documentId, fieldPath, repositoryName), callback);
+        }
     }
 
     /* Workflows - Sync */
 
     public Workflow startWorkflowInstanceWithDocPath(String documentPath, Workflow workflow) {
-        return (Workflow) getResponse(documentPath, workflow);
+        if (repositoryName == null) {
+            return fetchResponse(api.startWorkflowInstanceWithDocPath(documentPath, workflow));
+        }
+        return fetchResponse(api.startWorkflowInstanceWithDocPath(documentPath, workflow, repositoryName));
     }
 
     public Workflow startWorkflowInstanceWithDocId(String documentId, Workflow workflow) {
-        return (Workflow) getResponse(documentId, workflow);
+        if (repositoryName == null) {
+            return fetchResponse(api.startWorkflowInstanceWithDocId(documentId, workflow));
+        }
+        return fetchResponse(api.startWorkflowInstanceWithDocId(documentId, workflow, repositoryName));
     }
 
     public Workflows fetchWorkflowInstancesByDocId(String documentId) {
-        return (Workflows) getResponse(documentId);
+        if (repositoryName == null) {
+            return fetchResponse(api.fetchWorkflowInstances(documentId));
+        }
+        return fetchResponse(api.fetchWorkflowInstances(documentId, repositoryName));
     }
 
     public Workflows fetchWorkflowInstancesByDocPath(String documentPath) {
-        return (Workflows) getResponse(documentPath);
+        if (repositoryName == null) {
+            return fetchResponse(api.fetchWorkflowInstancesByDocPath(documentPath));
+        }
+        return fetchResponse(api.fetchWorkflowInstancesByDocPath(documentPath, repositoryName));
     }
 
     public Workflow fetchWorkflowInstance(String workflowInstanceId) {
-        return (Workflow) getResponse(workflowInstanceId);
+        return fetchResponse(api.fetchWorkflowInstance(workflowInstanceId));
     }
 
     public void cancelWorkflowInstance(String workflowInstanceId) {
-        getResponse(workflowInstanceId);
+        fetchResponse(api.cancelWorkflowInstance(workflowInstanceId));
     }
 
     public Graph fetchWorkflowInstanceGraph(String workflowInstanceId) {
-        return (Graph) getResponse(workflowInstanceId);
+        return fetchResponse(api.fetchWorkflowInstanceGraph(workflowInstanceId));
     }
 
     public Graph fetchWorkflowModelGraph(String workflowModelName) {
-        return (Graph) getResponse(workflowModelName);
+        return fetchResponse(api.fetchWorkflowModelGraph(workflowModelName));
     }
 
     public Workflow fetchWorkflowModel(String workflowModelName) {
-        return (Workflow) getResponse(workflowModelName);
+        return fetchResponse(api.fetchWorkflowModel(workflowModelName));
     }
 
     public Workflows fetchWorkflowModels() {
-        return (Workflows) getResponse();
+        return fetchResponse(api.fetchWorkflowModels());
     }
 
     /* Workflows - Async */
 
     public void startWorkflowInstanceWithDocPath(String documentPath, Workflow workflow, Callback<Workflow> callback) {
-        execute(callback, documentPath, workflow);
+        if (repositoryName == null) {
+            fetchResponse(api.startWorkflowInstanceWithDocPath(documentPath, workflow), callback);
+        } else {
+            fetchResponse(api.startWorkflowInstanceWithDocPath(documentPath, workflow, repositoryName), callback);
+        }
     }
 
     public void startWorkflowInstanceWithDocId(String documentId, Workflow workflow, Callback<Workflow> callback) {
-        execute(callback, documentId, workflow);
+        if (repositoryName == null) {
+            fetchResponse(api.startWorkflowInstanceWithDocId(documentId, workflow), callback);
+        } else {
+            fetchResponse(api.startWorkflowInstanceWithDocId(documentId, workflow, repositoryName), callback);
+        }
     }
 
-    public void fetchWorkflowInstancesByDocId(String documentId, Callback<Workflow> callback) {
-        execute(callback, documentId);
+    public void fetchWorkflowInstancesByDocId(String documentId, Callback<Workflows> callback) {
+        if (repositoryName == null) {
+            fetchResponse(api.fetchWorkflowInstances(documentId), callback);
+        } else {
+            fetchResponse(api.fetchWorkflowInstances(documentId, repositoryName), callback);
+        }
     }
 
-    public void fetchWorkflowInstancesByDocPath(String documentPath, Callback<Workflow> callback) {
-        execute(callback, documentPath);
+    public void fetchWorkflowInstancesByDocPath(String documentPath, Callback<Workflows> callback) {
+        if (repositoryName == null) {
+            fetchResponse(api.fetchWorkflowInstancesByDocPath(documentPath), callback);
+        } else {
+            fetchResponse(api.fetchWorkflowInstancesByDocPath(documentPath, repositoryName), callback);
+        }
     }
 
     public void fetchWorkflowInstance(String workflowInstanceId, Callback<Workflow> callback) {
-        execute(callback, workflowInstanceId);
+        fetchResponse(api.fetchWorkflowInstance(workflowInstanceId), callback);
     }
 
     public void deleteWorkflowInstance(String workflowInstanceId, Callback<ResponseBody> callback) {
-        execute(callback, workflowInstanceId);
+        // TODO DOES IT WORK ?
+        // execute(callback, workflowInstanceId);
     }
 
     public void fetchWorkflowInstanceGraph(String workflowInstanceId, Callback<Graph> callback) {
-        execute(callback, workflowInstanceId);
+        fetchResponse(api.fetchWorkflowInstanceGraph(workflowInstanceId), callback);
     }
 
     public void fetchWorkflowModelGraph(String workflowModelName, Callback<Graph> callback) {
-        execute(callback, workflowModelName);
+        fetchResponse(api.fetchWorkflowModelGraph(workflowModelName), callback);
     }
 
     public void fetchWorkflowModel(String workflowModelName, Callback<Workflow> callback) {
-        execute(callback, workflowModelName);
+        fetchResponse(api.fetchWorkflowModel(workflowModelName), callback);
     }
 
     public void fetchWorkflowModels(Callback<Workflows> callback) {
-        execute(callback);
+        fetchResponse(api.fetchWorkflowModels(), callback);
     }
 
 }
