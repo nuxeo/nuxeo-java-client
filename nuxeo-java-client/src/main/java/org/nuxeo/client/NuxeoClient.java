@@ -33,7 +33,6 @@ import java.util.regex.Pattern;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.util.Strings;
 import org.nuxeo.client.cache.NuxeoResponseCache;
-import org.nuxeo.client.cache.ResultCacheInMemory;
 import org.nuxeo.client.marshaller.NuxeoConverterFactory;
 import org.nuxeo.client.objects.Connectable;
 import org.nuxeo.client.objects.Document;
@@ -42,8 +41,8 @@ import org.nuxeo.client.objects.EntityTypes;
 import org.nuxeo.client.objects.Operation;
 import org.nuxeo.client.objects.RecordSet;
 import org.nuxeo.client.objects.Repository;
-import org.nuxeo.client.objects.blob.Blobs;
 import org.nuxeo.client.objects.blob.Blob;
+import org.nuxeo.client.objects.blob.Blobs;
 import org.nuxeo.client.objects.directory.DirectoryManager;
 import org.nuxeo.client.objects.task.TaskManager;
 import org.nuxeo.client.objects.upload.BatchUpload;
@@ -112,11 +111,6 @@ public class NuxeoClient {
         directoryManager = new DirectoryManager(this);
         batchUpload = new BatchUpload(this);
         taskManager = new TaskManager(this);
-    }
-
-    public NuxeoClient enableDefaultCache() {
-        nuxeoCache = new ResultCacheInMemory();
-        return this;
     }
 
     /*******************************
@@ -349,18 +343,11 @@ public class NuxeoClient {
     }
 
     public <T> T fetchResponse(Call<T> call) {
-        // TODO hardcoded for now - check if it's useful, we might want to refresh cache through client
-        boolean refreshCache = false;
         if (isCacheEnabled()) {
-            if (refreshCache) {
-                refreshCache = false;
-                nuxeoCache.invalidateAll();
-            } else {
-                String cacheKey = computeCacheKey(call);
-                T result = (T) nuxeoCache.getBody(cacheKey);
-                if (result != null) {
-                    return result;
-                }
+            String cacheKey = computeCacheKey(call);
+            T result = nuxeoCache.getBody(cacheKey);
+            if (result != null) {
+                return result;
             }
         }
         try {
