@@ -180,7 +180,6 @@ public class TestOperation extends TestBase {
         result = nuxeoClient.automation().input(doc).param("properties", null).execute("Document.Update");
         assertNotNull(result);
         DocRefs docRefs = new DocRefs();
-        docRefs.addDoc(doc);
         result = nuxeoClient.automation().input(docRefs).param("properties", null).execute("Document.Update");
         assertNotNull(result);
     }

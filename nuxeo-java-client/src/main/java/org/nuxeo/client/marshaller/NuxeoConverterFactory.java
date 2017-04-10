@@ -29,7 +29,6 @@ import org.nuxeo.client.spi.NuxeoClientException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.ObjectWriter;
 
 import okhttp3.RequestBody;
 import okhttp3.ResponseBody;
@@ -49,9 +48,9 @@ public class NuxeoConverterFactory extends Converter.Factory {
 
     public static NuxeoConverterFactory create() {
         // TODO JAVACLIENT-21
-        ObjectMapper objectMapper = new ObjectMapper();
-        objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-        return create(objectMapper);
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+        return create(mapper);
     }
 
     public static NuxeoConverterFactory create(ObjectMapper mapper) {
@@ -68,8 +67,7 @@ public class NuxeoConverterFactory extends Converter.Factory {
     public Converter<?, RequestBody> requestBodyConverter(Type type, Annotation[] parameterAnnotations,
             Annotation[] methodAnnotations, Retrofit retrofit) {
         JavaType javaType = mapper.getTypeFactory().constructType(type);
-        ObjectWriter writer = mapper.writerFor(javaType);
-        return new NuxeoRequestConverterFactory<>(writer, mapper, javaType);
+        return new NuxeoRequestConverterFactory<>(mapper, javaType);
     }
 
     /**

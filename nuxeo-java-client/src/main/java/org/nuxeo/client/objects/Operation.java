@@ -20,7 +20,7 @@
 package org.nuxeo.client.objects;
 
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -30,12 +30,14 @@ import org.nuxeo.client.objects.blob.Blob;
 import org.nuxeo.client.objects.blob.Blobs;
 import org.nuxeo.client.objects.operation.OperationBody;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
+import okhttp3.MultipartBody.Part;
 import okhttp3.RequestBody;
+import retrofit2.Call;
 import retrofit2.Callback;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
 
 /**
  * @since 0.1
@@ -51,18 +53,17 @@ public class Operation extends ConnectableEntity<OperationAPI> {
 
     protected String operationId;
 
-    public Operation(NuxeoClient nuxeoClient) {
+    /**
+     * For deserialization purpose
+     */
+    protected Operation() {
+        super(EntityTypes.OPERATION, OperationAPI.class);
+    }
+
+    public Operation(NuxeoClient nuxeoClient, String operationId) {
         super(EntityTypes.OPERATION, OperationAPI.class, nuxeoClient);
-        body = new OperationBody();
-    }
-
-    public void setOperationId(String operationId) {
+        this.body = new OperationBody();
         this.operationId = operationId;
-    }
-
-    public Operation newRequest(String operationId) {
-        this.operationId = operationId;
-        return this;
     }
 
     public Operation input(Object input) {
@@ -100,14 +101,26 @@ public class Operation extends ConnectableEntity<OperationAPI> {
 
     /** Operation Execution Methods Sync **/
 
-    public <T> T execute(String operationId, OperationBody body) {
+    @SuppressWarnings("unchecked")
+    public <T> T execute() {
+        return (T) fetchResponse(getCallToExecute());
+    }
+
+    /** Operation Execution Methods Async **/
+
+    @SuppressWarnings("unchecked")
+    public void execute(Callback<?> callback) {
+        fetchResponse(getCallToExecute(), (Callback<Object>) callback);
+    }
+
+    protected Call<Object> getCallToExecute() {
         Object input = body.getInput();
         if (input instanceof Blob) { // If input is blob or blobs -> use multipart
-            List<MultipartBody.Part> filePart = new ArrayList<>();
+            Blob blob = (Blob) input;
             RequestBody fbody = RequestBody.create(MediaType.parse(((Blob) input).getMimeType()),
                     ((Blob) input).getFile());
-            filePart.add(MultipartBody.Part.createFormData(INPUT_PART, ((Blob) input).getFileName(), fbody));
-            return (T) getResponse(operationId, body, filePart);
+            Part formData = Part.createFormData(INPUT_PART, blob.getFileName(), fbody);
+            return api.execute(operationId, body, Collections.singletonList(formData));
         } else if (input instanceof Blobs) { // If input is blob or blobs -> use multipart
             List<MultipartBody.Part> fileParts = new ArrayList<>();
             for (int i = 0; i < ((Blobs) input).size(); i++) {
@@ -116,58 +129,10 @@ public class Operation extends ConnectableEntity<OperationAPI> {
                 fileParts.add(MultipartBody.Part.createFormData(INPUT_PARTS + String.valueOf(i), fileBlob.getFileName(),
                         fbody));
             }
-            return (T) getResponse(operationId, body, fileParts);
+            return api.execute(operationId, body, fileParts);
         } else {
-            return (T) getResponse(operationId, body);
+            return api.execute(operationId, body);
         }
-    }
-
-    public <T> T execute(String operationId) {
-        return execute(operationId, this.body);
-    }
-
-    public <T> T execute(String batchId, String fileIdx, String operationId, OperationBody body) {
-        return (T) getResponse(batchId, fileIdx, operationId, body);
-    }
-
-    public <T> T execute() {
-        return execute(this.operationId, this.body);
-    }
-
-    /** Operation Execution Methods Async **/
-
-    public void execute(String operationId, OperationBody body, Callback<Object> callback) {
-        Object input = body.getInput();
-        if (input instanceof Blob) { // If input is blob or blobs -> use multipart
-            Map<String, RequestBody> fbodys = new HashMap<>();
-            RequestBody fbody = RequestBody.create(MediaType.parse(((Blob) input).getMimeType()),
-                    ((Blob) input).getFile());
-            fbodys.put(INPUT_PART, fbody);
-            super.execute(callback, operationId, body, fbodys);
-        } else if (input instanceof Blobs) { // If input is blob or blobs -> use multipart
-            Map<String, RequestBody> fbodys = new HashMap<>();
-            for (int i = 0; i < ((Blobs) input).size(); i++) {
-                Blob fileBlob = ((Blobs) input).getBlobs().get(i);
-                RequestBody fbody = RequestBody.create(MediaType.parse(fileBlob.getMimeType()), fileBlob.getFile());
-                fbodys.put(INPUT_PARTS + String.valueOf(i), fbody);
-            }
-            super.execute(callback, operationId, body, fbodys);
-        } else {
-            super.execute(callback, operationId, body);
-        }
-    }
-
-    public void execute(String operationId, Callback<Object> callback) {
-        this.execute(operationId, this.body, callback);
-    }
-
-    public void execute(String batchId, String fileIdx, String operationId, OperationBody body,
-            Callback<Object> callback) {
-        execute(callback, batchId, fileIdx, operationId, body);
-    }
-
-    public void execute(Callback<Object> callback) {
-        this.execute(this.operationId, this.body, callback);
     }
 
 }

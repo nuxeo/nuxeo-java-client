@@ -20,31 +20,26 @@
 package org.nuxeo.client.objects.operation;
 
 import java.util.ArrayList;
-import java.util.List;
+import java.util.Collection;
 
 /**
  * @since 0.1
  */
-public class DocRefs {
+public class DocRefs extends ArrayList<String> {
 
-    protected final List<DocRef> docs = new ArrayList<>();
-
-    public void addDoc(DocRef doc) {
-        docs.add(doc);
+    public DocRefs(int initialCapacity) {
+        super(initialCapacity);
     }
 
-    @Override
-    public String toString() {
-        StringBuilder buf = new StringBuilder("");
-        int size = docs.size();
-        if (size == 0) {
-            return buf.toString();
-        }
-        buf.append(docs.get(0).doc);
-        for (int i = 1; i < size; i++) {
-            buf.append(",").append(docs.get(i).doc);
-        }
-        return buf.toString();
+    public DocRefs() {
+    }
+
+    public DocRefs(Collection<? extends String> c) {
+        super(c);
+    }
+
+    public boolean add(DocRef docRef) {
+        return add(docRef.getDoc());
     }
 
 }

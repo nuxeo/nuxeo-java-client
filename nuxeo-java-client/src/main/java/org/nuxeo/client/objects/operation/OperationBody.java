@@ -22,7 +22,13 @@ package org.nuxeo.client.objects.operation;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.nuxeo.client.marshaller.OperationInputSerializer;
+import org.nuxeo.client.objects.blob.Blob;
+import org.nuxeo.client.objects.blob.Blobs;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 /**
  * @since 0.1
@@ -35,6 +41,7 @@ public class OperationBody {
     @JsonProperty("context")
     protected Map<String, Object> context;
 
+    @JsonIgnore
     protected Object input;
 
     public OperationBody() {
@@ -43,15 +50,25 @@ public class OperationBody {
         this.input = null;
     }
 
+    /**
+     * @return input needed to execute the request (ie: remove blob from input serialization)
+     */
+    @JsonProperty("input")
+    @JsonSerialize(using = OperationInputSerializer.class)
+    public Object input() {
+        if (input instanceof Blob || input instanceof Blobs) {
+            return null;
+        }
+        return input;
+    }
+
+    @JsonIgnore
     public Object getInput() {
         return input;
     }
 
     public void setInput(Object input) {
         this.input = input;
-        if (input instanceof DocRef || input instanceof DocRefs) {
-            this.input = input.toString();
-        }
     }
 
     public Map<String, Object> getContext() {

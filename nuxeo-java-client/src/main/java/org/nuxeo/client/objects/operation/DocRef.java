@@ -39,7 +39,7 @@ public class DocRef {
     }
 
     public String toString() {
-        return "doc:" + doc;
+        return doc;
     }
 
 }

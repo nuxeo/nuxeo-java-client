@@ -73,8 +73,6 @@ public class NuxeoClient {
 
     protected final OkHttpClient.Builder okhttpBuilder;
 
-    protected final Operation automation;
-
     protected final BatchUpload batchUpload;
 
     protected final UserManager userManager;
@@ -110,7 +108,6 @@ public class NuxeoClient {
         // client builder
         retrofit();
         // nuxeo builders
-        automation = new Operation(this);
         userManager = new UserManager(this);
         directoryManager = new DirectoryManager(this);
         batchUpload = new BatchUpload(this);
@@ -272,14 +269,8 @@ public class NuxeoClient {
         this.currentUser = new CurrentUser(this);
         return currentUser.getCurrentUser();
     }
-
-    public Operation automation() {
-        return automation;
-    }
-
     public Operation automation(String operationId) {
-        automation.setOperationId(operationId);
-        return automation;
+        return new Operation(this, operationId);
     }
 
     public UserManager getUserManager() {
