@@ -22,7 +22,7 @@ package org.nuxeo.client.methods;
 import java.util.List;
 
 import org.nuxeo.client.HttpHeaders;
-import org.nuxeo.client.objects.upload.BatchFile;
+import org.nuxeo.client.objects.operation.OperationBody;
 import org.nuxeo.client.objects.upload.BatchUpload;
 
 import okhttp3.RequestBody;
@@ -45,13 +45,17 @@ public interface BatchUploadAPI {
     Call<BatchUpload> createBatch();
 
     @GET("upload/{batchId}")
-    Call<List<BatchFile>> fetchBatchFiles(@Path("batchId") String batchId);
+    Call<List<BatchUpload>> fetchBatchUploads(@Path("batchId") String batchId);
 
     @GET("upload/{batchId}/{fileIdx}")
-    Call<BatchFile> fetchBatchFile(@Path("batchId") String batchId, @Path("fileIdx") String fileIdx);
+    Call<BatchUpload> fetchBatchUpload(@Path("batchId") String batchId, @Path("fileIdx") String fileIdx);
 
     @DELETE("upload/{batchId}")
     Call<ResponseBody> cancel(@Path("batchId") String batchId);
+
+    @POST("upload/{batchId}/{fileIdx}/execute/{operationId}")
+    Call<Object> execute(@Path("batchId") String batchId, @Path("fileIdx") String fileIdx,
+            @Path("operationId") String operationId, @Body OperationBody body);
 
     @Headers(HttpHeaders.CONTENT_TYPE_APPLICATION_OCTET_STREAM)
     @POST("upload/{batchId}/{fileIdx}")

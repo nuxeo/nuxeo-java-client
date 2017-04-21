@@ -45,7 +45,7 @@ import org.nuxeo.client.objects.blob.Blob;
 import org.nuxeo.client.objects.blob.Blobs;
 import org.nuxeo.client.objects.directory.DirectoryManager;
 import org.nuxeo.client.objects.task.TaskManager;
-import org.nuxeo.client.objects.upload.BatchUpload;
+import org.nuxeo.client.objects.upload.BatchUploadManager;
 import org.nuxeo.client.objects.user.CurrentUser;
 import org.nuxeo.client.objects.user.UserManager;
 import org.nuxeo.client.spi.NuxeoClientException;
@@ -71,8 +71,6 @@ public class NuxeoClient {
     public static final Pattern CMIS_PRODUCT_VERSION_PATTERN = Pattern.compile("\"productVersion\":\"(.*?)\"");
 
     protected final OkHttpClient.Builder okhttpBuilder;
-
-    protected final BatchUpload batchUpload;
 
     protected final UserManager userManager;
 
@@ -109,7 +107,6 @@ public class NuxeoClient {
         // nuxeo builders
         userManager = new UserManager(this);
         directoryManager = new DirectoryManager(this);
-        batchUpload = new BatchUpload(this);
         taskManager = new TaskManager(this);
     }
 
@@ -277,6 +274,10 @@ public class NuxeoClient {
         return taskManager;
     }
 
+    public BatchUploadManager batchUploadManager() {
+        return new BatchUploadManager(this);
+    }
+
     /*******************************
      * HTTP Services *
      ******************************/
@@ -312,14 +313,6 @@ public class NuxeoClient {
         } catch (IOException e) {
             throw new NuxeoClientException(e);
         }
-    }
-
-    public BatchUpload fetchUploadManager() {
-        return batchUpload.createBatch();
-    }
-
-    public BatchUpload batchUpload() {
-        return batchUpload;
     }
 
     /**
