@@ -22,6 +22,8 @@ package org.nuxeo.client.objects.directory;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.nuxeo.client.NuxeoClient;
+import org.nuxeo.client.objects.Connectable;
 import org.nuxeo.client.objects.Entity;
 import org.nuxeo.client.objects.EntityTypes;
 
@@ -30,7 +32,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 /**
  * @since 0.1
  */
-public class Directory extends Entity {
+public class Directory extends Entity implements Connectable {
 
     @JsonProperty("entries")
     protected List<DirectoryEntry> directoryEntries = new ArrayList<>();
@@ -49,6 +51,26 @@ public class Directory extends Entity {
 
     public void addDirectoryEntry(DirectoryEntry directoryEntry) {
         this.directoryEntries.add(directoryEntry);
+    }
+
+    public DirectoryEntry getDirectoryEntry(String id) {
+        for (DirectoryEntry directoryEntry : directoryEntries) {
+            if (directoryEntry.getProperties().getId().equals(id)) {
+                return directoryEntry;
+            }
+        }
+        return null;
+    }
+
+    public DirectoryEntry getDirectoryEntry(int index) {
+        return directoryEntries.get(index);
+    }
+
+    @Override
+    public void reconnectWith(NuxeoClient nuxeoClient) {
+        for (DirectoryEntry directoryEntry : directoryEntries) {
+            directoryEntry.reconnectWith(nuxeoClient);
+        }
     }
 
 }

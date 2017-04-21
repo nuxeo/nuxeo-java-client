@@ -19,6 +19,8 @@
  */
 package org.nuxeo.client.objects.directory;
 
+import java.util.Objects;
+
 import org.nuxeo.client.NuxeoClient;
 import org.nuxeo.client.methods.DirectoryManagerAPI;
 import org.nuxeo.client.objects.AbstractConnectable;
@@ -42,13 +44,27 @@ public class DirectoryManager extends AbstractConnectable<DirectoryManagerAPI> {
                 api.fetchDirectory(directoryName, currentPageIndex, pageSize, maxResults, sortBy, sortOrder));
     }
 
-    public DirectoryEntry createDirectoryEntry(String directoryName, DirectoryEntry directoryEntry) {
+    public DirectoryEntry createDirectoryEntry(DirectoryEntry directoryEntry) {
+        String directoryName = directoryEntry.getDirectoryName();
+        Objects.requireNonNull(directoryName, "You have to give the directory name to your entry.");
         return fetchResponse(api.createDirectoryEntry(directoryName, directoryEntry));
     }
 
-    public DirectoryEntry updateDirectoryEntry(String directoryName, String directoryEntryId,
-            DirectoryEntry directoryEntry) {
-        return fetchResponse(api.updateDirectoryEntry(directoryName, directoryEntryId, directoryEntry));
+    public DirectoryEntry updateDirectoryEntry(DirectoryEntry directoryEntry) {
+        String directoryName = directoryEntry.getDirectoryName();
+        String entryId = directoryEntry.getIdProperty();
+        Objects.requireNonNull(directoryName, "You have to give the directory name to your entry.");
+        Objects.requireNonNull(entryId, "You have to give the entry id to your entry.");
+        return fetchResponse(
+                api.updateDirectoryEntry(directoryName, entryId, directoryEntry));
+    }
+
+    public void deleteDirectoryEntry(DirectoryEntry directoryEntry) {
+        String directoryName = directoryEntry.getDirectoryName();
+        String entryId = directoryEntry.getIdProperty();
+        Objects.requireNonNull(directoryName, "You have to give the directory name to your entry.");
+        Objects.requireNonNull(entryId, "You have to give the entry id to your entry.");
+        deleteDirectoryEntry(directoryName, entryId);
     }
 
     public void deleteDirectoryEntry(String directoryName, String directoryEntryId) {
