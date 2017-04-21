@@ -21,115 +21,20 @@ package org.nuxeo.client.objects.user;
 
 import java.util.List;
 
-import org.nuxeo.client.objects.Entity;
 import org.nuxeo.client.objects.EntityTypes;
-
-import com.fasterxml.jackson.annotation.JsonProperty;
+import org.nuxeo.client.objects.PaginableEntity;
 
 /**
  * @since 0.1
  */
-public class Users extends Entity {
-
-    @JsonProperty("entries")
-    protected List<User> users;
-
-    protected Boolean isPaginable;
-
-    protected int resultsCount;
-
-    protected int pageSize;
-
-    protected int maxPageSize;
-
-    protected int currentPageSize;
-
-    protected int currentPageIndex;
-
-    protected int numberOfPages;
-
-    protected Boolean isPreviousPageAvailable;
-
-    protected Boolean isNextPageAvailable;
-
-    protected Boolean isLastPageAvailable;
-
-    protected Boolean isSortable;
-
-    protected Boolean hasError;
-
-    protected String errorMessage;
-
-    protected int pageIndex;
-
-    protected int pageCount;
+public class Users extends PaginableEntity<User> {
 
     public Users() {
         super(EntityTypes.USERS);
     }
 
     public List<User> getUsers() {
-        return users;
-    }
-
-    public Boolean getIsPaginable() {
-        return isPaginable;
-    }
-
-    public int getResultsCount() {
-        return resultsCount;
-    }
-
-    public int getPageSize() {
-        return pageSize;
-    }
-
-    public int getMaxPageSize() {
-        return maxPageSize;
-    }
-
-    public int getCurrentPageSize() {
-        return currentPageSize;
-    }
-
-    public int getCurrentPageIndex() {
-        return currentPageIndex;
-    }
-
-    public int getNumberOfPages() {
-        return numberOfPages;
-    }
-
-    public Boolean getIsPreviousPageAvailable() {
-        return isPreviousPageAvailable;
-    }
-
-    public Boolean getIsNextPageAvailable() {
-        return isNextPageAvailable;
-    }
-
-    public Boolean getIsLastPageAvailable() {
-        return isLastPageAvailable;
-    }
-
-    public Boolean getIsSortable() {
-        return isSortable;
-    }
-
-    public Boolean getHasError() {
-        return hasError;
-    }
-
-    public String getErrorMessage() {
-        return errorMessage;
-    }
-
-    public int getPageIndex() {
-        return pageIndex;
-    }
-
-    public int getPageCount() {
-        return pageCount;
+        return getEntries();
     }
 
 }

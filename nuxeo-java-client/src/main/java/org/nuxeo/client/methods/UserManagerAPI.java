@@ -23,6 +23,8 @@ import org.nuxeo.client.objects.user.Group;
 import org.nuxeo.client.objects.user.Groups;
 import org.nuxeo.client.objects.user.User;
 import org.nuxeo.client.objects.user.Users;
+import org.nuxeo.client.objects.workflow.Workflow;
+import org.nuxeo.client.objects.workflow.Workflows;
 
 import okhttp3.ResponseBody;
 import retrofit2.Call;
@@ -38,6 +40,10 @@ import retrofit2.http.Query;
  * @since 0.1
  */
 public interface UserManagerAPI {
+
+    // ----------
+    // Group APIs
+    // ----------
 
     @GET("group/{groupName}")
     Call<Group> fetchGroup(@Path("groupName") String groupName);
@@ -59,7 +65,11 @@ public interface UserManagerAPI {
             @Query("pageSize") int pageSize);
 
     @POST("group/{groupName}/user/{userName}")
-    Call<User> addUserToGroup(@Path("groupName") String groupName, @Path("userName") String userName);
+    Call<User> attachGroupToUser(@Path("groupName") String groupName, @Path("userName") String userName);
+
+    // ---------
+    // User APIs
+    // ---------
 
     @GET("user/{userName}")
     Call<User> fetchUser(@Path("userName") String userName);
@@ -81,6 +91,19 @@ public interface UserManagerAPI {
             @Query("pageSize") int pageSize);
 
     @POST("user/{userName}/group/{groupName}")
-    Call<User> attachGroupToUser(@Path("userName") String userName, @Path("groupName") String groupName);
+    Call<User> addUserToGroup(@Path("userName") String userName, @Path("groupName") String groupName);
+
+    // -----------------
+    // Current user APIs
+    // -----------------
+
+    @POST("automation/login")
+    Call<User> fetchCurrentUser();
+
+    @GET("workflow")
+    Call<Workflows> fetchWorkflowInstances();
+
+    @POST("workflow")
+    Call<Workflow> startWorkflowInstance(@Body Workflow workflow);
 
 }

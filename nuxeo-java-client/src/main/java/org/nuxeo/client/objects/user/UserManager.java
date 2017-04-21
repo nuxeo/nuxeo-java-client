@@ -22,6 +22,8 @@ package org.nuxeo.client.objects.user;
 import org.nuxeo.client.NuxeoClient;
 import org.nuxeo.client.methods.UserManagerAPI;
 import org.nuxeo.client.objects.AbstractConnectable;
+import org.nuxeo.client.objects.workflow.Workflow;
+import org.nuxeo.client.objects.workflow.Workflows;
 
 import okhttp3.ResponseBody;
 import retrofit2.Callback;
@@ -62,11 +64,29 @@ public class UserManager extends AbstractConnectable<UserManagerAPI> {
     }
 
     public Groups searchGroup(String query, int currentPageIndex, int pageSize) {
-        return (Groups) getResponse(query, currentPageIndex, pageSize);
+        return fetchResponse(api.searchGroup(query, currentPageIndex, pageSize));
     }
 
     public User addUserToGroup(String userName, String groupName) {
         return fetchResponse(api.addUserToGroup(userName, groupName));
+    }
+
+    public User fetchCurrentUser() {
+        return fetchResponse(api.fetchCurrentUser());
+    }
+
+    /**
+     * Fetch workflow instances for current user.
+     */
+    public Workflows fetchWorkflowInstances() {
+        return fetchResponse(api.fetchWorkflowInstances());
+    }
+
+    /**
+     * Start workflow instances for current user.
+     */
+    public Workflow startWorkflowInstance(Workflow workflow) {
+        return fetchResponse(api.startWorkflowInstance(workflow));
     }
 
     public User fetchUser(String userName) {
@@ -94,7 +114,7 @@ public class UserManager extends AbstractConnectable<UserManagerAPI> {
     }
 
     public Users searchUser(String query, int currentPageIndex, int pageSize) {
-        return (Users) getResponse(query, currentPageIndex, pageSize);
+        return fetchResponse(api.searchUser(query, currentPageIndex, pageSize));
     }
 
     public User attachGroupToUser(String groupName, String userName) {
@@ -129,6 +149,24 @@ public class UserManager extends AbstractConnectable<UserManagerAPI> {
 
     public void addUserToGroup(String userName, String groupName, Callback<User> callback) {
         fetchResponse(api.addUserToGroup(userName, groupName), callback);
+    }
+
+    public void fetchCurrentUser(Callback<User> callback) {
+        fetchResponse(api.fetchCurrentUser(), callback);
+    }
+
+    /**
+     * Fetch workflow instances for current user.
+     */
+    public void fetchWorkflowInstances(Callback<Workflows> callback) {
+        fetchResponse(api.fetchWorkflowInstances(), callback);
+    }
+
+    /**
+     * Start workflow instances for current user.
+     */
+    public void startWorkflowInstance(Workflow workflow, Callback<Workflow> callback) {
+        fetchResponse(api.startWorkflowInstance(workflow), callback);
     }
 
     public void fetchUser(String userName, Callback<User> callback) {
