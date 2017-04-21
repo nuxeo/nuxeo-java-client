@@ -46,7 +46,6 @@ import org.nuxeo.client.objects.blob.Blobs;
 import org.nuxeo.client.objects.directory.DirectoryManager;
 import org.nuxeo.client.objects.task.TaskManager;
 import org.nuxeo.client.objects.upload.BatchUploadManager;
-import org.nuxeo.client.objects.user.CurrentUser;
 import org.nuxeo.client.objects.user.UserManager;
 import org.nuxeo.client.spi.NuxeoClientException;
 import org.nuxeo.client.spi.auth.BasicAuthInterceptor;
@@ -72,8 +71,6 @@ public class NuxeoClient {
 
     protected final OkHttpClient.Builder okhttpBuilder;
 
-    protected final UserManager userManager;
-
     protected final DirectoryManager directoryManager;
 
     protected final TaskManager taskManager;
@@ -81,8 +78,6 @@ public class NuxeoClient {
     protected final Retrofit.Builder retrofitBuilder;
 
     protected final NuxeoConverterFactory converterFactory;
-
-    protected CurrentUser currentUser;
 
     protected NuxeoResponseCache nuxeoCache;
 
@@ -105,7 +100,6 @@ public class NuxeoClient {
         // client builder
         retrofit();
         // nuxeo builders
-        userManager = new UserManager(this);
         directoryManager = new DirectoryManager(this);
         taskManager = new TaskManager(this);
     }
@@ -250,20 +244,12 @@ public class NuxeoClient {
         return new Repository(this, repositoryName);
     }
 
-    public CurrentUser getCurrentUser() {
-        return currentUser;
-    }
-
-    public CurrentUser fetchCurrentUser() {
-        this.currentUser = new CurrentUser(this);
-        return currentUser.getCurrentUser();
-    }
     public Operation automation(String operationId) {
         return new Operation(this, operationId);
     }
 
-    public UserManager getUserManager() {
-        return userManager;
+    public UserManager userManager() {
+        return new UserManager(this);
     }
 
     public DirectoryManager getDirectoryManager() {
