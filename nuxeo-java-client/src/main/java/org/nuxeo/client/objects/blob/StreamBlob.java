@@ -20,19 +20,33 @@ package org.nuxeo.client.objects.blob;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.Serializable;
+
+import org.nuxeo.client.MediaTypes;
 
 /**
  * @since 3.0
  */
-public interface Blob extends Serializable {
+public class StreamBlob extends AbstractBlob {
 
-    String getFilename();
+    private final InputStream inputStream;
 
-    String getMimeType();
+    public StreamBlob(String fileName, InputStream inputStream) {
+        this(fileName, MediaTypes.APPLICATION_OCTET_STREAM_S, inputStream);
+    }
 
-    int getLength();
+    public StreamBlob(String fileName, String mimeType, InputStream inputStream) {
+        super(fileName, mimeType);
+        this.inputStream = inputStream;
+    }
 
-    InputStream getStream() throws IOException;
+    @Override
+    public int getLength() {
+        return -1;
+    }
+
+    @Override
+    public InputStream getStream() throws IOException {
+        return inputStream;
+    }
 
 }

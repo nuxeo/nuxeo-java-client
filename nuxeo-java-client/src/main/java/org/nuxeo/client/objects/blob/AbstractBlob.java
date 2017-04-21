@@ -18,21 +18,28 @@
  */
 package org.nuxeo.client.objects.blob;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.Serializable;
-
 /**
  * @since 3.0
  */
-public interface Blob extends Serializable {
+public abstract class AbstractBlob implements Blob {
 
-    String getFilename();
+    protected final String filename;
 
-    String getMimeType();
+    protected final String mimeType;
 
-    int getLength();
+    public AbstractBlob(String filename, String mimeType) {
+        this.filename = filename;
+        this.mimeType = mimeType;
+    }
 
-    InputStream getStream() throws IOException;
+    @Override
+    public String getFilename() {
+        return filename;
+    }
+
+    @Override
+    public String getMimeType() {
+        return mimeType;
+    }
 
 }

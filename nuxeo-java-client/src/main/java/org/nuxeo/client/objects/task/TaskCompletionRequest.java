@@ -24,10 +24,20 @@ import java.util.Map;
 import org.nuxeo.client.objects.Entity;
 import org.nuxeo.client.objects.EntityTypes;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 /**
  * @since 1.0
  */
 public class TaskCompletionRequest extends Entity {
+
+    /**
+     * Not design to be used.
+     * <p/>
+     * We need field representing the task id, because nuxeo server needs it in addition to the requested url.
+     */
+    @JsonProperty("id")
+    protected String taskId;
 
     protected String comment;
 

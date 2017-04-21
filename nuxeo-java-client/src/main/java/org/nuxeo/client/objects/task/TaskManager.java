@@ -54,7 +54,7 @@ public class TaskManager extends AbstractConnectable<TaskManagerAPI> {
 
     public Task delegate(String taskId, List<String> actors, String comment) {
         String actorsValue = StringUtils.join(actors, ",");
-        return reassign(taskId, actorsValue, comment);
+        return delegate(taskId, actorsValue, comment);
     }
 
     public Task delegate(String taskId, String actors, String comment) {
@@ -62,6 +62,8 @@ public class TaskManager extends AbstractConnectable<TaskManagerAPI> {
     }
 
     public Task complete(String taskId, String action, TaskCompletionRequest taskCompletionRequest) {
+        // server also expect taskId in the body
+        taskCompletionRequest.taskId = taskId;
         return fetchResponse(api.complete(taskId, action, taskCompletionRequest));
     }
 

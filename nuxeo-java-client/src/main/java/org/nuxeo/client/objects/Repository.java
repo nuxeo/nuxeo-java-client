@@ -23,7 +23,7 @@ import org.nuxeo.client.NuxeoClient;
 import org.nuxeo.client.methods.RepositoryAPI;
 import org.nuxeo.client.objects.acl.ACP;
 import org.nuxeo.client.objects.audit.Audit;
-import org.nuxeo.client.objects.blob.Blob;
+import org.nuxeo.client.objects.blob.FileBlob;
 import org.nuxeo.client.objects.workflow.Graph;
 import org.nuxeo.client.objects.workflow.Workflow;
 import org.nuxeo.client.objects.workflow.Workflows;
@@ -305,14 +305,14 @@ public class Repository extends RepositoryEntity<RepositoryAPI> {
 
     /* Blobs - Sync */
 
-    public Blob fetchBlobByPath(String documentPath, String fieldPath) {
+    public FileBlob fetchBlobByPath(String documentPath, String fieldPath) {
         if (repositoryName == null) {
             return fetchResponse(api.fetchBlobByPath(documentPath, fieldPath));
         }
         return fetchResponse(api.fetchBlobByPath(documentPath, fieldPath, repositoryName));
     }
 
-    public Blob fetchBlobById(String documentId, String fieldPath) {
+    public FileBlob fetchBlobById(String documentId, String fieldPath) {
         if (repositoryName == null) {
             return fetchResponse(api.fetchBlobById(documentId, fieldPath));
         }
@@ -321,7 +321,7 @@ public class Repository extends RepositoryEntity<RepositoryAPI> {
 
     /* Blobs - Async */
 
-    public void fetchBlobByPath(String documentPath, String fieldPath, Callback<Blob> callback) {
+    public void fetchBlobByPath(String documentPath, String fieldPath, Callback<FileBlob> callback) {
         if (repositoryName == null) {
             fetchResponse(api.fetchBlobByPath(documentPath, fieldPath), callback);
         } else {
@@ -329,7 +329,7 @@ public class Repository extends RepositoryEntity<RepositoryAPI> {
         }
     }
 
-    public void fetchBlobById(String documentId, String fieldPath, Callback<Blob> callback) {
+    public void fetchBlobById(String documentId, String fieldPath, Callback<FileBlob> callback) {
         if (repositoryName == null) {
             fetchResponse(api.fetchBlobById(documentId, fieldPath), callback);
         } else {
