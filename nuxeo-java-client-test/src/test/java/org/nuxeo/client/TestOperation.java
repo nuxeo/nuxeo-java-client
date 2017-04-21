@@ -26,7 +26,9 @@ import static org.junit.Assert.fail;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
+import java.io.Serializable;
 import java.util.List;
+import java.util.Map;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -37,11 +39,11 @@ import org.nuxeo.client.objects.Documents;
 import org.nuxeo.client.objects.Operation;
 import org.nuxeo.client.objects.blob.Blob;
 import org.nuxeo.client.objects.blob.Blobs;
+import org.nuxeo.client.objects.directory.DirectoryEntry;
 import org.nuxeo.client.objects.operation.DocRef;
 import org.nuxeo.client.objects.operation.DocRefs;
 import org.nuxeo.client.spi.NuxeoClientException;
 import org.nuxeo.client.objects.CustomJSONObject;
-import org.nuxeo.client.objects.DirectoryExample;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
@@ -186,11 +188,11 @@ public class TestOperation extends TestBase {
 
     @Test
     public void itCanFetchDirectoriesJsonBlob() throws IOException {
-        String result = nuxeoClient.automation().param("directoryName", "continent").execute("Directory.Entries");
-        List<DirectoryExample> directoryExamples = nuxeoClient.getConverterFactory().readJSON(result, List.class,
-                DirectoryExample.class);
+        String result = nuxeoClient.automation("Directory.Entries").param("directoryName", "continent").execute();
+        List<Map<String, Serializable>> directoryExamples = nuxeoClient.getConverterFactory().readJSON(result,
+                List.class, Map.class);
         assertNotNull(directoryExamples);
-        assertEquals("europe", directoryExamples.get(0).getId());
+        assertEquals("europe", directoryExamples.get(0).get(DirectoryEntry.ID_PROPERTY));
     }
 
     @Test

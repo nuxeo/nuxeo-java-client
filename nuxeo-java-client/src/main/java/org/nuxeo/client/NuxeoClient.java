@@ -71,8 +71,6 @@ public class NuxeoClient {
 
     protected final OkHttpClient.Builder okhttpBuilder;
 
-    protected final DirectoryManager directoryManager;
-
     protected final TaskManager taskManager;
 
     protected final Retrofit.Builder retrofitBuilder;
@@ -100,7 +98,6 @@ public class NuxeoClient {
         // client builder
         retrofit();
         // nuxeo builders
-        directoryManager = new DirectoryManager(this);
         taskManager = new TaskManager(this);
     }
 
@@ -252,8 +249,8 @@ public class NuxeoClient {
         return new UserManager(this);
     }
 
-    public DirectoryManager getDirectoryManager() {
-        return directoryManager;
+    public DirectoryManager directoryManager() {
+        return new DirectoryManager(this);
     }
 
     public TaskManager getTaskManager() {

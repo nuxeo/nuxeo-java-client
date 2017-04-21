@@ -120,7 +120,7 @@ public class TestWorkflowAndTask extends TestBase {
     @Test
     public void itCanFetchTaskFromDoc() {
         Task task = fetchAllTasks().get(0);
-        Document target = nuxeoClient.repository().fetchDocumentById(task.getTargetDocumentIds().get(0).get("id"));
+        Document target = nuxeoClient.repository().fetchDocumentById(task.getTargetDocumentIds().get(0));
         task = target.fetchTask();
         assertNotNull(task);
     }

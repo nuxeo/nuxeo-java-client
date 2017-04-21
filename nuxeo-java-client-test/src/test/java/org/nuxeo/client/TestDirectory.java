@@ -21,15 +21,14 @@ package org.nuxeo.client;
 import static junit.framework.TestCase.assertNotNull;
 import static org.junit.Assert.assertEquals;
 
-import java.util.List;
+import java.util.Optional;
 
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.nuxeo.client.api.objects.directory.Directory;
-import org.nuxeo.client.api.objects.directory.DirectoryEntry;
-import org.nuxeo.client.api.objects.directory.DirectoryEntryProperties;
+import org.nuxeo.client.objects.directory.Directory;
+import org.nuxeo.client.objects.directory.DirectoryEntry;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.restapi.test.RestServerFeature;
@@ -56,34 +55,36 @@ public class TestDirectory extends TestBase {
 
     @Test
     public void itCanGetDirectory() {
-        Directory directory = nuxeoClient.getDirectoryManager().fetchDirectory("continent");
+        Directory directory = nuxeoClient.directoryManager().fetchDirectory("continent");
         assertNotNull(directory);
         assertEquals(7, directory.getDirectoryEntries().size());
     }
 
-    //FIXME: JAVACLIENT-110
-    @Ignore
     @Test
-    public void itCanGetDirectoryThroughAutomation() {
-        List<DirectoryEntryProperties> result = nuxeoClient.automation("Directory.Entries")
-                                                           .param("directoryName", "continent")
-                                                           .execute();
-        assertNotNull(result);
-    }
-
-    @Ignore("JAVACLIENT-41")
-    @Test
-    public void itCanUpdateDirectory() {
+    public void itCanCreateUpdateFetchDeleteDirectory() {
+        // Create
         DirectoryEntry entry = new DirectoryEntry();
-        DirectoryEntryProperties directoryEntryProperties = new DirectoryEntryProperties();
-        directoryEntryProperties.setId(("test"));
-        directoryEntryProperties.setLabel("test");
-        directoryEntryProperties.setObsolete(0);
-        directoryEntryProperties.setOrdering(0);
-        entry.setProperties(directoryEntryProperties);
-        DirectoryEntry result = nuxeoClient.getDirectoryManager().createDirectoryEntry("continent", entry);
+        entry.setDirectoryName("continent");
+        entry.putIdProperty(("test"));
+        entry.putLabelProperty("test");
+        entry.putObsoleteProperty(0);
+        entry.putOrderingProperty(0);
+        DirectoryEntry result = nuxeoClient.directoryManager().createDirectoryEntry(entry);
         assertNotNull(result);
         assertEquals("continent", result.getDirectoryName());
+        assertEquals("test", result.getLabelProperty());
+
+        // Update
+        result.putLabelProperty("new update");
+        result = result.update();
+        assertEquals("new update", result.getLabelProperty());
+
+        // Fetch
+        // TODO no fetch in API ??
+        // result = nuxeoClient.directory("continent").
+
+        // Delete
+        nuxeoClient.directoryManager().deleteDirectoryEntry(result);
     }
 
 }

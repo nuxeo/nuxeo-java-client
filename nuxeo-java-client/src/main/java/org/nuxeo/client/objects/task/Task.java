@@ -19,12 +19,17 @@
  */
 package org.nuxeo.client.objects.task;
 
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
 import org.nuxeo.client.objects.Entity;
 import org.nuxeo.client.objects.EntityTypes;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
  * @since 1.0
@@ -51,8 +56,10 @@ public class Task extends Entity {
 
     protected List<String> comments;
 
+    @JsonProperty("targetDocumentIds")
     protected List<Map<String, String>> targetDocumentIds;
 
+    @JsonProperty("actors")
     protected List<Map<String, String>> actors;
 
     protected TaskVariables variables;
@@ -143,20 +150,38 @@ public class Task extends Entity {
         this.comments = comments;
     }
 
-    public List<Map<String, String>> getTargetDocumentIds() {
-        return targetDocumentIds;
+    @JsonIgnore
+    public List<String> getTargetDocumentIds() {
+        List<String> ids = new ArrayList<>(targetDocumentIds.size());
+        for (Map<String, String> targetDocumentId : targetDocumentIds) {
+            ids.add(targetDocumentId.get("id"));
+        }
+        return ids;
     }
 
-    public void setTargetDocumentIds(List<Map<String, String>> targetDocumentIds) {
-        this.targetDocumentIds = targetDocumentIds;
+    @JsonIgnore
+    public void setTargetDocumentIds(List<String> ids) {
+        targetDocumentIds = new ArrayList<>(ids.size());
+        for (String id : ids) {
+            targetDocumentIds.add(Collections.singletonMap("id", id));
+        }
     }
 
-    public List<Map<String, String>> getActors() {
-        return actors;
+    @JsonIgnore
+    public List<String> getActors() {
+        List<String> ids = new ArrayList<>(actors.size());
+        for (Map<String, String> actor : actors) {
+            ids.add(actor.get("id"));
+        }
+        return ids;
     }
 
-    public void setActors(List<Map<String, String>> actors) {
-        this.actors = actors;
+    @JsonIgnore
+    public void setActors(List<String> ids) {
+        actors = new ArrayList<>(ids.size());
+        for (String id : ids) {
+            actors.add(Collections.singletonMap("id", id));
+        }
     }
 
     public TaskVariables getVariables() {

@@ -19,11 +19,15 @@
  */
 package org.nuxeo.client.objects.workflow;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 import org.nuxeo.client.objects.Entity;
 import org.nuxeo.client.objects.EntityTypes;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
  * @since 0.1
@@ -42,6 +46,7 @@ public class Workflow extends Entity {
 
     protected String initiator;
 
+    @JsonProperty("attachedDocumentIds")
     protected List<Map<String, String>> attachedDocumentIds;
 
     protected Map<String, Object> variables;
@@ -76,8 +81,13 @@ public class Workflow extends Entity {
         return initiator;
     }
 
-    public List<Map<String, String>> getAttachedDocumentIds() {
-        return attachedDocumentIds;
+    @JsonIgnore
+    public List<String> getAttachedDocumentIds() {
+        List<String> ids = new ArrayList<>(attachedDocumentIds.size());
+        for (Map<String, String> attachedDocumentId : attachedDocumentIds) {
+            ids.add(attachedDocumentId.get("id"));
+        }
+        return ids;
     }
 
     public Map<String, Object> getVariables() {
