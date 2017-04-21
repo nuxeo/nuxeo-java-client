@@ -19,11 +19,11 @@
  */
 package org.nuxeo.client.objects.task;
 
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.nuxeo.client.objects.Entity;
 import org.nuxeo.client.objects.EntityTypes;
@@ -152,36 +152,22 @@ public class Task extends Entity {
 
     @JsonIgnore
     public List<String> getTargetDocumentIds() {
-        List<String> ids = new ArrayList<>(targetDocumentIds.size());
-        for (Map<String, String> targetDocumentId : targetDocumentIds) {
-            ids.add(targetDocumentId.get("id"));
-        }
-        return ids;
+        return targetDocumentIds.stream().map(target -> target.get("id")).collect(Collectors.toList());
     }
 
     @JsonIgnore
     public void setTargetDocumentIds(List<String> ids) {
-        targetDocumentIds = new ArrayList<>(ids.size());
-        for (String id : ids) {
-            targetDocumentIds.add(Collections.singletonMap("id", id));
-        }
+        targetDocumentIds = ids.stream().map(id -> Collections.singletonMap("id", id)).collect(Collectors.toList());
     }
 
     @JsonIgnore
     public List<String> getActors() {
-        List<String> ids = new ArrayList<>(actors.size());
-        for (Map<String, String> actor : actors) {
-            ids.add(actor.get("id"));
-        }
-        return ids;
+        return actors.stream().map(actor -> actor.get("id")).collect(Collectors.toList());
     }
 
     @JsonIgnore
     public void setActors(List<String> ids) {
-        actors = new ArrayList<>(ids.size());
-        for (String id : ids) {
-            actors.add(Collections.singletonMap("id", id));
-        }
+        actors = ids.stream().map(id -> Collections.singletonMap("id", id)).collect(Collectors.toList());
     }
 
     public TaskVariables getVariables() {

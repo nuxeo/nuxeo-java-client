@@ -41,8 +41,8 @@ import org.nuxeo.client.objects.EntityTypes;
 import org.nuxeo.client.objects.Operation;
 import org.nuxeo.client.objects.RecordSet;
 import org.nuxeo.client.objects.Repository;
-import org.nuxeo.client.objects.blob.Blob;
 import org.nuxeo.client.objects.blob.Blobs;
+import org.nuxeo.client.objects.blob.FileBlob;
 import org.nuxeo.client.objects.directory.DirectoryManager;
 import org.nuxeo.client.objects.task.TaskManager;
 import org.nuxeo.client.objects.upload.BatchUploadManager;
@@ -71,8 +71,6 @@ public class NuxeoClient {
 
     protected final OkHttpClient.Builder okhttpBuilder;
 
-    protected final TaskManager taskManager;
-
     protected final Retrofit.Builder retrofitBuilder;
 
     protected final NuxeoConverterFactory converterFactory;
@@ -97,8 +95,6 @@ public class NuxeoClient {
                                                 .addConverterFactory(converterFactory);
         // client builder
         retrofit();
-        // nuxeo builders
-        taskManager = new TaskManager(this);
     }
 
     /*******************************
@@ -253,8 +249,8 @@ public class NuxeoClient {
         return new DirectoryManager(this);
     }
 
-    public TaskManager getTaskManager() {
-        return taskManager;
+    public TaskManager taskManager() {
+        return new TaskManager(this);
     }
 
     public BatchUploadManager batchUploadManager() {
@@ -397,14 +393,15 @@ public class NuxeoClient {
                 }
             }
             String contentDisposition = headers.get("Content-Disposition");
-            if (body instanceof Blob && contentDisposition != null) {
+            if (body instanceof FileBlob && contentDisposition != null) {
                 String filename = contentDisposition.replaceFirst(".*filename\\*?=(UTF-8'')?(.*)", "$2");
                 try {
                     filename = URLDecoder.decode(filename, "UTF-8");
                 } catch (UnsupportedEncodingException e) {
                     // May not happen
                 }
-                ((Blob) body).setFileName(filename);
+                FileBlob fileBlob = new FileBlob(filename, ((FileBlob) body).getFile())
+                return retrofit2.Response.success((T) fileBlob, response.raw());
             }
             // No need to wrap the response
             return response;

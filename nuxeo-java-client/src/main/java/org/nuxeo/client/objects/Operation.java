@@ -19,6 +19,8 @@
  */
 package org.nuxeo.client.objects;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -36,6 +38,10 @@ import okhttp3.MediaType;
 import okhttp3.MultipartBody;
 import okhttp3.MultipartBody.Part;
 import okhttp3.RequestBody;
+import okhttp3.internal.Util;
+import okio.BufferedSink;
+import okio.Okio;
+import okio.Source;
 import retrofit2.Call;
 import retrofit2.Callback;
 
@@ -106,8 +112,6 @@ public class Operation extends ConnectableEntity<OperationAPI> {
         return (T) fetchResponse(getCallToExecute());
     }
 
-    /** Operation Execution Methods Async **/
-
     @SuppressWarnings("unchecked")
     public void execute(Callback<?> callback) {
         fetchResponse(getCallToExecute(), (Callback<Object>) callback);
@@ -117,16 +121,16 @@ public class Operation extends ConnectableEntity<OperationAPI> {
         Object input = body.getInput();
         if (input instanceof Blob) { // If input is blob or blobs -> use multipart
             Blob blob = (Blob) input;
-            RequestBody fbody = RequestBody.create(MediaType.parse(((Blob) input).getMimeType()),
-                    ((Blob) input).getFile());
-            Part formData = Part.createFormData(INPUT_PART, blob.getFileName(), fbody);
+            RequestBody fbody = create(blob);
+            Part formData = Part.createFormData(INPUT_PART, blob.getFilename(), fbody);
             return api.execute(operationId, body, Collections.singletonList(formData));
         } else if (input instanceof Blobs) { // If input is blob or blobs -> use multipart
+            List<Blob> blobs = ((Blobs) input).getBlobs();
             List<MultipartBody.Part> fileParts = new ArrayList<>();
-            for (int i = 0; i < ((Blobs) input).size(); i++) {
-                Blob fileBlob = ((Blobs) input).getBlobs().get(i);
-                RequestBody fbody = RequestBody.create(MediaType.parse(fileBlob.getMimeType()), fileBlob.getFile());
-                fileParts.add(MultipartBody.Part.createFormData(INPUT_PARTS + String.valueOf(i), fileBlob.getFileName(),
+            for (int i = 0; i < blobs.size(); i++) {
+                Blob blob = blobs.get(i);
+                RequestBody fbody = create(blob);
+                fileParts.add(MultipartBody.Part.createFormData(INPUT_PARTS + String.valueOf(i), blob.getFilename(),
                         fbody));
             }
             return api.execute(operationId, body, fileParts);
@@ -134,4 +138,39 @@ public class Operation extends ConnectableEntity<OperationAPI> {
             return api.execute(operationId, body);
         }
     }
+
+    /**
+     * Returns a new request body that transmits the content of {@link InputStream}.
+     */
+    public static RequestBody create(Blob blob) {
+        if (blob == null) {
+            throw new NullPointerException("content == null");
+        }
+
+        return new RequestBody() {
+
+            @Override
+            public MediaType contentType() {
+                return MediaType.parse(blob.getMimeType());
+            }
+
+            @Override
+            public long contentLength() throws IOException {
+                return blob.getLength();
+            }
+
+            @Override
+            public void writeTo(BufferedSink sink) throws IOException {
+                Source source = null;
+                try {
+                    source = Okio.source(blob.getStream());
+                    sink.writeAll(source);
+                } finally {
+                    Util.closeQuietly(source);
+                }
+            }
+
+        };
+    }
+
 }

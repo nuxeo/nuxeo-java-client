@@ -40,7 +40,7 @@ import org.nuxeo.client.objects.acl.ACE;
 import org.nuxeo.client.objects.acl.ACL;
 import org.nuxeo.client.objects.acl.ACP;
 import org.nuxeo.client.objects.audit.Audit;
-import org.nuxeo.client.objects.blob.Blob;
+import org.nuxeo.client.objects.blob.FileBlob;
 import org.nuxeo.client.objects.task.Task;
 import org.nuxeo.client.objects.workflow.Workflow;
 import org.nuxeo.client.objects.workflow.Workflows;
@@ -516,11 +516,11 @@ public class Document extends RepositoryEntity<RepositoryAPI> {
 
     /* Blobs Sync */
 
-    public Blob fetchBlob() {
+    public FileBlob fetchBlob() {
         return fetchBlob(DEFAULT_FILE_CONTENT);
     }
 
-    public Blob fetchBlob(String fieldPath) {
+    public FileBlob fetchBlob(String fieldPath) {
         if (repositoryName == null) {
             return fetchResponse(api.fetchBlobById(uid, fieldPath));
         }
@@ -529,11 +529,11 @@ public class Document extends RepositoryEntity<RepositoryAPI> {
 
     /* Blobs Async */
 
-    public void fetchBlob(Callback<Blob> callback) {
+    public void fetchBlob(Callback<FileBlob> callback) {
         fetchBlob(DEFAULT_FILE_CONTENT, callback);
     }
 
-    public void fetchBlob(String fieldPath, Callback<Blob> callback) {
+    public void fetchBlob(String fieldPath, Callback<FileBlob> callback) {
         if (repositoryName == null) {
             fetchResponse(api.fetchBlobById(uid, fieldPath), callback);
         }

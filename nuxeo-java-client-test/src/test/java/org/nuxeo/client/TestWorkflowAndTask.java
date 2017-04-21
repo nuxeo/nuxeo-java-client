@@ -23,6 +23,9 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import java.util.HashMap;
+import java.util.List;
+
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -30,6 +33,8 @@ import org.junit.runner.RunWith;
 import org.nuxeo.client.objects.Document;
 import org.nuxeo.client.objects.task.Task;
 import org.nuxeo.client.objects.task.TaskCompletionRequest;
+import org.nuxeo.client.objects.task.TaskInfo;
+import org.nuxeo.client.objects.task.TaskInfo.TaskInfoItem;
 import org.nuxeo.client.objects.task.Tasks;
 import org.nuxeo.client.objects.workflow.Graph;
 import org.nuxeo.client.objects.workflow.Workflow;
@@ -45,7 +50,6 @@ import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.Jetty;
 
-import java.util.HashMap;
 
 /**
  * @since 0.1
@@ -123,6 +127,18 @@ public class TestWorkflowAndTask extends TestBase {
         Document target = nuxeoClient.repository().fetchDocumentById(task.getTargetDocumentIds().get(0));
         task = target.fetchTask();
         assertNotNull(task);
+    }
+
+    @Test
+    public void itCanFetchTaskInfo() {
+        Task task = fetchAllTasks().get(0);
+        TaskInfo taskInfo = task.getTaskInfo();
+        assertNotNull(taskInfo);
+        List<TaskInfoItem> taskActions = taskInfo.getTaskActions();
+        assertEquals(2, taskActions.size());
+        assertEquals("cancel", taskActions.get(0).getName());
+        assertEquals("start_review", taskActions.get(1).getName());
+
     }
 
     @Ignore("JAVACLIENT-82")

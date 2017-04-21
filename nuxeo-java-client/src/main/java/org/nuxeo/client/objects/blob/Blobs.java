@@ -34,16 +34,16 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  */
 public class Blobs extends Entity {
 
+    @JsonProperty("entries")
+    protected final List<Blob> blobs = new ArrayList<>();
+
     public Blobs() {
-        super(null);
+        super(EntityTypes.BLOBS);
     }
 
-    @JsonProperty("entries")
-    protected List<Blob> blobs = new ArrayList<>();
-
-    public Blobs(List<Blob> blobs) {
-        super(EntityTypes.BLOBS);
-        this.blobs = blobs;
+    public Blobs(List<? extends Blob> blobs) {
+        this();
+        this.blobs.addAll(blobs);
     }
 
     public List<Blob> getBlobs() {
@@ -57,15 +57,19 @@ public class Blobs extends Entity {
 
     @JsonIgnore
     public void add(File file) {
-        Blob blob = new Blob(file);
+        FileBlob blob = new FileBlob(file);
         blobs.add(blob);
     }
 
     @JsonIgnore
-    public void add(String fileName, File file) {
-        Blob blob = new Blob(file);
-        blob.setFileName(fileName);
+    public void add(String filename, File file) {
+        FileBlob blob = new FileBlob(filename, file);
         blobs.add(blob);
+    }
+
+    @JsonIgnore
+    public boolean add(Blob blob) {
+        return blobs.add(blob);
     }
 
 }

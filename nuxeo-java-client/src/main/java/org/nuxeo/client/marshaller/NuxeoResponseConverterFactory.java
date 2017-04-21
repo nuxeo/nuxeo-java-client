@@ -40,8 +40,8 @@ import org.nuxeo.client.objects.Document;
 import org.nuxeo.client.objects.Documents;
 import org.nuxeo.client.objects.EntityTypes;
 import org.nuxeo.client.objects.RecordSet;
-import org.nuxeo.client.objects.blob.Blob;
 import org.nuxeo.client.objects.blob.Blobs;
+import org.nuxeo.client.objects.blob.FileBlob;
 import org.nuxeo.client.objects.user.User;
 import org.nuxeo.client.spi.NuxeoClientException;
 import org.nuxeo.client.util.IOUtils;
@@ -98,7 +98,7 @@ public final class NuxeoResponseConverterFactory<T> implements Converter<Respons
             } else {
                 // IOUtils.copyToTempFile close the input stream for us
                 File tmpFile = IOUtils.copyToTempFile(body.byteStream());
-                return (T) new Blob(tmpFile);
+                return (T) new FileBlob(tmpFile);
             }
         }
         // Checking the type of the method clientside - aka object for Automation calls.

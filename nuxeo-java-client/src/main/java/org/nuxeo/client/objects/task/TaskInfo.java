@@ -19,22 +19,24 @@
  */
 package org.nuxeo.client.objects.task;
 
+import java.util.List;
+
 /**
  * @since 1.0
  */
 public class TaskInfo {
 
-    protected TaskInfoItem taskActions;
+    protected List<TaskInfoItem> taskActions;
 
     protected TaskInfoItem layoutResource;
 
-    protected TaskInfoItem schemas;
+    protected List<TaskInfoItem> schemas;
 
-    public TaskInfoItem getTaskActions() {
+    public List<TaskInfoItem> getTaskActions() {
         return taskActions;
     }
 
-    public void setTaskActions(TaskInfoItem taskActions) {
+    public void setTaskActions(List<TaskInfoItem> taskActions) {
         this.taskActions = taskActions;
     }
 
@@ -46,11 +48,11 @@ public class TaskInfo {
         this.layoutResource = layoutResource;
     }
 
-    public TaskInfoItem getSchemas() {
+    public List<TaskInfoItem> getSchemas() {
         return schemas;
     }
 
-    public void setSchemas(TaskInfoItem schemas) {
+    public void setSchemas(List<TaskInfoItem> schemas) {
         this.schemas = schemas;
     }
 
