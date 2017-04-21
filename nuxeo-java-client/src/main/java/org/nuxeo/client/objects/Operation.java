@@ -134,5 +134,4 @@ public class Operation extends ConnectableEntity<OperationAPI> {
             return api.execute(operationId, body);
         }
     }
-
 }

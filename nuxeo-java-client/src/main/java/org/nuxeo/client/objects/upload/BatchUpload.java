@@ -24,14 +24,15 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.List;
-import java.util.Objects;
+import java.util.Map;
 
+import org.apache.commons.io.FilenameUtils;
 import org.nuxeo.client.ConstantsV1;
 import org.nuxeo.client.MediaTypes;
 import org.nuxeo.client.NuxeoClient;
 import org.nuxeo.client.methods.BatchUploadAPI;
 import org.nuxeo.client.objects.AbstractConnectable;
-import org.nuxeo.client.objects.Operation;
+import org.nuxeo.client.objects.operation.OperationBody;
 import org.nuxeo.client.spi.NuxeoClientException;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -47,6 +48,8 @@ public class BatchUpload extends AbstractConnectable<BatchUploadAPI> {
     @JsonIgnore
     protected int chunkSize;
 
+    protected String name;
+
     protected String batchId;
 
     protected String fileIdx;
@@ -55,12 +58,29 @@ public class BatchUpload extends AbstractConnectable<BatchUploadAPI> {
 
     protected long uploadedSize;
 
-    public BatchUpload() {
+    protected int[] uploadedChunkIds;
+
+    protected int chunkCount;
+
+    /**
+     * For deserialization purpose.
+     */
+    protected BatchUpload() {
         super(BatchUploadAPI.class);
     }
 
-    public BatchUpload(NuxeoClient nuxeoClient) {
+    protected BatchUpload(NuxeoClient nuxeoClient, String batchId) {
         super(BatchUploadAPI.class, nuxeoClient);
+        this.batchId = batchId;
+    }
+
+    protected BatchUpload(NuxeoClient nuxeoClient, String batchId, String fileIdx) {
+        this(nuxeoClient, batchId);
+        this.fileIdx = fileIdx;
+    }
+
+    public String getName() {
+        return name;
     }
 
     public String getBatchId() {
@@ -79,19 +99,50 @@ public class BatchUpload extends AbstractConnectable<BatchUploadAPI> {
         return uploadedSize;
     }
 
-    public BatchUpload createBatch() {
-        return fetchResponse(api.createBatch());
+    public long getSize() {
+        return uploadedSize;
     }
 
-    public BatchUpload upload(String name, long length, String fileType, String batchId, String fileIdx, File file) {
+    public int[] getUploadedChunkIds() {
+        return uploadedChunkIds;
+    }
+
+    public int getChunkCount() {
+        return chunkCount;
+    }
+
+    /**
+     * Use for deserialization purpose on GET calls.
+     */
+    protected void setSize(long size) {
+        uploadedSize = size;
+    }
+
+    public BatchUpload upload(String fileIdx, File file) {
+        return upload(fileIdx, file, file.getName());
+    }
+
+    public BatchUpload upload(String fileIdx, File file, String name) {
+        return upload(fileIdx, file, name, FilenameUtils.getExtension(file.getName()));
+    }
+
+    public BatchUpload upload(String fileIdx, File file, String name, String fileType) {
+        return upload(fileIdx, file, name, fileType, file.length());
+    }
+
+    public BatchUpload upload(String fileIdx, File file, String name, String fileType, long length) {
         if (chunkSize == 0) {
             // Post file
             RequestBody fbody = RequestBody.create(MediaType.parse(fileType), file);
-            return fetchResponse(api.upload(name, Objects.toString(length), fileType, ConstantsV1.UPLOAD_NORMAL_TYPE,
-                    "0", "1", batchId, fileIdx, fbody));
+            BatchUpload response = fetchResponse(api.upload(name, Long.toString(length), fileType,
+                    ConstantsV1.UPLOAD_NORMAL_TYPE, "0", "1", batchId, fileIdx, fbody));
+            response.name = name;
+            response.batchId = batchId;
+            response.fileIdx = fileIdx;
+            return response;
         }
-        Object response = null;
-        int contentLength = 0;
+        BatchUpload response = null;
+        int contentLength;
         byte[] buffer = new byte[chunkSize];
         int chunkIndex = 0;
         long chunkCount = (file.length() + chunkSize - 1) / chunkSize;
@@ -100,64 +151,132 @@ public class BatchUpload extends AbstractConnectable<BatchUploadAPI> {
                 // Post chunk as a stream
                 RequestBody requestBody = RequestBody.create(MediaTypes.APPLICATION_OCTET_STREAM.toOkHttpMediaType(),
                         buffer, 0, contentLength);
-                response = fetchResponse(api.upload(name, Objects.toString(length), fileType, ConstantsV1.UPLOAD_CHUNKED_TYPE,
-                        Objects.toString(chunkIndex), Objects.toString(chunkCount), batchId, fileIdx, requestBody));
+                response = fetchResponse(api.upload(name, Long.toString(length), fileType,
+                        ConstantsV1.UPLOAD_CHUNKED_TYPE, Integer.toString(chunkIndex), Long.toString(chunkCount),
+                        batchId, fileIdx, requestBody));
                 chunkIndex++;
             }
-            return (BatchUpload) response;
+            if (response != null) {
+                response.name = name;
+                // batchId and fileIdx are retrieved
+                // set back the internal value in order to upload with same settings
+                response.chunkSize = chunkSize;
+                // uploadedSize doesn't have the right value
+                response.uploadedSize = length;
+            }
+            return response;
         } catch (IOException reason) {
             throw new NuxeoClientException(reason);
         }
     }
 
-    public void cancel(String batchId) {
+    public void cancel() {
         fetchResponse(api.cancel(batchId));
     }
 
-    public void cancel() {
-        cancel(batchId);
+    public List<BatchUpload> fetchBatchUploads() {
+        List<BatchUpload> response = fetchResponse(api.fetchBatchUploads(batchId));
+        int i = 0;
+        for (BatchUpload upload : response) {
+            upload.batchId = batchId;
+            upload.fileIdx = String.valueOf(++i);
+        }
+        return response;
     }
 
-    public List<BatchFile> fetchBatchFiles(String batchId) {
-        return fetchResponse(api.fetchBatchFiles(batchId));
+    /**
+     * This method can only be called on a {@link BatchUpload} representing a real upload (ie: fileIdx != null).
+     */
+    public BatchUpload fetchBatchUpload() {
+        if (fileIdx == null) {
+            throw new NuxeoClientException("Unable to fetch BatchUpload because fileIdx is null");
+        }
+        return fetchBatchUpload(fileIdx);
     }
 
-    public BatchFile fetchBatchFile(String batchId, String fileIdx) {
-        return fetchResponse(api.fetchBatchFile(batchId, fileIdx));
+    public BatchUpload fetchBatchUpload(String fileIdx) {
+        BatchUpload response = fetchResponse(api.fetchBatchUpload(batchId, fileIdx));
+        response.name = name;
+        response.batchId = batchId;
+        response.fileIdx = fileIdx;
+        return response;
     }
 
-    public BatchFile fetchBatchFile(String fileIdx) {
-        return fetchBatchFile(batchId, fileIdx);
-    }
-
-    public List<BatchFile> fetchBatchFiles() {
-        return fetchBatchFiles(batchId);
-    }
-
+    /**
+     * This method can only be called on a {@link BatchUpload} representing a real upload (ie: fileIdx != null).
+     */
     public BatchBlob getBatchBlob() {
-        return getBatchBlob(batchId, fileIdx);
+        if (fileIdx == null) {
+            throw new NuxeoClientException("Unable to instantiate BatchBlob because fileIdx is null");
+        }
+        return getBatchBlob(fileIdx);
     }
 
-    private BatchBlob getBatchBlob(String batchId, String fileIdx) {
+    public BatchBlob getBatchBlob(String fileIdx) {
         return new BatchBlob(batchId, fileIdx);
     }
 
     public BatchUpload chunkSize(int chunkSize) {
         this.chunkSize = chunkSize;
+        // For consistency
+        this.uploadType = ConstantsV1.UPLOAD_CHUNKED_TYPE;
         return this;
     }
 
     public BatchUpload enableChunk() {
-        this.chunkSize = ConstantsV1.CHUNK_SIZE;
-        return this;
+        return chunkSize(ConstantsV1.CHUNK_SIZE);
     }
 
-    public Object execute(Operation operation) {
-        return execute(batchId, fileIdx, operation);
+    /**
+     * This method can only be called on a {@link BatchUpload} representing a real upload (ie: fileIdx != null).
+     */
+    public BatchUploadOperation automation(String operationId) {
+        if (fileIdx == null) {
+            throw new NuxeoClientException(
+                    "Unable to execute operation on a BatchUpload not representing a blob (fileIdx == null)");
+        }
+        return new BatchUploadOperation(fileIdx, operationId);
     }
 
-    public Object execute(String batchId, String fileIdx, Operation operation) {
-        return nuxeoClient.automation().execute(batchId, fileIdx, operation.getOperationId(), operation.getBody());
+    public class BatchUploadOperation {
+
+        protected final String fileIdx;
+
+        protected final String operationId;
+
+        protected final OperationBody body;
+
+        public BatchUploadOperation(String fileIdx, String operationId) {
+            this.fileIdx = fileIdx;
+            this.operationId = operationId;
+            this.body = new OperationBody();
+        }
+
+        public BatchUploadOperation param(String key, Object parameter) {
+            body.getParameters().put(key, parameter);
+            return this;
+        }
+
+        public BatchUploadOperation context(String key, Object contextValue) {
+            body.getContext().put(key, contextValue);
+            return this;
+        }
+
+        public BatchUploadOperation parameters(Map<String, Object> parameters) {
+            body.setParameters(parameters);
+            return this;
+        }
+
+        public BatchUploadOperation context(Map<String, Object> context) {
+            body.setContext(context);
+            return this;
+        }
+
+        @SuppressWarnings("unchecked")
+        public <T> T execute() {
+            return (T) fetchResponse(api.execute(batchId, fileIdx, operationId, body));
+        }
+
     }
 
 }
