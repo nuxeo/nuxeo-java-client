@@ -16,31 +16,32 @@
  * Contributors:
  *     Kevin Leturc <kleturc@nuxeo.com>
  */
-package org.nuxeo.client.objects;
+package org.nuxeo.client;
 
-import org.nuxeo.client.NuxeoClient;
+import static org.junit.Assert.assertEquals;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
+import java.nio.charset.Charset;
+
+import org.junit.Test;
 
 /**
- * @param <A> The api interface type.
  * @since 3.0
  */
-public class RepositoryEntity<A> extends ConnectableEntity<A> {
+public class TestMediaType {
 
-    @JsonProperty("repository")
-    protected String repositoryName;
-
-    public RepositoryEntity(String entityType, Class<A> apiClass) {
-        super(entityType, apiClass);
+    @Test
+    public void testTypeSubType() {
+        MediaType mediaType = MediaType.parse("application/json");
+        assertEquals("application", mediaType.type());
+        assertEquals("json", mediaType.subtype());
     }
 
-    public RepositoryEntity(String entityType, Class<A> apiClass, NuxeoClient nuxeoClient) {
-        super(entityType, apiClass, nuxeoClient);
-    }
-
-    public String getRepositoryName() {
-        return repositoryName;
+    @Test
+    public void testTypeSubTypeCharset() {
+        MediaType mediaType = MediaType.parse("application/json; charset=UTF-8");
+        assertEquals("application", mediaType.type());
+        assertEquals("json", mediaType.subtype());
+        assertEquals(Charset.forName("UTF-8"), mediaType.charset());
     }
 
 }

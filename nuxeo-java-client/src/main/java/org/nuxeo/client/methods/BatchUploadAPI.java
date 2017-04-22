@@ -21,7 +21,7 @@ package org.nuxeo.client.methods;
 
 import java.util.List;
 
-import org.nuxeo.client.ConstantsV1;
+import org.nuxeo.client.HttpHeaders;
 import org.nuxeo.client.objects.upload.BatchFile;
 import org.nuxeo.client.objects.upload.BatchUpload;
 
@@ -53,7 +53,7 @@ public interface BatchUploadAPI {
     @DELETE("upload/{batchId}")
     Call<ResponseBody> cancel(@Path("batchId") String batchId);
 
-    @Headers(ConstantsV1.CONTENT_TYPE_APPLICATION_OCTET_STREAM)
+    @Headers(HttpHeaders.CONTENT_TYPE_APPLICATION_OCTET_STREAM)
     @POST("upload/{batchId}/{fileIdx}")
     Call<BatchUpload> upload(@Header("X-File-Name") String fileName, @Header("X-File-Size") String fileSize,
             @Header("X-File-Type") String fileType, @Header("X-Upload-Type") String uploadType,

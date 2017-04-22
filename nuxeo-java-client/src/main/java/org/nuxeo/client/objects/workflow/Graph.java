@@ -22,21 +22,21 @@ package org.nuxeo.client.objects.workflow;
 import java.util.List;
 import java.util.Map;
 
-import org.nuxeo.client.ConstantsV1;
 import org.nuxeo.client.objects.Entity;
+import org.nuxeo.client.objects.EntityTypes;
 
 /**
  * @since 0.1
  */
 public class Graph extends Entity {
 
-    public Graph() {
-        super(ConstantsV1.ENTITY_TYPE_GRAPH);
-    }
-
     protected List<Map<String, Object>> nodes;
 
     protected List<Map<String, Object>> transitions;
+
+    public Graph() {
+        super(EntityTypes.GRAPH);
+    }
 
     public List<Map<String, Object>> getNodes() {
         return nodes;

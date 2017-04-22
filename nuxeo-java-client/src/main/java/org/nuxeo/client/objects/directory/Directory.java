@@ -22,8 +22,8 @@ package org.nuxeo.client.objects.directory;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.nuxeo.client.ConstantsV1;
 import org.nuxeo.client.objects.Entity;
+import org.nuxeo.client.objects.EntityTypes;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -32,12 +32,12 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  */
 public class Directory extends Entity {
 
-    public Directory() {
-        super(ConstantsV1.ENTITY_TYPE_DIRECTORY);
-    }
-
     @JsonProperty("entries")
     protected List<DirectoryEntry> directoryEntries = new ArrayList<>();
+
+    public Directory() {
+        super(EntityTypes.DIRECTORY);
+    }
 
     public List<DirectoryEntry> getDirectoryEntries() {
         return directoryEntries;

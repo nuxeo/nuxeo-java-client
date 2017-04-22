@@ -21,12 +21,9 @@ package org.nuxeo.client.marshaller;
 
 import java.io.IOException;
 
-import org.nuxeo.client.ConstantsV1;
+import org.nuxeo.client.MediaTypes;
 import org.nuxeo.client.spi.NuxeoClientException;
 
-import com.fasterxml.jackson.core.JsonEncoding;
-import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.core.util.ByteArrayBuilder;
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
@@ -45,31 +42,16 @@ public final class NuxeoRequestConverterFactory<T> implements Converter<T, Reque
 
     protected final ObjectMapper objectMapper;
 
-    protected NuxeoMarshaller<T> nuxeoMarshaller;
-
     NuxeoRequestConverterFactory(ObjectWriter adapter, ObjectMapper objectMapper, JavaType javaType) {
         this.adapter = adapter;
         this.objectMapper = objectMapper;
         this.javaType = javaType;
     }
 
-    NuxeoRequestConverterFactory(NuxeoMarshaller<T> nuxeoMarshaller, ObjectMapper objectMapper) {
-        this.nuxeoMarshaller = nuxeoMarshaller;
-        this.objectMapper = objectMapper;
-    }
-
     @Override
     public RequestBody convert(T value) throws IOException {
-        ByteArrayBuilder bb = new ByteArrayBuilder();
-        byte[] bytes;
-        if (nuxeoMarshaller != null) {
-            JsonGenerator jg = objectMapper.getFactory().createGenerator(bb, JsonEncoding.UTF8);
-            nuxeoMarshaller.write(jg, value);
-            bytes = bb.toByteArray();
-        } else {
-            bytes = adapter.writeValueAsBytes(value);
-        }
-        return RequestBody.create(ConstantsV1.APPLICATION_JSON_CHARSET_UTF_8, bytes);
+        byte[] bytes = adapter.writeValueAsBytes(value);
+        return RequestBody.create(MediaTypes.APPLICATION_JSON_CHARSET_UTF_8.toOkHttpMediaType(), bytes);
     }
 
     public String writeJSON(Object object) {

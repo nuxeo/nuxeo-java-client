@@ -58,7 +58,6 @@ import org.nuxeo.client.objects.audit.Audit;
 import org.nuxeo.client.objects.blob.Blob;
 import org.nuxeo.client.objects.blob.Blobs;
 import org.nuxeo.client.spi.NuxeoClientException;
-import org.nuxeo.client.marshallers.DocumentMarshaller;
 import org.nuxeo.client.objects.DataSet;
 import org.nuxeo.client.objects.Field;
 import org.nuxeo.common.utils.FileUtils;
@@ -245,20 +244,6 @@ public class TestRepository extends TestBase {
         nuxeoClient.repository().deleteDocument(documentToDelete3.getId());
         fetchInvalidations();
         assertTrue(!session.exists(new IdRef(documentToDelete3.getId())));
-    }
-
-    @Test
-    public void itCanUseCustomMarshallers() {
-
-        Document folder = nuxeoClient.registerMarshaller(new DocumentMarshaller())
-                                     .repository()
-                                     .fetchDocumentByPath("/folder_1");
-        assertNotNull(folder);
-        assertEquals(folder.getPath(), "/folder_1");
-        assertEquals(folder.getState(), "project");
-        assertEquals(folder.getType(), "Folder");
-
-        nuxeoClient.clearMarshaller();
     }
 
     @Test

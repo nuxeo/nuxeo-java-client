@@ -31,6 +31,7 @@ import java.util.List;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.nuxeo.client.marshaller.NuxeoResponseConverterFactory;
 import org.nuxeo.client.objects.Document;
 import org.nuxeo.client.objects.Documents;
 import org.nuxeo.client.objects.Operation;
@@ -195,10 +196,11 @@ public class TestOperation extends TestBase {
 
     @Test
     public void itCanFetchJSONBlob() {
-        String result = nuxeoClient.automation().execute("CustomOperationJSONBlob");
-        CustomJSONObject customJSONObject = nuxeoClient.getConverterFactory().readJSON(result, CustomJSONObject.class);
-        assertNotNull(customJSONObject);
-        assertEquals("1", customJSONObject.getUserId());
+        // register the entity
+        NuxeoResponseConverterFactory.registerEntity(CustomJSONObject.ENTITY_TYPE, CustomJSONObject.class);
+        CustomJSONObject result = nuxeoClient.automation().execute("CustomOperationJSONBlob");
+        assertNotNull(result);
+        assertEquals("1", result.getUserId());
     }
 
 }

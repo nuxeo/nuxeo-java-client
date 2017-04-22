@@ -24,6 +24,8 @@ import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.commons.lang3.StringUtils;
+
 /**
  * @since 0.1
  */
@@ -37,7 +39,7 @@ public final class MediaType {
 
     private static final Pattern PARAMETER = Pattern.compile(";\\s*(?:" + TOKEN + "=(?:" + TOKEN + "|" + QUOTED + "))?");
 
-    private final String mediaType;
+    private final String originalString;
 
     private final String type;
 
@@ -47,12 +49,81 @@ public final class MediaType {
 
     private final String nuxeoEntity;
 
-    private MediaType(String mediaType, String type, String subtype, String charset, String nuxeoEntity) {
-        this.mediaType = mediaType;
+    private MediaType(String originalString, String type, String subtype, String charset, String nuxeoEntity) {
+        this.originalString = originalString;
         this.type = type;
         this.subtype = subtype;
         this.charset = charset;
         this.nuxeoEntity = nuxeoEntity;
+    }
+
+    /**
+     * Returns the high-level media type, such as "text", "image", "audio", "video", or "application".
+     */
+    public String type() {
+        return type;
+    }
+
+    /**
+     * Returns a specific media subtype, such as "plain" or "png", "mpeg", "mp4" or "xml".
+     */
+    public String subtype() {
+        return subtype;
+    }
+
+    /**
+     * Returns the charset of this media type, or null if this media type doesn't specify a charset.
+     */
+    public Charset charset() {
+        return charset != null ? Charset.forName(charset) : null;
+    }
+
+    /**
+     * Returns the Nuxeo Entity
+     */
+    public String nuxeoEntity() {
+        return nuxeoEntity;
+    }
+
+    /**
+     * Returns the charset of this media type, or {@code defaultValue} if this media type doesn't specify a charset.
+     */
+    public Charset charset(Charset defaultValue) {
+        return charset != null ? Charset.forName(charset) : defaultValue;
+    }
+
+    public okhttp3.MediaType toOkHttpMediaType() {
+        return okhttp3.MediaType.parse(originalString);
+    }
+
+    public boolean equalsType(MediaType mediaType) {
+        return mediaType != null && StringUtils.equals(type, mediaType.type);
+    }
+
+    public boolean equalsTypeSubType(MediaType mediaType) {
+        return equalsType(mediaType) && StringUtils.equals(subtype, mediaType.subtype);
+    }
+
+    /**
+     * Returns the encoded media type, like "text/plain; charset=utf-8", appropriate for use in a Content-Type header.
+     */
+    @Override
+    public String toString() {
+        return originalString;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        return o instanceof MediaType && ((MediaType) o).originalString.equals(originalString);
+    }
+
+    @Override
+    public int hashCode() {
+        return originalString.hashCode();
+    }
+
+    public static MediaType fromOkHttpMediaType(okhttp3.MediaType mediaType) {
+        return parse(mediaType.toString());
     }
 
     /**
@@ -93,59 +164,6 @@ public final class MediaType {
         }
 
         return new MediaType(string, type, subtype, charset, nuxeoEntity);
-    }
-
-    /**
-     * Returns the high-level media type, such as "text", "image", "audio", "video", or "application".
-     */
-    public String type() {
-        return type;
-    }
-
-    /**
-     * Returns a specific media subtype, such as "plain" or "png", "mpeg", "mp4" or "xml".
-     */
-    public String subtype() {
-        return subtype;
-    }
-
-    /**
-     * Returns the charset of this media type, or null if this media type doesn't specify a charset.
-     */
-    public Charset charset() {
-        return charset != null ? Charset.forName(charset) : null;
-    }
-
-    /**
-     * Returns the Nuxeo Entity
-     */
-    public String nuxeoEntity() {
-        return nuxeoEntity;
-    }
-
-    /**
-     * Returns the charset of this media type, or {@code defaultValue} if this media type doesn't specify a charset.
-     */
-    public Charset charset(Charset defaultValue) {
-        return charset != null ? Charset.forName(charset) : defaultValue;
-    }
-
-    /**
-     * Returns the encoded media type, like "text/plain; charset=utf-8", appropriate for use in a Content-Type header.
-     */
-    @Override
-    public String toString() {
-        return mediaType;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        return o instanceof MediaType && ((MediaType) o).mediaType.equals(mediaType);
-    }
-
-    @Override
-    public int hashCode() {
-        return mediaType.hashCode();
     }
 
 }

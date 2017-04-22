@@ -19,12 +19,10 @@
  */
 package org.nuxeo.client.objects.upload;
 
-import org.nuxeo.client.objects.NuxeoEntity;
-
 /**
  * @since 0.1
  */
-public class BatchFile extends NuxeoEntity {
+public class BatchFile {
 
     protected String name;
 
@@ -35,10 +33,6 @@ public class BatchFile extends NuxeoEntity {
     protected int[] uploadedChunkIds;
 
     protected int chunkCount;
-
-    public BatchFile() {
-        super(null);
-    }
 
     public String getName() {
         return name;

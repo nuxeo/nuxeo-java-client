@@ -21,17 +21,13 @@ package org.nuxeo.client.objects.audit;
 
 import java.util.Map;
 
-import org.nuxeo.client.ConstantsV1;
 import org.nuxeo.client.objects.Entity;
+import org.nuxeo.client.objects.EntityTypes;
 
 /**
  * @since 0.1
  */
 public class LogEntry extends Entity {
-
-    public LogEntry() {
-        super(ConstantsV1.ENTITY_TYPE_LOGENTRY);
-    }
 
     protected int id;
 
@@ -58,6 +54,10 @@ public class LogEntry extends Entity {
     protected String logDate;
 
     protected Map<String, Object> extended;
+
+    public LogEntry() {
+        super(EntityTypes.LOGENTRY);
+    }
 
     public int getId() {
         return id;

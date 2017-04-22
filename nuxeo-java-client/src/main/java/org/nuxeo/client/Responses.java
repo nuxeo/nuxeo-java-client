@@ -16,31 +16,35 @@
  * Contributors:
  *     Kevin Leturc <kleturc@nuxeo.com>
  */
-package org.nuxeo.client.objects;
+package org.nuxeo.client;
 
-import org.nuxeo.client.NuxeoClient;
+import java.io.IOException;
+import java.nio.charset.Charset;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
+import okhttp3.Response;
+import okhttp3.ResponseBody;
+import okio.Buffer;
+import okio.BufferedSource;
 
 /**
- * @param <A> The api interface type.
- * @since 3.0
+ * @since 3.0.0
  */
-public class RepositoryEntity<A> extends ConnectableEntity<A> {
+public class Responses {
 
-    @JsonProperty("repository")
-    protected String repositoryName;
-
-    public RepositoryEntity(String entityType, Class<A> apiClass) {
-        super(entityType, apiClass);
+    public static String bodyToString(Response response) throws IOException {
+        return bodyToString(response.body());
     }
 
-    public RepositoryEntity(String entityType, Class<A> apiClass, NuxeoClient nuxeoClient) {
-        super(entityType, apiClass, nuxeoClient);
+    public static String bodyToString(ResponseBody body) throws IOException {
+        BufferedSource source = body.source();
+        // Buffer the entire body.
+        source.request(Long.MAX_VALUE);
+        Buffer buffer = source.buffer();
+        return buffer.clone().readString(Charset.defaultCharset());
     }
 
-    public String getRepositoryName() {
-        return repositoryName;
+    private Responses() {
+        // empty
     }
 
 }

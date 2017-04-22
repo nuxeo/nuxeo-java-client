@@ -27,18 +27,23 @@ import java.security.NoSuchAlgorithmException;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.function.UnaryOperator;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.util.Strings;
 import org.nuxeo.client.cache.NuxeoResponseCache;
 import org.nuxeo.client.cache.ResultCacheInMemory;
 import org.nuxeo.client.marshaller.NuxeoConverterFactory;
-import org.nuxeo.client.marshaller.NuxeoMarshaller;
 import org.nuxeo.client.objects.Connectable;
+import org.nuxeo.client.objects.Document;
+import org.nuxeo.client.objects.Documents;
+import org.nuxeo.client.objects.EntityTypes;
 import org.nuxeo.client.objects.Operation;
+import org.nuxeo.client.objects.RecordSet;
 import org.nuxeo.client.objects.Repository;
-import org.nuxeo.client.objects.blob.Blob;
 import org.nuxeo.client.objects.blob.Blobs;
+import org.nuxeo.client.objects.blob.Blob;
 import org.nuxeo.client.objects.directory.DirectoryManager;
 import org.nuxeo.client.objects.task.TaskManager;
 import org.nuxeo.client.objects.upload.BatchUpload;
@@ -47,6 +52,7 @@ import org.nuxeo.client.objects.user.UserManager;
 import org.nuxeo.client.spi.NuxeoClientException;
 import org.nuxeo.client.spi.auth.BasicAuthInterceptor;
 
+import okhttp3.Headers;
 import okhttp3.Interceptor;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -63,6 +69,8 @@ import retrofit2.Retrofit;
  */
 public class NuxeoClient {
 
+    public static final Pattern CMIS_PRODUCT_VERSION_PATTERN = Pattern.compile("\"productVersion\":\"(.*?)\"");
+
     protected final OkHttpClient.Builder okhttpBuilder;
 
     protected final Repository repository;
@@ -77,9 +85,9 @@ public class NuxeoClient {
 
     protected final TaskManager taskManager;
 
-    protected final NuxeoConverterFactory converterFactory;
-
     protected final Retrofit.Builder retrofitBuilder;
+
+    protected final NuxeoConverterFactory converterFactory;
 
     protected CurrentUser currentUser;
 
@@ -87,16 +95,16 @@ public class NuxeoClient {
 
     protected Retrofit retrofit;
 
+    protected NuxeoVersion serverVersion;
+
     public NuxeoClient(String url, String userName, String password) {
+        this(url, new BasicAuthInterceptor(userName, password));
+    }
+
+    public NuxeoClient(String url, Interceptor authenticationMethod) {
         // okhttp builder
         okhttpBuilder = new OkHttpClient.Builder();
-        if (okhttpBuilder.interceptors().isEmpty()) {
-            if (userName != null && password != null) {
-                setAuthenticationMethod(new BasicAuthInterceptor(userName, password));
-            } else {
-                throw new NuxeoClientException("Define credentials");
-            }
-        }
+        okhttpBuilder.addInterceptor(authenticationMethod);
         // retrofit builder
         converterFactory = NuxeoConverterFactory.create();
         retrofitBuilder = new Retrofit.Builder().baseUrl(url + ConstantsV1.API_PATH)
@@ -112,29 +120,14 @@ public class NuxeoClient {
         taskManager = new TaskManager(this);
     }
 
-    public NuxeoClient registerMarshaller(NuxeoMarshaller<?> marshaller) {
-        converterFactory.registerMarshaller(marshaller);
-        return this;
-    }
-
-    public NuxeoClient clearMarshaller() {
-        converterFactory.clearMarshaller();
-        return this;
-    }
-
     public NuxeoClient enableDefaultCache() {
         nuxeoCache = new ResultCacheInMemory();
         return this;
     }
 
-    public void logout() {
-        okhttpBuilder.interceptors().clear();
-        retrofit();
-    }
-
-    public NuxeoConverterFactory getConverterFactory() {
-        return converterFactory;
-    }
+    /*******************************
+     * Settings *
+     ******************************/
 
     public NuxeoClient header(String header, String value) {
         okhttpBuilder.interceptors().add(chain -> {
@@ -147,23 +140,23 @@ public class NuxeoClient {
     }
 
     public NuxeoClient enrichers(String... enrichers) {
-        header(ConstantsV1.HEADER_ENRICHERS, StringUtils.join(enrichers, ","));
+        header(HttpHeaders.X_ENRICHERS, StringUtils.join(enrichers, ","));
         return this;
     }
 
     public NuxeoClient voidOperation(boolean value) {
-        header(ConstantsV1.HEADER_VOID_OPERATION, Boolean.toString(value));
+        header(HttpHeaders.X_VOID_OPERATION, Boolean.toString(value));
         return this;
     }
 
     public NuxeoClient transactionTimeout(long timeout) {
-        header(ConstantsV1.HEADER_TX_TIMEOUT, String.valueOf(timeout));
+        header(HttpHeaders.NUXEO_TX_TIMEOUT, String.valueOf(timeout));
         return this;
     }
 
     public NuxeoClient fetch(String... fetchs) {
         for (String fetch : fetchs) {
-            header(ConstantsV1.HEADER_FETCH, fetch);
+            header(HttpHeaders.X_FETCH, fetch);
         }
         return this;
     }
@@ -173,33 +166,26 @@ public class NuxeoClient {
      * <p />
      * Possible values are: `root`, `children` and `max`.
      * <p />
+     * 
      * @see org.nuxeo.ecm.core.io.registry.context.DepthValues
      */
     public NuxeoClient depth(String value) {
-        header(ConstantsV1.HEADER_DEPTH, value);
+        header(HttpHeaders.DEPTH, value);
         return this;
     }
 
     public NuxeoClient version(String value) {
-        header(ConstantsV1.HEADER_VERSIONING, value);
+        header(HttpHeaders.X_VERSIONING_OPTION, value);
         return this;
     }
 
     public NuxeoClient schemas(String... properties) {
-        header(ConstantsV1.HEADER_PROPERTIES, String.join(",", properties));
+        header(HttpHeaders.X_PROPERTIES, String.join(",", properties));
         return this;
     }
 
     public NuxeoClient setCache(NuxeoResponseCache nuxeoCache) {
         this.nuxeoCache = nuxeoCache;
-        return this;
-    }
-
-    public NuxeoClient setAuthenticationMethod(Interceptor interceptor) {
-        okhttpBuilder.interceptors().add(interceptor);
-        if (retrofitBuilder != null) {
-            retrofit();
-        }
         return this;
     }
 
@@ -216,25 +202,12 @@ public class NuxeoClient {
         return this;
     }
 
-    public String getBaseUrl() {
-        return retrofit.baseUrl().toString();
-    }
+    /*******************************
+     * Client Services *
+     ******************************/
 
-    public void shutdown() {
-        logout();
-    }
-
-    public Retrofit getRetrofit() {
-        return retrofit;
-    }
-
-    public <A> A getApi(Class<A> apiClass) {
-        return retrofit.create(apiClass);
-    }
-
-    protected void retrofit() {
-        OkHttpClient okHttpClient = okhttpBuilder.build();
-        retrofit = retrofitBuilder.callFactory(okHttpClient).build();
+    public NuxeoConverterFactory getConverterFactory() {
+        return converterFactory;
     }
 
     public NuxeoResponseCache getNuxeoCache() {
@@ -245,8 +218,47 @@ public class NuxeoClient {
         return nuxeoCache != null;
     }
 
-    /** Services **/
+    public NuxeoClient refreshCache() {
+        if (isCacheEnabled()) {
+            nuxeoCache.invalidateAll();
+        }
+        return this;
+    }
 
+    /******************************
+     * Services *
+     ******************************/
+
+    /**
+     * This method gets the Nuxeo server version from CMIS the first time and then caches it.
+     *
+     * @return The Nuxeo server version.
+     */
+    public NuxeoVersion getServerVersion() {
+        if (serverVersion == null) {
+            try {
+                // Remove API_PATH from the base url
+                // Get repository capabilities on CMIS
+                Response response = get(
+                        retrofit.baseUrl().toString().replaceFirst(ConstantsV1.API_PATH, "") + "/json/cmis");
+                String body = response.body().string();
+                Matcher matcher = CMIS_PRODUCT_VERSION_PATTERN.matcher(body);
+                if (matcher.find()) {
+                    String version = matcher.group(1);
+                    serverVersion = NuxeoVersion.parse(version);
+                } else {
+                    throw new NuxeoClientException("Unable to get version from CMIS");
+                }
+            } catch (IOException ioe) {
+                throw new NuxeoClientException("Unable to retrieve the server version.", ioe);
+            }
+        }
+        return serverVersion;
+    }
+
+    /**
+     * @return A repository service linked to `default` repository in Nuxeo.
+     */
     public Repository repository() {
         return repository;
     }
@@ -290,6 +302,10 @@ public class NuxeoClient {
         return taskManager;
     }
 
+    /*******************************
+     * HTTP Services *
+     ******************************/
+
     public Response get(String url) {
         return request(url, Request.Builder::get);
     }
@@ -299,21 +315,21 @@ public class NuxeoClient {
     }
 
     public Response delete(String url, String json) {
-        RequestBody body = RequestBody.create(ConstantsV1.APPLICATION_JSON_CHARSET_UTF_8, json);
+        RequestBody body = RequestBody.create(MediaTypes.APPLICATION_JSON_CHARSET_UTF_8.toOkHttpMediaType(), json);
         return request(url, builder -> builder.delete(body));
     }
 
     public Response put(String url, String json) {
-        RequestBody body = RequestBody.create(ConstantsV1.APPLICATION_JSON_CHARSET_UTF_8, json);
+        RequestBody body = RequestBody.create(MediaTypes.APPLICATION_JSON_CHARSET_UTF_8.toOkHttpMediaType(), json);
         return request(url, builder -> builder.put(body));
     }
 
     public Response post(String url, String json) {
-        RequestBody body = RequestBody.create(ConstantsV1.APPLICATION_JSON_CHARSET_UTF_8, json);
+        RequestBody body = RequestBody.create(MediaTypes.APPLICATION_JSON_CHARSET_UTF_8.toOkHttpMediaType(), json);
         return request(url, builder -> builder.post(body));
     }
 
-    private Response request(String url, UnaryOperator<Builder> method) {
+    protected Response request(String url, UnaryOperator<Builder> method) {
         try {
             Request.Builder requestBuilder = new Builder().url(url);
             Request request = method.apply(requestBuilder).build();
@@ -331,9 +347,25 @@ public class NuxeoClient {
         return batchUpload;
     }
 
-    /******************************
-     * NEW API
-     ******************************/
+    /**
+     * Re-build the retrofit context.
+     */
+    protected void retrofit() {
+        OkHttpClient okHttpClient = okhttpBuilder.build();
+        retrofit = retrofitBuilder.callFactory(okHttpClient).build();
+    }
+
+    /**
+     * USE THIS METHOD WITH CAUTION
+     * <p />
+     * This method returns an usable API object based on current client configuration. Further parameters set on client
+     * won't be used by this API object.
+     *
+     * @return A new API instance from retrofit,
+     */
+    public <A> A createApi(Class<A> apiClass) {
+        return retrofit.create(apiClass);
+    }
 
     public <T> T fetchResponse(Call<T> call) {
         // TODO hardcoded for now - check if it's useful, we might want to refresh cache through client
@@ -379,6 +411,7 @@ public class NuxeoClient {
         });
     }
 
+    @SuppressWarnings("unchecked")
     protected <T> retrofit2.Response<T> handleResponse(Call<T> call, retrofit2.Response<T> response) {
         try {
             // For redirect 308 -> the response should be success
@@ -387,10 +420,14 @@ public class NuxeoClient {
                 String errorBody = response.errorBody().string();
                 if (Strings.EMPTY.equals(errorBody)) {
                     nuxeoClientException = new NuxeoClientException(response.code(), response.message());
-                } else if (!ConstantsV1.APPLICATION_JSON.equals(response.raw().body().contentType())) {
-                    nuxeoClientException = new NuxeoClientException(response.code(), errorBody);
                 } else {
-                    nuxeoClientException = converterFactory.readJSON(errorBody, NuxeoClientException.class);
+                    MediaType mediaType = MediaType.fromOkHttpMediaType(response.raw().body().contentType());
+                    if (!MediaTypes.APPLICATION_JSON.equalsTypeSubType(mediaType)
+                            && !MediaTypes.APPLICATION_JSON_NXENTITY.equalsTypeSubType(mediaType)) {
+                        nuxeoClientException = new NuxeoClientException(response.code(), errorBody);
+                    } else {
+                        nuxeoClientException = converterFactory.readJSON(errorBody, NuxeoClientException.class);
+                    }
                 }
                 throw nuxeoClientException;
             }
@@ -398,11 +435,12 @@ public class NuxeoClient {
                 nuxeoCache.put(computeCacheKey(call), response);
             }
             T body = response.body();
+            Headers headers = response.headers();
             if (body instanceof ResponseBody) {
                 throw new IllegalStateException("Internal client error, everything should be mapped to a type.");
             } else if (body == null) {
                 if (response.code() == 204
-                        && ConstantsV1.APPLICATION_NUXEO_EMPTY_LIST.equals(response.headers().get("Content-Type"))) {
+                        && MediaTypes.APPLICATION_NUXEO_EMPTY_LIST_S.equals(headers.get("Content-Type"))) {
                     return retrofit2.Response.success((T) new Blobs(), response.raw());
                 }
             } else if (body instanceof Connectable) {
@@ -413,18 +451,16 @@ public class NuxeoClient {
                         ((Connectable) item).reconnectWith(this);
                     }
                 }
-                // TODO: currently no way to read headers in converter, find a generic way to provide this feature and extract it from client
-            } else if (body instanceof Blob) {
-                String contentDisposition = response.headers().get("Content-Disposition");
-                if (contentDisposition != null) {
-                    String fileName = contentDisposition.replaceFirst(".*filename\\*?=(UTF-8'')?(.*)", "$2");
-                    try {
-                        fileName = URLDecoder.decode(fileName, "UTF-8");
-                    } catch (UnsupportedEncodingException e) {
-                        // May not happen
-                    }
-                    ((Blob) body).setFileName(fileName);
+            }
+            String contentDisposition = headers.get("Content-Disposition");
+            if (body instanceof Blob && contentDisposition != null) {
+                String filename = contentDisposition.replaceFirst(".*filename\\*?=(UTF-8'')?(.*)", "$2");
+                try {
+                    filename = URLDecoder.decode(filename, "UTF-8");
+                } catch (UnsupportedEncodingException e) {
+                    // May not happen
                 }
+                ((Blob) body).setFileName(filename);
             }
             // No need to wrap the response
             return response;

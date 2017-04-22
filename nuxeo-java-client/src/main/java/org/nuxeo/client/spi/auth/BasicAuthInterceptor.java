@@ -21,28 +21,26 @@ package org.nuxeo.client.spi.auth;
 
 import java.io.IOException;
 
-import org.nuxeo.client.util.Base64;
-
-import com.google.common.net.HttpHeaders;
-
 import okhttp3.Interceptor;
 import okhttp3.Request;
 import okhttp3.Response;
+
+import org.nuxeo.client.HttpHeaders;
+import org.nuxeo.client.MediaTypes;
+import org.nuxeo.client.spi.NuxeoClientException;
+import org.nuxeo.client.util.Base64;
 
 /**
  * @since 0.1
  */
 public class BasicAuthInterceptor implements Interceptor {
 
-    public static final String AUTHORIZATION = "Authorization";
-
     protected String token;
 
     public BasicAuthInterceptor(String username, String password) {
-        setAuth(username, password);
-    }
-
-    public void setAuth(String username, String password) {
+        if (username == null || password == null) {
+            throw new NuxeoClientException("'username' and 'password' must be set");
+        }
         String info = username + ":" + password;
         token = "Basic " + Base64.encode(info);
     }
@@ -52,9 +50,8 @@ public class BasicAuthInterceptor implements Interceptor {
         Request original = chain.request();
         Request request = chain.request()
                                .newBuilder()
-                               .addHeader(AUTHORIZATION, token)
-                               .addHeader(HttpHeaders.CONTENT_TYPE,
-                                       com.google.common.net.MediaType.JSON_UTF_8.toString())
+                               .addHeader(HttpHeaders.AUTHORIZATION, token)
+                               .addHeader(HttpHeaders.CONTENT_TYPE, MediaTypes.APPLICATION_JSON_CHARSET_UTF_8_S)
                                .method(original.method(), original.body())
                                .build();
         return chain.proceed(request);

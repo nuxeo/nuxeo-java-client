@@ -25,6 +25,7 @@ import java.security.NoSuchAlgorithmException;
 import java.util.Date;
 import java.util.Random;
 
+import org.nuxeo.client.HttpHeaders;
 import org.nuxeo.client.util.Base64;
 
 import okhttp3.Headers;
@@ -37,21 +38,13 @@ import okhttp3.Response;
  */
 public class PortalSSOAuthInterceptor implements Interceptor {
 
-    public static final String NX_USER = "NX_USER";
-
-    public static final String NX_TOKEN = "NX_TOKEN";
-
-    public static final String NX_RD = "NX_RD";
-
-    public static final String NX_TS = "NX_TS";
-
     protected final String secret;
 
     protected final String username;
 
-    public PortalSSOAuthInterceptor(String secretKey, String userName) {
-        this.secret = secretKey;
-        this.username = userName;
+    public PortalSSOAuthInterceptor(String username, String secret) {
+        this.username = username;
+        this.secret = secret;
     }
 
     protected Headers computeHeaders() {
@@ -70,12 +63,11 @@ public class PortalSSOAuthInterceptor implements Interceptor {
         }
 
         String base64HashedToken = Base64.encode(hashedToken);
-        Headers headers = new Headers.Builder().add(NX_TS, String.valueOf(ts))
-                                               .add(NX_RD, String.valueOf(random))
-                                               .add(NX_TOKEN, base64HashedToken)
-                                               .add(NX_USER, username)
-                                               .build();
-        return headers;
+        return new Headers.Builder().add(HttpHeaders.NX_TS, String.valueOf(ts))
+                                    .add(HttpHeaders.NX_RD, String.valueOf(random))
+                                    .add(HttpHeaders.NX_TOKEN, base64HashedToken)
+                                    .add(HttpHeaders.NX_USER, username)
+                                    .build();
     }
 
     @Override

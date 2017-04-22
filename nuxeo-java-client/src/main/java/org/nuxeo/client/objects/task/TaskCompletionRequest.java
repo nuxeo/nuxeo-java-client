@@ -21,8 +21,8 @@ package org.nuxeo.client.objects.task;
 
 import java.util.Map;
 
-import org.nuxeo.client.ConstantsV1;
 import org.nuxeo.client.objects.Entity;
+import org.nuxeo.client.objects.EntityTypes;
 
 /**
  * @since 1.0
@@ -34,7 +34,7 @@ public class TaskCompletionRequest extends Entity {
     private Map<String, Object> variables;
 
     public TaskCompletionRequest() {
-        super(ConstantsV1.ENTITY_TYPE_TASK);
+        super(EntityTypes.TASK);
     }
 
     public String getComment() {

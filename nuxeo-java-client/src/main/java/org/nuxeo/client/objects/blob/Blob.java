@@ -25,8 +25,8 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import org.apache.commons.io.FileCleaningTracker;
-import org.nuxeo.client.ConstantsV1;
 import org.nuxeo.client.objects.Entity;
+import org.nuxeo.client.MediaTypes;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
@@ -56,7 +56,7 @@ public class Blob extends Entity {
     }
 
     public Blob(File file) {
-        this(file.getName(), ConstantsV1.APPLICATION_OCTET_STREAM);
+        this(file.getName(), MediaTypes.APPLICATION_OCTET_STREAM_S);
         this.file = file;
     }
 
@@ -98,7 +98,7 @@ public class Blob extends Entity {
     }
 
     public void setMimeType(String mimeType) {
-        this.mimeType = mimeType == null ? ConstantsV1.APPLICATION_OCTET_STREAM : mimeType;
+        this.mimeType = mimeType == null ? MediaTypes.APPLICATION_OCTET_STREAM_S : mimeType;
     }
 
     @JsonIgnore

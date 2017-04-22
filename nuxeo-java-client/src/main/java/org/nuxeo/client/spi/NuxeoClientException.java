@@ -19,12 +19,7 @@
  */
 package org.nuxeo.client.spi;
 
-import java.io.PrintStream;
-import java.io.PrintWriter;
-import java.lang.reflect.Field;
-import java.lang.reflect.Modifier;
-
-import org.nuxeo.client.ConstantsV1;
+import org.nuxeo.client.objects.EntityTypes;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -35,115 +30,105 @@ public class NuxeoClientException extends RuntimeException {
 
     private static final int INTERNAL_ERROR_STATUS = 666;
 
-    protected final int status;
-
-    protected String code;
-
-    protected final String type;
-
-    protected final String info;
+    @JsonProperty("entity-type")
+    private final String entityType;
 
     @JsonProperty("stacktrace")
     protected final String exception;
 
     @JsonProperty("exception")
-    protected final Throwable throwable;
+    private final Throwable throwable;
 
-    @JsonProperty("entity-type")
-    private final String entityType;
+    private final int status;
+
+    private String code;
+
+    private final String type;
+
+    private final String info;
 
     public NuxeoClientException(String message) {
         this(message, null);
     }
 
-    public NuxeoClientException(Throwable e) {
-        this("error", e);
+    /**
+     * Constructor for exceptions in client.
+     */
+    public NuxeoClientException(Throwable cause) {
+        this("An internal error occurred", cause);
     }
 
-    public NuxeoClientException(String message, Throwable e) {
-        super(message, e);
-        throwable = e;
+    /**
+     * Constructor for exceptions in client.
+     */
+    public NuxeoClientException(String message, Throwable cause) {
+        super(message, cause);
+        entityType = EntityTypes.EXCEPTION;
+        exception = message;
+        throwable = cause;
         status = INTERNAL_ERROR_STATUS;
         type = "Error";
-        info = e == null ? null : e.getMessage();
-        entityType = ConstantsV1.ENTITY_TYPE_EXCEPTION;
-        exception = message;
+        info = cause == null ? null : cause.getMessage();
     }
 
     public NuxeoClientException(int code, String message) {
         super("An error occurred, code=" + code);
-        info = message;
-        throwable = null;
-        type = null;
-        status = code;
-        entityType = ConstantsV1.ENTITY_TYPE_EXCEPTION;
+        entityType = EntityTypes.EXCEPTION;
         exception = null;
+        throwable = null;
+        status = code;
+        type = null;
+        info = message;
     }
 
     public String getEntityType() {
         return entityType;
     }
 
-    public int getStatus() {
-        return status;
-    }
-
-    public String getType() {
-        return type;
+    public String getException() {
+        return exception;
     }
 
     public Throwable getThrowable() {
         return throwable;
     }
 
-    public String getRemoteStackTrace() {
-        Field[] fields = this.getClass().getDeclaredFields();
-        StringBuilder result = new StringBuilder();
-        for (Field field : fields) {
-            try {
-                if (Modifier.isPrivate(field.getModifiers()) || field.get(this) == null) {
-                    continue;
-                }
-                result.append("  ");
-                result.append(field.getName());
-                result.append(": ");
-                result.append(field.get(this));
-            } catch (IllegalAccessException ex) {
-                System.out.println(ex);
-            }
-            result.append(System.lineSeparator());
-        }
-        return result.toString();
-    }
-
-    @Override
-    public void printStackTrace(PrintStream s) {
-        if (status == INTERNAL_ERROR_STATUS) {
-            super.printStackTrace(s);
-        }
-        s.println("Exception:");
-        s.print(getRemoteStackTrace());
-    }
-
-    @Override
-    public void printStackTrace(PrintWriter s) {
-        if (status == INTERNAL_ERROR_STATUS) {
-            super.printStackTrace(s);
-        }
-        s.println("Exception:");
-        s.print(getRemoteStackTrace());
+    public int getStatus() {
+        return status;
     }
 
     public String getCode() {
         return code;
     }
 
-    public String getException() {
-        return exception;
+    public String getType() {
+        return type;
     }
 
     public String getInfo() {
         return info;
+    }
+
+    @Override
+    public String getMessage() {
+        StringBuilder sb = new StringBuilder();
+        appendValue(sb, "status", status);
+        appendValue(sb, "code", code);
+        appendValue(sb, "type", type);
+        if (exception != null && !"null".equals(exception)) {
+            appendValue(sb, "exception", exception);
+            sb.append("------ END OF CLIENT EXCEPTION MESSAGE ------");
+        }
+        return sb.toString();
+    }
+
+    private void appendValue(StringBuilder sb, String key, Object value) {
+        if (value != null) {
+            if (sb.length() > 0) {
+                sb.append(", ");
+            }
+            sb.append(key).append('=').append(value.toString().replace("\\n", "\n"));
+        }
     }
 
 }

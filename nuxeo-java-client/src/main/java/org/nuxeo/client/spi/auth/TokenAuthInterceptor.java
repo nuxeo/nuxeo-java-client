@@ -25,12 +25,12 @@ import okhttp3.Interceptor;
 import okhttp3.Request;
 import okhttp3.Response;
 
+import org.nuxeo.client.HttpHeaders;
+
 /**
  * @since 0.1
  */
 public class TokenAuthInterceptor implements Interceptor {
-
-    protected static final String TOKEN_HEADER = "X-Authentication-Token";
 
     protected String token;
 
@@ -44,7 +44,7 @@ public class TokenAuthInterceptor implements Interceptor {
         Request request = chain.request()
                                .newBuilder()
                                .method(original.method(), original.body())
-                               .addHeader(TOKEN_HEADER, token)
+                               .addHeader(HttpHeaders.X_AUTHENTICATION_TOKEN, token)
                                .build();
         return chain.proceed(request);
     }

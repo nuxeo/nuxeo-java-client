@@ -30,7 +30,7 @@ import java.util.TimeZone;
  *
  * @since 1.0
  */
-public class DateParser {
+public class Dates {
 
     public static Calendar parse(String str) throws ParseException {
         if (str == null) {
@@ -90,7 +90,6 @@ public class DateParser {
     /**
      * 2011-10-23T12:00:00.00Z
      *
-     * @param date
      * @return the formatted date.
      */
     public static String formatW3CDateTime(Date date) {
@@ -99,20 +98,9 @@ public class DateParser {
         }
         Calendar cal = new GregorianCalendar(TimeZone.getTimeZone("UTC"));
         cal.setTime(date);
-        StringBuilder buf = new StringBuilder(32);
-        return buf.append(cal.get(Calendar.YEAR))
-                  .append('-')
-                  .append(pad(cal.get(Calendar.MONTH) + 1))
-                  .append('-')
-                  .append(pad(cal.get(Calendar.DATE)))
-                  .append('T')
-                  .append(pad(cal.get(Calendar.HOUR_OF_DAY)))
-                  .append(':')
-                  .append(pad(cal.get(Calendar.MINUTE)))
-                  .append(':')
-                  .append(pad(cal.get(Calendar.SECOND)))
-                  .append('Z')
-                  .toString();
+        return String.format("%04d-%02d-%02dT%02d:%02d:%02dZ", cal.get(Calendar.YEAR), cal.get(Calendar.MONTH) + 1,
+                cal.get(Calendar.DATE), cal.get(Calendar.HOUR_OF_DAY), cal.get(Calendar.MINUTE),
+                cal.get(Calendar.SECOND));
     }
 
     public static String formatW3CDateTimeMs(Date date) {
@@ -121,39 +109,12 @@ public class DateParser {
         }
         Calendar cal = new GregorianCalendar(TimeZone.getTimeZone("UTC"));
         cal.setTime(date);
-        StringBuilder buf = new StringBuilder(32);
-        return buf.append(cal.get(Calendar.YEAR))
-                  .append('-')
-                  .append(pad(cal.get(Calendar.MONTH) + 1))
-                  .append('-')
-                  .append(pad(cal.get(Calendar.DATE)))
-                  .append('T')
-                  .append(pad(cal.get(Calendar.HOUR_OF_DAY)))
-                  .append(':')
-                  .append(pad(cal.get(Calendar.MINUTE)))
-                  .append(':')
-                  .append(pad(cal.get(Calendar.SECOND)))
-                  .append('.')
-                  .append(pad3(cal.get(Calendar.MILLISECOND)))
-                  .append('Z')
-                  .toString();
+        return String.format("%04d-%02d-%02dT%02d:%02d:%02d.%03dZ", cal.get(Calendar.YEAR), cal.get(Calendar.MONTH) + 1,
+                cal.get(Calendar.DATE), cal.get(Calendar.HOUR_OF_DAY), cal.get(Calendar.MINUTE),
+                cal.get(Calendar.SECOND), cal.get(Calendar.MILLISECOND));
     }
 
-    private final static String pad(int i) {
-        return i < 10 ? "0".concat(String.valueOf(i)) : String.valueOf(i);
-    }
-
-    private final static String pad3(int i) {
-        if (i < 10) {
-            return "00".concat(String.valueOf(i));
-        } else if (i < 100) {
-            return "0".concat(String.valueOf(i));
-        } else {
-            return String.valueOf(i);
-        }
-    }
-
-    private final static int readYear(Calendar cal, String str, int off) throws ParseException {
+    private static int readYear(Calendar cal, String str, int off) throws ParseException {
         if (str.length() >= off + 4) {
             cal.set(Calendar.YEAR, Integer.parseInt(str.substring(off, off + 4)));
             return off + 4;
@@ -161,7 +122,7 @@ public class DateParser {
         throw new ParseException("Invalid year in date '" + str + "'", off);
     }
 
-    private final static int readMonth(Calendar cal, String str, int off) throws ParseException {
+    private static int readMonth(Calendar cal, String str, int off) throws ParseException {
         if (str.length() >= off + 2) {
             cal.set(Calendar.MONTH, Integer.parseInt(str.substring(off, off + 2)) - 1);
             return off + 2;
@@ -169,7 +130,7 @@ public class DateParser {
         throw new ParseException("Invalid month in date '" + str + "'", off);
     }
 
-    private final static int readDay(Calendar cal, String str, int off) throws ParseException {
+    private static int readDay(Calendar cal, String str, int off) throws ParseException {
         if (str.length() >= off + 2) {
             cal.set(Calendar.DATE, Integer.parseInt(str.substring(off, off + 2)));
             return off + 2;
@@ -177,7 +138,7 @@ public class DateParser {
         throw new ParseException("Invalid day in date '" + str + "'", off);
     }
 
-    private final static int readHours(Calendar cal, String str, int off) throws ParseException {
+    private static int readHours(Calendar cal, String str, int off) throws ParseException {
         if (str.length() >= off + 2) {
             cal.set(Calendar.HOUR, Integer.parseInt(str.substring(off, off + 2)));
             return off + 2;
@@ -185,7 +146,7 @@ public class DateParser {
         throw new ParseException("Invalid hours in date '" + str + "'", off);
     }
 
-    private final static int readMinutes(Calendar cal, String str, int off) throws ParseException {
+    private static int readMinutes(Calendar cal, String str, int off) throws ParseException {
         if (str.length() >= off + 2) {
             cal.set(Calendar.MINUTE, Integer.parseInt(str.substring(off, off + 2)));
             return off + 2;
@@ -193,7 +154,7 @@ public class DateParser {
         throw new ParseException("Invalid minutes in date '" + str + "'", off);
     }
 
-    private final static int readSeconds(Calendar cal, String str, int off) throws ParseException {
+    private static int readSeconds(Calendar cal, String str, int off) throws ParseException {
         if (str.length() >= off + 2) {
             cal.set(Calendar.SECOND, Integer.parseInt(str.substring(off, off + 2)));
             return off + 2;
@@ -204,13 +165,9 @@ public class DateParser {
     /**
      * Return -1 if no more content to read or the offset of the expected TZ
      *
-     * @param cal
-     * @param str
-     * @param off
-     * @return
      * @throws java.text.ParseException
      */
-    private final static int readMilliseconds(Calendar cal, String str, int off) throws ParseException {
+    private static int readMilliseconds(Calendar cal, String str, int off) throws ParseException {
         int e = str.indexOf('Z', off);
         if (e == -1) {
             e = str.indexOf('+', off);
@@ -224,7 +181,7 @@ public class DateParser {
         // If more than 3 digits truncate to 3 digits.
         int mslen = ms.length();
         if (mslen > 0) {
-            int f = 0;
+            int f;
             switch (mslen) {
             case 1:
                 f = Integer.parseInt(ms) * 100;
@@ -244,11 +201,11 @@ public class DateParser {
         return e;
     }
 
-    private static final boolean isChar(char c, String str, int off) {
+    private static boolean isChar(char c, String str, int off) {
         return str.length() > off && str.charAt(off) == c;
     }
 
-    private static final int readCharOpt(char c, Calendar cal, String str, int off) {
+    private static int readCharOpt(char c, Calendar cal, String str, int off) {
         if (str.length() > off) {
             if (str.charAt(off) == c) {
                 return off + 1;
@@ -257,7 +214,7 @@ public class DateParser {
         return -1;
     }
 
-    private final static boolean readTimeZone(Calendar cal, String str, int off) throws ParseException {
+    private static boolean readTimeZone(Calendar cal, String str, int off) throws ParseException {
         int len = str.length();
         if (len == off) {
             return false;
@@ -273,7 +230,7 @@ public class DateParser {
         } else if (c != '-') {
             throw new ParseException("Only Z, +, - prefixes are allowed in TZ", off);
         }
-        int h = 0;
+        int h;
         int m = 0;
         int d = len - off;
         if (d == 2) {

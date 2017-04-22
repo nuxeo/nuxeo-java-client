@@ -23,8 +23,8 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.nuxeo.client.ConstantsV1;
 import org.nuxeo.client.objects.Entity;
+import org.nuxeo.client.objects.EntityTypes;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -42,7 +42,7 @@ public class Blobs extends Entity {
     protected List<Blob> blobs = new ArrayList<>();
 
     public Blobs(List<Blob> blobs) {
-        super(ConstantsV1.ENTITY_TYPE_BLOBS);
+        super(EntityTypes.BLOBS);
         this.blobs = blobs;
     }
 

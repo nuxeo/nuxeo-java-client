@@ -18,6 +18,8 @@
  */
 package org.nuxeo.client.objects;
 
+import java.util.Objects;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
@@ -31,7 +33,11 @@ public class Entity {
     protected final String entityType;
 
     public Entity(String entityType) {
-        this.entityType = entityType;
+        this.entityType = Objects.requireNonNull(entityType, "'entity-type' must be provided");
+    }
+
+    public String getEntityType() {
+        return entityType;
     }
 
 }

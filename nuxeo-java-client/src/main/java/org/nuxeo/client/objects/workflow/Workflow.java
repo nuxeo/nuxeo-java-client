@@ -22,8 +22,8 @@ package org.nuxeo.client.objects.workflow;
 import java.util.List;
 import java.util.Map;
 
-import org.nuxeo.client.ConstantsV1;
 import org.nuxeo.client.objects.Entity;
+import org.nuxeo.client.objects.EntityTypes;
 
 /**
  * @since 0.1
@@ -49,7 +49,7 @@ public class Workflow extends Entity {
     protected String graphResource;
 
     public Workflow() {
-        super(ConstantsV1.ENTITY_TYPE_WORKFLOW);
+        super(EntityTypes.WORKFLOW);
     }
 
     public String getId() {

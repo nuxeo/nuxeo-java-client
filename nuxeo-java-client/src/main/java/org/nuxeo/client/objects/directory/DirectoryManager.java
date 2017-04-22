@@ -21,37 +21,38 @@ package org.nuxeo.client.objects.directory;
 
 import org.nuxeo.client.NuxeoClient;
 import org.nuxeo.client.methods.DirectoryManagerAPI;
-import org.nuxeo.client.objects.NuxeoEntity;
+import org.nuxeo.client.objects.AbstractConnectable;
 
 /**
  * @since 0.1
  */
-public class DirectoryManager extends NuxeoEntity {
+public class DirectoryManager extends AbstractConnectable<DirectoryManagerAPI> {
 
     public DirectoryManager(NuxeoClient nuxeoClient) {
-        super(null, nuxeoClient, DirectoryManagerAPI.class);
+        super(DirectoryManagerAPI.class, nuxeoClient);
     }
 
     public Directory fetchDirectory(String directoryName) {
-        return (Directory) getResponse(directoryName);
+        return fetchResponse(api.fetchDirectory(directoryName));
     }
 
     public Directory fetchDirectory(String directoryName, String currentPageIndex, String pageSize, String maxResults,
             String sortBy, String sortOrder) {
-        return (Directory) getResponse(directoryName, currentPageIndex, pageSize, maxResults, sortBy, sortOrder);
+        return fetchResponse(
+                api.fetchDirectory(directoryName, currentPageIndex, pageSize, maxResults, sortBy, sortOrder));
     }
 
     public DirectoryEntry createDirectoryEntry(String directoryName, DirectoryEntry directoryEntry) {
-        return (DirectoryEntry) getResponse(directoryName, directoryEntry);
+        return fetchResponse(api.createDirectoryEntry(directoryName, directoryEntry));
     }
 
     public DirectoryEntry updateDirectoryEntry(String directoryName, String directoryEntryId,
             DirectoryEntry directoryEntry) {
-        return (DirectoryEntry) getResponse(directoryName, directoryEntryId, directoryEntry);
+        return fetchResponse(api.updateDirectoryEntry(directoryName, directoryEntryId, directoryEntry));
     }
 
     public void deleteDirectoryEntry(String directoryName, String directoryEntryId) {
-        getResponse(directoryName, directoryEntryId);
+        fetchResponse(api.deleteDirectoryEntry(directoryName, directoryEntryId));
     }
 
 }

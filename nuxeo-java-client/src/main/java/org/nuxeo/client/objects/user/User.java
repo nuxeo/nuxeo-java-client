@@ -26,14 +26,15 @@ import java.util.Map;
 
 import org.nuxeo.client.ConstantsV1;
 import org.nuxeo.client.NuxeoClient;
-import org.nuxeo.client.objects.NuxeoEntity;
+import org.nuxeo.client.objects.Entity;
+import org.nuxeo.client.objects.EntityTypes;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
  * @since 0.1
  */
-public class User extends NuxeoEntity {
+public class User extends Entity {
 
     protected String id;
 
@@ -51,7 +52,7 @@ public class User extends NuxeoEntity {
     protected boolean isAnonymous;
 
     public User() {
-        super(ConstantsV1.ENTITY_TYPE_USER);
+        super(EntityTypes.USER);
     }
 
     public User(String entityType) {
@@ -59,7 +60,7 @@ public class User extends NuxeoEntity {
     }
 
     public User(String entityType, NuxeoClient nuxeoClient, Class api) {
-        super(entityType, nuxeoClient, api);
+        super(entityType);
     }
 
     public String getId() {

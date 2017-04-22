@@ -27,9 +27,10 @@ import java.util.List;
 import java.util.Objects;
 
 import org.nuxeo.client.ConstantsV1;
+import org.nuxeo.client.MediaTypes;
 import org.nuxeo.client.NuxeoClient;
 import org.nuxeo.client.methods.BatchUploadAPI;
-import org.nuxeo.client.objects.NuxeoEntity;
+import org.nuxeo.client.objects.AbstractConnectable;
 import org.nuxeo.client.objects.Operation;
 import org.nuxeo.client.spi.NuxeoClientException;
 
@@ -41,7 +42,7 @@ import okhttp3.RequestBody;
 /**
  * @since 0.1
  */
-public class BatchUpload extends NuxeoEntity {
+public class BatchUpload extends AbstractConnectable<BatchUploadAPI> {
 
     @JsonIgnore
     protected int chunkSize;
@@ -54,12 +55,12 @@ public class BatchUpload extends NuxeoEntity {
 
     protected long uploadedSize;
 
-    public BatchUpload(NuxeoClient nuxeoClient) {
-        super(null, nuxeoClient, BatchUploadAPI.class);
+    public BatchUpload() {
+        super(BatchUploadAPI.class);
     }
 
-    public BatchUpload() {
-        super(null);
+    public BatchUpload(NuxeoClient nuxeoClient) {
+        super(BatchUploadAPI.class, nuxeoClient);
     }
 
     public String getBatchId() {
@@ -79,15 +80,15 @@ public class BatchUpload extends NuxeoEntity {
     }
 
     public BatchUpload createBatch() {
-        return (BatchUpload) getResponse();
+        return fetchResponse(api.createBatch());
     }
 
     public BatchUpload upload(String name, long length, String fileType, String batchId, String fileIdx, File file) {
         if (chunkSize == 0) {
             // Post file
             RequestBody fbody = RequestBody.create(MediaType.parse(fileType), file);
-            return (BatchUpload) getResponse(name, Objects.toString(length), fileType, ConstantsV1.UPLOAD_NORMAL_TYPE,
-                    "0", "1", batchId, fileIdx, fbody);
+            return fetchResponse(api.upload(name, Objects.toString(length), fileType, ConstantsV1.UPLOAD_NORMAL_TYPE,
+                    "0", "1", batchId, fileIdx, fbody));
         }
         Object response = null;
         int contentLength = 0;
@@ -97,10 +98,10 @@ public class BatchUpload extends NuxeoEntity {
         try (BufferedInputStream bis = new BufferedInputStream(new FileInputStream(file))) {
             while ((contentLength = bis.read(buffer)) > 0) {
                 // Post chunk as a stream
-                RequestBody requestBody = RequestBody.create(MediaType.parse(ConstantsV1.APPLICATION_OCTET_STREAM),
+                RequestBody requestBody = RequestBody.create(MediaTypes.APPLICATION_OCTET_STREAM.toOkHttpMediaType(),
                         buffer, 0, contentLength);
-                response = getResponse(name, Objects.toString(length), fileType, ConstantsV1.UPLOAD_CHUNKED_TYPE,
-                        Objects.toString(chunkIndex), Objects.toString(chunkCount), batchId, fileIdx, requestBody);
+                response = fetchResponse(api.upload(name, Objects.toString(length), fileType, ConstantsV1.UPLOAD_CHUNKED_TYPE,
+                        Objects.toString(chunkIndex), Objects.toString(chunkCount), batchId, fileIdx, requestBody));
                 chunkIndex++;
             }
             return (BatchUpload) response;
@@ -110,7 +111,7 @@ public class BatchUpload extends NuxeoEntity {
     }
 
     public void cancel(String batchId) {
-        getResponse(batchId);
+        fetchResponse(api.cancel(batchId));
     }
 
     public void cancel() {
@@ -118,11 +119,11 @@ public class BatchUpload extends NuxeoEntity {
     }
 
     public List<BatchFile> fetchBatchFiles(String batchId) {
-        return (List<BatchFile>) getResponse(batchId);
+        return fetchResponse(api.fetchBatchFiles(batchId));
     }
 
     public BatchFile fetchBatchFile(String batchId, String fileIdx) {
-        return (BatchFile) getResponse(batchId, fileIdx);
+        return fetchResponse(api.fetchBatchFile(batchId, fileIdx));
     }
 
     public BatchFile fetchBatchFile(String fileIdx) {
