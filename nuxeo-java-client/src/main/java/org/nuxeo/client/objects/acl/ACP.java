@@ -21,22 +21,22 @@ package org.nuxeo.client.objects.acl;
 
 import java.util.List;
 
-import org.nuxeo.client.ConstantsV1;
-import org.nuxeo.client.objects.NuxeoEntity;
+import org.nuxeo.client.objects.Entity;
+import org.nuxeo.client.objects.EntityTypes;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
  * @since 0.1
  */
-public class ACP extends NuxeoEntity {
-
-    public ACP() {
-        super(ConstantsV1.ENTITY_TYPE_ACP);
-    }
+public class ACP extends Entity {
 
     @JsonProperty("acl")
     protected List<ACL> acls;
+
+    public ACP() {
+        super(EntityTypes.ACP);
+    }
 
     public List<ACL> getAcls() {
         return acls;

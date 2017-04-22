@@ -18,6 +18,8 @@
  */
 package org.nuxeo.client.objects;
 
+import java.util.Objects;
+
 import org.nuxeo.client.NuxeoClient;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -26,21 +28,29 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  * @param <A> The api interface type.
  * @since 3.0
  */
-public class RepositoryEntity<A> extends ConnectableEntity<A> {
+public class ConnectableEntity<A> extends AbstractConnectable<A> {
 
-    @JsonProperty("repository")
-    protected String repositoryName;
+    @JsonProperty("entity-type")
+    protected final String entityType;
 
-    public RepositoryEntity(String entityType, Class<A> apiClass) {
-        super(entityType, apiClass);
+    /**
+     * Minimal constructor to use benefit of injection mechanism.
+     */
+    protected ConnectableEntity(String entityType, Class<A> apiClass) {
+        super(apiClass);
+        this.entityType = Objects.requireNonNull(entityType, "'entity-type' must be provider");
     }
 
-    public RepositoryEntity(String entityType, Class<A> apiClass, NuxeoClient nuxeoClient) {
-        super(entityType, apiClass, nuxeoClient);
+    /**
+     * The constructor to use.
+     */
+    protected ConnectableEntity(String entityType, Class<A> apiClass, NuxeoClient nuxeoClient) {
+        super(apiClass, nuxeoClient);
+        this.entityType = Objects.requireNonNull(entityType, "'entity-type' must be provider");
     }
 
-    public String getRepositoryName() {
-        return repositoryName;
+    public String getEntityType() {
+        return entityType;
     }
 
 }

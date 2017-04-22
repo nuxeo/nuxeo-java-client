@@ -21,7 +21,7 @@ package org.nuxeo.client.objects.acl;
 
 import java.util.Calendar;
 
-import org.nuxeo.client.util.DateUtils;
+import org.nuxeo.client.util.Dates;
 
 /**
  * @since 0.1
@@ -150,11 +150,11 @@ public class ACE {
     }
 
     public String getBeginAsString() {
-        return DateUtils.formatDate(begin.getTime());
+        return Dates.formatW3CDateTime(begin.getTime());
     }
 
     public String getEndAsString() {
-        return DateUtils.formatDate(end.getTime());
+        return Dates.formatW3CDateTime(end.getTime());
     }
 
 }

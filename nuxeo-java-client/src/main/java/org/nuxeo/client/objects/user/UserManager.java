@@ -21,7 +21,7 @@ package org.nuxeo.client.objects.user;
 
 import org.nuxeo.client.NuxeoClient;
 import org.nuxeo.client.methods.UserManagerAPI;
-import org.nuxeo.client.objects.NuxeoEntity;
+import org.nuxeo.client.objects.AbstractConnectable;
 
 import okhttp3.ResponseBody;
 import retrofit2.Callback;
@@ -29,10 +29,10 @@ import retrofit2.Callback;
 /**
  * @since 0.1
  */
-public class UserManager extends NuxeoEntity<UserManagerAPI> {
+public class UserManager extends AbstractConnectable<UserManagerAPI> {
 
     public UserManager(NuxeoClient nuxeoClient) {
-        super(null, UserManagerAPI.class, nuxeoClient);
+        super(UserManagerAPI.class, nuxeoClient);
     }
 
     /** Sync **/

@@ -88,7 +88,7 @@ public class TestCurrentUser extends TestBase {
         login();
         CurrentUser currentUser = nuxeoClient.fetchCurrentUser();
         assertEquals("Administrator", currentUser.getUsername());
-        setAuthenticationMethod(new PortalSSOAuthInterceptor("nuxeo5secretkey", "user1"));
+        setAuthenticationMethod(new PortalSSOAuthInterceptor("user1", "nuxeo5secretkey"));
         currentUser = nuxeoClient.fetchCurrentUser();
         assertEquals("user1", currentUser.getUsername());
     }

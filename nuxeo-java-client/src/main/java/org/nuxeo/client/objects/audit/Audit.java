@@ -21,8 +21,8 @@ package org.nuxeo.client.objects.audit;
 
 import java.util.List;
 
-import org.nuxeo.client.ConstantsV1;
 import org.nuxeo.client.objects.Entity;
+import org.nuxeo.client.objects.EntityTypes;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -30,10 +30,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  * @since 0.1
  */
 public class Audit extends Entity {
-
-    public Audit() {
-        super(ConstantsV1.ENTITY_TYPE_AUDIT);
-    }
 
     @JsonProperty("entries")
     protected List<LogEntry> logEntries;
@@ -69,6 +65,10 @@ public class Audit extends Entity {
     protected int pageIndex;
 
     protected int pageCount;
+
+    public Audit() {
+        super(EntityTypes.AUDIT);
+    }
 
     public List<LogEntry> getLogEntries() {
         return logEntries;

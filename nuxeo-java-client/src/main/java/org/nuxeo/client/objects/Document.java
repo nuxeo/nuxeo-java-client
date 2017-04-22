@@ -53,6 +53,8 @@ import retrofit2.Callback;
  */
 public class Document extends RepositoryEntity<RepositoryAPI> {
 
+    public static final String DEFAULT_FILE_CONTENT = "file:content";
+
     protected String path;
 
     protected String type;
@@ -110,7 +112,7 @@ public class Document extends RepositoryEntity<RepositoryAPI> {
     public Document(String id, String type, List<String> facets, String changeToken, String path, String state,
             String lockOwner, String lockCreated, String repositoryName, String versionLabel, String isCheckedOut,
             boolean isProxy, Map<String, Object> properties, Map<String, Object> contextParameters) {
-        super(ConstantsV1.ENTITY_TYPE_DOCUMENT, RepositoryAPI.class);
+        super(EntityTypes.DOCUMENT, RepositoryAPI.class);
         uid = id;
         this.changeToken = changeToken;
         this.facets = facets;
@@ -127,7 +129,7 @@ public class Document extends RepositoryEntity<RepositoryAPI> {
     }
 
     public Document(String title, String type) {
-        super(ConstantsV1.ENTITY_TYPE_DOCUMENT, RepositoryAPI.class);
+        super(EntityTypes.DOCUMENT, RepositoryAPI.class);
         uid = null;
         this.title = title;
         name = title;
@@ -172,7 +174,7 @@ public class Document extends RepositoryEntity<RepositoryAPI> {
      * @param document the document to copy from the sub class.
      */
     public Document(Document document) {
-        super(ConstantsV1.ENTITY_TYPE_DOCUMENT, RepositoryAPI.class);
+        super(EntityTypes.DOCUMENT, RepositoryAPI.class);
         type = ConstantsV1.DEFAULT_DOC_TYPE;
         try {
             Class<?> superclass = this.getClass().getSuperclass();
@@ -202,7 +204,7 @@ public class Document extends RepositoryEntity<RepositoryAPI> {
     }
 
     public String getInputType() {
-        return ConstantsV1.ENTITY_TYPE_DOCUMENT;
+        return EntityTypes.DOCUMENT;
     }
 
     public String getPath() {
@@ -553,7 +555,7 @@ public class Document extends RepositoryEntity<RepositoryAPI> {
     /* Blobs Sync */
 
     public Blob fetchBlob() {
-        return fetchBlob(ConstantsV1.DEFAULT_FILE_CONTENT);
+        return fetchBlob(DEFAULT_FILE_CONTENT);
     }
 
     public Blob fetchBlob(String fieldPath) {
@@ -568,7 +570,7 @@ public class Document extends RepositoryEntity<RepositoryAPI> {
     /* Blobs Async */
 
     public void fetchBlob(Callback<Blob> callback) {
-        fetchBlob(ConstantsV1.DEFAULT_FILE_CONTENT, callback);
+        fetchBlob(DEFAULT_FILE_CONTENT, callback);
     }
 
     public void fetchBlob(String fieldPath, Callback<Blob> callback) {

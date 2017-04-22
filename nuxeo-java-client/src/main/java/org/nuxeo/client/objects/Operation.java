@@ -24,24 +24,23 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.nuxeo.client.ConstantsV1;
 import org.nuxeo.client.NuxeoClient;
 import org.nuxeo.client.methods.OperationAPI;
 import org.nuxeo.client.objects.blob.Blob;
 import org.nuxeo.client.objects.blob.Blobs;
 import org.nuxeo.client.objects.operation.OperationBody;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
 import retrofit2.Callback;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 /**
  * @since 0.1
  */
-public class Operation extends NuxeoEntity<OperationAPI> {
+public class Operation extends ConnectableEntity<OperationAPI> {
 
     public static final String INPUT_PART = "input";
 
@@ -53,7 +52,7 @@ public class Operation extends NuxeoEntity<OperationAPI> {
     protected String operationId;
 
     public Operation(NuxeoClient nuxeoClient) {
-        super(ConstantsV1.ENTITY_TYPE_OPERATION, OperationAPI.class, nuxeoClient);
+        super(EntityTypes.OPERATION, OperationAPI.class, nuxeoClient);
         body = new OperationBody();
     }
 

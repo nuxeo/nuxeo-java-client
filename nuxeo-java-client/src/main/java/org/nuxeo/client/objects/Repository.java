@@ -19,7 +19,6 @@
  */
 package org.nuxeo.client.objects;
 
-import org.nuxeo.client.ConstantsV1;
 import org.nuxeo.client.NuxeoClient;
 import org.nuxeo.client.methods.RepositoryAPI;
 import org.nuxeo.client.objects.acl.ACP;
@@ -40,19 +39,11 @@ public class Repository extends RepositoryEntity<RepositoryAPI> {
     protected Document root;
 
     public Repository(NuxeoClient nuxeoClient) {
-        super(ConstantsV1.ENTITY_TYPE_DOCUMENT, RepositoryAPI.class, nuxeoClient);
+        super(EntityTypes.DOCUMENT, RepositoryAPI.class, nuxeoClient);
     }
 
     public Repository repositoryName(String repositoryName) {
         super.repositoryName = repositoryName;
-        return this;
-    }
-
-    /**
-     * Force the cache refresh.
-     */
-    public Repository refreshCache() {
-        this.refreshCache = true;
         return this;
     }
 

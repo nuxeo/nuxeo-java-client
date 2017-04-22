@@ -24,23 +24,23 @@ import java.util.List;
 import org.apache.commons.lang3.StringUtils;
 import org.nuxeo.client.NuxeoClient;
 import org.nuxeo.client.methods.TaskManagerAPI;
-import org.nuxeo.client.objects.NuxeoEntity;
+import org.nuxeo.client.objects.AbstractConnectable;
 
 /**
  * @since 1.0
  */
-public class TaskManager extends NuxeoEntity {
+public class TaskManager extends AbstractConnectable<TaskManagerAPI> {
 
     public TaskManager(NuxeoClient nuxeoClient) {
-        super(null, TaskManagerAPI.class, nuxeoClient);
+        super(TaskManagerAPI.class, nuxeoClient);
     }
 
     public Tasks fetchTasks(String userId, String workflowInstanceId, String workflowModelName) {
-        return (Tasks) getResponse(userId, workflowInstanceId, workflowModelName);
+        return fetchResponse(api.fetchTasks(userId, workflowInstanceId, workflowModelName));
     }
 
     public Task fetchTask(String taskId) {
-        return (Task) getResponse(taskId);
+        return fetchResponse(api.fetchTask(taskId));
     }
 
     public Task reassign(String taskId, List<String> actors, String comment) {
@@ -49,7 +49,7 @@ public class TaskManager extends NuxeoEntity {
     }
 
     public Task reassign(String taskId, String actors, String comment) {
-        return (Task) getResponse(taskId, actors, comment);
+        return fetchResponse(api.reassign(taskId, actors, comment));
     }
 
     public Task delegate(String taskId, List<String> actors, String comment) {
@@ -58,10 +58,11 @@ public class TaskManager extends NuxeoEntity {
     }
 
     public Task delegate(String taskId, String actors, String comment) {
-        return (Task) getResponse(taskId, actors, comment);
+        return fetchResponse(api.delegate(taskId, actors, comment));
     }
 
     public Task complete(String taskId, String action, TaskCompletionRequest taskCompletionRequest) {
-        return (Task) getResponse(taskId, action, taskCompletionRequest);
+        return fetchResponse(api.complete(taskId, action, taskCompletionRequest));
     }
+
 }

@@ -21,19 +21,15 @@ package org.nuxeo.client.objects.user;
 
 import java.util.List;
 
-import org.nuxeo.client.ConstantsV1;
-import org.nuxeo.client.objects.NuxeoEntity;
+import org.nuxeo.client.objects.Entity;
+import org.nuxeo.client.objects.EntityTypes;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
  * @since 0.1
  */
-public class Users extends NuxeoEntity {
-
-    public Users() {
-        super(ConstantsV1.ENTITY_TYPE_USERS);
-    }
+public class Users extends Entity {
 
     @JsonProperty("entries")
     protected List<User> users;
@@ -67,6 +63,10 @@ public class Users extends NuxeoEntity {
     protected int pageIndex;
 
     protected int pageCount;
+
+    public Users() {
+        super(EntityTypes.USERS);
+    }
 
     public List<User> getUsers() {
         return users;

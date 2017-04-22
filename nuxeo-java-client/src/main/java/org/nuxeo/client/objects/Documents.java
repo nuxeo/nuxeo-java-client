@@ -21,7 +21,6 @@ package org.nuxeo.client.objects;
 
 import java.util.List;
 
-import org.nuxeo.client.ConstantsV1;
 import org.nuxeo.client.NuxeoClient;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -67,11 +66,11 @@ public class Documents extends Entity implements Connectable {
     protected int pageCount;
 
     public Documents() {
-        super(ConstantsV1.ENTITY_TYPE_DOCUMENTS);
+        super(EntityTypes.DOCUMENTS);
     }
 
     public Documents(List<Document> documents) {
-        super(ConstantsV1.ENTITY_TYPE_DOCUMENTS);
+        this();
         this.documents = documents;
     }
 

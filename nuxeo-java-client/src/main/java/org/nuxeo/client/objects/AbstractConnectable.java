@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2016-2017 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2017 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,22 +19,23 @@
  */
 package org.nuxeo.client.objects;
 
+import java.util.Objects;
+
 import org.nuxeo.client.NuxeoClient;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
 
 import retrofit2.Call;
 import retrofit2.Callback;
 
 /**
  * @param <A> The api interface type.
- * @since 0.1
+ * @since 3.0
  */
-public abstract class NuxeoEntity<A> extends Entity implements Connectable {
+public class AbstractConnectable<A> implements Connectable {
 
     @JsonIgnore
-    protected Class<A> apiClass;
+    protected final Class<A> apiClass;
 
     @JsonIgnore
     protected NuxeoClient nuxeoClient;
@@ -42,38 +43,17 @@ public abstract class NuxeoEntity<A> extends Entity implements Connectable {
     @JsonIgnore
     protected A api;
 
-    @JsonProperty("repository")
-    protected String repositoryName;
-
-    @JsonIgnore
-    protected boolean refreshCache = false;
-
-    /**
-     * For Serialization purpose.
-     *
-     * @deprecated check that deserialization is not an issue and if all entity need retrofit ie: it makes call to rest
-     *             api
-     */
-    @Deprecated
-    public NuxeoEntity(String entityType) {
-        this(entityType, null);
-    }
-
     /**
      * Minimal constructor to use benefit of injection mechanism.
      */
-    public NuxeoEntity(String entityType, Class<A> apiClass) {
-        super(entityType);
-        this.apiClass = apiClass;
+    protected AbstractConnectable(Class<A> apiClass) {
+        this.apiClass = Objects.requireNonNull(apiClass, "API interface must be provided");
     }
 
-    /**
-     * The constructor to use.
-     */
-    protected NuxeoEntity(String entityType, Class<A> apiClass, NuxeoClient nuxeoClient) {
-        this(entityType, apiClass);
+    protected AbstractConnectable(Class<A> apiClass, NuxeoClient nuxeoClient) {
+        this(apiClass);
         this.nuxeoClient = nuxeoClient;
-        this.api = nuxeoClient.getApi(apiClass);
+        this.api = nuxeoClient.createApi(apiClass);
     }
 
     protected <T> T fetchResponse(Call<T> call) {
@@ -87,6 +67,7 @@ public abstract class NuxeoEntity<A> extends Entity implements Connectable {
     @Override
     public void reconnectWith(NuxeoClient nuxeoClient) {
         this.nuxeoClient = nuxeoClient;
-        this.api = nuxeoClient.getApi(apiClass);
+        this.api = nuxeoClient.createApi(apiClass);
     }
+
 }

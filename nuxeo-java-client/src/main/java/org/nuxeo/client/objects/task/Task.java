@@ -23,17 +23,13 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.Map;
 
-import org.nuxeo.client.ConstantsV1;
 import org.nuxeo.client.objects.Entity;
+import org.nuxeo.client.objects.EntityTypes;
 
 /**
  * @since 1.0
  */
 public class Task extends Entity {
-
-    public Task() {
-        super(ConstantsV1.ENTITY_TYPE_TASK);
-    }
 
     protected String id;
 
@@ -62,6 +58,10 @@ public class Task extends Entity {
     protected TaskVariables variables;
 
     protected TaskInfo taskInfo;
+
+    public Task() {
+        super(EntityTypes.TASK);
+    }
 
     public String getId() {
         return id;

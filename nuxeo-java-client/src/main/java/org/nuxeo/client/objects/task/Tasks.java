@@ -21,8 +21,8 @@ package org.nuxeo.client.objects.task;
 
 import java.util.List;
 
-import org.nuxeo.client.ConstantsV1;
 import org.nuxeo.client.objects.Entity;
+import org.nuxeo.client.objects.EntityTypes;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -32,7 +32,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public class Tasks extends Entity {
 
     public Tasks() {
-        super(ConstantsV1.ENTITY_TYPE_TASKS);
+        super(EntityTypes.TASKS);
     }
 
     @JsonProperty("entries")

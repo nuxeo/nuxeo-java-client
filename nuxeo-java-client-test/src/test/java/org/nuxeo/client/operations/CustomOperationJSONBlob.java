@@ -37,6 +37,7 @@ public class CustomOperationJSONBlob {
     public Blob run() {
 
         JSONObject attributes = new JSONObject();
+        attributes.put("entity-type", "custom-json-object");
         attributes.put("userId", "1");
         attributes.put("token", "token");
 

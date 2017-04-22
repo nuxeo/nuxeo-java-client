@@ -21,19 +21,15 @@ package org.nuxeo.client.objects.user;
 
 import java.util.List;
 
-import org.nuxeo.client.ConstantsV1;
-import org.nuxeo.client.objects.NuxeoEntity;
+import org.nuxeo.client.objects.Entity;
+import org.nuxeo.client.objects.EntityTypes;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
  * @since 0.1
  */
-public class Groups extends NuxeoEntity {
-
-    public Groups() {
-        super(ConstantsV1.ENTITY_TYPE_GROUPS);
-    }
+public class Groups extends Entity {
 
     @JsonProperty("entries")
     protected List<Group> groups;
@@ -130,6 +126,10 @@ public class Groups extends NuxeoEntity {
 
     public int getPageCount() {
         return pageCount;
+    }
+
+    public Groups() {
+        super(EntityTypes.GROUPS);
     }
 
 }

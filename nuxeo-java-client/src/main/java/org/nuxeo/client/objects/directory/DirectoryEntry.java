@@ -19,21 +19,22 @@
  */
 package org.nuxeo.client.objects.directory;
 
-import org.nuxeo.client.ConstantsV1;
+import org.nuxeo.client.methods.DirectoryManagerAPI;
 import org.nuxeo.client.objects.Entity;
+import org.nuxeo.client.objects.EntityTypes;
 
 /**
  * @since 0.1
  */
 public class DirectoryEntry extends Entity {
 
-    public DirectoryEntry() {
-        super(ConstantsV1.ENTITY_TYPE_DIRECTORY_ENTRY);
-    }
-
     protected String directoryName;
 
     protected DirectoryEntryProperties properties;
+
+    public DirectoryEntry() {
+        super(EntityTypes.DIRECTORY_ENTRY);
+    }
 
     public String getDirectoryName() {
         return directoryName;

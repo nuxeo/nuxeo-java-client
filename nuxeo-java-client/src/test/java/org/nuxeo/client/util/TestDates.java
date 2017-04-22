@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2016-2017 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2017 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,27 +14,29 @@
  * limitations under the License.
  *
  * Contributors:
- *     Vladimir Pasquier <vpasquier@nuxeo.com>
  *     Kevin Leturc <kleturc@nuxeo.com>
  */
 package org.nuxeo.client.util;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+
 import java.util.Date;
 
+import org.junit.Test;
+
 /**
- * @since 1.0
+ * @since 3.0
  */
-public class DateUtils {
+public class TestDates {
 
-    private DateUtils() {
-    }
-
-    public static Date parseDate(String date) {
-        return DateParser.parseW3CDateTime(date);
-    }
-
-    public static String formatDate(Date date) {
-        return DateParser.formatW3CDateTime(date);
+    @Test
+    public void test() {
+        Date date = new Date();
+        String dateString = Dates.formatW3CDateTimeMs(date);
+        assertNotNull(dateString);
+        Date resultDate = Dates.parseW3CDateTime(dateString);
+        assertEquals(date, resultDate);
     }
 
 }

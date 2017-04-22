@@ -22,14 +22,12 @@ package org.nuxeo.client.objects;
 import java.util.List;
 import java.util.Map;
 
-import org.nuxeo.client.ConstantsV1;
-
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
  * @since 0.1
  */
-public class RecordSet extends NuxeoEntity {
+public class RecordSet extends Entity {
 
     protected int pageSize = -1;
 
@@ -41,11 +39,11 @@ public class RecordSet extends NuxeoEntity {
     protected List<Map<String, String>> uuids;
 
     public RecordSet() {
-        super(ConstantsV1.ENTITY_TYPE_DOCUMENTS);
+        super(EntityTypes.DOCUMENTS);
     }
 
     public RecordSet(int currentPageIndex, int pageSize, int numberOfPages) {
-        super(ConstantsV1.ENTITY_TYPE_DOCUMENTS);
+        super(EntityTypes.DOCUMENTS);
         this.currentPageIndex = currentPageIndex;
         this.pageSize = pageSize;
         this.numberOfPages = numberOfPages;

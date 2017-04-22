@@ -21,8 +21,8 @@ package org.nuxeo.client.objects.workflow;
 
 import java.util.List;
 
-import org.nuxeo.client.ConstantsV1;
 import org.nuxeo.client.objects.Entity;
+import org.nuxeo.client.objects.EntityTypes;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -35,7 +35,7 @@ public class Workflows extends Entity {
     protected List<Workflow> workflows;
 
     public Workflows() {
-        super(ConstantsV1.ENTITY_TYPE_WORKFLOWS);
+        super(EntityTypes.WORKFLOWS);
     }
 
     public List<Workflow> getWorkflows() {

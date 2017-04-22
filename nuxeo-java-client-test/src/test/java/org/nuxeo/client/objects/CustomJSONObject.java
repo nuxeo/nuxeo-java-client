@@ -29,8 +29,10 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
-@JsonPropertyOrder({ "userId", "token" })
-public class CustomJSONObject {
+@JsonPropertyOrder({ "entity-type", "userId", "token" })
+public class CustomJSONObject extends Entity {
+
+    public static final String ENTITY_TYPE = "custom-json-object";
 
     @JsonProperty("userId")
     private String userId;
@@ -41,22 +43,22 @@ public class CustomJSONObject {
     @JsonIgnore
     private Map<String, Object> additionalProperties = new HashMap<>();
 
-    @JsonProperty("userId")
+    public CustomJSONObject() {
+        super(ENTITY_TYPE);
+    }
+
     public String getUserId() {
         return userId;
     }
 
-    @JsonProperty("userId")
     public void setUserId(String userId) {
         this.userId = userId;
     }
 
-    @JsonProperty("token")
     public String getToken() {
         return token;
     }
 
-    @JsonProperty("token")
     public void setToken(String token) {
         this.token = token;
     }
