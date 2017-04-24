@@ -142,7 +142,7 @@ public class ITUpload extends AbstractITBase {
         assertNotNull(doc);
         doc.setPropertyValue("file:content", batchUpload.getBatchBlob());
         doc = doc.updateDocument();
-        assertEquals("sample.jpg", ((Map) doc.get("file:content")).get("name"));
+        assertEquals("sample.jpg", ((Map) doc.getPropertyValue("file:content")).get("name"));
     }
 
     @Test
