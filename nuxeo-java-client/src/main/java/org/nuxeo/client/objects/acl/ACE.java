@@ -150,10 +150,16 @@ public class ACE {
     }
 
     public String getBeginAsString() {
+        if (begin == null) {
+            return null;
+        }
         return Dates.formatW3CDateTime(begin.getTime());
     }
 
     public String getEndAsString() {
+        if (end == null) {
+            return null;
+        }
         return Dates.formatW3CDateTime(end.getTime());
     }
 
