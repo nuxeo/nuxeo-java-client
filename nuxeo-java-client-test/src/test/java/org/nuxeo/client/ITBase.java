@@ -108,7 +108,7 @@ public class ITBase {
         assertEquals("default", document.getRepositoryName());
         assertEquals("project", document.getState());
         assertEquals("note", document.getTitle());
-        assertEquals("note", document.get("dc:title"));
+        assertEquals("note", document.getPropertyValue("dc:title"));
 
         Document documentUpdated = new Document("test update", "Note");
         documentUpdated.setId(document.getId());
@@ -118,13 +118,13 @@ public class ITBase {
         // Update
         documentUpdated = repository.updateDocument(documentUpdated);
         assertNotNull(documentUpdated);
-        assertEquals("note updated", documentUpdated.get("dc:title"));
+        assertEquals("note updated", documentUpdated.getPropertyValue("dc:title"));
 
         // Fetch
         // Check if the document in the repository has been changed.
         Document result = repository.fetchDocumentById(documentUpdated.getId());
         assertNotNull(result);
-        assertEquals("note updated", result.get("dc:title"));
+        assertEquals("note updated", result.getPropertyValue("dc:title"));
 
         // Delete
         repository.deleteDocument(result);

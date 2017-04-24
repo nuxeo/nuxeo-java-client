@@ -167,7 +167,7 @@ public class ITRepository extends AbstractITBase {
         // Retrieve a document from query
         NuxeoResponseCache cache = new ResultCacheInMemory();
         Document document = nuxeoClient.setCache(cache).repository().fetchDocumentByPath("/folder_1/note_0");
-        assertEquals("Note 0", document.get("dc:title"));
+        assertEquals("Note 0", document.getPropertyValue("dc:title"));
         assertTrue(nuxeoClient.getNuxeoCache().size() == 1);
 
         // Update this document
@@ -175,17 +175,17 @@ public class ITRepository extends AbstractITBase {
         documentUpdated.setId(document.getId());
         documentUpdated.setPropertyValue("dc:title", "note updated");
         documentUpdated = nuxeoClient.repository().updateDocument(documentUpdated);
-        assertEquals("note updated", documentUpdated.get("dc:title"));
+        assertEquals("note updated", documentUpdated.getPropertyValue("dc:title"));
 
         // Retrieve again this document within cache
         document = nuxeoClient.repository().fetchDocumentByPath("/folder_1/note_0");
-        assertEquals("Note 0", document.get("dc:title"));
+        assertEquals("Note 0", document.getPropertyValue("dc:title"));
         assertTrue(nuxeoClient.getNuxeoCache().size() == 2);
 
         // Refresh the cache and check the update has been recovered.
         cache.invalidateAll();
         document = nuxeoClient.repository().fetchDocumentByPath("/folder_1/note_0");
-        assertEquals("note updated", document.get("dc:title"));
+        assertEquals("note updated", document.getPropertyValue("dc:title"));
         assertTrue(nuxeoClient.getNuxeoCache().size() == 1);
     }
 
@@ -419,14 +419,14 @@ public class ITRepository extends AbstractITBase {
         assertEquals("2017-05-04T03:02:01.000Z", calendarStr);
 
         Document file = new Document("My Title", "File");
-        file.set("dc:issued", calendarStr);
+        file.setPropertyValue("dc:issued", calendarStr);
         file = nuxeoClient.repository().createDocumentByPath("/", file);
         assertEquals("2017-05-04T03:02:01.000Z", file.getPropertyValue("dc:issued"));
 
         calendar.add(Calendar.MONTH, 1);
         calendarStr = formatter.format(calendar.getTime());
         assertEquals("2017-06-04T03:02:01.000Z", calendarStr);
-        file.set("dc:issued", calendarStr);
+        file.setPropertyValue("dc:issued", calendarStr);
         file = nuxeoClient.repository().updateDocument(file);
         assertEquals("2017-06-04T03:02:01.000Z", file.getPropertyValue("dc:issued"));
     }
@@ -441,14 +441,14 @@ public class ITRepository extends AbstractITBase {
         assertEquals("2017-05-04T03:02:01.000+02:00", calendarStr);
 
         Document file = new Document("My Title", "File");
-        file.set("dc:issued", calendarStr);
+        file.setPropertyValue("dc:issued", calendarStr);
         file = nuxeoClient.repository().createDocumentByPath("/", file);
         assertEquals("2017-05-04T01:02:01.000Z", file.getPropertyValue("dc:issued"));
 
         calendar.add(Calendar.MONTH, 1);
         calendarStr = formatter.format(calendar.getTime());
         assertEquals("2017-06-04T03:02:01.000+02:00", calendarStr);
-        file.set("dc:issued", calendarStr);
+        file.setPropertyValue("dc:issued", calendarStr);
         file = nuxeoClient.repository().updateDocument(file);
         assertEquals("2017-06-04T01:02:01.000Z", file.getPropertyValue("dc:issued"));
     }
@@ -461,13 +461,13 @@ public class ITRepository extends AbstractITBase {
         assertEquals("2017-05-04T03:02:01.000Z", dateTimeStr);
 
         Document file = new Document("My Title", "File");
-        file.set("dc:issued", dateTimeStr);
+        file.setPropertyValue("dc:issued", dateTimeStr);
         file = nuxeoClient.repository().createDocumentByPath("/", file);
         assertEquals("File", file.getType());
         assertEquals("2017-05-04T03:02:01.000Z", file.getPropertyValue("dc:issued"));
 
         dateTime = dateTime.plus(1, ChronoUnit.MONTHS);
-        file.set("dc:issued", dateTime.format(formatter));
+        file.setPropertyValue("dc:issued", dateTime.format(formatter));
         file = nuxeoClient.repository().updateDocument(file);
         assertEquals("2017-06-04T03:02:01.000Z", file.getPropertyValue("dc:issued"));
     }
@@ -480,13 +480,13 @@ public class ITRepository extends AbstractITBase {
         assertEquals("2017-05-04T03:02:01.000+02:00", dateTimeStr);
 
         Document file = new Document("My Title", "File");
-        file.set("dc:issued", dateTimeStr);
+        file.setPropertyValue("dc:issued", dateTimeStr);
         file = nuxeoClient.repository().createDocumentByPath("/", file);
         assertEquals("File", file.getType());
         assertEquals("2017-05-04T01:02:01.000Z", file.getPropertyValue("dc:issued"));
 
         dateTime = dateTime.plus(1, ChronoUnit.MONTHS);
-        file.set("dc:issued", dateTime.format(formatter));
+        file.setPropertyValue("dc:issued", dateTime.format(formatter));
         file = nuxeoClient.repository().updateDocument(file);
         assertEquals("2017-06-04T01:02:01.000Z", file.getPropertyValue("dc:issued"));
     }
@@ -510,8 +510,8 @@ public class ITRepository extends AbstractITBase {
         GregorianCalendar dateType1 = new GregorianCalendar();
         Date dateType2 = new Date(System.currentTimeMillis());
 
-        assertExceptionFor(doc -> doc.set("dc:issued", dateType1), file, expectedMsg1);
-        assertExceptionFor(doc -> doc.set("dc:issued", dateType2), file, expectedMsg2);
+        assertExceptionFor(doc -> doc.setPropertyValue("dc:issued", dateType1), file, expectedMsg1);
+        assertExceptionFor(doc -> doc.setPropertyValue("dc:issued", dateType2), file, expectedMsg2);
     }
 
     @Test

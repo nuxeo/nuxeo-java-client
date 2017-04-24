@@ -248,12 +248,6 @@ public class Document extends RepositoryEntity<RepositoryAPI> {
         return name;
     }
 
-    public void set(String key, Object value) {
-        rejectIfDateFound(key, value);
-        properties.put(key, value);
-        dirtyProperties.put(key, value);
-    }
-
     public Map<String, Object> getProperties() {
         return properties;
     }
@@ -338,10 +332,6 @@ public class Document extends RepositoryEntity<RepositoryAPI> {
 
     public void setName(String name) {
         this.name = name;
-    }
-
-    public Object get(String key) {
-        return properties.get(key);
     }
 
     /**
