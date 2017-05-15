@@ -29,7 +29,11 @@ public class EntityTypes {
 
     public static final String BLOBS = "blobs";
 
-    public static final String DIRECTORY = "directoryEntries";
+    public static final String DIRECTORIES = "directories";
+
+    public static final String DIRECTORY = "directory";
+
+    public static final String DIRECTORY_ENTRIES = "directoryEntries";
 
     public static final String DIRECTORY_ENTRY = "directoryEntry";
 

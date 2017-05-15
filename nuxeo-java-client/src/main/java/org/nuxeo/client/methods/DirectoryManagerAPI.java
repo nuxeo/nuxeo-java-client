@@ -19,7 +19,8 @@
  */
 package org.nuxeo.client.methods;
 
-import org.nuxeo.client.objects.directory.Directory;
+import org.nuxeo.client.objects.directory.Directories;
+import org.nuxeo.client.objects.directory.DirectoryEntries;
 import org.nuxeo.client.objects.directory.DirectoryEntry;
 
 import okhttp3.ResponseBody;
@@ -37,11 +38,14 @@ import retrofit2.http.Query;
  */
 public interface DirectoryManagerAPI {
 
-    @GET("directory/{directoryName}")
-    Call<Directory> fetchDirectory(@Path("directoryName") String directoryName);
+    @GET("directory")
+    Call<Directories> fetchDirectories();
 
     @GET("directory/{directoryName}")
-    Call<Directory> fetchDirectory(@Path("directoryName") String directoryName,
+    Call<DirectoryEntries> fetchDirectoryEntries(@Path("directoryName") String directoryName);
+
+    @GET("directory/{directoryName}")
+    Call<DirectoryEntries> fetchDirectoryEntries(@Path("directoryName") String directoryName,
             @Query("currentPageIndex") String currentPageIndex, @Query("pageSize") String pageSize,
             @Query("maxResults") String maxResults, @Query("sortBy") String sortBy, @Query("sortOrder") String sortOrder);
 

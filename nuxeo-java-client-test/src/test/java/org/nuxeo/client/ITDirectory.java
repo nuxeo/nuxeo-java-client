@@ -21,9 +21,12 @@ package org.nuxeo.client;
 
 import static junit.framework.TestCase.assertNotNull;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
 import org.junit.Test;
+import org.nuxeo.client.objects.directory.Directories;
 import org.nuxeo.client.objects.directory.Directory;
+import org.nuxeo.client.objects.directory.DirectoryEntries;
 import org.nuxeo.client.objects.directory.DirectoryEntry;
 
 /**
@@ -32,10 +35,24 @@ import org.nuxeo.client.objects.directory.DirectoryEntry;
 public class ITDirectory extends AbstractITBase {
 
     @Test
-    public void itCanGetDirectory() {
-        Directory directory = nuxeoClient.directoryManager().fetchDirectory("continent");
-        assertNotNull(directory);
-        assertEquals(7, directory.getDirectoryEntries().size());
+    public void itCanGetDirectories() {
+        Directories directories = nuxeoClient.directoryManager().fetchDirectories();
+        assertNotNull(directories);
+        Directory continent = directories.getDirectory("continent");
+        assertNotNull(continent);
+        assertEquals("id", continent.getIdField());
+        assertEquals("vocabulary", continent.getSchema());
+        assertNull(continent.getParent());
+        DirectoryEntries directoryEntries = continent.fetchEntries();
+        assertNotNull(directoryEntries);
+        assertEquals(7, directoryEntries.getDirectoryEntries().size());
+    }
+
+    @Test
+    public void itCanGetDirectoryEntries() {
+        DirectoryEntries directoryEntries = nuxeoClient.directoryManager().fetchDirectoryEntries("continent");
+        assertNotNull(directoryEntries);
+        assertEquals(7, directoryEntries.getDirectoryEntries().size());
     }
 
     @Test
