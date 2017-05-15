@@ -34,14 +34,18 @@ public class DirectoryManager extends AbstractConnectable<DirectoryManagerAPI> {
         super(DirectoryManagerAPI.class, nuxeoClient);
     }
 
-    public Directory fetchDirectory(String directoryName) {
-        return fetchResponse(api.fetchDirectory(directoryName));
+    public Directories fetchDirectories() {
+        return fetchResponse(api.fetchDirectories());
     }
 
-    public Directory fetchDirectory(String directoryName, String currentPageIndex, String pageSize, String maxResults,
-            String sortBy, String sortOrder) {
+    public DirectoryEntries fetchDirectoryEntries(String directoryName) {
+        return fetchResponse(api.fetchDirectoryEntries(directoryName));
+    }
+
+    public DirectoryEntries fetchDirectoryEntries(String directoryName, String currentPageIndex, String pageSize,
+            String maxResults, String sortBy, String sortOrder) {
         return fetchResponse(
-                api.fetchDirectory(directoryName, currentPageIndex, pageSize, maxResults, sortBy, sortOrder));
+                api.fetchDirectoryEntries(directoryName, currentPageIndex, pageSize, maxResults, sortBy, sortOrder));
     }
 
     public DirectoryEntry createDirectoryEntry(DirectoryEntry directoryEntry) {
