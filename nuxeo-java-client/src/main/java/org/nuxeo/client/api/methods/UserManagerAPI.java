@@ -54,6 +54,10 @@ public interface UserManagerAPI {
     @GET("group/search")
     Call<Groups> searchGroup(@Query("q") String query);
 
+    @GET("group/search")
+    Call<Groups> searchGroup(@Query("q") String query, @Query("currentPageIndex") int currentPageIndex,
+            @Query("pageSize") int pageSize);
+
     @POST("group/{groupName}/user/{userName}")
     Call<User> addUserToGroup(@Path("groupName") String groupName, @Path("userName") String userName);
 
@@ -71,6 +75,10 @@ public interface UserManagerAPI {
 
     @GET("user/search")
     Call<Users> searchUser(@Query("q") String query);
+
+    @GET("user/search")
+    Call<Users> searchUser(@Query("q") String query, @Query("currentPageIndex") int currentPageIndex,
+            @Query("pageSize") int pageSize);
 
     @POST("user/{userName}/group/{groupName}")
     Call<User> attachGroupToUser(@Path("userName") String userName, @Path("groupName") String groupName);
