@@ -61,6 +61,10 @@ public class UserManager extends NuxeoEntity {
         return (Groups) getResponse(query);
     }
 
+    public Groups searchGroup(String query, int currentPageIndex, int pageSize) {
+        return (Groups) getResponse(query, currentPageIndex, pageSize);
+    }
+
     public User addUserToGroup(String userName, String groupName) {
         return (User) getResponse(groupName, userName);
     }
@@ -87,6 +91,10 @@ public class UserManager extends NuxeoEntity {
 
     public Users searchUser(String query) {
         return (Users) getResponse(query);
+    }
+
+    public Users searchUser(String query, int currentPageIndex, int pageSize) {
+        return (Users) getResponse(query, currentPageIndex, pageSize);
     }
 
     public User attachGroupToUser(String groupName, String userName) {

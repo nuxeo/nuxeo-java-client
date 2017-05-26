@@ -20,8 +20,10 @@
 package org.nuxeo.client.test;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.util.ArrayList;
@@ -32,8 +34,10 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.client.api.objects.user.Group;
+import org.nuxeo.client.api.objects.user.Groups;
 import org.nuxeo.client.api.objects.user.User;
 import org.nuxeo.client.api.objects.user.UserManager;
+import org.nuxeo.client.api.objects.user.Users;
 import org.nuxeo.client.internals.spi.NuxeoClientException;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
@@ -141,6 +145,35 @@ public class TestUserGroup extends TestBase {
     }
 
     @Test
+    public void itCanSearchUsers() {
+        Users users = nuxeoClient.getUserManager().searchUser("*");
+        assertNotNull(users);
+        assertEquals(2, users.getResultsCount());
+        assertEquals(2, users.getCurrentPageSize());
+    }
+
+    /*
+     * JAVACLIENT-132
+     */
+    @Test
+    public void itCanPaginateUsers() {
+        // First search will retrieve Administrator
+        Users users = nuxeoClient.getUserManager().searchUser("*", 0, 1);
+        assertNotNull(users);
+        assertEquals(2, users.getResultsCount());
+        assertEquals(1, users.getCurrentPageSize());
+        assertEquals("Administrator", users.getUsers().get(0).getId());
+        assertTrue(users.getIsNextPageAvailable());
+        // Second search will retrieve Guest
+        users = nuxeoClient.getUserManager().searchUser("*", 1, 1);
+        assertNotNull(users);
+        assertEquals(2, users.getResultsCount());
+        assertEquals(1, users.getCurrentPageSize());
+        assertEquals("Guest", users.getUsers().get(0).getId());
+        assertFalse(users.getIsNextPageAvailable());
+    }
+
+    @Test
     public void itCanCreateAGroup() {
         UserManager userManager = nuxeoClient.getUserManager();
         Group group = createGroup();
@@ -192,6 +225,42 @@ public class TestUserGroup extends TestBase {
     }
 
     @Test
+    public void itCanSearchGroups() {
+        Groups groups = nuxeoClient.getUserManager().searchGroup("*");
+        assertNotNull(groups);
+        assertEquals(3, groups.getResultsCount());
+        assertEquals(3, groups.getCurrentPageSize());
+    }
+
+    /*
+     * JAVACLIENT-132
+     */
+    @Test
+    public void itCanPaginateGroups() {
+        // First search will retrieve administrators
+        Groups groups = nuxeoClient.getUserManager().searchGroup("*", 0, 1);
+        assertNotNull(groups);
+        assertEquals(3, groups.getResultsCount());
+        assertEquals(1, groups.getCurrentPageSize());
+        assertEquals("administrators", groups.getGroups().get(0).getGroupName());
+        assertTrue(groups.getIsNextPageAvailable());
+        // Second search will retrieve members
+        groups = nuxeoClient.getUserManager().searchGroup("*", 1, 1);
+        assertNotNull(groups);
+        assertEquals(3, groups.getResultsCount());
+        assertEquals(1, groups.getCurrentPageSize());
+        assertEquals("members", groups.getGroups().get(0).getGroupName());
+        assertTrue(groups.getIsNextPageAvailable());
+        // Third search will retrieve powerusers
+        groups = nuxeoClient.getUserManager().searchGroup("*", 2, 1);
+        assertNotNull(groups);
+        assertEquals(3, groups.getResultsCount());
+        assertEquals(1, groups.getCurrentPageSize());
+        assertEquals("powerusers", groups.getGroups().get(0).getGroupName());
+        assertFalse(groups.getIsNextPageAvailable());
+    }
+
+    @Test
     public void itCanAttachAUserToAGroup() {
         UserManager userManager = nuxeoClient.getUserManager();
         Group group = createGroup();
@@ -233,4 +302,5 @@ public class TestUserGroup extends TestBase {
         }
 
     }
+
 }
