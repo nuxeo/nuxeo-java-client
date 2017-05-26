@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2016 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2016-2017 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,16 +15,16 @@
  *
  * Contributors:
  *         Vladimir Pasquier <vpasquier@nuxeo.com>
+ *         Kevin Leturc <kleturc@nuxeo.com>
  */
 package org.nuxeo.client.api.methods;
 
-import okhttp3.ResponseBody;
-
-import org.nuxeo.client.api.objects.user.Groups;
 import org.nuxeo.client.api.objects.user.Group;
+import org.nuxeo.client.api.objects.user.Groups;
 import org.nuxeo.client.api.objects.user.User;
 import org.nuxeo.client.api.objects.user.Users;
 
+import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.DELETE;
