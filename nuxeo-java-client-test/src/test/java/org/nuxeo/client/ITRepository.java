@@ -47,6 +47,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 import org.junit.Test;
 import org.nuxeo.client.cache.NuxeoResponseCache;
@@ -59,6 +60,7 @@ import org.nuxeo.client.objects.RecordSet;
 import org.nuxeo.client.objects.acl.ACE;
 import org.nuxeo.client.objects.acl.ACP;
 import org.nuxeo.client.objects.audit.Audit;
+import org.nuxeo.client.objects.audit.LogEntry;
 import org.nuxeo.client.objects.blob.Blobs;
 import org.nuxeo.client.objects.blob.FileBlob;
 import org.nuxeo.client.objects.user.User;
@@ -329,8 +331,12 @@ public class ITRepository extends AbstractITBase {
     public void itCanFetchAudit() {
         Document root = nuxeoClient.repository().fetchDocumentRoot();
         Audit audit = root.fetchAudit();
-        assertTrue(audit.getLogEntries().size() != 0);
-        assertEquals("eventDocumentCategory", audit.getLogEntries().get(0).getCategory());
+        assertFalse(audit.getLogEntries().isEmpty());
+        List<String> categories = audit.getLogEntries()
+                                       .stream()
+                                       .map(LogEntry::getCategory)
+                                       .collect(Collectors.toList());
+        assertTrue(categories.contains("eventDocumentCategory"));
     }
 
     @Test
