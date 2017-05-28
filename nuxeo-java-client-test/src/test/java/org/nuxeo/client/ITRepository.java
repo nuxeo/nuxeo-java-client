@@ -50,7 +50,6 @@ import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 import org.junit.Test;
-import org.nuxeo.client.cache.NuxeoResponseCache;
 import org.nuxeo.client.cache.ResultCacheInMemory;
 import org.nuxeo.client.objects.DataSet;
 import org.nuxeo.client.objects.Document;
@@ -164,29 +163,31 @@ public class ITRepository extends AbstractITBase {
 
     @Test
     public void itCanUseCaching() {
+        // Re-build a client with cache
+        NuxeoClient client = ITBase.createClientBuilder().cache(new ResultCacheInMemory()).connect().schemas("*");
         // Retrieve a document from query
-        NuxeoResponseCache cache = new ResultCacheInMemory();
-        Document document = nuxeoClient.setCache(cache).repository().fetchDocumentByPath("/folder_1/note_0");
+        Document document = client.repository().fetchDocumentByPath("/folder_1/note_0");
         assertEquals("Note 0", document.getPropertyValue("dc:title"));
-        assertTrue(nuxeoClient.getNuxeoCache().size() == 1);
+        // Two entries in the cache because we fetched current user on #connect() call
+        assertEquals(2, client.getNuxeoCache().size());
 
         // Update this document
         Document documentUpdated = new Document("test update", "Note");
         documentUpdated.setId(document.getId());
         documentUpdated.setPropertyValue("dc:title", "note updated");
-        documentUpdated = nuxeoClient.repository().updateDocument(documentUpdated);
+        documentUpdated = client.repository().updateDocument(documentUpdated);
         assertEquals("note updated", documentUpdated.getPropertyValue("dc:title"));
 
         // Retrieve again this document within cache
-        document = nuxeoClient.repository().fetchDocumentByPath("/folder_1/note_0");
+        document = client.repository().fetchDocumentByPath("/folder_1/note_0");
         assertEquals("Note 0", document.getPropertyValue("dc:title"));
-        assertTrue(nuxeoClient.getNuxeoCache().size() == 2);
+        assertEquals(3, client.getNuxeoCache().size());
 
         // Refresh the cache and check the update has been recovered.
-        cache.invalidateAll();
-        document = nuxeoClient.repository().fetchDocumentByPath("/folder_1/note_0");
+        client.getNuxeoCache().invalidateAll();
+        document = client.repository().fetchDocumentByPath("/folder_1/note_0");
         assertEquals("note updated", document.getPropertyValue("dc:title"));
-        assertTrue(nuxeoClient.getNuxeoCache().size() == 1);
+        assertEquals(1, client.getNuxeoCache().size());
     }
 
     @Test

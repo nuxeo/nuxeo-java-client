@@ -22,6 +22,8 @@ package org.nuxeo.client.marshaller;
 import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 
 import org.nuxeo.client.spi.NuxeoClientException;
@@ -40,6 +42,8 @@ import retrofit2.Retrofit;
  */
 public class NuxeoConverterFactory extends Converter.Factory {
 
+    protected static final Map<String, Class<?>> entityTypeToClass = new HashMap<>();
+
     protected final ObjectMapper mapper;
 
     protected NuxeoConverterFactory(ObjectMapper mapper) {
@@ -57,10 +61,19 @@ public class NuxeoConverterFactory extends Converter.Factory {
         return new NuxeoConverterFactory(mapper);
     }
 
+    /**
+     * Register an entity pojo to the automation unmarshalling mechanism.
+     *
+     * @since 3.0
+     */
+    public static void registerEntity(String entityType, Class<?> clazz) {
+        entityTypeToClass.put(entityType, clazz);
+    }
+
     @Override
     public Converter<ResponseBody, ?> responseBodyConverter(Type type, Annotation[] annotations, Retrofit client) {
         JavaType javaType = mapper.getTypeFactory().constructType(type);
-        return new NuxeoResponseConverterFactory<>(mapper, javaType);
+        return new NuxeoResponseConverterFactory<>(mapper, javaType, entityTypeToClass);
     }
 
     @Override

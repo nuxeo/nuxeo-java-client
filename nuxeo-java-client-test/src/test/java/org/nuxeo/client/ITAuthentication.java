@@ -25,8 +25,10 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import org.junit.Test;
+import org.nuxeo.client.NuxeoClient.Builder;
 import org.nuxeo.client.objects.user.User;
 import org.nuxeo.client.spi.NuxeoClientException;
+import org.nuxeo.client.spi.auth.PortalSSOAuthInterceptor;
 
 /**
  * @since 0.1
@@ -35,29 +37,18 @@ public class ITAuthentication {
 
     @Test
     public void itCanLoginAndLogout() {
-        NuxeoClient client = ITBase.createClient();
+        NuxeoClient.Builder builder = ITBase.createClientBuilder();
 
         // Login
-        User currentUser = client.userManager().fetchCurrentUser();
+        NuxeoClient client = builder.connect();
+        User currentUser = client.getCurrentUser();
         assertNotNull(currentUser);
         assertEquals("Administrator", currentUser.getUserName());
         assertTrue(currentUser.isAdministrator());
         assertEquals("administrators", currentUser.getGroups().get(0));
 
         // Logout
-        // TODO provide a real way to logout
-//        client.logout();
-//        try {
-//            client.userManager().fetchCurrentUser();
-//            fail("Should be non authorized");
-//        } catch (NuxeoClientException reason) {
-//            assertEquals(401, reason.getStatus());
-//        }
-    }
-
-    @Test
-    public void itCanFailOnLogin() {
-        NuxeoClient client = ITBase.createClient("wrong", "credentials");
+        client.disconnect();
         try {
             client.userManager().fetchCurrentUser();
             fail("Should be non authorized");
@@ -67,14 +58,23 @@ public class ITAuthentication {
     }
 
     @Test
+    public void itCanFailOnLogin() {
+        try {
+            ITBase.createClientBuilder("wrong", "credentials").connect();
+            fail("Should be non authorized");
+        } catch (NuxeoClientException reason) {
+            assertEquals(401, reason.getStatus());
+        }
+    }
+
+    @Test
     public void itCanChangeAuthMethod() {
-        // TODO re-implement this
-        // login();
-        // CurrentUser currentUser = client.fetchCurrentUser();
-        // assertEquals("Administrator", currentUser.getUsername());
-        // setAuthenticationMethod(new PortalSSOAuthInterceptor("user1", "nuxeo5secretkey"));
-        // currentUser = client.fetchCurrentUser();
-        // assertEquals("user1", currentUser.getUsername());
+        NuxeoClient client = new NuxeoClient.Builder().url(ITBase.BASE_URL)
+                                                      .authentication(new PortalSSOAuthInterceptor("Administrator",
+                                                              "nuxeo5secretkey"))
+                                                      .connect();
+        User currentUser = client.getCurrentUser();
+        assertEquals("Administrator", currentUser.getUserName());
     }
 
 }

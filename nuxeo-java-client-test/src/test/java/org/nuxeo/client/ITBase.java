@@ -235,7 +235,15 @@ public class ITBase {
     }
 
     public static NuxeoClient createClient(String login, String password) {
-        return new NuxeoClient(BASE_URL, login, password).timeout(60);
+        return createClientBuilder(login, password).connect();
+    }
+
+    public static NuxeoClient.Builder createClientBuilder() {
+        return createClientBuilder(LOGIN, PASSWORD);
+    }
+
+    public static NuxeoClient.Builder createClientBuilder(String login, String password) {
+        return new NuxeoClient.Builder().url(BASE_URL).authentication(login, password).timeout(60);
     }
 
     public static User createUser() {
