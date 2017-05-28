@@ -37,6 +37,12 @@
       <scope>provided</scope>
     </dependency>
     <dependency>
+      <groupId>org.nuxeo.ecm.platform</groupId>
+      <artifactId>nuxeo-platform-login-portal-sso</artifactId>
+      <version>${nuxeo.tested.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
       <groupId>org.nuxeo.client</groupId>
       <artifactId>nuxeo-java-client</artifactId>
       <scope>test</scope>

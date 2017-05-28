@@ -19,7 +19,6 @@
  */
 package org.nuxeo.client;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
@@ -50,6 +49,7 @@ import org.nuxeo.client.objects.config.ConfigManager;
 import org.nuxeo.client.objects.directory.DirectoryManager;
 import org.nuxeo.client.objects.task.TaskManager;
 import org.nuxeo.client.objects.upload.BatchUploadManager;
+import org.nuxeo.client.objects.user.User;
 import org.nuxeo.client.objects.user.UserManager;
 import org.nuxeo.client.spi.NuxeoClientException;
 import org.nuxeo.client.spi.auth.BasicAuthInterceptor;
@@ -58,7 +58,6 @@ import okhttp3.Headers;
 import okhttp3.Interceptor;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
-import okhttp3.Request.Builder;
 import okhttp3.RequestBody;
 import okhttp3.Response;
 import okhttp3.ResponseBody;
@@ -85,20 +84,25 @@ public class NuxeoClient {
 
     protected Retrofit retrofit;
 
+    protected User currentUser;
+
     protected NuxeoVersion serverVersion;
 
-    public NuxeoClient(String url, String userName, String password) {
-        this(url, new BasicAuthInterceptor(userName, password));
-    }
-
-    public NuxeoClient(String url, Interceptor authenticationMethod) {
+    protected NuxeoClient(Builder builder) {
         // okhttp builder
         okhttpBuilder = new OkHttpClient.Builder();
-        okhttpBuilder.addInterceptor(authenticationMethod);
+        okhttpBuilder.addInterceptor(builder.authenticationMethod);
         // retrofit builder
         converterFactory = NuxeoConverterFactory.create();
-        retrofitBuilder = new Retrofit.Builder().baseUrl(url + ConstantsV1.API_PATH)
+        retrofitBuilder = new Retrofit.Builder().baseUrl(builder.url + ConstantsV1.API_PATH)
                                                 .addConverterFactory(converterFactory);
+        nuxeoCache = builder.cache;
+        if (builder.connectTimeout != null) {
+            okhttpBuilder.connectTimeout(builder.connectTimeout.longValue(), TimeUnit.SECONDS);
+        }
+        if (builder.readTimeout != null) {
+            okhttpBuilder.readTimeout(builder.readTimeout.longValue(), TimeUnit.SECONDS);
+        }
         // client builder
         retrofit();
     }
@@ -166,24 +170,6 @@ public class NuxeoClient {
         return this;
     }
 
-    public NuxeoClient setCache(NuxeoResponseCache nuxeoCache) {
-        this.nuxeoCache = nuxeoCache;
-        return this;
-    }
-
-    public NuxeoClient timeout(long timeout) {
-        okhttpBuilder.connectTimeout(timeout, TimeUnit.SECONDS);
-        okhttpBuilder.readTimeout(timeout, TimeUnit.SECONDS);
-        retrofit();
-        return this;
-    }
-
-    public NuxeoClient readTimeout(long timeout) {
-        okhttpBuilder.readTimeout(timeout, TimeUnit.SECONDS);
-        retrofit();
-        return this;
-    }
-
     /*******************************
      * Client Services *
      ******************************/
@@ -207,9 +193,25 @@ public class NuxeoClient {
         return this;
     }
 
+    public void disconnect() {
+        okhttpBuilder.interceptors().clear();
+        headerInterceptors.clear();
+        nuxeoCache = null;
+        retrofit();
+    }
+
     /******************************
      * Services *
      ******************************/
+
+    /**
+     * This method returns the current logged user retrieved on {@link NuxeoClient} creation.
+     *
+     * @return the current logged user.
+     */
+    public User getCurrentUser() {
+        return currentUser;
+    }
 
     /**
      * This method gets the Nuxeo server version from CMIS the first time and then caches it.
@@ -300,9 +302,9 @@ public class NuxeoClient {
         return request(url, builder -> builder.post(body));
     }
 
-    protected Response request(String url, UnaryOperator<Builder> method) {
+    protected Response request(String url, UnaryOperator<Request.Builder> method) {
         try {
-            Request.Builder requestBuilder = new Builder().url(url);
+            Request.Builder requestBuilder = new Request.Builder().url(url);
             Request request = method.apply(requestBuilder).build();
             return retrofit.callFactory().newCall(request).execute();
         } catch (IOException e) {
@@ -457,6 +459,103 @@ public class NuxeoClient {
             hexString.append(Integer.toHexString(0xFF & msg));
         }
         return hexString.toString();
+    }
+
+    /**
+     * {@link NuxeoClient} builder.
+     *
+     * @since 3.0
+     */
+    public static class Builder {
+
+        protected String url;
+
+        protected Interceptor authenticationMethod;
+
+        protected NuxeoResponseCache cache;
+
+        protected Long connectTimeout;
+
+        protected Long readTimeout;
+
+        protected Map<String, Class<?>> entityTypeToClass;
+
+        public Builder() {
+            // init default values
+            entityTypeToClass = new HashMap<>();
+            entityTypeToClass.put(EntityTypes.DOCUMENT, Document.class);
+            entityTypeToClass.put(EntityTypes.DOCUMENTS, Documents.class);
+            entityTypeToClass.put(EntityTypes.RECORDSET, RecordSet.class);
+            entityTypeToClass.put(EntityTypes.USER, User.class);
+        }
+
+        public Builder url(String url) {
+            this.url = url;
+            return this;
+        }
+
+        public Builder authentication(String username, String password) {
+            return authentication(new BasicAuthInterceptor(username, password));
+        }
+
+        public Builder authentication(Interceptor authenticationMethod) {
+            this.authenticationMethod = authenticationMethod;
+            return this;
+        }
+
+        public Builder cache(NuxeoResponseCache cache) {
+            this.cache = cache;
+            return this;
+        }
+
+        // TODO check if it's enough to set timeouts on creation
+        /**
+         * Sets the given timeout to connect and read timeout settings of client. The timeout unit is seconds.
+         */
+        public Builder timeout(long timeout) {
+            return connectTimeout(timeout).readTimeout(timeout);
+        }
+
+        /**
+         * The timeout unit is seconds.
+         */
+        public Builder connectTimeout(long connectTimeout) {
+            this.connectTimeout = Long.valueOf(connectTimeout);
+            return this;
+        }
+
+        /**
+         * The timeout unit is seconds.
+         */
+        public Builder readTimeout(long readTimeout) {
+            this.readTimeout = Long.valueOf(readTimeout);
+            return this;
+        }
+
+        /**
+         * Register entity type to class link for automatic unmarshalling process in automation.
+         * <p />
+         * CAUTION: this method is just a convenient way to register entity pojo. This operation is done in a static way
+         * on NuxeoConverterFactory.
+         */
+        public Builder registerEntity(String entityType, Class<?> clazz) {
+            entityTypeToClass.put(entityType, clazz);
+            return this;
+        }
+
+        /**
+         * Builds a {@link NuxeoClient} and log it, it will throw a {@link NuxeoClientException} if failed.
+         */
+        public NuxeoClient connect() {
+            // init client
+            NuxeoClient client = new NuxeoClient(this);
+            // register entity type class
+            entityTypeToClass.forEach(NuxeoConverterFactory::registerEntity);
+            // login client on server
+            client.currentUser = client.userManager().fetchCurrentUser();
+            return client;
+        }
+
     }
 
 }

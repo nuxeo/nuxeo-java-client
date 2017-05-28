@@ -18,6 +18,9 @@
     <copy tofile="${out.dir}/nuxeo-marketplace-jsf-ui.zip">
       <artifact:file key="org.nuxeo.ecm.distribution:nuxeo-marketplace-jsf-ui::zip" />
     </copy>
+    <copy todir="${nuxeo.nxserver}/bundles/">
+      <artifact:file key="org.nuxeo.ecm.platform:nuxeo-platform-login-portal-sso" />
+    </copy>
   </target>
 
 </project>

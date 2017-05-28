@@ -52,7 +52,7 @@ public class EntityValueDeserializer extends StdDeserializer<Object> {
         TreeNode entityNode = node.get(ConstantsV1.ENTITY_TYPE);
         if (entityNode != null && entityNode.isValueNode()) {
             String entityType = ((ValueNode) entityNode).asText();
-            Class<?> klazz = NuxeoResponseConverterFactory.entityTypeToClass.get(entityType);
+            Class<?> klazz = NuxeoConverterFactory.entityTypeToClass.get(entityType);
             if (klazz != null) {
                 return klazz;
             }

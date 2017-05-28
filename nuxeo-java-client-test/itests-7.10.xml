@@ -14,6 +14,9 @@
     <!-- install produced artifact for tests -->
     <!-- TODO find a better way <artifact:resolveFile key="org.nuxeo.client:nuxeo-java-client-test::jar" /> doesn't work -->
     <copy file="${out.dir}/nuxeo-java-client-test-${maven.project.version}.jar" todir="${nuxeo.nxserver}/bundles/" />
+    <copy todir="${nuxeo.nxserver}/bundles/">
+      <artifact:file key="org.nuxeo.ecm.platform:nuxeo-platform-login-portal-sso" />
+    </copy>
   </target>
 
 </project>

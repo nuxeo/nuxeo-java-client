@@ -23,7 +23,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;
-import java.util.HashMap;
 import java.util.Map;
 
 import javax.mail.BodyPart;
@@ -36,13 +35,8 @@ import org.nuxeo.client.ConstantsV1;
 import org.nuxeo.client.MediaType;
 import org.nuxeo.client.MediaTypes;
 import org.nuxeo.client.Responses;
-import org.nuxeo.client.objects.Document;
-import org.nuxeo.client.objects.Documents;
-import org.nuxeo.client.objects.EntityTypes;
-import org.nuxeo.client.objects.RecordSet;
 import org.nuxeo.client.objects.blob.Blobs;
 import org.nuxeo.client.objects.blob.FileBlob;
-import org.nuxeo.client.objects.user.User;
 import org.nuxeo.client.spi.NuxeoClientException;
 import org.nuxeo.client.util.IOUtils;
 
@@ -58,20 +52,17 @@ import retrofit2.Converter;
  */
 public final class NuxeoResponseConverterFactory<T> implements Converter<ResponseBody, T> {
 
-    protected static final Map<String, Class<?>> entityTypeToClass = new HashMap<>();
-
     protected final JavaType javaType;
 
     protected final ObjectMapper objectMapper;
 
-    protected NuxeoResponseConverterFactory(ObjectMapper objectMapper, JavaType javaType) {
+    protected final Map<String, Class<?>> entityTypeToClass;
+
+    protected NuxeoResponseConverterFactory(ObjectMapper objectMapper, JavaType javaType,
+            Map<String, Class<?>> entityTypeToClass) {
         this.objectMapper = objectMapper;
         this.javaType = javaType;
-        // register default entities
-        entityTypeToClass.put(EntityTypes.DOCUMENT, Document.class);
-        entityTypeToClass.put(EntityTypes.DOCUMENTS, Documents.class);
-        entityTypeToClass.put(EntityTypes.RECORDSET, RecordSet.class);
-        entityTypeToClass.put(EntityTypes.USER, User.class);
+        this.entityTypeToClass = entityTypeToClass;
     }
 
     @Override
@@ -134,15 +125,6 @@ public final class NuxeoResponseConverterFactory<T> implements Converter<Respons
         } catch (IOException reason) {
             throw new NuxeoClientException("Converter Read Issue.", reason);
         }
-    }
-
-    /**
-     * Register an entity pojo to the automation unmarshalling mechanism.
-     * 
-     * @since 3.0
-     */
-    public static void registerEntity(String entityType, Class<?> clazz) {
-        entityTypeToClass.put(entityType, clazz);
     }
 
 }

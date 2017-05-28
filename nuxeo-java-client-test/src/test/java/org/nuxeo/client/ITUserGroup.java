@@ -57,9 +57,9 @@ public class ITUserGroup extends AbstractITBase {
     public void itCanLoginWithANewUser() {
         // Try to log with the login/password to check that the password was correctly set
         try {
-            NuxeoClient client = new NuxeoClient("http://localhost:8080/nuxeo", user.getUserName(),
-                    ITBase.DEFAULT_USER_PASSWORD);
-            client.userManager().fetchCurrentUser();
+            new NuxeoClient.Builder().url(ITBase.BASE_URL)
+                                     .authentication(user.getUserName(), ITBase.DEFAULT_USER_PASSWORD)
+                                     .connect();
         } catch (NuxeoClientException reason) {
             fail("User should be able to login, the password may have been reset");
         }
@@ -194,8 +194,11 @@ public class ITUserGroup extends AbstractITBase {
 
         // Try to log with the login/password to check that the password was not overridden
         try {
-            NuxeoClient client = new NuxeoClient(ITBase.BASE_URL, user.getUserName(), ITBase.DEFAULT_USER_PASSWORD);
-            User totoUser = client.userManager().fetchCurrentUser();
+            NuxeoClient client = new NuxeoClient.Builder().url(ITBase.BASE_URL)
+                                                          .authentication(user.getUserName(),
+                                                                  ITBase.DEFAULT_USER_PASSWORD)
+                                                          .connect();
+            User totoUser = client.getCurrentUser();
             assertNotNull(totoUser);
             assertEquals(ITBase.DEFAULT_USER_LOGIN, totoUser.getUserName());
         } catch (NuxeoClientException reason) {
