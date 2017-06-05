@@ -9,25 +9,46 @@ import java.util.Map;
  */
 public class DataSet extends Document {
 
-    protected List<Field> fields = new ArrayList<>();
+    public static final String FIELDS_PROPERTY = "ds:fields";
 
-    public DataSet(String file, String dataSet) {
-        super(file, dataSet);
+
+    public DataSet(String uid) {
+        super(uid, "DataSet");
     }
 
     @SuppressWarnings("unchecked")
     public DataSet(Document document) {
         super(document);
-        for (Map<String, Object> fieldProps : (List<Map<String, Object>>) document.getPropertyValue("ds:fields")) {
-            fields.add(new Field(fieldProps));
+        // convert to sub object as Jackson doesn't know our adapter during unmarshalling
+        this.<List>getPropertyValue(FIELDS_PROPERTY).replaceAll(map -> new Field((Map<String, Object>) map));
+    }
+
+    public Field getField(int index) {
+        List<Field> fields = getFields();
+        if (fields == null) {
+            return null;
         }
+        return fields.get(index);
     }
 
     public List<Field> getFields() {
-        return fields;
+        return getPropertyValue(FIELDS_PROPERTY);
     }
 
     public void setFields(List<Field> fields) {
-        this.fields = fields;
+        setPropertyValue(FIELDS_PROPERTY, fields);
+    }
+
+    public boolean addField(Field field) {
+        return getFieldsForUpdate().add(field);
+    }
+
+    protected List<Field> getFieldsForUpdate() {
+        List<Field> fields = getFields();
+        if (fields == null) {
+            fields = new ArrayList<>();
+        }
+        setFields(fields);
+        return fields;
     }
 }

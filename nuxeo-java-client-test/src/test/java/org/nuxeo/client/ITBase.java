@@ -101,7 +101,7 @@ public class ITBase {
         Document root = repository.fetchDocumentRoot();
 
         // Create
-        Document document = new Document("note", "Note");
+        Document document = Document.createWithName("note", "Note");
         document.setPropertyValue("dc:title", "note");
         document = repository.createDocumentById(root.getId(), document);
         assertEquals("Note", document.getType());
@@ -110,10 +110,8 @@ public class ITBase {
         assertEquals("note", document.getTitle());
         assertEquals("note", document.getPropertyValue("dc:title"));
 
-        Document documentUpdated = new Document("test update", "Note");
-        documentUpdated.setId(document.getId());
+        Document documentUpdated = Document.createWithId(document.getId(), "Note");
         documentUpdated.setPropertyValue("dc:title", "note updated");
-        documentUpdated.setTitle("note updated");
 
         // Update
         documentUpdated = repository.updateDocument(documentUpdated);
@@ -140,7 +138,7 @@ public class ITBase {
     public void itCanAttachBlob() {
         NuxeoClient client = createClient();
         // Create a file
-        Document doc = new Document("file", "File");
+        Document doc = Document.createWithName("file", "File");
         doc.setPropertyValue("dc:title", "File");
         doc = client.repository().createDocumentByPath("/", doc);
         // Attach a blob

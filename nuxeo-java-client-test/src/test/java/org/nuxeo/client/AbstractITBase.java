@@ -59,20 +59,20 @@ public abstract class AbstractITBase {
     public void initDocuments() {
         // Create documents
         for (int i = 1; i < 3; i++) {
-            Document doc = new Document("folder_" + i, "Folder");
+            Document doc = Document.createWithName("folder_" + i, "Folder");
             doc.setPropertyValue("dc:title", "Folder " + i);
             nuxeoClient.repository().createDocumentByPath("/", doc);
         }
 
         for (int i = 0; i < 1; i++) {
-            Document doc = new Document("note_" + i, "Note");
+            Document doc = Document.createWithName("note_" + i, "Note");
             doc.setPropertyValue("dc:title", "Note " + i);
             doc.setPropertyValue("note:note", "Note " + i);
             nuxeoClient.repository().createDocumentByPath("/folder_1", doc);
         }
 
         // Create a file
-        Document doc = new Document("file", "File");
+        Document doc = Document.createWithName("file", "File");
         doc.setPropertyValue("dc:title", "File");
         nuxeoClient.repository().createDocumentByPath("/folder_2", doc);
         // Attach a light blob

@@ -136,7 +136,7 @@ public class ITUpload extends AbstractITBase {
         assertNotNull(batchUpload);
 
         // Getting a doc and attaching the batch file
-        Document doc = new Document("file", "File");
+        Document doc = Document.createWithName("file", "File");
         doc.setPropertyValue("dc:title", "new title");
         doc = nuxeoClient.repository().createDocumentByPath("/", doc);
         assertNotNull(doc);
@@ -156,7 +156,7 @@ public class ITUpload extends AbstractITBase {
         assertNotNull(batchUpload);
 
         // Getting a doc and attaching the batch file
-        Document doc = new Document("file", "File");
+        Document doc = Document.createWithName("file", "File");
         doc.setPropertyValue("dc:title", "new title");
         doc = nuxeoClient.repository().createDocumentByPath("/", doc);
         assertNotNull(doc);
@@ -184,7 +184,7 @@ public class ITUpload extends AbstractITBase {
         // return batchId and fileIdx
 
         // POST request with batchId and fileIdx to create document
-        Document doc = new Document("file_rest", "File");
+        Document doc = Document.createWithName("file_rest", "File");
         doc.setPropertyValue("dc:title", "new title");
         doc.setPropertyValue("file:content", batchUploadManager.getBatch(batchId, "1").getBatchBlob());
         doc = nuxeoClient.repository().createDocumentByPath("/", doc);
