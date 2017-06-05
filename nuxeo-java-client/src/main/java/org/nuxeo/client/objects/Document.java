@@ -47,6 +47,7 @@ import org.nuxeo.client.objects.workflow.Workflows;
 import org.nuxeo.client.spi.NuxeoClientException;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
 import retrofit2.Callback;
@@ -74,6 +75,8 @@ public class Document extends RepositoryEntity<RepositoryAPI> {
 
     protected String lastModified;
 
+    // We need this @JsonProperty because setProperties has some business logic whose Jackson doesn't have to use
+    @JsonProperty("properties")
     @JsonDeserialize(contentUsing = EntityValueDeserializer.class)
     protected Map<String, Object> properties = new HashMap<>();
 
@@ -98,6 +101,7 @@ public class Document extends RepositoryEntity<RepositoryAPI> {
     /**
      * @since 2.3
      */
+    @JsonProperty("isProxy")
     protected boolean isProxy;
 
     /**
@@ -107,47 +111,30 @@ public class Document extends RepositoryEntity<RepositoryAPI> {
         this(ConstantsV1.DEFAULT_DOC_TYPE, ConstantsV1.DEFAULT_DOC_TYPE);
     }
 
-    public Document(String title, String type) {
-        this(null, type, null, null, null, null, null, null, null, null, null, false, null, null);
-        this.title = title;
-        this.name = title;
-    }
-
     /**
-     * @since 2.3
+     * Protected constructor for adapters implementation.
+     *
+     * @since 3.0 this constructor has changed its meaning, it is used for adapters, see
+     *        org.nuxeo.client.objects.DataSet.
      */
-    public Document(String id, String type, List<String> facets, String changeToken, String path, String state,
-            String lockOwner, String lockCreated, String repositoryName, String versionLabel, String isCheckedOut,
-            boolean isProxy, Map<String, Object> properties, Map<String, Object> contextParameters) {
+    protected Document(String uid, String type) {
         super(EntityTypes.DOCUMENT, RepositoryAPI.class);
-        uid = id;
-        this.changeToken = changeToken;
-        this.facets = facets;
-        this.path = path;
+        this.uid = uid;
         this.type = type;
-        this.state = state;
-        this.lockOwner = lockOwner;
-        this.lockCreated = lockCreated;
-        super.repositoryName = repositoryName;
-        this.versionLabel = versionLabel;
-        this.isCheckedOut = isCheckedOut;
-        this.isProxy = isProxy;
-        setProperties(properties);
-        setContextParameters(contextParameters);
     }
 
     /**
-     * This constructor is providing a way to create 'adapters' of a document. See org.nuxeo.client.test.objects.DataSet
-     * in nuxeo-java-client-test.
+     * This constructor is providing a way to create 'adapters' of a document. See org.nuxeo.client.objects.DataSet in
+     * nuxeo-java-client-test.
      *
      * @since 1.0
      * @param document the document to copy from the sub class.
      */
-    public Document(Document document) {
+    protected Document(Document document) {
         super(EntityTypes.DOCUMENT, RepositoryAPI.class);
         type = ConstantsV1.DEFAULT_DOC_TYPE;
         try {
-            Class<?> superclass = this.getClass().getSuperclass();
+            Class<?> superclass = getClass().getSuperclass();
             while (!superclass.equals(Document.class)) {
                 superclass = superclass.getSuperclass();
                 if (superclass.equals(Object.class)) {
@@ -160,21 +147,33 @@ public class Document extends RepositoryEntity<RepositoryAPI> {
                     superclass.getDeclaredField(field.getName()).set(this, field.get(document));
                 }
             }
-        } catch (NoSuchFieldException | IllegalAccessException reason) {
+        } catch (ReflectiveOperationException reason) {
             throw new NuxeoClientException(reason);
         }
     }
 
-    public void setRepositoryName(String repositoryName) {
-        this.repositoryName = repositoryName;
+    /**
+     * Regular way to instantiate a {@link Document} in order to update it.
+     *
+     * @since 3.0
+     */
+    public static Document createWithId(String uid, String type) {
+        return new Document(uid, type);
+    }
+
+    /**
+     * Regular way to instantiate a {@link Document} in order to create it.
+     *
+     * @since 3.0
+     */
+    public static Document createWithName(String name, String type) {
+        Document document = new Document(null, type);
+        document.name = name;
+        return document;
     }
 
     public String getId() {
         return uid;
-    }
-
-    public String getInputType() {
-        return EntityTypes.DOCUMENT;
     }
 
     public String getPath() {
@@ -257,41 +256,30 @@ public class Document extends RepositoryEntity<RepositoryAPI> {
         return (T) properties.get(key);
     }
 
+    /**
+     * Sets one property value, property's value will also be put to dirty properties.
+     */
     public void setPropertyValue(String key, Object value) {
         rejectIfDateFound(key, value);
         properties.put(key, value);
         dirtyProperties.put(key, value);
     }
 
-    public void followLifeCycle(String state) {
-        this.state = state;
-    }
-
-    public void setLockOwner(String lockOwner) {
-        this.lockOwner = lockOwner;
-    }
-
-    public void setLockCreated(String lockCreated) {
-        this.lockCreated = lockCreated;
-    }
-
-    public void setVersionLabel(String versionLabel) {
-        this.versionLabel = versionLabel;
-    }
-
-    public void setIsCheckedOut(String isCheckedOut) {
-        this.isCheckedOut = isCheckedOut;
-    }
-
-    public void setLastModified(String lastModified) {
-        this.lastModified = lastModified;
-    }
-
+    /**
+     * Sets several properties in one call, this method will also put input properties to dirty properties.
+     */
+    @JsonIgnore
     public void setProperties(Map<String, Object> properties) {
         this.properties.clear();
         if (properties != null) {
             rejectIfDateFound(null, properties);
             this.properties.putAll(properties);
+        }
+        // do the logic as it because we can call setProperties(getDirtyProperties()) -> the expected result is to have
+        // dirty properties in properties and an empty dirty properties
+        this.dirtyProperties.clear();
+        if (properties != null) {
+            this.dirtyProperties.putAll(properties);
         }
     }
 
@@ -310,30 +298,6 @@ public class Document extends RepositoryEntity<RepositoryAPI> {
         }
     }
 
-    public void setChangeToken(String changeToken) {
-        this.changeToken = changeToken;
-    }
-
-    public void setFacets(List<String> facets) {
-        this.facets = facets;
-    }
-
-    public void setParentRef(String parentRef) {
-        this.parentRef = parentRef;
-    }
-
-    public void setId(String uid) {
-        this.uid = uid;
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
     /**
      * Get the dirty properties.
      */
@@ -343,7 +307,7 @@ public class Document extends RepositoryEntity<RepositoryAPI> {
 
     /**
      * @return The value associates to the input key from the context parameters.
-     * @since 3.0.0
+     * @since 3.0
      */
     @SuppressWarnings("unchecked")
     public <T> T getContextParameter(String key) {
@@ -354,7 +318,12 @@ public class Document extends RepositoryEntity<RepositoryAPI> {
         return contextParameters;
     }
 
+    /*------------*
+     *  Services  *
+     *------------*/
+
     public Document updateDocument() {
+        setProperties(getDirtyProperties());
         if (repositoryName == null) {
             return fetchResponse(api.updateDocument(uid, this));
         }
@@ -578,13 +547,6 @@ public class Document extends RepositoryEntity<RepositoryAPI> {
      */
     public boolean isProxy() {
         return isProxy;
-    }
-
-    /**
-     * @since 2.3
-     */
-    public void setIsProxy(boolean isProxy) {
-        this.isProxy = isProxy;
     }
 
     private void rejectIfDateFound(String key, Object value) {

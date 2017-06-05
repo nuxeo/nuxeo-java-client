@@ -37,9 +37,9 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
@@ -172,8 +172,7 @@ public class ITRepository extends AbstractITBase {
         assertEquals(2, client.getNuxeoCache().size());
 
         // Update this document
-        Document documentUpdated = new Document("test update", "Note");
-        documentUpdated.setId(document.getId());
+        Document documentUpdated = Document.createWithId(document.getId(), document.getType());
         documentUpdated.setPropertyValue("dc:title", "note updated");
         documentUpdated = client.repository().updateDocument(documentUpdated);
         assertEquals("note updated", documentUpdated.getPropertyValue("dc:title"));
@@ -383,7 +382,7 @@ public class ITRepository extends AbstractITBase {
         Document document = nuxeoClient.enrichers("acls", "breadcrumb").repository().fetchDocumentByPath("/folder_2");
         assertNotNull(document);
         assertEquals(1, ((List) document.getContextParameters().get("acls")).size());
-        assertEquals(1, document.<Documents>getContextParameter("breadcrumb").size());
+        assertEquals(1, document.<Documents> getContextParameter("breadcrumb").size());
     }
 
     /**
@@ -419,7 +418,7 @@ public class ITRepository extends AbstractITBase {
         String calendarStr = formatter.format(calendar.getTime());
         assertEquals("2017-05-04T03:02:01.000Z", calendarStr);
 
-        Document file = new Document("My Title", "File");
+        Document file = Document.createWithName("My Title", "File");
         file.setPropertyValue("dc:issued", calendarStr);
         file = nuxeoClient.repository().createDocumentByPath("/", file);
         assertEquals("2017-05-04T03:02:01.000Z", file.getPropertyValue("dc:issued"));
@@ -441,7 +440,7 @@ public class ITRepository extends AbstractITBase {
         String calendarStr = formatter.format(calendar.getTime());
         assertEquals("2017-05-04T03:02:01.000+02:00", calendarStr);
 
-        Document file = new Document("My Title", "File");
+        Document file = Document.createWithName("My Title", "File");
         file.setPropertyValue("dc:issued", calendarStr);
         file = nuxeoClient.repository().createDocumentByPath("/", file);
         assertEquals("2017-05-04T01:02:01.000Z", file.getPropertyValue("dc:issued"));
@@ -461,7 +460,7 @@ public class ITRepository extends AbstractITBase {
         String dateTimeStr = dateTime.format(formatter);
         assertEquals("2017-05-04T03:02:01.000Z", dateTimeStr);
 
-        Document file = new Document("My Title", "File");
+        Document file = Document.createWithName("My Title", "File");
         file.setPropertyValue("dc:issued", dateTimeStr);
         file = nuxeoClient.repository().createDocumentByPath("/", file);
         assertEquals("File", file.getType());
@@ -480,7 +479,7 @@ public class ITRepository extends AbstractITBase {
         String dateTimeStr = dateTime.format(formatter);
         assertEquals("2017-05-04T03:02:01.000+02:00", dateTimeStr);
 
-        Document file = new Document("My Title", "File");
+        Document file = Document.createWithName("My Title", "File");
         file.setPropertyValue("dc:issued", dateTimeStr);
         file = nuxeoClient.repository().createDocumentByPath("/", file);
         assertEquals("File", file.getType());
@@ -504,7 +503,7 @@ public class ITRepository extends AbstractITBase {
      */
     @Test
     public void itCannotHandleDateByDefault() {
-        Document file = new Document("My Title", "File");
+        Document file = Document.createWithName("My Title", "File");
         String expectedMsg1 = buildErrorMsgForDate("dc:issued", GregorianCalendar.class);
         String expectedMsg2 = buildErrorMsgForDate("dc:issued", Date.class);
 
@@ -517,7 +516,7 @@ public class ITRepository extends AbstractITBase {
 
     @Test
     public void itCannotHandlePropsIfDateFound() {
-        Document file = new Document("My Title", "File");
+        Document file = Document.createWithName("My Title", "File");
         Map<String, Object> props = new HashMap<>();
         props.put("dc:issued", new GregorianCalendar());
         String expectedMsg = buildErrorMsgForDate("dc:issued", GregorianCalendar.class);
@@ -528,7 +527,7 @@ public class ITRepository extends AbstractITBase {
 
     @Test
     public void itCannotHandlePropsIfDateArrayFound() {
-        Document file = new Document("My Title", "File");
+        Document file = Document.createWithName("My Title", "File");
         Map<String, Object> props = new HashMap<>();
         props.put("sth:dateArray", new Object[] { "unused", new GregorianCalendar() });
         String expectedMsg = buildErrorMsgForDate("sth:dateArray", GregorianCalendar.class);
@@ -539,7 +538,7 @@ public class ITRepository extends AbstractITBase {
 
     @Test
     public void itCannotHandlePropsIfDateListFound() {
-        Document file = new Document("My Title", "File");
+        Document file = Document.createWithName("My Title", "File");
         Map<String, Object> props = new HashMap<>();
         props.put("sth:dateList", Arrays.asList(new GregorianCalendar(), new GregorianCalendar()));
         String expectedMsg = buildErrorMsgForDate("sth:dateList", GregorianCalendar.class);
@@ -550,7 +549,7 @@ public class ITRepository extends AbstractITBase {
 
     @Test
     public void itCannotHandlePropsIfDateFoundInComplexProps() {
-        Document file = new Document("My Title", "File");
+        Document file = Document.createWithName("My Title", "File");
         Map<String, Object> props = new HashMap<>();
         Map<String, Object> complexProps = new HashMap<>();
 
@@ -573,28 +572,24 @@ public class ITRepository extends AbstractITBase {
 
     @Test
     public void itCannotConstructDocumentIfDateFoundInProps() {
-        Map<String, Object> complexProps = new HashMap<>();
-        complexProps.put("complex:date", new Date(System.currentTimeMillis()));
-
-        Map<String, Object> withComplexProps = new HashMap<>();
-        withComplexProps.put("sth:complex", complexProps);
+        Map<String, Object> withoutComplexProps = Collections.singletonMap("dc:issued", new GregorianCalendar());
         try {
-            new Document(null, null, null, null, null, null, null, null, null, null, null, false, withComplexProps,
-                    null);
-            fail();
-        } catch (IllegalArgumentException e) {
-            String expectedMsg = buildErrorMsgForDate("complex:date", Date.class);
-            assertEquals(e.getMessage(), expectedMsg, e.getMessage());
-        }
-
-        Map<String, Object> withoutComplexProps = new HashMap<>();
-        withoutComplexProps.put("dc:issued", new GregorianCalendar());
-        try {
-            new Document(null, null, null, null, null, null, null, null, null, null, null, false, withoutComplexProps,
-                    null);
+            Document document = Document.createWithName("ID", "TYPE");
+            document.setProperties(withoutComplexProps);
             fail();
         } catch (IllegalArgumentException e) {
             String expectedMsg = buildErrorMsgForDate("dc:issued", GregorianCalendar.class);
+            assertEquals(e.getMessage(), expectedMsg, e.getMessage());
+        }
+
+        Map<String, Object> complexProps = Collections.singletonMap("complex:date", new Date());
+        Map<String, Object> withComplexProps = Collections.singletonMap("sth:complex", complexProps);
+        try {
+            Document document = Document.createWithName("ID", "TYPE");
+            document.setProperties(withComplexProps);
+            fail();
+        } catch (IllegalArgumentException e) {
+            String expectedMsg = buildErrorMsgForDate("complex:date", Date.class);
             assertEquals(e.getMessage(), expectedMsg, e.getMessage());
         }
     }
@@ -606,17 +601,14 @@ public class ITRepository extends AbstractITBase {
     public void itCanHandleComplexProperties() throws IOException, NoSuchFieldException, IllegalAccessException {
         // DataSet doctype comes from nuxeo-automation-test
         Document folder = nuxeoClient.repository().fetchDocumentByPath("/folder_1");
-        Document document = new Document("dataSet1", "DataSet");
+        Document document = Document.createWithName("dataSet1", "DataSet");
         document.setPropertyValue("dc:title", "new title");
 
-        List<Field> fields = new ArrayList<>();
-        List<String> roles = new ArrayList<>();
-        roles.add("BenchmarkIndicator");
-        roles.add("Decision");
+        List<String> roles = Arrays.asList("BenchmarkIndicator", "Decision");
         Field field1 = new Field("string", "description", roles, "columnName", "sqlTypeHint", "name");
         Field field2 = new Field("string", "description", roles, "columnName", "sqlTypeHint", "name");
-        fields.add(field1);
-        fields.add(field2);
+        List<Field> fields = Arrays.asList(field1, field2);
+
         Map<String, Object> creationProps = new HashMap<>();
         creationProps.put("ds:tableName", "MyTable");
         creationProps.put("ds:fields", fields);
@@ -625,7 +617,7 @@ public class ITRepository extends AbstractITBase {
         document = nuxeoClient.repository().createDocumentByPath("/folder_1", document);
         assertNotNull(document);
         assertEquals("DataSet", document.getType());
-        List list = (List) document.getProperties().get("ds:fields");
+        List list = document.getPropertyValue("ds:fields");
         assertFalse(list.isEmpty());
         assertEquals(2, list.size());
         assertEquals("document", document.getEntityType());
@@ -634,24 +626,31 @@ public class ITRepository extends AbstractITBase {
         assertEquals("dataSet1", document.getTitle());
 
         // Here we are using a sub class DataSet of Document which let the dev implementing business logic.
-        fields.clear();
-        roles.clear();
-        roles.add("BenchmarkIndicator");
-        Field field = new Field("string", "description", roles, "columnName", "sqlTypeHint", "name");
-        fields.add(field);
-        DataSet dataset = new DataSet("dataSet1", "DataSet");
-        dataset.setId(document.getId());
-        dataset.setPropertyValue("ds:fields", fields);
+        roles = Collections.singletonList("BenchmarkIndicator");
+        fields = Collections.singletonList(
+                new Field("string", "description", roles, "columnName", "sqlTypeHint", "name"));
+        DataSet dataset = new DataSet(document.getId());
+        dataset.setFields(fields);
 
         document = nuxeoClient.repository().updateDocument(dataset);
         dataset = new DataSet(document);
         assertNotNull(dataset);
-        fields = (List<Field>) dataset.getProperties().get("ds:fields");
-        assertNotNull(fields);
         fields = dataset.getFields();
+        assertNotNull(fields);
         assertFalse(fields.isEmpty());
         assertEquals(1, fields.size());
         assertEquals(1, fields.get(0).getRoles().size());
+
+        // Use addFields
+        dataset.addField(new Field("string", "description", roles, "columnName", "sqlTypeHint", "name"));
+
+        document = nuxeoClient.repository().updateDocument(dataset);
+        dataset = new DataSet(document);
+        assertNotNull(dataset);
+        fields = dataset.getFields();
+        assertNotNull(fields);
+        assertFalse(fields.isEmpty());
+        assertEquals(2, fields.size());
     }
 
     /**

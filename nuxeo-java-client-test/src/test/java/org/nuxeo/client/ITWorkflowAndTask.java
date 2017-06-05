@@ -53,7 +53,7 @@ public class ITWorkflowAndTask extends AbstractITBase {
     public void init() {
         super.init();
         // Create a note
-        document = new Document("note", "Note");
+        document = Document.createWithName("note", "Note");
         document = nuxeoClient.repository().createDocumentByPath("/", document);
         // Fetch serial workflow model
         serialWorkflow = nuxeoClient.repository().fetchWorkflowModels().get(1);
