@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2016 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2016-2017 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,44 +14,22 @@
  * limitations under the License.
  *
  * Contributors:
- *         Vladimir Pasquier <vpasquier@nuxeo.com>
+ *     Vladimir Pasquier <vpasquier@nuxeo.com>
+ *     Kevin Leturc <kleturc@nuxeo.com>
  */
 package org.nuxeo.client;
 
 import static junit.framework.TestCase.assertNotNull;
 import static org.junit.Assert.assertEquals;
 
-import java.util.Optional;
-
-import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.nuxeo.client.objects.directory.Directory;
 import org.nuxeo.client.objects.directory.DirectoryEntry;
-import org.nuxeo.ecm.core.test.annotations.Granularity;
-import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
-import org.nuxeo.ecm.restapi.test.RestServerFeature;
-import org.nuxeo.ecm.restapi.test.RestServerInit;
-import org.nuxeo.runtime.test.runner.Features;
-import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.Jetty;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
 
 /**
  * @since 0.1
  */
-@RunWith(FeaturesRunner.class)
-@Features({ RestServerFeature.class })
-@Jetty(port = 18090)
-@LocalDeploy("org.nuxeo.java.client.test:test-directories-sql-contrib.xml")
-@RepositoryConfig(cleanup = Granularity.METHOD, init = RestServerInit.class)
-public class TestDirectory extends TestBase {
-
-    @Before
-    public void authentication() {
-        login();
-    }
+public class ITDirectory extends AbstractITBase {
 
     @Test
     public void itCanGetDirectory() {

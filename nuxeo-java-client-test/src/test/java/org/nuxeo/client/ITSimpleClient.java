@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2016 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2016-2017 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,50 +14,34 @@
  * limitations under the License.
  *
  * Contributors:
- *         Vladimir Pasquier <vpasquier@nuxeo.com>
+ *     Vladimir Pasquier <vpasquier@nuxeo.com>
+ *     Kevin Leturc <kleturc@nuxeo.com>
  */
 package org.nuxeo.client;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 
-import okhttp3.Response;
-
 import org.apache.logging.log4j.util.Strings;
-import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.nuxeo.client.ConstantsV1;
 import org.nuxeo.client.objects.Document;
-import org.nuxeo.ecm.core.test.annotations.Granularity;
-import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
-import org.nuxeo.ecm.restapi.test.RestServerFeature;
-import org.nuxeo.runtime.test.runner.Features;
-import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.Jetty;
+
+import okhttp3.Response;
 
 /**
  * @since 0.1
  */
-@RunWith(FeaturesRunner.class)
-@Features({ RestServerFeature.class })
-@Jetty(port = 18090)
-@RepositoryConfig(cleanup = Granularity.METHOD)
-public class TestSimpleClient extends TestBase {
-
-    @Before
-    public void authentication() {
-        login();
-    }
+public class ITSimpleClient extends AbstractITBase {
 
     @Test
     public void itCanGET() throws IOException {
-        Response response = nuxeoClient.get(baseURL + ConstantsV1.API_PATH + "path/");
+        Response response = nuxeoClient.get(ITBase.BASE_URL + ConstantsV1.API_PATH + "path/");
         assertNotNull(response);
-        assertEquals(true, response.isSuccessful());
+        assertTrue(response.isSuccessful());
         String json = response.body().string();
         assertFalse(Strings.EMPTY.equals(json));
         Document document = nuxeoClient.getConverterFactory().readJSON(json, Document.class);
@@ -67,15 +51,33 @@ public class TestSimpleClient extends TestBase {
 
     @Test
     public void itCanPUT() throws IOException {
-        Response response = nuxeoClient.put(baseURL + ConstantsV1.API_PATH + "path/",
+        Response response = nuxeoClient.put(ITBase.BASE_URL + ConstantsV1.API_PATH + "path/",
                 "{\"entity-type\": \"document\",\"properties\": {\"dc:title\": \"new title\"}}");
         assertNotNull(response);
-        assertEquals(true, response.isSuccessful());
+        assertTrue(response.isSuccessful());
         String json = response.body().string();
         assertFalse(Strings.EMPTY.equals(json));
         Document document = nuxeoClient.getConverterFactory().readJSON(json, Document.class);
         assertNotNull(document);
         assertEquals("new title", document.getTitle());
+    }
+
+    @Test
+    public void itCanPOSTAndDELETE() throws IOException {
+        Response response = nuxeoClient.post(ITBase.BASE_URL + ConstantsV1.API_PATH + "path/",
+                "{\"entity-type\": \"document\",\"type\":\"File\",\"name\":\"file\",\"properties\": {\"dc:title\": \"file\"}}");
+        assertNotNull(response);
+        assertTrue(response.isSuccessful());
+        String json = response.body().string();
+        assertFalse(Strings.EMPTY.equals(json));
+        Document document = nuxeoClient.getConverterFactory().readJSON(json, Document.class);
+        assertNotNull(document);
+        assertEquals("file", document.getTitle());
+
+        response = nuxeoClient.delete(ITBase.BASE_URL + ConstantsV1.API_PATH + "path/file");
+        assertTrue(response.isSuccessful());
+        json = response.body().string();
+        assertTrue(Strings.EMPTY.equals(json));
     }
 
 }

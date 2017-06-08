@@ -1,0 +1,23 @@
+<project name="nuxeo-java-client-tests-8.10" xmlns:nx="urn:nuxeo-build" xmlns:artifact="urn:nuxeo-artifact">
+  <taskdef resource="org/nuxeo/build/antlib.xml" uri="urn:nuxeo-build" />
+  <taskdef resource="org/nuxeo/build/artifact/antlib.xml" uri="urn:nuxeo-artifact" />
+  <taskdef resource="net/sf/antcontrib/antlib.xml" />
+
+  <property name="out.dir" value="${maven.project.build.directory}" />
+  <unzip dest="${out.dir}/" overwrite="false">
+    <artifact:resolveFile key="org.nuxeo:nuxeo-ftest::zip" />
+  </unzip>
+  <import file="${out.dir}/nuxeo-ftest.xml" />
+
+  <property name="mp.install" value="file:${out.dir}/nuxeo-marketplace-jsf-ui.zip" />
+  <target name="prepare-environment" depends="_init,prepare-db,prepare-tomcat">
+    <copy file="src/test/resources/cors-config.xml" todir="${nuxeo.nxserver}/config/" />
+    <!-- install produced artifact for tests -->
+    <!-- TODO find a better way <artifact:resolveFile key="org.nuxeo.client:nuxeo-java-client-test::jar" /> doesn't work -->
+    <copy file="${out.dir}/nuxeo-java-client-test-${maven.project.version}.jar" todir="${nuxeo.nxserver}/bundles/" />
+    <copy tofile="${out.dir}/nuxeo-marketplace-jsf-ui.zip">
+      <artifact:file key="org.nuxeo.ecm.distribution:nuxeo-marketplace-jsf-ui::zip" />
+    </copy>
+  </target>
+
+</project>

@@ -1,4 +1,7 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: Nuxeo Java Client
-Bundle-SymbolicName: org.nuxeo.java.client.test;singleton:=true
+Bundle-Name: Nuxeo Java Client Test
+Bundle-SymbolicName: org.nuxeo.client.test;singleton:=true
+Bundle-Version: 1.0.0
+Nuxeo-Component: OSGI-INF/javaclient-dataset-type-contrib.xml,
+  OSGI-INF/javaclient-operations-contrib.xml

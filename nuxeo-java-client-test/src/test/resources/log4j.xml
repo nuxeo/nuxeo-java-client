@@ -24,6 +24,7 @@
     </layout>
   </appender>
 
+  <!-- TODO check if this is useful -->
   <appender name="CHECKER"
             class="org.nuxeo.automation.scripting.test.util.LogChecker">
     <errorHandler class="org.apache.log4j.helpers.OnlyOnceErrorHandler"/>
@@ -33,11 +34,6 @@
              value="%d{HH:mm:ss,SSS} %-5p [%C{1}] %m%n"/>
     </layout>
   </appender>
-
-  <!--<category name="org.nuxeo.runtime" additivity="false">-->
-  <!--<priority value="TRACE" />-->
-  <!--<appender-ref ref="FILE"/>-->
-  <!--</category>-->
 
   <root>
     <priority value="DEBUG"/>

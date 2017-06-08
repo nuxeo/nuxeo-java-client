@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2016 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2016-2017 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,7 +14,8 @@
  * limitations under the License.
  *
  * Contributors:
- *         Vladimir Pasquier <vpasquier@nuxeo.com>
+ *     Vladimir Pasquier <vpasquier@nuxeo.com>
+ *     Kevin Leturc <kleturc@nuxeo.com>
  */
 package org.nuxeo.client;
 
@@ -23,51 +24,27 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.fail;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.codec.digest.DigestUtils;
-import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.nuxeo.client.ConstantsV1;
 import org.nuxeo.client.objects.Document;
-import org.nuxeo.client.objects.blob.Blob;
+import org.nuxeo.client.objects.blob.FileBlob;
 import org.nuxeo.client.objects.upload.BatchUpload;
 import org.nuxeo.client.objects.upload.BatchUploadManager;
 import org.nuxeo.client.spi.NuxeoClientException;
 import org.nuxeo.common.utils.FileUtils;
-import org.nuxeo.ecm.automation.server.jaxrs.batch.BatchManager;
-import org.nuxeo.ecm.core.test.annotations.Granularity;
-import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
-import org.nuxeo.ecm.restapi.test.RestServerFeature;
-import org.nuxeo.ecm.restapi.test.RestServerInit;
-import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.test.runner.Features;
-import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.Jetty;
-import org.nuxeo.transientstore.test.TransientStoreFeature;
 
 /**
  * @since 0.1
  */
-@RunWith(FeaturesRunner.class)
-@Features({ TransientStoreFeature.class, RestServerFeature.class })
-@Jetty(port = 18090)
-@RepositoryConfig(cleanup = Granularity.METHOD, init = RestServerInit.class)
-public class TestUpload extends TestBase {
-
-    @Before
-    public void authentication() {
-        login();
-    }
+public class ITUpload extends AbstractITBase {
 
     @Test
     public void itCanManageBatch() {
-        BatchUpload batchUpload = nuxeoClient.fetchUploadManager();
+        BatchUploadManager batchUploadManager = nuxeoClient.batchUploadManager();
+        BatchUpload batchUpload = batchUploadManager.createBatch();
         assertNotNull(batchUpload);
         assertNotNull(batchUpload.getBatchId());
         batchUpload.cancel();
@@ -82,7 +59,8 @@ public class TestUpload extends TestBase {
     @Test
     public void itCanUploadFiles() {
         // Upload the file
-        BatchUpload batchUpload = nuxeoClient.fetchUploadManager();
+        BatchUploadManager batchUploadManager = nuxeoClient.batchUploadManager();
+        BatchUpload batchUpload = batchUploadManager.createBatch();
         assertNotNull(batchUpload);
         String batchId = batchUpload.getBatchId();
         assertNotNull(batchId);
@@ -145,21 +123,13 @@ public class TestUpload extends TestBase {
         assertEquals(file.length(), batchUpload.getSize());
         assertEquals(4, batchUpload.getChunkCount());
         assertEquals(batchUpload.getChunkCount(), batchUpload.getUploadedChunkIds().length);
-        // TODO rework this
-        // Check the uploaded blob
-        org.nuxeo.ecm.core.api.Blob uploadedBlob = Framework.getService(BatchManager.class).getBlob(
-                batchUpload.getBatchId(), batchUpload.getFileIdx());
-        assertNotNull(uploadedBlob);
-        try (InputStream expectedIS = new FileInputStream(file);
-                InputStream uploadedBlobIS = uploadedBlob.getStream()) {
-            assertEquals(DigestUtils.md5Hex(expectedIS), DigestUtils.md5Hex(uploadedBlobIS));
-        }
     }
 
     @Test
     public void itCanAttachABatchToADoc() {
         // Upload file chunks
-        BatchUpload batchUpload = nuxeoClient.fetchUploadManager();
+        BatchUploadManager batchUploadManager = nuxeoClient.batchUploadManager();
+        BatchUpload batchUpload = batchUploadManager.createBatch();
         assertNotNull(batchUpload);
         File file = FileUtils.getResourceFileFromContext("sample.jpg");
         batchUpload = batchUpload.upload("1", file);
@@ -168,7 +138,7 @@ public class TestUpload extends TestBase {
         // Getting a doc and attaching the batch file
         Document doc = new Document("file", "File");
         doc.setPropertyValue("dc:title", "new title");
-        doc = nuxeoClient.repository().createDocumentByPath("/folder_1", doc);
+        doc = nuxeoClient.repository().createDocumentByPath("/", doc);
         assertNotNull(doc);
         doc.setPropertyValue("file:content", batchUpload.getBatchBlob());
         doc = doc.updateDocument();
@@ -178,7 +148,8 @@ public class TestUpload extends TestBase {
     @Test
     public void itCanExecuteOp() {
         // Upload file
-        BatchUpload batchUpload = nuxeoClient.fetchUploadManager();
+        BatchUploadManager batchUploadManager = nuxeoClient.batchUploadManager();
+        BatchUpload batchUpload = batchUploadManager.createBatch();
         assertNotNull(batchUpload);
         File file = FileUtils.getResourceFileFromContext("sample.jpg");
         batchUpload = batchUpload.upload("1", file);
@@ -187,9 +158,9 @@ public class TestUpload extends TestBase {
         // Getting a doc and attaching the batch file
         Document doc = new Document("file", "File");
         doc.setPropertyValue("dc:title", "new title");
-        doc = nuxeoClient.repository().createDocumentByPath("/folder_1", doc);
+        doc = nuxeoClient.repository().createDocumentByPath("/", doc);
         assertNotNull(doc);
-        Blob blob = batchUpload.automation("Blob.AttachOnDocument").param("document", doc).execute();
+        FileBlob blob = batchUpload.automation("Blob.AttachOnDocument").param("document", doc).execute();
         assertNotNull(blob);
     }
 
@@ -221,9 +192,9 @@ public class TestUpload extends TestBase {
         // return docId
 
         // GET request with docId to get file
-        Blob blob = nuxeoClient.repository().fetchBlobById(doc.getId(), Document.DEFAULT_FILE_CONTENT);
+        FileBlob blob = nuxeoClient.repository().fetchBlobById(doc.getId(), Document.DEFAULT_FILE_CONTENT);
         assertNotNull(blob);
-        assertEquals("sample.jpg", blob.getFileName());
+        assertEquals("sample.jpg", blob.getFilename());
         assertEquals(file.length(), blob.getLength());
         assertNotNull(blob.getFile());
         assertEquals(file.length(), blob.getFile().length());
