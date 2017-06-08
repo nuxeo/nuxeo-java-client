@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2017 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2017 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,9 +14,9 @@
  * limitations under the License.
  *
  * Contributors:
- *         Vladimir Pasquier <vpasquier@nuxeo.com>
+ *     Vladimir Pasquier <vpasquier@nuxeo.com>
  */
-package org.nuxeo.client.operations;
+package org.nuxeo.client.test.operations;
 
 import org.nuxeo.ecm.automation.core.annotations.Operation;
 import org.nuxeo.ecm.automation.core.annotations.OperationMethod;
@@ -43,4 +43,5 @@ public class CustomOperationJSONBlob {
 
         return Blobs.createBlob(attributes.toString(), "application/json");
     }
+
 }

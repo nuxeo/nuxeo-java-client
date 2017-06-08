@@ -22,12 +22,11 @@ package org.nuxeo.client.methods;
 import java.util.List;
 import java.util.Map;
 
-import okhttp3.MultipartBody;
-import okhttp3.RequestBody;
-
 import org.nuxeo.client.objects.Operation;
 import org.nuxeo.client.objects.operation.OperationBody;
 
+import okhttp3.MultipartBody;
+import okhttp3.RequestBody;
 import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.GET;

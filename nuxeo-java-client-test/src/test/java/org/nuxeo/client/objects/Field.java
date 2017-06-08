@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2016 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2016-2017 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,7 +14,7 @@
  * limitations under the License.
  *
  * Contributors:
- *         Vladimir Pasquier <vpasquier@nuxeo.com>
+ *     Vladimir Pasquier <vpasquier@nuxeo.com>
  */
 package org.nuxeo.client.objects;
 
@@ -105,4 +105,5 @@ public class Field {
     public void setName(String name) {
         this.name = name;
     }
+
 }

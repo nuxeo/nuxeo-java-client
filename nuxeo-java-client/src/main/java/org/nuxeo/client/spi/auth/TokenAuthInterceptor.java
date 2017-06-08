@@ -21,11 +21,11 @@ package org.nuxeo.client.spi.auth;
 
 import java.io.IOException;
 
+import org.nuxeo.client.HttpHeaders;
+
 import okhttp3.Interceptor;
 import okhttp3.Request;
 import okhttp3.Response;
-
-import org.nuxeo.client.HttpHeaders;
 
 /**
  * @since 0.1
