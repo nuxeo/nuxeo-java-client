@@ -230,7 +230,7 @@ public class BatchUpload extends AbstractConnectable<BatchUploadAPI> {
     /**
      * This method can only be called on a {@link BatchUpload} representing a real upload (ie: fileIdx != null).
      */
-    public BatchUploadOperation automation(String operationId) {
+    public BatchUploadOperation operation(String operationId) {
         if (fileIdx == null) {
             throw new NuxeoClientException(
                     "Unable to execute operation on a BatchUpload not representing a blob (fileIdx == null)");

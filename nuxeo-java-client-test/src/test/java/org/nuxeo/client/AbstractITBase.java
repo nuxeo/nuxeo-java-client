@@ -78,7 +78,7 @@ public abstract class AbstractITBase {
         // Attach a light blob
         File file = FileUtils.getResourceFileFromContext("blob.json");
         FileBlob fileBlob = new FileBlob(file);
-        nuxeoClient.automation("Blob.AttachOnDocument").param("document", "/folder_2/file").input(fileBlob).execute();
+        nuxeoClient.operation("Blob.AttachOnDocument").param("document", "/folder_2/file").input(fileBlob).execute();
     }
 
     @After
@@ -87,7 +87,7 @@ public abstract class AbstractITBase {
         // First remove proxies before removing documents
         Collection<String> docIdsToDelete = repositoryInterceptor.getDocumentIdsToDelete();
         if (!docIdsToDelete.isEmpty()) {
-            nuxeoClient.automation("Document.RemoveProxies").input(new DocRefs(docIdsToDelete)).execute();
+            nuxeoClient.operation("Document.RemoveProxies").input(new DocRefs(docIdsToDelete)).execute();
             docIdsToDelete.forEach(repository::deleteDocument);
         }
         workflowInterceptor.getWorkflowIdsToDelete().forEach(repository::cancelWorkflowInstance);

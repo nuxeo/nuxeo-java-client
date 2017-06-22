@@ -62,7 +62,7 @@ public class NuxeoConverterFactory extends Converter.Factory {
     }
 
     /**
-     * Register an entity pojo to the automation unmarshalling mechanism.
+     * Register an entity pojo to the operation unmarshalling mechanism.
      *
      * @since 3.0
      */

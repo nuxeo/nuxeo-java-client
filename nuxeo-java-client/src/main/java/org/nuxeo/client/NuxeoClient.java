@@ -251,7 +251,7 @@ public class NuxeoClient {
         return new Repository(this, repositoryName);
     }
 
-    public Operation automation(String operationId) {
+    public Operation operation(String operationId) {
         return new Operation(this, operationId);
     }
 
@@ -533,7 +533,7 @@ public class NuxeoClient {
         }
 
         /**
-         * Register entity type to class link for automatic unmarshalling process in automation.
+         * Register entity type to class link for automatic unmarshalling process in operation.
          * <p />
          * CAUTION: this method is just a convenient way to register entity pojo. This operation is done in a static way
          * on NuxeoConverterFactory.

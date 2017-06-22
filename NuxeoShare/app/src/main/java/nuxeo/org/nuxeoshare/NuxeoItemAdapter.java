@@ -13,14 +13,15 @@ import org.nuxeo.client.api.objects.Documents;
 class NuxeoItemAdapter extends BaseAdapter {
 
     Context context;
+
     Documents data;
+
     private static LayoutInflater inflater = null;
 
     public NuxeoItemAdapter(Context context, Documents data) {
         this.context = context;
         this.data = data;
-        inflater = (LayoutInflater) context
-                .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
     }
 
     @Override

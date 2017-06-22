@@ -366,7 +366,7 @@ public class Document extends RepositoryEntity<RepositoryAPI> {
     public Document addPermission(ACE ace) {
         Map<String, Object> params = toAutomationParameters(ace);
         params.put("user", ace.getUsername());
-        return nuxeoClient.automation(Operations.DOCUMENT_ADD_PERMISSION).input(this).parameters(params).execute();
+        return nuxeoClient.operation(Operations.DOCUMENT_ADD_PERMISSION).input(this).parameters(params).execute();
     }
 
     protected Map<String, Object> toAutomationParameters(ACE ace) {
@@ -392,7 +392,7 @@ public class Document extends RepositoryEntity<RepositoryAPI> {
     public Document addInvitation(ACE ace, String email) {
         Map<String, Object> params = toAutomationParameters(ace);
         params.put("email", email);
-        return nuxeoClient.automation(Operations.DOCUMENT_ADD_PERMISSION).input(this).parameters(params).execute();
+        return nuxeoClient.operation(Operations.DOCUMENT_ADD_PERMISSION).input(this).parameters(params).execute();
     }
 
     /**
@@ -418,7 +418,7 @@ public class Document extends RepositoryEntity<RepositoryAPI> {
         params.put("id", aceId);
         params.put("user", username);
         params.put("acl", ACLName);
-        nuxeoClient.automation(Operations.DOCUMENT_REMOVE_PERMISSION).input(this).parameters(params).execute();
+        nuxeoClient.operation(Operations.DOCUMENT_REMOVE_PERMISSION).input(this).parameters(params).execute();
     }
 
     /* ACP Async */
@@ -439,7 +439,7 @@ public class Document extends RepositoryEntity<RepositoryAPI> {
     public void addPermission(ACE ace, Callback<Document> callback) {
         Map<String, Object> params = toAutomationParameters(ace);
         params.put("user", ace.getUsername());
-        nuxeoClient.automation(Operations.DOCUMENT_ADD_PERMISSION).input(this).parameters(params).execute(callback);
+        nuxeoClient.operation(Operations.DOCUMENT_ADD_PERMISSION).input(this).parameters(params).execute(callback);
     }
 
     /**
@@ -452,7 +452,7 @@ public class Document extends RepositoryEntity<RepositoryAPI> {
     public void addInvitation(ACE ace, String email, Callback<Document> callback) {
         Map<String, Object> params = toAutomationParameters(ace);
         params.put("email", email);
-        nuxeoClient.automation(Operations.DOCUMENT_ADD_PERMISSION).input(this).parameters(params).execute(callback);
+        nuxeoClient.operation(Operations.DOCUMENT_ADD_PERMISSION).input(this).parameters(params).execute(callback);
     }
 
     /* Children Sync */
