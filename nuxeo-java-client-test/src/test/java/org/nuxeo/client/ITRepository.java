@@ -64,8 +64,6 @@ import org.nuxeo.client.objects.blob.Blobs;
 import org.nuxeo.client.objects.blob.FileBlob;
 import org.nuxeo.client.objects.user.User;
 import org.nuxeo.client.spi.NuxeoClientException;
-import org.nuxeo.client.objects.DataSet;
-import org.nuxeo.client.objects.Field;
 import org.nuxeo.common.utils.FileUtils;
 
 /**
@@ -191,7 +189,7 @@ public class ITRepository extends AbstractITBase {
 
     @Test
     public void itCanUseQueriesAndResultSet() {
-        RecordSet documents = nuxeoClient.automation("Repository.ResultSetQuery")
+        RecordSet documents = nuxeoClient.operation("Repository.ResultSetQuery")
                                          .param("query", "SELECT * FROM Document")
                                          .execute();
         assertTrue(documents.getUuids().size() != 0);
@@ -224,7 +222,7 @@ public class ITRepository extends AbstractITBase {
         Blobs inputBlobs = new Blobs();
         inputBlobs.add(temp1);
         inputBlobs.add(temp2);
-        Blobs blobs = nuxeoClient.automation("Blob.AttachOnDocument")
+        Blobs blobs = nuxeoClient.operation("Blob.AttachOnDocument")
                                  .param("document", file.getPath())
                                  .param("xpath", "files:files")
                                  .input(inputBlobs)
@@ -248,7 +246,7 @@ public class ITRepository extends AbstractITBase {
         Blobs inputBlobs = new Blobs();
         inputBlobs.add(temp1);
         inputBlobs.add(temp2);
-        Blobs blobs = nuxeoClient.automation("Blob.AttachOnDocument")
+        Blobs blobs = nuxeoClient.operation("Blob.AttachOnDocument")
                                  .param("document", file.getPath())
                                  .param("xpath", "files:files")
                                  .input(inputBlobs)
@@ -344,7 +342,7 @@ public class ITRepository extends AbstractITBase {
         // TODO rework this test
         Thread t = new Thread(() -> {
             try {
-                RecordSet documents = nuxeoClient.automation("Repository.ResultSetQuery")
+                RecordSet documents = nuxeoClient.operation("Repository.ResultSetQuery")
                                                  .param("query", "SELECT * FROM Document")
                                                  .execute();
                 assertTrue(documents.getUuids().size() != 0);
@@ -353,7 +351,7 @@ public class ITRepository extends AbstractITBase {
         });
         Thread t2 = new Thread(() -> {
             try {
-                RecordSet documents = nuxeoClient.automation("Repository.ResultSetQuery")
+                RecordSet documents = nuxeoClient.operation("Repository.ResultSetQuery")
                                                  .param("query", "SELECT * FROM Document")
                                                  .execute();
                 assertTrue(documents.getUuids().size() != 0);
@@ -666,7 +664,7 @@ public class ITRepository extends AbstractITBase {
 
         assertFalse(folder.isProxy());
 
-        Document proxy = nuxeoClient.automation("Document.CreateLiveProxy")
+        Document proxy = nuxeoClient.operation("Document.CreateLiveProxy")
                                     .param("Destination Path", root.getPath())
                                     .input(folder)
                                     .execute();

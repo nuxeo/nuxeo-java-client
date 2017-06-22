@@ -160,7 +160,7 @@ public class ITUpload extends AbstractITBase {
         doc.setPropertyValue("dc:title", "new title");
         doc = nuxeoClient.repository().createDocumentByPath("/", doc);
         assertNotNull(doc);
-        FileBlob blob = batchUpload.automation("Blob.AttachOnDocument").param("document", doc).execute();
+        FileBlob blob = batchUpload.operation("Blob.AttachOnDocument").param("document", doc).execute();
         assertNotNull(blob);
     }
 
