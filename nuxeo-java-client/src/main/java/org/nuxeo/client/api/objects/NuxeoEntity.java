@@ -257,6 +257,11 @@ public abstract class NuxeoEntity<T> {
                     }
                     ((Blob) entity).setFileName(fileName);
                 }
+
+                String contentType = headers.get("Content-Type")
+                if (contentType != null) {
+                    ((Blob) entity).setMimeType(contentType);
+                }
             }
             return entity;
         } else if (entity instanceof List<?>) {
