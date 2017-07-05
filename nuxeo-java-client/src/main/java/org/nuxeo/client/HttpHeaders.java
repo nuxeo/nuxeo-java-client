@@ -45,10 +45,6 @@ public class HttpHeaders {
 
     public static final String X_AUTHENTICATION_TOKEN = "X-Authentication-Token";
 
-    public static final String X_ENRICHERS = "X-NXenrichers.document";
-
-    public static final String X_FETCH = "X-NXfetch.document";
-
     public static final String X_PROPERTIES = "X-NXproperties";
 
     public static final String X_VOID_OPERATION = "X-NXVoidOperation";

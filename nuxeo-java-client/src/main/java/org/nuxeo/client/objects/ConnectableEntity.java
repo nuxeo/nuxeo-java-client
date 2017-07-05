@@ -26,9 +26,10 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
  * @param <A> The api interface type.
+ * @param <B> The type of object extending this one.
  * @since 3.0
  */
-public class ConnectableEntity<A> extends AbstractConnectable<A> {
+public class ConnectableEntity<A, B extends ConnectableEntity<A, B>> extends AbstractConnectable<A, B> {
 
     @JsonProperty("entity-type")
     protected final String entityType;

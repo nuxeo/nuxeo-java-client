@@ -43,7 +43,7 @@ import okhttp3.RequestBody;
 /**
  * @since 0.1
  */
-public class BatchUpload extends AbstractConnectable<BatchUploadAPI> {
+public class BatchUpload extends AbstractConnectable<BatchUploadAPI, BatchUpload> {
 
     @JsonIgnore
     protected int chunkSize;

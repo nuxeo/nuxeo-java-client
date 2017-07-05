@@ -29,7 +29,7 @@ import org.nuxeo.client.objects.AbstractConnectable;
 /**
  * @since 1.0
  */
-public class TaskManager extends AbstractConnectable<TaskManagerAPI> {
+public class TaskManager extends AbstractConnectable<TaskManagerAPI, TaskManager> {
 
     public TaskManager(NuxeoClient nuxeoClient) {
         super(TaskManagerAPI.class, nuxeoClient);

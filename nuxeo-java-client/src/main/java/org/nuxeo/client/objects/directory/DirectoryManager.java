@@ -28,7 +28,7 @@ import org.nuxeo.client.objects.AbstractConnectable;
 /**
  * @since 0.1
  */
-public class DirectoryManager extends AbstractConnectable<DirectoryManagerAPI> {
+public class DirectoryManager extends AbstractConnectable<DirectoryManagerAPI, DirectoryManager> {
 
     public DirectoryManager(NuxeoClient nuxeoClient) {
         super(DirectoryManagerAPI.class, nuxeoClient);

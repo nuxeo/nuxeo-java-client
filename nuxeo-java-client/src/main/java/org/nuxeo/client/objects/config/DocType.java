@@ -32,7 +32,7 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 /**
  * @since 3.0
  */
-public class DocType extends ConnectableEntity<ConfigAPI> {
+public class DocType extends ConnectableEntity<ConfigAPI, DocType> {
 
     protected String name;
 

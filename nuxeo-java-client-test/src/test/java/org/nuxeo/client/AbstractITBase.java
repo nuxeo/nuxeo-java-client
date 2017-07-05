@@ -50,10 +50,9 @@ public abstract class AbstractITBase {
     @Before
     public void init() {
         // Create client and bind interceptors to register creation/deletion on server
-        nuxeoClient.okhttpBuilder.addInterceptor(repositoryInterceptor);
-        nuxeoClient.okhttpBuilder.addInterceptor(workflowInterceptor);
-        nuxeoClient.okhttpBuilder.addInterceptor(userGroupInterceptor);
-        nuxeoClient.retrofit();
+        nuxeoClient.addOkHttpInterceptor(repositoryInterceptor);
+        nuxeoClient.addOkHttpInterceptor(workflowInterceptor);
+        nuxeoClient.addOkHttpInterceptor(userGroupInterceptor);
     }
 
     public void initDocuments() {

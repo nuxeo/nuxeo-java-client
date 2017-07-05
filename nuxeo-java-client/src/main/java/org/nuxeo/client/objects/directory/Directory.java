@@ -25,7 +25,7 @@ import org.nuxeo.client.objects.EntityTypes;
 /**
  * @since 3.0
  */
-public class Directory extends ConnectableEntity<DirectoryManagerAPI> {
+public class Directory extends ConnectableEntity<DirectoryManagerAPI, Directory> {
 
     private String name;
 

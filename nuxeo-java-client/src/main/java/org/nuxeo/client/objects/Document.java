@@ -55,7 +55,7 @@ import retrofit2.Callback;
 /**
  * @since 0.1
  */
-public class Document extends RepositoryEntity<RepositoryAPI> {
+public class Document extends RepositoryEntity<RepositoryAPI, Document> {
 
     public static final String DEFAULT_FILE_CONTENT = "file:content";
 

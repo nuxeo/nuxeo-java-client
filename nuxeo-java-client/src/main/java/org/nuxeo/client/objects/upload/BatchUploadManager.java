@@ -28,7 +28,7 @@ import org.nuxeo.client.objects.AbstractConnectable;
 /**
  * @since 3.0
  */
-public class BatchUploadManager extends AbstractConnectable<BatchUploadAPI> {
+public class BatchUploadManager extends AbstractConnectable<BatchUploadAPI, BatchUploadManager> {
 
     public BatchUploadManager(NuxeoClient nuxeoClient) {
         super(BatchUploadAPI.class, nuxeoClient);
