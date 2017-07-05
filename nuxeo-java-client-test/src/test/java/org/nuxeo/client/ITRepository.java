@@ -138,7 +138,7 @@ public class ITRepository extends AbstractITBase {
 
     @Test
     public void itCanFetchSpecificProperty() {
-        nuxeoClient.fetch("dc:creator");
+        nuxeoClient.fetchPropertiesForDocument("dc:creator");
         Document note = nuxeoClient.repository().fetchDocumentByPath("/folder_1/note_0");
         assertNotNull(note);
         assertEquals("Note 0", note.getPropertyValue("dc:title"));
@@ -377,7 +377,9 @@ public class ITRepository extends AbstractITBase {
 
     @Test
     public void itCanUseEnrichers() {
-        Document document = nuxeoClient.enrichers("acls", "breadcrumb").repository().fetchDocumentByPath("/folder_2");
+        Document document = nuxeoClient.enrichersForDocument("acls", "breadcrumb")
+                                       .repository()
+                                       .fetchDocumentByPath("/folder_2");
         assertNotNull(document);
         assertEquals(1, ((List) document.getContextParameters().get("acls")).size());
         assertEquals(1, document.<Documents> getContextParameter("breadcrumb").size());
@@ -390,7 +392,9 @@ public class ITRepository extends AbstractITBase {
     @Test
     public void itCanUseBreadcrumb() {
         // Test deserialization
-        Document document = nuxeoClient.enrichers("breadcrumb").repository().fetchDocumentByPath("/folder_2/file");
+        Document document = nuxeoClient.enrichersForDocument("breadcrumb")
+                                       .repository()
+                                       .fetchDocumentByPath("/folder_2/file");
         assertNotNull(document);
         Documents documents = document.getContextParameter("breadcrumb");
         assertNotNull(documents);

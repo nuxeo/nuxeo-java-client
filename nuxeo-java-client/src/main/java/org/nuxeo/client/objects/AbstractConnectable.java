@@ -30,9 +30,11 @@ import retrofit2.Callback;
 
 /**
  * @param <A> The api interface type.
+ * @param <B> The type of object extending this one.
  * @since 3.0
  */
-public class AbstractConnectable<A> implements Connectable {
+public class AbstractConnectable<A, B extends AbstractConnectable<A, B>> extends AbstractBase<B>
+        implements Connectable {
 
     @JsonIgnore
     protected final Class<A> apiClass;
@@ -47,13 +49,16 @@ public class AbstractConnectable<A> implements Connectable {
      * Minimal constructor to use benefit of injection mechanism.
      */
     protected AbstractConnectable(Class<A> apiClass) {
+        // don't call super, this AbstractConnectable constructor is used for not yet connected object,
+        // at this moment we don't need okhttp or retrofit objects
         this.apiClass = Objects.requireNonNull(apiClass, "API interface must be provided");
     }
 
     protected AbstractConnectable(Class<A> apiClass, NuxeoClient nuxeoClient) {
-        this(apiClass);
+        super(nuxeoClient);
+        this.apiClass = Objects.requireNonNull(apiClass, "API interface must be provided");
         this.nuxeoClient = nuxeoClient;
-        this.api = nuxeoClient.createApi(apiClass);
+        this.api = retrofit.create(apiClass);
     }
 
     protected <T> T fetchResponse(Call<T> call) {
@@ -66,8 +71,16 @@ public class AbstractConnectable<A> implements Connectable {
 
     @Override
     public void reconnectWith(NuxeoClient nuxeoClient) {
+        replaceWith(nuxeoClient);
         this.nuxeoClient = nuxeoClient;
-        this.api = nuxeoClient.createApi(apiClass);
+        this.api = retrofit.create(apiClass);
+    }
+
+    @Override
+    protected void buildRetrofit() {
+        super.buildRetrofit();
+        // now re-create an API
+        this.api = retrofit.create(this.apiClass);
     }
 
 }

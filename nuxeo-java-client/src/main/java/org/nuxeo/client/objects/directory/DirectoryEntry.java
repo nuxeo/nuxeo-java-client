@@ -31,7 +31,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 /**
  * @since 0.1
  */
-public class DirectoryEntry extends ConnectableEntity<DirectoryManagerAPI> {
+public class DirectoryEntry extends ConnectableEntity<DirectoryManagerAPI, DirectoryEntry> {
 
     /**
      * @since 3.0

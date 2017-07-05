@@ -26,6 +26,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
+import org.nuxeo.client.HttpHeaders;
 import org.nuxeo.client.NuxeoClient;
 import org.nuxeo.client.methods.OperationAPI;
 import org.nuxeo.client.objects.blob.Blob;
@@ -48,7 +49,7 @@ import retrofit2.Callback;
 /**
  * @since 0.1
  */
-public class Operation extends ConnectableEntity<OperationAPI> {
+public class Operation extends ConnectableEntity<OperationAPI, Operation> {
 
     public static final String INPUT_PART = "input";
 
@@ -130,8 +131,8 @@ public class Operation extends ConnectableEntity<OperationAPI> {
             for (int i = 0; i < blobs.size(); i++) {
                 Blob blob = blobs.get(i);
                 RequestBody fbody = create(blob);
-                fileParts.add(MultipartBody.Part.createFormData(INPUT_PARTS + String.valueOf(i), blob.getFilename(),
-                        fbody));
+                fileParts.add(
+                        MultipartBody.Part.createFormData(INPUT_PARTS + String.valueOf(i), blob.getFilename(), fbody));
             }
             return api.execute(operationId, body, fileParts);
         } else {
@@ -171,6 +172,14 @@ public class Operation extends ConnectableEntity<OperationAPI> {
             }
 
         };
+    }
+
+    /*******************************
+     * Specific configuration *
+     ******************************/
+
+    public Operation voidOperation(boolean value) {
+        return header(HttpHeaders.X_VOID_OPERATION, Boolean.toString(value));
     }
 
 }

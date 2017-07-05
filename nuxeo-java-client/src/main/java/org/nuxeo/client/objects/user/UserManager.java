@@ -31,7 +31,7 @@ import retrofit2.Callback;
 /**
  * @since 0.1
  */
-public class UserManager extends AbstractConnectable<UserManagerAPI> {
+public class UserManager extends AbstractConnectable<UserManagerAPI, UserManager> {
 
     public UserManager(NuxeoClient nuxeoClient) {
         super(UserManagerAPI.class, nuxeoClient);

@@ -27,7 +27,7 @@ import org.nuxeo.client.objects.AbstractConnectable;
 /**
  * @since 3.0
  */
-public class ConfigManager extends AbstractConnectable<ConfigAPI> {
+public class ConfigManager extends AbstractConnectable<ConfigAPI, ConfigManager> {
 
     public ConfigManager(NuxeoClient nuxeoClient) {
         super(ConfigAPI.class, nuxeoClient);

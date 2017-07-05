@@ -34,7 +34,7 @@ import retrofit2.Callback;
 /**
  * @since 0.1
  */
-public class Repository extends RepositoryEntity<RepositoryAPI> {
+public class Repository extends RepositoryEntity<RepositoryAPI, Repository> {
 
     public Repository(NuxeoClient nuxeoClient) {
         super(EntityTypes.DOCUMENT, RepositoryAPI.class, nuxeoClient);
