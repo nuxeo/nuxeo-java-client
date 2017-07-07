@@ -6,7 +6,8 @@ This is supported by Nuxeo and compatible with Nuxeo LTS 2015, Nuxeo LTS 2016 an
 
 Here is the [Documentation Website](http://nuxeo.github.io/nuxeo-java-client).
 
-[![Build Status](https://qa.nuxeo.org/jenkins/buildStatus/icon?job=Client/nuxeo-java-client-master-vs-master)](https://qa.nuxeo.org/jenkins/job/Client/job/nuxeo-java-client-master-vs-master)
+[![Build Status](https://qa.nuxeo.org/jenkins/job/Client/job/nuxeo-java-client-vs-master/job/master/badge/icon)](https://qa.nuxeo.org/jenkins/job/Client/job/nuxeo-java-client-vs-master/job/master/)
+[![Dependency Status](https://www.versioneye.com/user/projects/59637bee0fb24f00583adf8e/badge.svg?style=flat-square)](https://www.versioneye.com/user/projects/59637bee0fb24f00583adf8e)
 
 
 
