@@ -45,7 +45,7 @@ node(env.SLAVE) {
                     archive 'nuxeo-java-client/target/*.jar, nuxeo-java-client-test/target/tomcat/log/*.log'
                     junit 'nuxeo-java-client/target/surefire-reports/*.xml'
                     junit 'nuxeo-java-client-test/target/failsafe-reports/*.xml'
-                    if (env.BRANCH_NAME == 'master') {
+                    if (env.BRANCH_NAME == 'master' && env.STATUS_CONTEXT_NAME == 'nuxeo/master') {
                         step([$class: 'JiraIssueUpdater', issueSelector: [$class: 'DefaultIssueSelector'], scm: scm])
                     }
                     if (currentBuild.getPreviousBuild() != null && 'SUCCESS' != currentBuild.getPreviousBuild().getResult()) {
