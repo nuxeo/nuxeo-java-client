@@ -34,6 +34,9 @@ public class DirectoryManager extends AbstractConnectable<DirectoryManagerAPI, D
         super(DirectoryManagerAPI.class, nuxeoClient);
     }
 
+    /**
+     * CAUTION: Only available for Nuxeo Server greater than LTS 2016 - 8.10
+     */
     public Directories fetchDirectories() {
         return fetchResponse(api.fetchDirectories());
     }

@@ -21,6 +21,7 @@ package org.nuxeo.client;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assume.assumeTrue;
 
 import java.util.List;
 
@@ -113,6 +114,10 @@ public class ITConfig extends AbstractITBase {
 
     @Test
     public void itCanFetchFacets() {
+        // test failed on 7.10 because of malformed response
+        assumeTrue("itCanFetchFacets works only since Nuxeo 8.10",
+                nuxeoClient.getServerVersion().isGreaterThan(NuxeoVersion.LTS_8_10));
+
         List<Facet> facets = nuxeoClient.configManager().fetchFacets();
         assertNotNull(facets);
         Facet savedSearchFacet = facets.stream()

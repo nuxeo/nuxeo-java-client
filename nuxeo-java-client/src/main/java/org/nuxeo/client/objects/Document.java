@@ -541,7 +541,7 @@ public class Document extends RepositoryEntity<RepositoryAPI, Document> {
     }
 
     /**
-     * CAUTION this method will only work on a Nuxeo server 8.10 and upon.
+     * CAUTION: Only available for Nuxeo Server greater than LTS 2016 - 8.10
      *
      * @since 2.3
      */
