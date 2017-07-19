@@ -25,8 +25,15 @@ package org.nuxeo.client;
  */
 public class Operations {
 
+    public static final String BLOB_ATTACH_ON_DOCUMENT = "Blob.AttachOnDocument";
+
     public static final String DOCUMENT_ADD_PERMISSION = "Document.AddPermission";
 
     public static final String DOCUMENT_REMOVE_PERMISSION = "Document.RemovePermission";
+
+    /**
+     * CAUTION: Only available for Nuxeo Server greater than LTS 2016 - 8.10
+     */
+    public static final String DOCUMENT_REMOVE_PROXIES = "Document.RemoveProxies";
 
 }

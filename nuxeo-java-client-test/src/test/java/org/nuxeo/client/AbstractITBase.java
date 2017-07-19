@@ -21,10 +21,12 @@ package org.nuxeo.client;
 
 import java.io.File;
 import java.util.Collection;
+import java.util.stream.Collectors;
 
 import org.junit.After;
 import org.junit.Before;
 import org.nuxeo.client.objects.Document;
+import org.nuxeo.client.objects.Documents;
 import org.nuxeo.client.objects.Repository;
 import org.nuxeo.client.objects.blob.FileBlob;
 import org.nuxeo.client.objects.operation.DocRefs;
@@ -77,16 +79,31 @@ public abstract class AbstractITBase {
         // Attach a light blob
         File file = FileUtils.getResourceFileFromContext("blob.json");
         FileBlob fileBlob = new FileBlob(file);
-        nuxeoClient.operation("Blob.AttachOnDocument").param("document", "/folder_2/file").input(fileBlob).execute();
+        nuxeoClient.operation(Operations.BLOB_ATTACH_ON_DOCUMENT)
+                   .param("document", "/folder_2/file")
+                   .input(fileBlob)
+                   .execute();
     }
 
     @After
-    public void tearDown() throws InterruptedException {
+    public void tearDown() {
         Repository repository = nuxeoClient.repository();
         // First remove proxies before removing documents
         Collection<String> docIdsToDelete = repositoryInterceptor.getDocumentIdsToDelete();
         if (!docIdsToDelete.isEmpty()) {
-            nuxeoClient.operation("Document.RemoveProxies").input(new DocRefs(docIdsToDelete)).execute();
+            if (nuxeoClient.getServerVersion().isGreaterThan(NuxeoVersion.LTS_8_10)) {
+                // Document.RemoveProxies was introduced in 8.3
+                nuxeoClient.operation(Operations.DOCUMENT_REMOVE_PROXIES).input(new DocRefs(docIdsToDelete)).execute();
+            } else {
+                // Before we need to search all proxies
+                Documents proxyIdsToDelete = repository.query(
+                        "SELECT * FROM Document WHERE ecm:isProxy=1 and ecm:proxyTargetId IN "
+                                + docIdsToDelete.stream()
+                                                .map(id -> "'" + id + "'")
+                                                .collect(Collectors.joining(",", "(", ")")));
+                // Then delete them
+                proxyIdsToDelete.getDocuments().stream().map(Document::getId).forEach(repository::deleteDocument);
+            }
             docIdsToDelete.forEach(repository::deleteDocument);
         }
         workflowInterceptor.getWorkflowIdsToDelete().forEach(repository::cancelWorkflowInstance);

@@ -22,6 +22,7 @@ package org.nuxeo.client;
 import static junit.framework.TestCase.assertNotNull;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assume.assumeTrue;
 
 import org.junit.Test;
 import org.nuxeo.client.objects.directory.Directories;
@@ -36,6 +37,8 @@ public class ITDirectory extends AbstractITBase {
 
     @Test
     public void itCanGetDirectories() {
+        assumeTrue("itCanGetDirectories works only since Nuxeo 8.10",
+                nuxeoClient.getServerVersion().isGreaterThan(NuxeoVersion.LTS_8_10));
         Directories directories = nuxeoClient.directoryManager().fetchDirectories();
         assertNotNull(directories);
         Directory continent = directories.getDirectory("continent");
