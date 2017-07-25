@@ -21,6 +21,8 @@ node(env.SLAVE) {
     try {
         timestamps {
             timeout(30) {
+                def masterBuild = env.BRANCH_NAME == 'master' && env.STATUS_CONTEXT_NAME == 'nuxeo/master'
+
                 stage('checkout') {
                     checkout scm
                 }
@@ -35,7 +37,11 @@ node(env.SLAVE) {
                     def jdk = tool name: 'java-8-oracle'
                     env.JAVA_HOME = "${jdk}"
                     def mvnHome = tool name: 'maven-3', type: 'hudson.tasks.Maven$MavenInstallation'
-                    sh "${mvnHome}/bin/mvn clean verify -P ${env.TARGET_PLATFORM}"
+                    def mvnGoals = 'clean install'
+                    if (masterBuild) {
+                        mvnGoals += ' deploy'
+                    }
+                    sh "${mvnHome}/bin/mvn ${mvnGoals} -P ${env.TARGET_PLATFORM}"
                 }
 
                 stage('post build') {
@@ -45,7 +51,7 @@ node(env.SLAVE) {
                     archive 'nuxeo-java-client/target/*.jar, nuxeo-java-client-test/target/tomcat/log/*.log'
                     junit 'nuxeo-java-client/target/surefire-reports/*.xml'
                     junit 'nuxeo-java-client-test/target/failsafe-reports/*.xml'
-                    if (env.BRANCH_NAME == 'master' && env.STATUS_CONTEXT_NAME == 'nuxeo/master') {
+                    if (masterBuild) {
                         step([$class: 'JiraIssueUpdater', issueSelector: [$class: 'DefaultIssueSelector'], scm: scm])
                     }
                     if (currentBuild.getPreviousBuild() != null && 'SUCCESS' != currentBuild.getPreviousBuild().getResult()) {
