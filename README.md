@@ -6,10 +6,10 @@ This is supported by Nuxeo and compatible with Nuxeo LTS 2015, Nuxeo LTS 2016 an
 
 Here is the [Documentation Website](http://nuxeo.github.io/nuxeo-java-client).
 
-[![Build Status](https://qa.nuxeo.org/jenkins/job/Client/job/nuxeo-java-client-vs-master/job/master/badge/icon)](https://qa.nuxeo.org/jenkins/job/Client/job/nuxeo-java-client-vs-master/job/master/)
+[![Jenkins master vs master](https://img.shields.io/jenkins/s/https/qa.nuxeo.org/jenkins/job/Client/job/nuxeo-java-client-vs-master/job/master.svg?label=Nuxeo%20master)]()
+[![Jenkins master vs 8.10](https://img.shields.io/jenkins/s/https/qa2.nuxeo.org/jenkins/job/8.10/job/nuxeo-java-client-vs-8.10/job/master.svg?label=Nuxeo%208.10)]()
+[![Jenkins master vs 7.10](https://img.shields.io/jenkins/s/https/qa2.nuxeo.org/jenkins/job/7.10/job/nuxeo-java-client-vs-7.10/job/master.svg?label=Nuxeo%207.10)]()
 [![Dependency Status](https://www.versioneye.com/user/projects/59637bee0fb24f00583adf8e/badge.svg?style=flat-square)](https://www.versioneye.com/user/projects/59637bee0fb24f00583adf8e)
-
-
 
 ## Building
 
@@ -47,7 +47,7 @@ Nuxeo Java Client is compatible with:
 
 You can download the client on our Nexus: [Nuxeo Client Library 3.0.0-SNAPSHOT](https://maven.nuxeo.org/nexus/#nexus-search;gav~org.nuxeo.client~nuxeo-java-client~3.0.0-SNAPSHOT~jar~)
 
-**Import Nuxeo Java Client with:**
+#### Import Nuxeo Java Client with:
 
 Maven:
 
@@ -55,7 +55,7 @@ Maven:
 <dependency>
   <groupId>org.nuxeo.client</groupId>
   <artifactId>nuxeo-java-client</artifactId>
-  <version>3.0.0SNAPSHOT</version>
+  <version>3.0.0-SNAPSHOT</version>
 </dependency>
 ...
 <repository>
@@ -110,25 +110,28 @@ And given credentials (by default using the Basic Auth) :
 import org.nuxeo.client.api.NuxeoClient;
 import org.nuxeo.client.api.NuxeoClientBuilder;
 
-NuxeoClient nuxeoClient = NuxeoClientBuilder.builder()
-                                            .url(url)
-                                            .authentication("Administrator", "Administrator")
-                                            .connect();
+NuxeoClient nuxeoClient = new NuxeoClient.Builder()
+                                         .url(url)
+                                         .authentication("Administrator", "Administrator")
+                                         .connect();
 ```
 
-Options on builder:
+#### Options
 
-```java
-// To set read and connect timeout on http client
-nuxeoClient = NuxeoClientBuilder.builder().readTimeout(60).connectTimeout(60);
-```
+Options can be set on builder, client or API objects. This ensure inheritance and isolation of options on the object
+whose options are applied. As it, the builder gives its options to client and client gives them to API objects.
+
+Some options are only available on some objects. This is the case for `cache` or `voidOperation` options.
 
 ```java
 // To set a cache on client (this line needs the import of nuxeo-java-client-cache)
-nuxeoClient = NuxeoClientBuilder.builder().cache(new ResultCacheInMemory());
+nuxeoClient = new NuxeoClient.Builder().cache(new ResultCacheInMemory());
 ```
 
-Options:
+```java
+// To set read and connect timeout on http client
+nuxeoClient = new NuxeoClient.Builder().readTimeout(60).connectTimeout(60);
+```
 
 ```java
 // To define session and transaction timeout in http headers
@@ -140,7 +143,7 @@ nuxeoClient = nuxeoClient.timeout(60).transactionTimeout(60);
 // Headers customization works by overriding - when you set a header which exist previously, client
 // will remove the previous one
 nuxeoClient = nuxeoClient.schemas("dublincore", "common")
-                         .enrichers("acls","preview")
+                         .enrichersForDocument("acls", "preview")
                          .header(key1, value1)
                          .header(key2, value2);
 ```
@@ -162,22 +165,22 @@ General rule:
 - When using `fetch` methods, `NuxeoClient` is making remote calls.
 - When using `get` methods, objects are retrieved from memory.
 
-#### Automation API
+#### Operation API
 
-To use the Automation API, `org.nuxeo.client.NuxeoClient#automation(String)` is the entry point for all calls:
+To use the Operation API, `org.nuxeo.client.NuxeoClient#operation(String)` is the entry point for all calls:
 
 ```java
 import org.nuxeo.client.objects.Document;
 
 // Fetch the root document
-Document doc = nuxeoClient.automation("Repository.GetDocument").param("value", "/").execute();
+Document doc = nuxeoClient.operation("Repository.GetDocument").param("value", "/").execute();
 ```
 
 ```java
 import org.nuxeo.client.objects.Documents;
 
 // Execute query
-Documents docs = nuxeoClient.automation("Repository.Query")
+Documents docs = nuxeoClient.operation("Repository.Query")
                             .param("query", "SELECT * FROM Document")
                             .execute();
 ```
@@ -188,7 +191,7 @@ import org.nuxeo.client.objects.blob.FileBlob;
 // To upload|download blob(s)
 
 FileBlob fileBlob = new FileBlob(io.File file);
-fileBlob = nuxeoClient.automation("Blob.AttachOnDocument")
+fileBlob = nuxeoClient.operation("Blob.AttachOnDocument")
                       .param("document", "/folder/file")
                       .input(fileBlob)
                       .execute();
@@ -196,13 +199,13 @@ fileBlob = nuxeoClient.automation("Blob.AttachOnDocument")
 Blobs inputBlobs = new Blobs();
 inputBlobs.add(io.File file1);
 inputBlobs.add(io.File file2);
-Blobs blobs = nuxeoClient.automation("Blob.AttachOnDocument")
+Blobs blobs = nuxeoClient.operation("Blob.AttachOnDocument")
                          .param("xpath", "files:files")
                          .param("document", "/folder/file")
                          .input(inputBlobs)
                          .execute();
 
-FileBlob resultBlob = nuxeoClient.automation("Document.GetBlob")
+FileBlob resultBlob = nuxeoClient.operation("Document.GetBlob")
                                  .input("folder/file")
                                  .execute();
 ```
@@ -284,7 +287,7 @@ Documents documents = nuxeoClient.repository().query("SELECT * From Note");
 
 import org.nuxeo.client.api.objects.RecordSet;
 // With RecordSets
-RecordSet documents = nuxeoClient.automation("Repository.ResultSetQuery")
+RecordSet documents = nuxeoClient.operation("Repository.ResultSetQuery")
                                  .param("query", "SELECT * FROM Document")
                                  .execute();
 ```
@@ -410,13 +413,13 @@ doc.set("file:content", batchUpload.getBatchBlob());
 doc = doc.updateDocument();
 ```
 
-or with Automation:
+or with operation:
 
 ```java
 Document doc = new Document("file", "File");
 doc.set("dc:title", "new title");
 doc = nuxeoClient.repository().createDocumentByPath("/folder_1", doc);
-Blob blob = batchUpload.automation("Blob.AttachOnDocument").param("document", doc).execute();
+Blob blob = batchUpload.operation("Blob.AttachOnDocument").param("document", doc).execute();
 ```
 
 #### Directories
@@ -555,16 +558,16 @@ All APIs are duplicated with an additional parameter `retrofit2.Callback<T>`.
 
 When no response is needed (204 No Content Status for example), use `retrofit2.Callback<ResponseBody>` (`okhttp3.ResponseBody`). This object can be introspected like the response headers or status for instance.
 
-#### Automation & Business Objects
+#### Operation & Business Objects
 
-In Automation, to use Plain Old Java Object client side for mapping custom objects server side (like document model adapter or simply a custom structure sent back by the server), it is possible to manage "business objects":
+In Operation, to use Plain Old Java Object client side for mapping custom objects server side (like document model adapter or simply a custom structure sent back by the server), it is possible to manage "business objects":
 
-- Server side, a custom JSON object will be built in the Automation operation and sent
+- Server side, a custom JSON object will be built in the Operation operation and sent
 - Client side, a mapper will be available to match the custom response JSON payload to represent the structure by a POJO
 
 Example:
 
-Custom server side Automation operation:
+Custom server side operation:
 
 ```java
 @Operation(id = CustomOperationJSONBlob.ID, category = "Document", label = "CustomOperationJSONBlob")
@@ -643,12 +646,12 @@ public class CustomJSONObject extends Entity {
 - This code to register the pojo and use the operation:
 
 ```java
-NuxeoClient client = NuxeoClientBuilder.builder()
+NuxeoClient client = new NuxeoClient.Builder()
                                        .url(url)
                                        .authentication(username, password)
                                        .registerEntity(CustomJSONObject.ENTITY_TYPE, CustomJSONObject.class)
                                        .connect();
-CustomJSONObject customJSONObject = nuxeoClient.automation("CustomOperationJSONBlob").execute();
+CustomJSONObject customJSONObject = nuxeoClient.operation("CustomOperationJSONBlob").execute();
 ```
 
 #### Custom Endpoints/Marshallers
@@ -714,7 +717,7 @@ And it's done!
 
 We provide a "in memory" cache implementation using [Guava](https://github.com/google/guava). In order to use it, you need to add as dependency `nuxeo-java-client-cache`.
 
-- You can use this cache with `NuxeoClientBuilder.builder().cache(new ResultCacheInMemory())`
+- You can use this cache with `new NuxeoClient.Builder().cache(new ResultCacheInMemory())`
 
 - It will store all results from requests and will restore them regarding to their signatures.
 
@@ -725,7 +728,7 @@ To use it, just set the cache during client construction:
 import org.nuxeo.client.NuxeoClient.NuxeoClient;
 import org.nuxeo.client.NuxeoClient.Builder;
 
-NuxeoClient client = NuxeoClientBuilder.builder()
+NuxeoClient client = new NuxeoClient.Builder()
                                        .url(url).authentication(username, password)
                                        .cache(new ResultCacheInMemory)
                                        .connect();
