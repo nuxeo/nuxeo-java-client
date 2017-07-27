@@ -19,8 +19,6 @@
  */
 package org.nuxeo.client.objects.directory;
 
-import java.util.Objects;
-
 import org.nuxeo.client.NuxeoClient;
 import org.nuxeo.client.methods.DirectoryManagerAPI;
 import org.nuxeo.client.objects.AbstractConnectable;
@@ -41,48 +39,12 @@ public class DirectoryManager extends AbstractConnectable<DirectoryManagerAPI, D
         return fetchResponse(api.fetchDirectories());
     }
 
-    public DirectoryEntries fetchDirectoryEntries(String directoryName) {
-        return fetchResponse(api.fetchDirectoryEntries(directoryName));
-    }
-
-    public DirectoryEntries fetchDirectoryEntries(String directoryName, String currentPageIndex, String pageSize,
-            String maxResults, String sortBy, String sortOrder) {
-        return fetchResponse(
-                api.fetchDirectoryEntries(directoryName, currentPageIndex, pageSize, maxResults, sortBy, sortOrder));
-    }
-
-    public DirectoryEntry createDirectoryEntry(DirectoryEntry directoryEntry) {
-        String directoryName = directoryEntry.getDirectoryName();
-        Objects.requireNonNull(directoryName, "You have to give the directory name to your entry.");
-        return fetchResponse(api.createDirectoryEntry(directoryName, directoryEntry));
-    }
-
     /**
+     * @return a new {@link Directory} instance to make remote calls on it
      * @since 3.0
      */
-    public DirectoryEntry fetchDirectoryEntry(String directoryName, String directoryEntryId) {
-        return fetchResponse(api.fetchDirectoryEntry(directoryName, directoryEntryId));
-    }
-
-    public DirectoryEntry updateDirectoryEntry(DirectoryEntry directoryEntry) {
-        String directoryName = directoryEntry.getDirectoryName();
-        String entryId = directoryEntry.getIdProperty();
-        Objects.requireNonNull(directoryName, "You have to give the directory name to your entry.");
-        Objects.requireNonNull(entryId, "You have to give the entry id to your entry.");
-        return fetchResponse(
-                api.updateDirectoryEntry(directoryName, entryId, directoryEntry));
-    }
-
-    public void deleteDirectoryEntry(DirectoryEntry directoryEntry) {
-        String directoryName = directoryEntry.getDirectoryName();
-        String entryId = directoryEntry.getIdProperty();
-        Objects.requireNonNull(directoryName, "You have to give the directory name to your entry.");
-        Objects.requireNonNull(entryId, "You have to give the entry id to your entry.");
-        deleteDirectoryEntry(directoryName, entryId);
-    }
-
-    public void deleteDirectoryEntry(String directoryName, String directoryEntryId) {
-        fetchResponse(api.deleteDirectoryEntry(directoryName, directoryEntryId));
+    public Directory directory(String directoryName) {
+        return new Directory(nuxeoClient, directoryName);
     }
 
 }

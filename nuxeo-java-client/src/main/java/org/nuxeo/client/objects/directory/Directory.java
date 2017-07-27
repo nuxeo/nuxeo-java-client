@@ -18,6 +18,9 @@
  */
 package org.nuxeo.client.objects.directory;
 
+import java.util.Objects;
+
+import org.nuxeo.client.NuxeoClient;
 import org.nuxeo.client.methods.DirectoryManagerAPI;
 import org.nuxeo.client.objects.ConnectableEntity;
 import org.nuxeo.client.objects.EntityTypes;
@@ -39,6 +42,11 @@ public class Directory extends ConnectableEntity<DirectoryManagerAPI, Directory>
         super(EntityTypes.DIRECTORY, DirectoryManagerAPI.class);
     }
 
+    public Directory(NuxeoClient nuxeoClient, String name) {
+        super(EntityTypes.DIRECTORY, DirectoryManagerAPI.class, nuxeoClient);
+        this.name = Objects.requireNonNull(name, "Directory name must not be null");
+    }
+
     public String getName() {
         return name;
     }
@@ -57,6 +65,31 @@ public class Directory extends ConnectableEntity<DirectoryManagerAPI, Directory>
 
     public DirectoryEntries fetchEntries() {
         return fetchResponse(api.fetchDirectoryEntries(name));
+    }
+
+    public DirectoryEntries fetchEntries(String currentPageIndex, String pageSize, String maxResults, String sortBy,
+            String sortOrder) {
+        return fetchResponse(
+                api.fetchDirectoryEntries(name, currentPageIndex, pageSize, maxResults, sortBy, sortOrder));
+    }
+
+    public DirectoryEntry createEntry(DirectoryEntry entry) {
+        entry.setDirectoryName(name);
+        return fetchResponse(api.createDirectoryEntry(name, entry));
+    }
+
+    public DirectoryEntry fetchEntry(String entryId) {
+        return fetchResponse(api.fetchDirectoryEntry(name, entryId));
+    }
+
+    public DirectoryEntry updateEntry(DirectoryEntry entry) {
+        entry.setDirectoryName(name);
+        String entryId = Objects.requireNonNull(entry.getIdProperty(), "You have to give the entry id to your entry.");
+        return fetchResponse(api.updateDirectoryEntry(name, entryId, entry));
+    }
+
+    public void deleteEntry(String entryId) {
+        fetchResponse(api.deleteDirectoryEntry(name, entryId));
     }
 
 }
