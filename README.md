@@ -6,9 +6,9 @@ This is supported by Nuxeo and compatible with Nuxeo LTS 2015, Nuxeo LTS 2016 an
 
 Here is the [Documentation Website](http://nuxeo.github.io/nuxeo-java-client).
 
-[![Jenkins master vs master](https://img.shields.io/jenkins/s/https/qa.nuxeo.org/jenkins/job/Client/job/nuxeo-java-client-vs-master/job/master.svg?label=Nuxeo%20master)]()
-[![Jenkins master vs 8.10](https://img.shields.io/jenkins/s/https/qa2.nuxeo.org/jenkins/job/8.10/job/nuxeo-java-client-vs-8.10/job/master.svg?label=Nuxeo%208.10)]()
-[![Jenkins master vs 7.10](https://img.shields.io/jenkins/s/https/qa2.nuxeo.org/jenkins/job/7.10/job/nuxeo-java-client-vs-7.10/job/master.svg?label=Nuxeo%207.10)]()
+[![Jenkins master vs master](https://img.shields.io/jenkins/s/https/qa.nuxeo.org/jenkins/job/Client/job/nuxeo-java-client-vs-master/job/master.svg?label=Nuxeo%209.x)](https://qa.nuxeo.org/jenkins/job/Client/job/nuxeo-java-client-vs-master/job/master/)
+[![Jenkins master vs 8.10](https://img.shields.io/jenkins/s/https/qa2.nuxeo.org/jenkins/job/8.10/job/nuxeo-java-client-vs-8.10/job/master.svg?label=Nuxeo%208.10)](https://qa2.nuxeo.org/jenkins/job/8.10/job/nuxeo-java-client-vs-8.10/job/master/)
+[![Jenkins master vs 7.10](https://img.shields.io/jenkins/s/https/qa2.nuxeo.org/jenkins/job/7.10/job/nuxeo-java-client-vs-7.10/job/master.svg?label=Nuxeo%207.10)](https://qa2.nuxeo.org/jenkins/job/7.10/job/nuxeo-java-client-vs-7.10/job/master/)
 [![Dependency Status](https://www.versioneye.com/user/projects/59637bee0fb24f00583adf8e/badge.svg?style=flat-square)](https://www.versioneye.com/user/projects/59637bee0fb24f00583adf8e)
 
 ## Building
