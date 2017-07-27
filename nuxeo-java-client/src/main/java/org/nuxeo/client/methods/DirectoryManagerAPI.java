@@ -53,6 +53,10 @@ public interface DirectoryManagerAPI {
     Call<DirectoryEntry> createDirectoryEntry(@Path("directoryName") String directoryName,
             @Body DirectoryEntry directoryEntry);
 
+    @GET("directory/{directoryName}/{entryId}")
+    Call<DirectoryEntry> fetchDirectoryEntry(@Path("directoryName") String directoryName,
+            @Path("entryId") String directoryEntryId);
+
     @PUT("directory/{directoryName}/{entryId}")
     Call<DirectoryEntry> updateDirectoryEntry(@Path("directoryName") String directoryName,
             @Path("entryId") String directoryEntryId, @Body DirectoryEntry directoryEntry);

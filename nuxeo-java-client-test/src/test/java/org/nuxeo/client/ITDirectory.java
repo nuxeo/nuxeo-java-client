@@ -24,11 +24,15 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assume.assumeTrue;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.junit.Test;
 import org.nuxeo.client.objects.directory.Directories;
 import org.nuxeo.client.objects.directory.Directory;
 import org.nuxeo.client.objects.directory.DirectoryEntries;
 import org.nuxeo.client.objects.directory.DirectoryEntry;
+import org.nuxeo.client.objects.directory.DirectoryManager;
 
 /**
  * @since 0.1
@@ -60,14 +64,16 @@ public class ITDirectory extends AbstractITBase {
 
     @Test
     public void itCanCreateUpdateFetchDeleteDirectory() {
+        DirectoryManager directoryManager = nuxeoClient.directoryManager();
+
         // Create
         DirectoryEntry entry = new DirectoryEntry();
         entry.setDirectoryName("continent");
-        entry.putIdProperty(("test"));
+        entry.putIdProperty("test");
         entry.putLabelProperty("test");
         entry.putObsoleteProperty(0);
         entry.putOrderingProperty(0);
-        DirectoryEntry result = nuxeoClient.directoryManager().createDirectoryEntry(entry);
+        DirectoryEntry result = directoryManager.createDirectoryEntry(entry);
         assertNotNull(result);
         assertEquals("continent", result.getDirectoryName());
         assertEquals("test", result.getLabelProperty());
@@ -78,11 +84,22 @@ public class ITDirectory extends AbstractITBase {
         assertEquals("new update", result.getLabelProperty());
 
         // Fetch
-        // TODO no fetch in API ??
-        // result = nuxeoClient.directory("continent").
+        result = directoryManager.fetchDirectoryEntry("continent", "test");
+        assertNotNull(result);
+        assertEquals("continent", result.getDirectoryName());
+        assertEquals("new update", result.getLabelProperty());
+
+        Map<String, String> props = new HashMap<>();
+        props.put(DirectoryEntry.ID_PROPERTY, "test");
+        props.put(DirectoryEntry.LABEL_PROPERTY, "update again");
+        result.setProperties(props);
+        result = directoryManager.updateDirectoryEntry(result);
+        assertNotNull(result);
+        assertEquals("continent", result.getDirectoryName());
+        assertEquals("update again", result.getLabelProperty());
 
         // Delete
-        nuxeoClient.directoryManager().deleteDirectoryEntry(result);
+        directoryManager.deleteDirectoryEntry(result);
     }
 
 }
