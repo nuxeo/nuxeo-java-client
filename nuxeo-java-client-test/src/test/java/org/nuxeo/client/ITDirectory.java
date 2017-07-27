@@ -32,7 +32,6 @@ import org.nuxeo.client.objects.directory.Directories;
 import org.nuxeo.client.objects.directory.Directory;
 import org.nuxeo.client.objects.directory.DirectoryEntries;
 import org.nuxeo.client.objects.directory.DirectoryEntry;
-import org.nuxeo.client.objects.directory.DirectoryManager;
 
 /**
  * @since 0.1
@@ -57,14 +56,14 @@ public class ITDirectory extends AbstractITBase {
 
     @Test
     public void itCanGetDirectoryEntries() {
-        DirectoryEntries directoryEntries = nuxeoClient.directoryManager().fetchDirectoryEntries("continent");
+        DirectoryEntries directoryEntries = nuxeoClient.directoryManager().directory("continent").fetchEntries();
         assertNotNull(directoryEntries);
         assertEquals(7, directoryEntries.getDirectoryEntries().size());
     }
 
     @Test
     public void itCanCreateUpdateFetchDeleteDirectory() {
-        DirectoryManager directoryManager = nuxeoClient.directoryManager();
+        Directory directory = nuxeoClient.directoryManager().directory("continent");
 
         // Create
         DirectoryEntry entry = new DirectoryEntry();
@@ -73,7 +72,7 @@ public class ITDirectory extends AbstractITBase {
         entry.putLabelProperty("test");
         entry.putObsoleteProperty(0);
         entry.putOrderingProperty(0);
-        DirectoryEntry result = directoryManager.createDirectoryEntry(entry);
+        DirectoryEntry result = directory.createEntry(entry);
         assertNotNull(result);
         assertEquals("continent", result.getDirectoryName());
         assertEquals("test", result.getLabelProperty());
@@ -84,7 +83,7 @@ public class ITDirectory extends AbstractITBase {
         assertEquals("new update", result.getLabelProperty());
 
         // Fetch
-        result = directoryManager.fetchDirectoryEntry("continent", "test");
+        result = directory.fetchEntry("test");
         assertNotNull(result);
         assertEquals("continent", result.getDirectoryName());
         assertEquals("new update", result.getLabelProperty());
@@ -93,13 +92,13 @@ public class ITDirectory extends AbstractITBase {
         props.put(DirectoryEntry.ID_PROPERTY, "test");
         props.put(DirectoryEntry.LABEL_PROPERTY, "update again");
         result.setProperties(props);
-        result = directoryManager.updateDirectoryEntry(result);
+        result = directory.updateEntry(result);
         assertNotNull(result);
         assertEquals("continent", result.getDirectoryName());
         assertEquals("update again", result.getLabelProperty());
 
         // Delete
-        directoryManager.deleteDirectoryEntry(result);
+        directory.deleteEntry(result.getIdProperty());
     }
 
 }

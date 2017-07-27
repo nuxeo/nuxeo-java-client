@@ -134,4 +134,11 @@ public class DirectoryEntry extends ConnectableEntity<DirectoryManagerAPI, Direc
         return fetchResponse(api.updateDirectoryEntry(directoryName, getIdProperty(), this));
     }
 
+    /**
+     * @since 3.0
+     */
+    public void delete() {
+        fetchResponse(api.deleteDirectoryEntry(directoryName, getIdProperty()));
+    }
+
 }

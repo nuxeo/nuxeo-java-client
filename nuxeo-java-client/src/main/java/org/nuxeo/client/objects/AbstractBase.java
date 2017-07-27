@@ -41,7 +41,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
  * @param <B> The type of object extending this one.
  * @since 3.0
  */
-public abstract class AbstractBase<B extends AbstractBase<B>> {
+public class AbstractBase<B extends AbstractBase<B>> {
 
     @JsonIgnore
     protected OkHttpClient.Builder okhttpBuilder;
