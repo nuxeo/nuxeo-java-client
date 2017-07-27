@@ -57,6 +57,13 @@ public class DirectoryManager extends AbstractConnectable<DirectoryManagerAPI, D
         return fetchResponse(api.createDirectoryEntry(directoryName, directoryEntry));
     }
 
+    /**
+     * @since 3.0
+     */
+    public DirectoryEntry fetchDirectoryEntry(String directoryName, String directoryEntryId) {
+        return fetchResponse(api.fetchDirectoryEntry(directoryName, directoryEntryId));
+    }
+
     public DirectoryEntry updateDirectoryEntry(DirectoryEntry directoryEntry) {
         String directoryName = directoryEntry.getDirectoryName();
         String entryId = directoryEntry.getIdProperty();

@@ -73,8 +73,11 @@ public class DirectoryEntry extends ConnectableEntity<DirectoryManagerAPI, Direc
         return properties;
     }
 
-    public void setProperties(Map<String, Object> properties) {
-        this.properties = properties;
+    public void setProperties(Map<String, ?> properties) {
+        this.properties.clear();
+        if (properties != null) {
+            this.properties.putAll(properties);
+        }
     }
 
     @SuppressWarnings("unchecked")
