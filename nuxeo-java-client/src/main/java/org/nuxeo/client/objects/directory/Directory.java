@@ -84,7 +84,8 @@ public class Directory extends ConnectableEntity<DirectoryManagerAPI, Directory>
 
     public DirectoryEntry updateEntry(DirectoryEntry entry) {
         entry.setDirectoryName(name);
-        String entryId = Objects.requireNonNull(entry.getIdProperty(), "You have to give the entry id to your entry.");
+        String entryId = Objects.requireNonNull(entry.getIdPropertyString(),
+                "You have to give the entry id to your entry.");
         return fetchResponse(api.updateDirectoryEntry(name, entryId, entry));
     }
 

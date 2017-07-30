@@ -52,7 +52,7 @@ public class DirectoryEntries extends Entity implements Connectable {
         this.directoryEntries.add(directoryEntry);
     }
 
-    public DirectoryEntry getDirectoryEntry(String id) {
+    public <T> DirectoryEntry getDirectoryEntry(T id) {
         for (DirectoryEntry directoryEntry : directoryEntries) {
             if (directoryEntry.getIdProperty().equals(id)) {
                 return directoryEntry;

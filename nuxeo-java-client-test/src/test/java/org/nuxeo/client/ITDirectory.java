@@ -88,6 +88,7 @@ public class ITDirectory extends AbstractITBase {
         assertEquals("continent", result.getDirectoryName());
         assertEquals("new update", result.getLabelProperty());
 
+        // Another way to update
         Map<String, String> props = new HashMap<>();
         props.put(DirectoryEntry.ID_PROPERTY, "test");
         props.put(DirectoryEntry.LABEL_PROPERTY, "update again");
@@ -98,7 +99,7 @@ public class ITDirectory extends AbstractITBase {
         assertEquals("update again", result.getLabelProperty());
 
         // Delete
-        directory.deleteEntry(result.getIdProperty());
+        directory.deleteEntry(result.getIdPropertyString());
     }
 
 }

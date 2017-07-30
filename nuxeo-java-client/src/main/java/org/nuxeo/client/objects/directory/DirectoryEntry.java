@@ -91,12 +91,17 @@ public class DirectoryEntry extends ConnectableEntity<DirectoryManagerAPI, Direc
     }
 
     @JsonIgnore
-    public String getIdProperty() {
+    public String getIdPropertyString() {
+        return String.valueOf(this.<Object>getIdProperty());
+    }
+
+    @JsonIgnore
+    public <T> T getIdProperty() {
         return getProperty(ID_PROPERTY);
     }
 
     @JsonIgnore
-    public String putIdProperty(String value) {
+    public <T> T putIdProperty(T value) {
         return putProperty(ID_PROPERTY, value);
     }
 
@@ -131,14 +136,14 @@ public class DirectoryEntry extends ConnectableEntity<DirectoryManagerAPI, Direc
     }
 
     public DirectoryEntry update() {
-        return fetchResponse(api.updateDirectoryEntry(directoryName, getIdProperty(), this));
+        return fetchResponse(api.updateDirectoryEntry(directoryName, getIdPropertyString(), this));
     }
 
     /**
      * @since 3.0
      */
     public void delete() {
-        fetchResponse(api.deleteDirectoryEntry(directoryName, getIdProperty()));
+        fetchResponse(api.deleteDirectoryEntry(directoryName, getIdPropertyString()));
     }
 
 }
