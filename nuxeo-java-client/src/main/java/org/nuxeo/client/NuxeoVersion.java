@@ -112,6 +112,13 @@ public class NuxeoVersion {
     /**
      * @return Whether or not the input version is greater than this one.
      */
+    public boolean isGreaterThan(String version) {
+        return isGreaterThan(parse(version));
+    }
+
+    /**
+     * @return Whether or not the input version is greater than this one.
+     */
     public boolean isGreaterThan(NuxeoVersion version) {
         if (majorVersion > version.majorVersion()
                 || majorVersion == version.majorVersion() && minorVersion > version.minorVersion()) {

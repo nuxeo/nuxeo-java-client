@@ -53,12 +53,31 @@ public class DirectoryEntry extends ConnectableEntity<DirectoryManagerAPI, Direc
      */
     public static final String OBSOLETE_PROPERTY = "obsolete";
 
+    /**
+     * @since Nuxeo 9.3 - Nuxeo LTS 2017
+     */
+    protected String id;
+
     protected String directoryName;
 
     protected Map<String, Object> properties = new HashMap<>();
 
     public DirectoryEntry() {
         super(EntityTypes.DIRECTORY_ENTRY, DirectoryManagerAPI.class);
+    }
+
+    /**
+     * Since NXP-22739, id is serialized as {@link String} beside properties to face type issue.
+     *
+     * @return the id field if server is above 9.3, unless try to convert it to {@link String} from {@link #properties}
+     */
+    public String getId() {
+        if (nuxeoClient != null && nuxeoClient.getServerVersion().isGreaterThan("9.3-SNAPSHOT")) {
+            return id;
+        }
+        // Object declaration is needed, unless compiler will infer char[] as return type and so a ClassCastException is
+        // raised
+        return String.valueOf(this.<Object> getIdProperty());
     }
 
     public String getDirectoryName() {
@@ -88,11 +107,6 @@ public class DirectoryEntry extends ConnectableEntity<DirectoryManagerAPI, Direc
     @SuppressWarnings("unchecked")
     public <T> T putProperty(String key, T value) {
         return (T) properties.put(key, value);
-    }
-
-    @JsonIgnore
-    public String getIdPropertyString() {
-        return String.valueOf(this.<Object>getIdProperty());
     }
 
     @JsonIgnore
@@ -136,14 +150,14 @@ public class DirectoryEntry extends ConnectableEntity<DirectoryManagerAPI, Direc
     }
 
     public DirectoryEntry update() {
-        return fetchResponse(api.updateDirectoryEntry(directoryName, getIdPropertyString(), this));
+        return fetchResponse(api.updateDirectoryEntry(directoryName, getId(), this));
     }
 
     /**
      * @since 3.0
      */
     public void delete() {
-        fetchResponse(api.deleteDirectoryEntry(directoryName, getIdPropertyString()));
+        fetchResponse(api.deleteDirectoryEntry(directoryName, getId()));
     }
 
 }
