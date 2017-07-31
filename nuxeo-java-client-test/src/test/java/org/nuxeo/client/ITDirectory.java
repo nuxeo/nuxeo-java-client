@@ -99,7 +99,7 @@ public class ITDirectory extends AbstractITBase {
         assertEquals("update again", result.getLabelProperty());
 
         // Delete
-        directory.deleteEntry(result.getIdPropertyString());
+        directory.deleteEntry(result.getId());
     }
 
 }
