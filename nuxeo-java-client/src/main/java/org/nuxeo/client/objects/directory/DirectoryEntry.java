@@ -27,6 +27,8 @@ import org.nuxeo.client.objects.ConnectableEntity;
 import org.nuxeo.client.objects.EntityTypes;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
 /**
  * @since 0.1
@@ -71,13 +73,15 @@ public class DirectoryEntry extends ConnectableEntity<DirectoryManagerAPI, Direc
      *
      * @return the id field if server is above 9.3, unless try to convert it to {@link String} from {@link #properties}
      */
+    @JsonInclude(Include.NON_NULL)
     public String getId() {
         if (nuxeoClient != null && nuxeoClient.getServerVersion().isGreaterThan("9.3-SNAPSHOT")) {
             return id;
         }
         // Object declaration is needed, unless compiler will infer char[] as return type and so a ClassCastException is
         // raised
-        return String.valueOf(this.<Object> getIdProperty());
+        Object idProperty = getIdProperty();
+        return idProperty == null ? null : String.valueOf(idProperty);
     }
 
     public String getDirectoryName() {
