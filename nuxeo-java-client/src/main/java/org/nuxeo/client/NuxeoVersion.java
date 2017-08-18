@@ -34,7 +34,8 @@ public class NuxeoVersion {
 
     public static final NuxeoVersion LTS_8_10 = new NuxeoVersion(8, 10, 0, false);
 
-    private static final Pattern NUXEO_VERSION_PATTERN = Pattern.compile("(\\d+)\\.(\\d+)(?:-HF(\\d+))?(-SNAPSHOT)?");
+    private static final Pattern NUXEO_VERSION_PATTERN = Pattern.compile(
+            "(\\d+)\\.(\\d+)(?:-HF(\\d+))?(-SNAPSHOT)?(-I\\d{8}_\\d{4})?");
 
     private final int majorVersion;
 
@@ -138,7 +139,7 @@ public class NuxeoVersion {
         Matcher matcher = NUXEO_VERSION_PATTERN.matcher(version);
         if (!matcher.matches()) {
             throw new NuxeoClientException(
-                    "Input version=" + version + "doesn't represent a valid Nuxeo server version");
+                    "Input version=" + version + " doesn't represent a valid Nuxeo server version");
         }
         int majorVersion = Integer.parseInt(matcher.group(1));
         int minorVersion = Integer.parseInt(matcher.group(2));

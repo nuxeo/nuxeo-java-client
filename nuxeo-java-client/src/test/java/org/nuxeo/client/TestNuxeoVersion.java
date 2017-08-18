@@ -35,6 +35,7 @@ public class TestNuxeoVersion {
         assertVersion(NuxeoVersion.parse("7.10-HF05"), 7, 10, 5, false);
         assertVersion(NuxeoVersion.parse("7.10-HF05-SNAPSHOT"), 7, 10, 5, true);
         assertVersion(NuxeoVersion.parse("7.10-SNAPSHOT"), 7, 10, 0, true);
+        assertVersion(NuxeoVersion.parse("7.10-I20170818_1955"), 7, 10, 0, false);
     }
 
     @Test
