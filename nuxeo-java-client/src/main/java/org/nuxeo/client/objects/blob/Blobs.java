@@ -62,12 +62,6 @@ public class Blobs extends Entity {
     }
 
     @JsonIgnore
-    public void add(String filename, File file) {
-        FileBlob blob = new FileBlob(filename, file);
-        blobs.add(blob);
-    }
-
-    @JsonIgnore
     public boolean add(Blob blob) {
         return blobs.add(blob);
     }

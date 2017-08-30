@@ -121,7 +121,7 @@ public class ITOperation extends AbstractITBase {
         // Attach a blob
         File temp1 = FileUtils.getResourceFileFromContext("sample.jpg");
         int length = (int) temp1.length();
-        StreamBlob byteBlob = new StreamBlob("sample.jpg", new FileInputStream(temp1));
+        StreamBlob byteBlob = new StreamBlob(new FileInputStream(temp1), "sample.jpg");
         FileBlob blob = nuxeoClient.operation("Blob.AttachOnDocument")
                                    .param("document", FOLDER_2_FILE)
                                    .input(byteBlob)

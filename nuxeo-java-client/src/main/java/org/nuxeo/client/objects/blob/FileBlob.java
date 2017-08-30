@@ -37,14 +37,14 @@ public class FileBlob extends AbstractBlob {
     protected final File file;
 
     public FileBlob(File file) {
-        this(file.getName(), file);
+        this(file, file.getName());
     }
 
-    public FileBlob(String filename, File file) {
-        this(filename, MediaTypes.APPLICATION_OCTET_STREAM_S, file);
+    public FileBlob(File file, String filename) {
+        this(file, filename, MediaTypes.APPLICATION_OCTET_STREAM_S);
     }
 
-    public FileBlob(String filename, String mediaType, File file) {
+    public FileBlob(File file, String filename, String mediaType) {
         super(filename, mediaType);
         this.file = file;
     }

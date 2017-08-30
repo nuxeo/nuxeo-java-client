@@ -30,12 +30,12 @@ public class StreamBlob extends AbstractBlob {
 
     private final InputStream inputStream;
 
-    public StreamBlob(String fileName, InputStream inputStream) {
-        this(fileName, MediaTypes.APPLICATION_OCTET_STREAM_S, inputStream);
+    public StreamBlob(InputStream inputStream, String filename) {
+        this(inputStream, filename, MediaTypes.APPLICATION_OCTET_STREAM_S);
     }
 
-    public StreamBlob(String fileName, String mimeType, InputStream inputStream) {
-        super(fileName, mimeType);
+    public StreamBlob(InputStream inputStream, String filename, String mimeType) {
+        super(filename, mimeType);
         this.inputStream = inputStream;
     }
 
