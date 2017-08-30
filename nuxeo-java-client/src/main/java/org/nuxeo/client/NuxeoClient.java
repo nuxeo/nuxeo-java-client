@@ -333,7 +333,7 @@ public class NuxeoClient extends AbstractBase<NuxeoClient> {
                 if (mimeType == null) {
                     mimeType = MediaTypes.APPLICATION_OCTET_STREAM_S;
                 }
-                FileBlob fileBlob = new FileBlob(filename, mimeType, fbody.getFile());
+                FileBlob fileBlob = new FileBlob(fbody.getFile(), filename, mimeType);
                 return retrofit2.Response.success((T) fileBlob, response.raw());
             }
             // No need to wrap the response

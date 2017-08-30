@@ -60,6 +60,7 @@ import org.nuxeo.client.objects.acl.ACE;
 import org.nuxeo.client.objects.acl.ACP;
 import org.nuxeo.client.objects.audit.Audit;
 import org.nuxeo.client.objects.audit.LogEntry;
+import org.nuxeo.client.objects.blob.Blob;
 import org.nuxeo.client.objects.blob.Blobs;
 import org.nuxeo.client.objects.blob.FileBlob;
 import org.nuxeo.client.objects.user.User;
@@ -210,6 +211,8 @@ public class ITRepository extends AbstractITBase {
         Document file = nuxeoClient.repository().fetchDocumentByPath("/folder_2/file");
         FileBlob blob = file.fetchBlob();
         assertNotNull(blob);
+        assertEquals("blob.json", blob.getFilename());
+        assertEquals("text/plain", blob.getMimeType());
     }
 
     @Test
@@ -228,8 +231,12 @@ public class ITRepository extends AbstractITBase {
                                  .input(inputBlobs)
                                  .execute();
         assertNotNull(blobs);
-        assertEquals("sample.jpg", blobs.getBlobs().get(0).getFilename());
-        assertEquals("sample.jpg", blobs.getBlobs().get(1).getFilename());
+        Blob blob0 = blobs.getBlobs().get(0);
+        Blob blob1 = blobs.getBlobs().get(1);
+        assertEquals("sample.jpg", blob0.getFilename());
+        assertEquals("sample.jpg", blob1.getFilename());
+        assertEquals("image/jpeg", blob0.getMimeType());
+        assertEquals("image/jpeg", blob1.getMimeType());
 
         // Fetch blob by path
         FileBlob blob = nuxeoClient.repository().fetchBlobByPath(file.getPath(), "files:files/0/file");

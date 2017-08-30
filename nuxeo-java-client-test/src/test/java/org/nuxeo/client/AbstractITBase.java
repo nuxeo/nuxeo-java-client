@@ -78,7 +78,7 @@ public abstract class AbstractITBase {
         nuxeoClient.repository().createDocumentByPath("/folder_2", doc);
         // Attach a light blob
         File file = FileUtils.getResourceFileFromContext("blob.json");
-        FileBlob fileBlob = new FileBlob(file);
+        FileBlob fileBlob = new FileBlob(file, "blob.json", "text/plain");
         nuxeoClient.operation(Operations.BLOB_ATTACH_ON_DOCUMENT)
                    .param("document", "/folder_2/file")
                    .input(fileBlob)

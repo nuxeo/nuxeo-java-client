@@ -23,6 +23,8 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 import javax.mail.BodyPart;
@@ -35,6 +37,7 @@ import org.nuxeo.client.ConstantsV1;
 import org.nuxeo.client.MediaType;
 import org.nuxeo.client.MediaTypes;
 import org.nuxeo.client.Responses;
+import org.nuxeo.client.objects.blob.Blob;
 import org.nuxeo.client.objects.blob.Blobs;
 import org.nuxeo.client.objects.blob.FileBlob;
 import org.nuxeo.client.spi.NuxeoClientException;
@@ -73,19 +76,20 @@ public final class NuxeoResponseConverterFactory<T> implements Converter<Respons
         if (!MediaTypes.APPLICATION_JSON.equalsTypeSubType(mediaType)
                 && !MediaTypes.APPLICATION_JSON_NXENTITY.equalsTypeSubType(mediaType)) {
             if (mediaType.type().equals(MediaTypes.MULTIPART_S)) {
-                Blobs blobs = new Blobs();
+                List<Blob> blobs = new ArrayList<>();
                 try (InputStream is = body.byteStream()) {
                     MimeMultipart mp = new MimeMultipart(new ByteArrayDataSource(is, mediaType.toString()));
                     int size = mp.getCount();
                     for (int i = 0; i < size; i++) {
                         BodyPart part = mp.getBodyPart(i);
                         // IOUtils.copyToTempFile close the input stream for us
-                        blobs.add(part.getFileName(), IOUtils.copyToTempFile(part.getInputStream()));
+                        blobs.add(new FileBlob(IOUtils.copyToTempFile(part.getInputStream()), part.getFileName(),
+                                part.getContentType()));
                     }
                 } catch (MessagingException reason) {
                     throw new IOException(reason);
                 }
-                return (T) blobs;
+                return (T) new Blobs(blobs);
             } else {
                 // IOUtils.copyToTempFile close the input stream for us
                 File tmpFile = IOUtils.copyToTempFile(body.byteStream());
