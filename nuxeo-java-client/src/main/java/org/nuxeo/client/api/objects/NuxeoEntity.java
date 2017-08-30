@@ -247,6 +247,7 @@ public abstract class NuxeoEntity<T> {
                     blob.apiClass = apiClass;
                 }
             } else if (entity instanceof Blob) {
+                Blob blob = (Blob) entity;
                 String contentDisposition = headers.get("Content-Disposition");
                 if (contentDisposition != null) {
                     String fileName = contentDisposition.replaceFirst(".*filename\\*?=(UTF-8'')?(.*)", "$2");
@@ -255,8 +256,13 @@ public abstract class NuxeoEntity<T> {
                     } catch (UnsupportedEncodingException e) {
                         // May not happen
                     }
-                    ((Blob) entity).setFileName(fileName);
+                    blob.setFileName(fileName);
                 }
+                String mimeType = headers.get("Content-Type");
+                if (mimeType == null) {
+                    mimeType = ConstantsV1.APPLICATION_OCTET_STREAM;
+                }
+                blob.setMimeType(mimeType);
             }
             return entity;
         } else if (entity instanceof List<?>) {

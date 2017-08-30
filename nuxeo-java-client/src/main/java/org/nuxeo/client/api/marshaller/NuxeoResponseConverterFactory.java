@@ -21,6 +21,8 @@ package org.nuxeo.client.api.marshaller;
 import java.io.Closeable;
 import java.io.IOException;
 import java.io.Reader;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 import javax.mail.BodyPart;
@@ -89,19 +91,20 @@ public final class NuxeoResponseConverterFactory<T> implements Converter<Respons
                 && !(mediaType.type().equals(ConstantsV1.APPLICATION)
                         && mediaType.subtype().equals(ConstantsV1.JSON_NXENTITY))) {
             if (mediaType.type().equals(ConstantsV1.MULTIPART)) {
-                Blobs blobs = new Blobs();
+                List<Blob> blobs = new ArrayList<>();
                 try {
                     MimeMultipart mp = new MimeMultipart(
                             new ByteArrayDataSource(value.byteStream(), mediaType.toString()));
                     int size = mp.getCount();
                     for (int i = 0; i < size; i++) {
                         BodyPart part = mp.getBodyPart(i);
-                        blobs.add(part.getFileName(), IOUtils.copyToTempFile(part.getInputStream()));
+                        blobs.add(new Blob(IOUtils.copyToTempFile(part.getInputStream()), part.getFileName(),
+                                part.getContentType()));
                     }
                 } catch (MessagingException reason) {
                     throw new IOException(reason);
                 }
-                return (T) blobs;
+                return (T) new Blobs(blobs);
             } else {
                 return (T) new Blob(IOUtils.copyToTempFile(value.byteStream()));
             }

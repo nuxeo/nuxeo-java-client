@@ -43,8 +43,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
-
 import java.util.function.Consumer;
+
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -73,11 +73,11 @@ import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.Jetty;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * @since 0.1
@@ -284,6 +284,7 @@ public class TestRepository extends TestBase {
         Document file = nuxeoClient.repository().fetchDocumentByPath("/folder_2/file");
         Blob blob = file.fetchBlob();
         assertNotNull(blob);
+        assertEquals("text/plain", blob.getMimeType());
     }
 
     @Test
@@ -296,6 +297,7 @@ public class TestRepository extends TestBase {
         Blobs inputBlobs = new Blobs();
         inputBlobs.add(temp1);
         inputBlobs.add(temp2);
+        inputBlobs.getBlobs().forEach(blob -> blob.setMimeType("image/jpeg"));
         Blobs blobs = nuxeoClient.automation()
                                  .newRequest("Blob.AttachOnDocument")
                                  .param("document", file.getPath())
@@ -303,8 +305,12 @@ public class TestRepository extends TestBase {
                                  .input(inputBlobs)
                                  .execute();
         assertNotNull(blobs);
-        assertEquals("sample.jpg", blobs.getBlobs().get(0).getFileName());
-        assertEquals("sample.jpg", blobs.getBlobs().get(1).getFileName());
+        Blob blob0 = blobs.getBlobs().get(0);
+        Blob blob1 = blobs.getBlobs().get(1);
+        assertEquals("sample.jpg", blob0.getFileName());
+        assertEquals("sample.jpg", blob1.getFileName());
+        assertEquals("image/jpeg", blob0.getMimeType());
+        assertEquals("image/jpeg", blob1.getMimeType());
 
         //Fetch blob by path
         Blob blob = nuxeoClient.repository().fetchBlobByPath(file.getPath(), "files:files/0/file");
@@ -322,6 +328,7 @@ public class TestRepository extends TestBase {
         Blobs inputBlobs = new Blobs();
         inputBlobs.add(temp1);
         inputBlobs.add(temp2);
+        inputBlobs.getBlobs().forEach(blob -> blob.setMimeType("image/jpeg"));
         Blobs blobs = nuxeoClient.automation()
                                  .newRequest("Blob.AttachOnDocument")
                                  .param("document", file.getPath())
@@ -329,8 +336,12 @@ public class TestRepository extends TestBase {
                                  .input(inputBlobs)
                                  .execute();
         assertNotNull(blobs);
-        assertEquals("sample.jpg", blobs.getBlobs().get(0).getFileName());
-        assertEquals("sample.jpg", blobs.getBlobs().get(1).getFileName());
+        Blob blob0 = blobs.getBlobs().get(0);
+        Blob blob1 = blobs.getBlobs().get(1);
+        assertEquals("sample.jpg", blob0.getFileName());
+        assertEquals("sample.jpg", blob1.getFileName());
+        assertEquals("image/jpeg", blob0.getMimeType());
+        assertEquals("image/jpeg", blob1.getMimeType());
 
         //Fetch blob by id
         Blob blob = nuxeoClient.repository().fetchBlobById(file.getUid(),"files:files/0/file");

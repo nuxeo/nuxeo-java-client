@@ -55,14 +55,17 @@ public class Blob extends NuxeoEntity {
     }
 
     public Blob(File file) {
-        this(file.getName(), ConstantsV1.APPLICATION_OCTET_STREAM);
-        this.file = file;
+        this(file, file.getName(), ConstantsV1.APPLICATION_OCTET_STREAM);
     }
 
     public Blob(String fileName, String mimeType) {
+        this(null, fileName, mimeType);
+    }
+
+    public Blob(File file, String fileName, String mimeType) {
         super(null);
+        this.file = file;
         this.fileName = fileName;
-        this.file = null;
         setMimeType(mimeType);
     }
 
