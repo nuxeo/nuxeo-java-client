@@ -1,4 +1,4 @@
-# Java Client Library 2.6.1-SNAPSHOT for the Nuxeo Platform REST APIs
+# Java Client Library 2.7-SNAPSHOT for the Nuxeo Platform REST APIs
 
 The Nuxeo Java Client is a Java client library (can be used for Android) for Nuxeo Automation and REST API.
 
@@ -42,7 +42,7 @@ See Nuxeo Java Client branch [1.0](https://github.com/nuxeo/nuxeo-java-client/tr
 
 #### Compatible with Nuxeo Platform 8.10 - LTS 2016 and 9.x - FastTracks
 
-You can download the client on our Nexus: [Nuxeo Client Library 2.6.1-SNAPSHOT](https://maven.nuxeo.org/nexus/#nexus-search;gav~org.nuxeo.client~nuxeo-java-client~2.6.1-SNAPSHOT~jar~)
+You can download the client on our Nexus: [Nuxeo Client Library 2.7-SNAPSHOT](https://maven.nuxeo.org/nexus/#nexus-search;gav~org.nuxeo.client~nuxeo-java-client~2.7-SNAPSHOT~jar~)
 
 **Import Nuxeo Java Client with:**
 
@@ -52,7 +52,7 @@ Maven:
 <dependency>
   <groupId>org.nuxeo.client</groupId>
   <artifactId>nuxeo-java-client</artifactId>
-  <version>2.6.1-SNAPSHOT</version>
+  <version>2.7-SNAPSHOT</version>
 </dependency>
 ...
 <repository>
@@ -72,20 +72,20 @@ Maven:
 Gradle:
 
 ```
-compile 'org.nuxeo.client:nuxeo-java-client:2.6.1-SNAPSHOT'
+compile 'org.nuxeo.client:nuxeo-java-client:2.7-SNAPSHOT'
 ```
 
 Ivy:
 
 ```
-<dependency org="org.nuxeo.client" name="nuxeo-java-client" rev="2.6.1-SNAPSHOT" />
+<dependency org="org.nuxeo.client" name="nuxeo-java-client" rev="2.7-SNAPSHOT" />
 
 ```
 
 SBT:
 
 ```
-libraryDependencies += "org.nuxeo.client" % "nuxeo-java-client" % "2.6.1-SNAPSHOT" 
+libraryDependencies += "org.nuxeo.client" % "nuxeo-java-client" % "2.7-SNAPSHOT" 
 ```
 
 ### Sub-Modules Organization
