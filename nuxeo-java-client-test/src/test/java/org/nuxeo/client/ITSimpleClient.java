@@ -26,7 +26,7 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 
-import org.apache.logging.log4j.util.Strings;
+import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
 import org.nuxeo.client.objects.Document;
 
@@ -43,7 +43,7 @@ public class ITSimpleClient extends AbstractITBase {
         assertNotNull(response);
         assertTrue(response.isSuccessful());
         String json = response.body().string();
-        assertFalse(Strings.EMPTY.equals(json));
+        assertFalse(StringUtils.EMPTY.equals(json));
         Document document = nuxeoClient.getConverterFactory().readJSON(json, Document.class);
         assertNotNull(document);
         assertEquals("Root", document.getType());
@@ -56,7 +56,7 @@ public class ITSimpleClient extends AbstractITBase {
         assertNotNull(response);
         assertTrue(response.isSuccessful());
         String json = response.body().string();
-        assertFalse(Strings.EMPTY.equals(json));
+        assertFalse(StringUtils.EMPTY.equals(json));
         Document document = nuxeoClient.getConverterFactory().readJSON(json, Document.class);
         assertNotNull(document);
         assertEquals("new title", document.getTitle());
@@ -69,7 +69,7 @@ public class ITSimpleClient extends AbstractITBase {
         assertNotNull(response);
         assertTrue(response.isSuccessful());
         String json = response.body().string();
-        assertFalse(Strings.EMPTY.equals(json));
+        assertFalse(StringUtils.EMPTY.equals(json));
         Document document = nuxeoClient.getConverterFactory().readJSON(json, Document.class);
         assertNotNull(document);
         assertEquals("file", document.getTitle());
@@ -77,7 +77,7 @@ public class ITSimpleClient extends AbstractITBase {
         response = nuxeoClient.delete(ITBase.BASE_URL + ConstantsV1.API_PATH + "path/file");
         assertTrue(response.isSuccessful());
         json = response.body().string();
-        assertTrue(Strings.EMPTY.equals(json));
+        assertTrue(StringUtils.EMPTY.equals(json));
     }
 
 }
