@@ -85,20 +85,25 @@
   </modules>
 
   <properties>
+    <!-- dependency versions -->
+    <apache.commons.version>3.6</apache.commons.version>
+    <commons-io.version>2.5</commons-io.version>
     <fasterxml.version>2.7.4</fasterxml.version>
-    <retrofit.version>2.2.0</retrofit.version>
-    <okhttp.version>3.6.0</okhttp.version>
-    <log4j.version>2.4.1</log4j.version>
-    <retrolambda.version>2.0.6</retrolambda.version>
+    <guava.version>23.0</guava.version>
     <junit.version>4.12</junit.version>
+    <javax.mail.version>1.4.7</javax.mail.version>
+    <okhttp.version>3.8.1</okhttp.version>
+    <okio.version>1.11.0</okio.version>
+    <retrofit.version>2.3.0</retrofit.version>
+    <!-- plugin dependency versions -->
+    <plugin.compiler.version>3.6.2</plugin.compiler.version>
+    <plugin.javadoc.version>2.10.4</plugin.javadoc.version>
+    <plugin.source.version>3.0.1</plugin.source.version>
+    <plugin.retrolambda.version>2.5.1</plugin.retrolambda.version>
+    <!-- other properties -->
     <java.version.source>1.8</java.version.source>
     <java.version.target>1.7</java.version.target>
-    <javax.mail.version>1.4.7</javax.mail.version>
-    <compiler.version>3.3</compiler.version>
-    <guava.version>21.0</guava.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <commons-io.version>2.5</commons-io.version>
-    <apache.commons.version>3.3.2</apache.commons.version>
   </properties>
 
   <dependencyManagement>
@@ -124,6 +129,11 @@
         <version>${okhttp.version}</version>
       </dependency>
       <dependency>
+        <groupId>com.squareup.okio</groupId>
+        <artifactId>okio</artifactId>
+        <version>${okio.version}</version>
+      </dependency>
+      <dependency>
         <groupId>com.fasterxml.jackson.core</groupId>
         <artifactId>jackson-annotations</artifactId>
         <version>${fasterxml.version}</version>
@@ -137,16 +147,6 @@
         <groupId>com.fasterxml.jackson.core</groupId>
         <artifactId>jackson-databind</artifactId>
         <version>${fasterxml.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.logging.log4j</groupId>
-        <artifactId>log4j-api</artifactId>
-        <version>${log4j.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.logging.log4j</groupId>
-        <artifactId>log4j-core</artifactId>
-        <version>${log4j.version}</version>
       </dependency>
       <dependency>
         <groupId>com.google.guava</groupId>
@@ -271,13 +271,23 @@
       <plugins>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-source-plugin</artifactId>
-          <version>3.0.0</version>
+          <artifactId>maven-compiler-plugin</artifactId>
+          <version>${plugin.compiler.version}</version>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-javadoc-plugin</artifactId>
-          <version>2.10.3</version>
+          <version>${plugin.javadoc.version}</version>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-source-plugin</artifactId>
+          <version>${plugin.source.version}</version>
+        </plugin>
+        <plugin>
+          <groupId>net.orfjackal.retrolambda</groupId>
+          <artifactId>retrolambda-maven-plugin</artifactId>
+          <version>${plugin.retrolambda.version}</version>
         </plugin>
       </plugins>
     </pluginManagement>
@@ -285,7 +295,6 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
-        <version>${compiler.version}</version>
         <configuration>
           <source>${java.version.source}</source>
           <target>${java.version.source}</target>
@@ -294,12 +303,10 @@
       <plugin>
         <groupId>net.orfjackal.retrolambda</groupId>
         <artifactId>retrolambda-maven-plugin</artifactId>
-        <version>${retrolambda.version}</version>
         <executions>
           <execution>
             <goals>
               <goal>process-main</goal>
-              <goal>process-test</goal>
             </goals>
           </execution>
         </executions>

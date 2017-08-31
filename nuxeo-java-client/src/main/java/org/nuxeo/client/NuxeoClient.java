@@ -29,7 +29,7 @@ import java.util.function.UnaryOperator;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.logging.log4j.util.Strings;
+import org.apache.commons.lang3.StringUtils;
 import org.nuxeo.client.cache.NuxeoResponseCache;
 import org.nuxeo.client.marshaller.NuxeoConverterFactory;
 import org.nuxeo.client.objects.AbstractBase;
@@ -278,7 +278,7 @@ public class NuxeoClient extends AbstractBase<NuxeoClient> {
             if (!response.isSuccessful() && response.code() != 308) {
                 NuxeoClientException nuxeoClientException;
                 String errorBody = response.errorBody().string();
-                if (Strings.EMPTY.equals(errorBody)) {
+                if (StringUtils.EMPTY.equals(errorBody)) {
                     nuxeoClientException = new NuxeoClientException(response.code(), response.message());
                 } else {
                     MediaType mediaType = MediaType.fromOkHttpMediaType(response.raw().body().contentType());

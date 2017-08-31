@@ -17,6 +17,10 @@
       <artifactId>nuxeo-java-client</artifactId>
     </dependency>
     <dependency>
+      <groupId>com.squareup.retrofit2</groupId>
+      <artifactId>retrofit</artifactId>
+    </dependency>
+    <dependency>
       <groupId>com.google.guava</groupId>
       <artifactId>guava</artifactId>
     </dependency>
