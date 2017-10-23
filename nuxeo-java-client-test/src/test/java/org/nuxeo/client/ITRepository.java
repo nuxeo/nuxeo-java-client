@@ -64,7 +64,7 @@ import org.nuxeo.client.objects.blob.Blob;
 import org.nuxeo.client.objects.blob.Blobs;
 import org.nuxeo.client.objects.blob.FileBlob;
 import org.nuxeo.client.objects.user.User;
-import org.nuxeo.client.spi.NuxeoClientException;
+import org.nuxeo.client.spi.NuxeoClientRemoteException;
 import org.nuxeo.common.utils.FileUtils;
 
 /**
@@ -201,7 +201,7 @@ public class ITRepository extends AbstractITBase {
         try {
             nuxeoClient.repository().fetchDocumentByPath("/folder_1/wrong");
             fail("Should be not found");
-        } catch (NuxeoClientException reason) {
+        } catch (NuxeoClientRemoteException reason) {
             assertEquals(404, reason.getStatus());
         }
     }
@@ -501,7 +501,7 @@ public class ITRepository extends AbstractITBase {
     }
 
     /**
-     * Dates can only be handled as {@link java.lang.String}. Otherwise, exception should be raised. There're several
+     * Dates can only be handled as {@link java.lang.String}. Otherwise, errorBody should be raised. There're several
      * examples showing how to convert date correctly into ISO 8601 format:
      * <ul>
      * <li>Convert {@link java.util.GregorianCalendar} in UTC, see {@link #itCanHandleGregorianCalendarUTC}.

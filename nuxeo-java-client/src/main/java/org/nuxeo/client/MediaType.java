@@ -104,6 +104,10 @@ public final class MediaType {
         return equalsType(mediaType) && StringUtils.equals(subtype, mediaType.subtype);
     }
 
+    public boolean equalsTypeStartsWithSubType(MediaType mediaType) {
+        return equalsType(mediaType) && subtype.startsWith(mediaType.subtype);
+    }
+
     /**
      * Returns the encoded media type, like "text/plain; charset=utf-8", appropriate for use in a Content-Type header.
      */
@@ -123,6 +127,9 @@ public final class MediaType {
     }
 
     public static MediaType fromOkHttpMediaType(okhttp3.MediaType mediaType) {
+        if (mediaType == null) {
+            return null;
+        }
         return parse(mediaType.toString());
     }
 
