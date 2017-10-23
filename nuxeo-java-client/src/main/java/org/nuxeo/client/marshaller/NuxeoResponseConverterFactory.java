@@ -119,7 +119,7 @@ public final class NuxeoResponseConverterFactory<T> implements Converter<Respons
             ObjectReader objectReader = objectMapper.readerFor(javaType);
             return objectReader.readValue(reader);
         } catch (IOException reason) {
-            throw new NuxeoClientException(reason);
+            throw new NuxeoClientException("Error during deserialization of HTTP body", reason);
         }
     }
 

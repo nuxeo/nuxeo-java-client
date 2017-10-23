@@ -25,9 +25,8 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import org.junit.Test;
-import org.nuxeo.client.NuxeoClient.Builder;
 import org.nuxeo.client.objects.user.User;
-import org.nuxeo.client.spi.NuxeoClientException;
+import org.nuxeo.client.spi.NuxeoClientRemoteException;
 import org.nuxeo.client.spi.auth.PortalSSOAuthInterceptor;
 
 /**
@@ -52,7 +51,7 @@ public class ITAuthentication {
         try {
             client.userManager().fetchCurrentUser();
             fail("Should be non authorized");
-        } catch (NuxeoClientException reason) {
+        } catch (NuxeoClientRemoteException reason) {
             assertEquals(401, reason.getStatus());
         }
     }
@@ -62,7 +61,7 @@ public class ITAuthentication {
         try {
             ITBase.createClientBuilder("wrong", "credentials").connect();
             fail("Should be non authorized");
-        } catch (NuxeoClientException reason) {
+        } catch (NuxeoClientRemoteException reason) {
             assertEquals(401, reason.getStatus());
         }
     }

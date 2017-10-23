@@ -37,7 +37,7 @@ import org.nuxeo.client.objects.user.User;
 import org.nuxeo.client.objects.user.UserManager;
 import org.nuxeo.client.objects.workflow.Workflow;
 import org.nuxeo.client.objects.workflow.Workflows;
-import org.nuxeo.client.spi.NuxeoClientException;
+import org.nuxeo.client.spi.NuxeoClientRemoteException;
 import org.nuxeo.common.utils.FileUtils;
 
 /**
@@ -129,7 +129,7 @@ public class ITBase {
         try {
             repository.fetchDocumentByPath(result.getPath());
             fail("Document should have been deleted");
-        } catch (NuxeoClientException nce) {
+        } catch (NuxeoClientRemoteException nce) {
             assertEquals(404, nce.getStatus());
         }
     }
@@ -175,9 +175,9 @@ public class ITBase {
         try {
             userManager.fetchUser(DEFAULT_USER_LOGIN);
             fail("User should not exist");
-        } catch (NuxeoClientException reason) {
+        } catch (NuxeoClientRemoteException reason) {
             Assert.assertEquals(404, reason.getStatus());
-            Assert.assertEquals("user does not exist", reason.getException());
+            Assert.assertEquals("user does not exist", reason.getMessage());
         }
     }
 
@@ -209,9 +209,9 @@ public class ITBase {
         try {
             userManager.fetchGroup(DEFAULT_GROUP_NAME);
             fail("Group should not exist");
-        } catch (NuxeoClientException reason) {
+        } catch (NuxeoClientRemoteException reason) {
             Assert.assertEquals(404, reason.getStatus());
-            Assert.assertEquals("group does not exist", reason.getException());
+            Assert.assertEquals("group does not exist", reason.getMessage());
         }
     }
 

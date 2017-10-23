@@ -166,7 +166,7 @@ public class BatchUpload extends AbstractConnectable<BatchUploadAPI, BatchUpload
             }
             return response;
         } catch (IOException reason) {
-            throw new NuxeoClientException(reason);
+            throw new NuxeoClientException("Error during batch upload", reason);
         }
     }
 

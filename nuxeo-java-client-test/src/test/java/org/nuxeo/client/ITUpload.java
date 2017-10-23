@@ -33,7 +33,7 @@ import org.nuxeo.client.objects.Document;
 import org.nuxeo.client.objects.blob.FileBlob;
 import org.nuxeo.client.objects.upload.BatchUpload;
 import org.nuxeo.client.objects.upload.BatchUploadManager;
-import org.nuxeo.client.spi.NuxeoClientException;
+import org.nuxeo.client.spi.NuxeoClientRemoteException;
 import org.nuxeo.common.utils.FileUtils;
 
 /**
@@ -51,7 +51,7 @@ public class ITUpload extends AbstractITBase {
         try {
             batchUpload.fetchBatchUploads();
             fail("Should be not found");
-        } catch (NuxeoClientException reason) {
+        } catch (NuxeoClientRemoteException reason) {
             assertEquals(404, reason.getStatus());
         }
     }

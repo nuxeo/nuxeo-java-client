@@ -38,7 +38,7 @@ import org.nuxeo.client.objects.task.Tasks;
 import org.nuxeo.client.objects.workflow.Graph;
 import org.nuxeo.client.objects.workflow.Workflow;
 import org.nuxeo.client.objects.workflow.Workflows;
-import org.nuxeo.client.spi.NuxeoClientException;
+import org.nuxeo.client.spi.NuxeoClientRemoteException;
 
 /**
  * @since 0.1
@@ -115,7 +115,7 @@ public class ITWorkflowAndTask extends AbstractITBase {
         try {
             nuxeoClient.repository().cancelWorkflowInstance(workflow.getId());
             fail("Should fail: wf instance already cancelled");
-        } catch (NuxeoClientException reason) {
+        } catch (NuxeoClientRemoteException reason) {
             assertEquals(500, reason.getStatus());
         }
     }
@@ -183,7 +183,7 @@ public class ITWorkflowAndTask extends AbstractITBase {
         try {
             nuxeoClient.taskManager().reassign(task.getId(), "Administrator", "some comment");
             fail("Should fail: not possible to reassign this task");
-        } catch (NuxeoClientException reason) {
+        } catch (NuxeoClientRemoteException reason) {
             assertEquals(500, reason.getStatus());
         }
     }

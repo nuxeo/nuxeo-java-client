@@ -148,7 +148,7 @@ public class Document extends RepositoryEntity<RepositoryAPI, Document> {
                 }
             }
         } catch (ReflectiveOperationException reason) {
-            throw new NuxeoClientException(reason);
+            throw new NuxeoClientException("Error during construction of document adapter", reason);
         }
     }
 

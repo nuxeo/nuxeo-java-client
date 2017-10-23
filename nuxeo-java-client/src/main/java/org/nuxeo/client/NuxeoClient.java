@@ -49,6 +49,7 @@ import org.nuxeo.client.objects.upload.BatchUploadManager;
 import org.nuxeo.client.objects.user.User;
 import org.nuxeo.client.objects.user.UserManager;
 import org.nuxeo.client.spi.NuxeoClientException;
+import org.nuxeo.client.spi.NuxeoClientRemoteException;
 import org.nuxeo.client.spi.auth.BasicAuthInterceptor;
 
 import okhttp3.Headers;
@@ -230,7 +231,7 @@ public class NuxeoClient extends AbstractBase<NuxeoClient> {
             Request request = method.apply(requestBuilder).build();
             return retrofit.callFactory().newCall(request).execute();
         } catch (IOException e) {
-            throw new NuxeoClientException(e);
+            throw new NuxeoClientException("Error during call on url=" + url, e);
         }
     }
 
@@ -247,7 +248,7 @@ public class NuxeoClient extends AbstractBase<NuxeoClient> {
             response = handleResponse(call, response);
             return response.body();
         } catch (IOException reason) {
-            throw new NuxeoClientException(reason);
+            throw new NuxeoClientException("Error during call on Nuxeo server", reason);
         }
     }
 
@@ -275,21 +276,18 @@ public class NuxeoClient extends AbstractBase<NuxeoClient> {
     protected <T> retrofit2.Response<T> handleResponse(Call<T> call, retrofit2.Response<T> response) {
         try {
             // For redirect 308 -> the response should be success
-            if (!response.isSuccessful() && response.code() != 308) {
-                NuxeoClientException nuxeoClientException;
+            int httpCode = response.code();
+            String httpMessage = response.message();
+            if (!response.isSuccessful() && httpCode != 308) {
+                // error body is not null as it's an error
                 String errorBody = response.errorBody().string();
-                if (StringUtils.EMPTY.equals(errorBody)) {
-                    nuxeoClientException = new NuxeoClientException(response.code(), response.message());
-                } else {
-                    MediaType mediaType = MediaType.fromOkHttpMediaType(response.raw().body().contentType());
-                    if (!MediaTypes.APPLICATION_JSON.equalsTypeSubType(mediaType)
-                            && !MediaTypes.APPLICATION_JSON_NXENTITY.equalsTypeSubType(mediaType)) {
-                        nuxeoClientException = new NuxeoClientException(response.code(), errorBody);
-                    } else {
-                        nuxeoClientException = converterFactory.readJSON(errorBody, NuxeoClientException.class);
-                    }
+                // content type could be null
+                MediaType mediaType = MediaType.fromOkHttpMediaType(response.raw().body().contentType());
+                if (!StringUtils.EMPTY.equals(errorBody)
+                        && MediaTypes.APPLICATION_JSON.equalsTypeStartsWithSubType(mediaType)) {
+                    throw converterFactory.readJSON(errorBody, NuxeoClientRemoteException.class);
                 }
-                throw nuxeoClientException;
+                throw new NuxeoClientRemoteException(httpCode, httpMessage, errorBody, null);
             }
             if (isCacheEnabled()) {
                 nuxeoCache.put(computeCacheKey(call), response);
@@ -299,8 +297,7 @@ public class NuxeoClient extends AbstractBase<NuxeoClient> {
             if (body instanceof ResponseBody) {
                 throw new IllegalStateException("Internal client error, everything should be mapped to a type.");
             } else if (body == null) {
-                if (response.code() == 204
-                        && MediaTypes.APPLICATION_NUXEO_EMPTY_LIST_S.equals(headers.get("Content-Type"))) {
+                if (httpCode == 204 && MediaTypes.APPLICATION_NUXEO_EMPTY_LIST_S.equals(headers.get("Content-Type"))) {
                     return retrofit2.Response.success((T) new Blobs(), response.raw());
                 }
             } else if (body instanceof Connectable) {
@@ -339,7 +336,7 @@ public class NuxeoClient extends AbstractBase<NuxeoClient> {
             // No need to wrap the response
             return response;
         } catch (IOException ioe) {
-            throw new NuxeoClientException(ioe);
+            throw new NuxeoClientException("Error during deserialization of HTTP response", ioe);
         }
     }
 
