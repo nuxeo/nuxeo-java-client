@@ -9,15 +9,11 @@
   </unzip>
   <import file="${out.dir}/nuxeo-ftest.xml" />
 
-  <property name="mp.install" value="file:${out.dir}/nuxeo-marketplace-jsf-ui.zip" />
   <target name="prepare-environment" depends="_init,prepare-db,prepare-tomcat">
     <copy file="src/test/resources/cors-config.xml" todir="${nuxeo.nxserver}/config/" />
     <!-- install produced artifact for tests -->
     <!-- TODO find a better way <artifact:resolveFile key="org.nuxeo.client:nuxeo-java-client-test::jar" /> doesn't work -->
     <copy file="${out.dir}/nuxeo-java-client-test-${maven.project.version}.jar" todir="${nuxeo.nxserver}/bundles/" />
-    <copy tofile="${out.dir}/nuxeo-marketplace-jsf-ui.zip">
-      <artifact:file key="org.nuxeo.ecm.distribution:nuxeo-marketplace-jsf-ui::zip" />
-    </copy>
     <copy todir="${nuxeo.nxserver}/bundles/">
       <artifact:file key="org.nuxeo.ecm.platform:nuxeo-platform-login-portal-sso" />
     </copy>
