@@ -185,6 +185,18 @@ public class AbstractBase<B extends AbstractBase<B>> {
     }
 
     /**
+     * Replaces the current fetch properties associate to group type by the input one. Possible values are:
+     * <ul>
+     *     <li>memberUsers</li>
+     *     <li>memberGroups</li>
+     *     <li>parentGroups</li>
+     * </ul>
+     */
+    public B fetchPropertiesForGroup(String fetchProperty, String... fetchProperties) {
+        return fetchProperties("group", fetchProperty, fetchProperties);
+    }
+
+    /**
      * Sets the depth. Possible values are: `root`, `children` and `max`.
      *
      * @see org.nuxeo.ecm.core.io.registry.context.DepthValues

@@ -21,6 +21,7 @@ package org.nuxeo.client;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
@@ -81,7 +82,7 @@ public class RepositoryInterceptor implements Interceptor {
     }
 
     public Collection<String> getDocumentIdsToDelete() {
-        return documentPathsToDelete.values();
+        return new HashSet<>(documentPathsToDelete.values());
     }
 
 }

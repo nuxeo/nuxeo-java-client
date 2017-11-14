@@ -261,6 +261,7 @@ public class ITBase {
         Group group = new Group();
         group.setGroupName(DEFAULT_GROUP_NAME);
         group.setGroupLabel("Toto Group");
+        group.setMemberGroups(Collections.singletonList("members"));
         return group;
     }
 

@@ -67,6 +67,18 @@ public interface UserManagerAPI {
     @POST("group/{groupName}/user/{userName}")
     Call<User> attachGroupToUser(@Path("groupName") String groupName, @Path("userName") String userName);
 
+    /**
+     * @since 3.0
+     */
+    @GET("group/{groupName}/@users")
+    Call<Users> fetchGroupMemberUsers(@Path("groupName") String groupName);
+
+    /**
+     * @since 3.0
+     */
+    @GET("group/{groupName}/@groups")
+    Call<Groups> fetchGroupMemberGroups(@Path("groupName") String groupName);
+
     // ---------
     // User APIs
     // ---------
