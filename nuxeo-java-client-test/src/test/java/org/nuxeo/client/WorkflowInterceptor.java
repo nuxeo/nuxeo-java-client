@@ -75,7 +75,7 @@ public class WorkflowInterceptor implements Interceptor {
     }
 
     public Set<String> getWorkflowIdsToDelete() {
-        return workflowIdsToDelete;
+        return new HashSet<>(workflowIdsToDelete);
     }
 
 }

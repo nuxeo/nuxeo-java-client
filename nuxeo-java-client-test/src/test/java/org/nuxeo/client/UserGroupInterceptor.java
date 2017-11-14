@@ -83,11 +83,11 @@ public class UserGroupInterceptor implements Interceptor {
     }
 
     public Set<String> getUsersToDelete() {
-        return usersToDelete;
+        return new HashSet<>(usersToDelete);
     }
 
     public Set<String> getGroupsToDelete() {
-        return groupsToDelete;
+        return new HashSet<>(groupsToDelete);
     }
 
 }

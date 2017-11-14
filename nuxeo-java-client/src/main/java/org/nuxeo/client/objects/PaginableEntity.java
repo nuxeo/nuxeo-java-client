@@ -19,6 +19,7 @@
 package org.nuxeo.client.objects;
 
 import java.util.List;
+import java.util.stream.Stream;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -82,6 +83,10 @@ public class PaginableEntity<E> extends Entity {
 
     public List<E> getEntries() {
         return entries;
+    }
+
+    public Stream<E> streamEntries() {
+        return entries.stream();
     }
 
     public E getEntry(int index) {
