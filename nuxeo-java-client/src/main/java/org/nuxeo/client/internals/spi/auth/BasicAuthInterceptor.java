@@ -41,7 +41,7 @@ public class BasicAuthInterceptor implements Interceptor {
 
     public void setAuth(String username, String password) {
         String info = username + ":" + password;
-        token = "Basic " + Base64.encode(info);
+        token = "Basic " + Base64.encode(info, Base64.DONT_BREAK_LINES);
     }
 
     @Override
