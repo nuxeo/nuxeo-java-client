@@ -19,13 +19,16 @@
 package org.nuxeo.client.test;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
-import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.client.api.objects.user.CurrentUser;
+import org.nuxeo.client.api.objects.user.User;
+import org.nuxeo.client.api.objects.user.UserManager;
 import org.nuxeo.client.internals.spi.NuxeoClientException;
 import org.nuxeo.client.internals.spi.auth.PortalSSOAuthInterceptor;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
@@ -55,9 +58,9 @@ public class TestCurrentUser extends TestBase {
         CurrentUser currentUser = nuxeoClient.fetchCurrentUser();
         assertNotNull(currentUser);
         assertEquals("Administrator", currentUser.getUsername());
-        assertEquals(true, currentUser.isAdministrator());
+        assertTrue(currentUser.isAdministrator());
         assertEquals("administrators", currentUser.getGroups().get(1));
-        Assert.assertEquals("login", currentUser.getEntityType());
+        assertEquals("login", currentUser.getEntityType());
     }
 
     @Test
@@ -91,6 +94,25 @@ public class TestCurrentUser extends TestBase {
         setAuthenticationMethod(new PortalSSOAuthInterceptor("nuxeo5secretkey", "user1"));
         currentUser = nuxeoClient.fetchCurrentUser();
         assertEquals("user1", currentUser.getUsername());
+    }
+
+    @Test
+    public void itCanLoginWithLongCredentials() {
+        login();
+        String email = "verylongmailaddress0123456789@nuxeo.com";
+        String password = "verylongpassword0123456789";
+        // first create user
+        UserManager userManager = nuxeoClient.getUserManager();
+        User user = new User();
+        user.setUserName(email);
+        user.setEmail(email);
+        user.setPassword(password);
+        userManager.createUser(user);
+        // now test
+        login(email, password);
+        CurrentUser currentUser = nuxeoClient.fetchCurrentUser();
+        assertEquals(email, currentUser.getUsername());
+        assertFalse(currentUser.isAdministrator());
     }
 
 }
