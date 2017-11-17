@@ -20,13 +20,13 @@ package org.nuxeo.client.internals.spi.auth;
 
 import java.io.IOException;
 
-import okhttp3.Interceptor;
-import okhttp3.Request;
-import okhttp3.Response;
-
 import org.nuxeo.client.internals.util.Base64;
 
 import com.google.common.net.HttpHeaders;
+
+import okhttp3.Interceptor;
+import okhttp3.Request;
+import okhttp3.Response;
 
 /**
  * @since 0.1
@@ -41,7 +41,7 @@ public class BasicAuthInterceptor implements Interceptor {
 
     public void setAuth(String username, String password) {
         String info = username + ":" + password;
-        token = "Basic " + Base64.encode(info);
+        token = "Basic " + Base64.encode(info, Base64.DONT_BREAK_LINES);
     }
 
     @Override

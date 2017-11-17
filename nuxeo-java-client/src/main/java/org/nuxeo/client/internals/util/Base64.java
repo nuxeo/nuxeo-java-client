@@ -215,6 +215,10 @@ public class Base64 {
         return encodeBytes(content.getBytes());
     }
 
+    public static String encode(String content, int options) {
+        return encodeBytes(content.getBytes(), options);
+    }
+
     public static String encode(String content, String charset) throws UnsupportedEncodingException {
         return encodeBytes(content.getBytes(charset));
     }
