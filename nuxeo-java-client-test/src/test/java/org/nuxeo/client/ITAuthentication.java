@@ -20,12 +20,14 @@
 package org.nuxeo.client;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import org.junit.Test;
 import org.nuxeo.client.objects.user.User;
+import org.nuxeo.client.objects.user.UserManager;
 import org.nuxeo.client.spi.NuxeoClientRemoteException;
 
 /**
@@ -70,6 +72,26 @@ public class ITAuthentication {
         NuxeoClient client = ITBase.createClientPortalSSO();
         User currentUser = client.getCurrentUser();
         assertEquals("Administrator", currentUser.getUserName());
+    }
+
+    @Test
+    public void itCanLoginWithLongCredentials() {
+        UserManager userManager = ITBase.createClientBuilder().connect().userManager();
+
+        String email = "verylongmailaddress0123456789@nuxeo.com";
+        String password = "verylongpassword0123456789";
+        // first create user
+        User user = new User();
+        user.setUserName(email);
+        user.setEmail(email);
+        user.setPassword(password);
+        userManager.createUser(user);
+        // now test
+        User currentUser = ITBase.createClient(email, password).getCurrentUser();
+        assertEquals(email, currentUser.getUserName());
+        assertFalse(currentUser.isAdministrator());
+        // delete it
+        userManager.deleteUser(email);
     }
 
 }

@@ -42,7 +42,7 @@ public class BasicAuthInterceptor implements Interceptor {
             throw new NuxeoClientException("'username' and 'password' must be set");
         }
         String info = username + ":" + password;
-        token = "Basic " + Base64.encode(info);
+        token = "Basic " + Base64.encode(info, Base64.DONT_BREAK_LINES);
     }
 
     @Override

@@ -216,6 +216,15 @@ public class Base64 {
         return encodeBytes(content.getBytes());
     }
 
+    /**
+     * @param options encoding options provided by {@link Base64}.
+     * @since 3.0.
+     * @see Base64#DONT_BREAK_LINES
+     */
+    public static String encode(String content, int options) {
+        return encodeBytes(content.getBytes(), options);
+    }
+
     public static String encode(String content, String charset) throws UnsupportedEncodingException {
         return encodeBytes(content.getBytes(charset));
     }
