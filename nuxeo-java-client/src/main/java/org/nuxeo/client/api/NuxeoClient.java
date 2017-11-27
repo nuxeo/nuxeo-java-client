@@ -19,27 +19,26 @@ package org.nuxeo.client.api;
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
+import org.apache.commons.lang3.StringUtils;
+import org.nuxeo.client.api.cache.NuxeoResponseCache;
+import org.nuxeo.client.api.cache.ResultCacheInMemory;
+import org.nuxeo.client.api.marshaller.NuxeoConverterFactory;
+import org.nuxeo.client.api.marshaller.NuxeoMarshaller;
+import org.nuxeo.client.api.objects.Operation;
+import org.nuxeo.client.api.objects.Repository;
+import org.nuxeo.client.api.objects.directory.DirectoryManager;
+import org.nuxeo.client.api.objects.task.TaskManager;
+import org.nuxeo.client.api.objects.upload.BatchUpload;
+import org.nuxeo.client.api.objects.user.CurrentUser;
+import org.nuxeo.client.api.objects.user.UserManager;
+import org.nuxeo.client.internals.spi.NuxeoClientException;
+import org.nuxeo.client.internals.spi.auth.BasicAuthInterceptor;
+
 import okhttp3.Interceptor;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
-
-import org.apache.commons.lang3.StringUtils;
-import org.nuxeo.client.api.marshaller.NuxeoConverterFactory;
-import org.nuxeo.client.api.marshaller.NuxeoMarshaller;
-import org.nuxeo.client.api.objects.directory.DirectoryManager;
-import org.nuxeo.client.api.objects.user.CurrentUser;
-import org.nuxeo.client.api.objects.task.TaskManager;
-import org.nuxeo.client.internals.spi.NuxeoClientException;
-import org.nuxeo.client.api.cache.NuxeoResponseCache;
-import org.nuxeo.client.api.cache.ResultCacheInMemory;
-import org.nuxeo.client.api.objects.Operation;
-import org.nuxeo.client.api.objects.Repository;
-import org.nuxeo.client.api.objects.upload.BatchUpload;
-import org.nuxeo.client.api.objects.user.UserManager;
-import org.nuxeo.client.internals.spi.auth.BasicAuthInterceptor;
-
 import retrofit2.Retrofit;
 
 /**
@@ -70,6 +69,11 @@ public class NuxeoClient implements Client {
     protected NuxeoResponseCache nuxeoCache;
 
     protected Retrofit retrofit;
+
+    /**
+     * @since 2.7
+     */
+    protected Interceptor authenticationMethod;
 
     public NuxeoClient(String url, String userName, String password) {
         // okhttp builder
@@ -176,8 +180,12 @@ public class NuxeoClient implements Client {
     }
 
     @Override
-    public NuxeoClient setAuthenticationMethod(Interceptor interceptor) {
-        okhttpBuilder.interceptors().add(interceptor);
+    public NuxeoClient setAuthenticationMethod(Interceptor authenticationMethod) {
+        if (this.authenticationMethod != null) {
+            okhttpBuilder.interceptors().remove(this.authenticationMethod);
+        }
+        this.authenticationMethod = authenticationMethod;
+        okhttpBuilder.addInterceptor(authenticationMethod);
         if (retrofitBuilder != null) {
             retrofit();
         }
