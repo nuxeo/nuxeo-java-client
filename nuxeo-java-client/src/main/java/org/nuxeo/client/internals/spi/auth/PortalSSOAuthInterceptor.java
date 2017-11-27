@@ -24,12 +24,12 @@ import java.security.NoSuchAlgorithmException;
 import java.util.Date;
 import java.util.Random;
 
+import org.nuxeo.client.internals.util.Base64;
+
 import okhttp3.Headers;
 import okhttp3.Interceptor;
 import okhttp3.Request;
 import okhttp3.Response;
-
-import org.nuxeo.client.internals.util.Base64;
 
 /**
  * @since 0.1
@@ -53,7 +53,7 @@ public class PortalSSOAuthInterceptor implements Interceptor {
         this.username = userName;
     }
 
-    protected Headers computeHeaders() {
+    protected Headers computeHeaders(Headers originalHeaders) {
         // compute token
         long ts = new Date().getTime();
         long random = new Random(ts).nextInt();
@@ -69,11 +69,12 @@ public class PortalSSOAuthInterceptor implements Interceptor {
         }
 
         String base64HashedToken = Base64.encode(hashedToken);
-        Headers headers = new Headers.Builder().add(NX_TS, String.valueOf(ts))
-                                               .add(NX_RD, String.valueOf(random))
-                                               .add(NX_TOKEN, base64HashedToken)
-                                               .add(NX_USER, username)
-                                               .build();
+        Headers headers = originalHeaders.newBuilder()
+                                         .add(NX_TS, String.valueOf(ts))
+                                         .add(NX_RD, String.valueOf(random))
+                                         .add(NX_TOKEN, base64HashedToken)
+                                         .add(NX_USER, username)
+                                         .build();
         return headers;
     }
 
@@ -82,7 +83,7 @@ public class PortalSSOAuthInterceptor implements Interceptor {
         Request original = chain.request();
         Request request = chain.request()
                                .newBuilder()
-                               .headers(computeHeaders())
+                               .headers(computeHeaders(original.headers()))
                                .method(original.method(), original.body())
                                .build();
         return chain.proceed(request);
