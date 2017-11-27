@@ -29,11 +29,13 @@ import java.util.List;
 import java.util.Map;
 
 import org.junit.Test;
+import org.nuxeo.client.methods.BatchUploadAPI;
 import org.nuxeo.client.objects.Document;
 import org.nuxeo.client.objects.blob.FileBlob;
 import org.nuxeo.client.objects.upload.BatchUpload;
 import org.nuxeo.client.objects.upload.BatchUploadManager;
 import org.nuxeo.client.spi.NuxeoClientRemoteException;
+import org.nuxeo.client.spi.auth.PortalSSOAuthInterceptor;
 import org.nuxeo.common.utils.FileUtils;
 
 /**
@@ -58,40 +60,60 @@ public class ITUpload extends AbstractITBase {
 
     @Test
     public void itCanUploadFiles() {
+        itCanUploadFiles(nuxeoClient);
+    }
+
+    /**
+     * JAVACLIENT-142: Checks that using {@link PortalSSOAuthInterceptor} doesn't erase HTTP headers set from
+     * {@link BatchUploadAPI}.
+     */
+    @Test
+    public void itCanUploadFilesWithPortalSSOAuthentication() {
+        NuxeoClient nuxeoClient = ITBase.createClientPortalSSO();
+        itCanUploadFiles(nuxeoClient);
+    }
+
+    private void itCanUploadFiles(NuxeoClient nuxeoClient) {
+        String filename1 = "sample.jpg";
+        String filename2 = "blob.json";
+
         // Upload the file
         BatchUploadManager batchUploadManager = nuxeoClient.batchUploadManager();
         BatchUpload batchUpload = batchUploadManager.createBatch();
         assertNotNull(batchUpload);
         String batchId = batchUpload.getBatchId();
         assertNotNull(batchId);
-        File file = FileUtils.getResourceFileFromContext("sample.jpg");
+        File file = FileUtils.getResourceFileFromContext(filename1);
+
         batchUpload = batchUpload.upload("1", file);
-        assertNotNull(batchUpload);
-        assertEquals(batchId, batchUpload.getBatchId());
-        assertEquals("1", batchUpload.getFileIdx());
-        assertEquals(file.getName(), batchUpload.getName());
-        assertEquals(ConstantsV1.UPLOAD_NORMAL_TYPE, batchUpload.getUploadType());
+        assertBatchUpload(batchId, "1", filename1, batchUpload);
 
         // Check the batch by fetching it again
         batchUpload = batchUpload.fetchBatchUpload();
-        assertNotNull(batchUpload);
-        assertEquals(batchId, batchUpload.getBatchId());
-        assertEquals("1", batchUpload.getFileIdx());
-        assertEquals(file.getName(), batchUpload.getName());
-        assertEquals(ConstantsV1.UPLOAD_NORMAL_TYPE, batchUpload.getUploadType());
+        assertBatchUpload(batchId, "1", filename1, batchUpload);
+
+        // Check the batch by fetching it again and re-instantiating the batch upload (in BatchUpload we set back some
+        // properties in order to handle responses with light metadata)
+        batchUpload = batchUploadManager.fetchBatchUpload(batchId, "1");
+        assertBatchUpload(batchId, "1", filename1, batchUpload);
 
         // Upload another file and check files
-        file = FileUtils.getResourceFileFromContext("blob.json");
+        file = FileUtils.getResourceFileFromContext(filename2);
         batchUpload.upload("2", file);
         List<BatchUpload> batchUploads = batchUpload.fetchBatchUploads();
         assertNotNull(batchUploads);
         assertEquals(2, batchUploads.size());
-        assertEquals("sample.jpg", batchUploads.get(0).getName());
-        assertEquals(batchId, batchUploads.get(0).getBatchId());
-        assertEquals("1", batchUploads.get(0).getFileIdx());
-        assertEquals("blob.json", batchUploads.get(1).getName());
-        assertEquals(batchId, batchUploads.get(1).getBatchId());
-        assertEquals("2", batchUploads.get(1).getFileIdx());
+        assertBatchUpload(batchId, "1", filename1, batchUploads.get(0));
+        assertBatchUpload(batchId, "2", filename2, batchUploads.get(1));
+    }
+
+    private void assertBatchUpload(String expectedBatchId, String expectedFileIdx, String expectedName,
+            BatchUpload actual) {
+        assertNotNull(actual);
+        assertEquals(expectedBatchId, actual.getBatchId());
+        assertEquals(expectedFileIdx, actual.getFileIdx());
+        assertEquals(expectedName, actual.getName());
+        assertEquals(ConstantsV1.UPLOAD_NORMAL_TYPE, actual.getUploadType());
     }
 
     @Test

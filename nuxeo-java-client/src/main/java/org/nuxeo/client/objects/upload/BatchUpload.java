@@ -196,7 +196,9 @@ public class BatchUpload extends AbstractConnectable<BatchUploadAPI, BatchUpload
 
     public BatchUpload fetchBatchUpload(String fileIdx) {
         BatchUpload response = fetchResponse(api.fetchBatchUpload(batchId, fileIdx));
-        response.name = name;
+        if (name != null) {
+            response.name = name;
+        }
         response.batchId = batchId;
         response.fileIdx = fileIdx;
         return response;

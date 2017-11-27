@@ -47,7 +47,7 @@ public class PortalSSOAuthInterceptor implements Interceptor {
         this.secret = secret;
     }
 
-    protected Headers computeHeaders() {
+    protected Headers computeHeaders(Headers headers) {
         // compute token
         long ts = new Date().getTime();
         long random = new Random(ts).nextInt();
@@ -63,11 +63,12 @@ public class PortalSSOAuthInterceptor implements Interceptor {
         }
 
         String base64HashedToken = Base64.encode(hashedToken);
-        return new Headers.Builder().add(HttpHeaders.NX_TS, String.valueOf(ts))
-                                    .add(HttpHeaders.NX_RD, String.valueOf(random))
-                                    .add(HttpHeaders.NX_TOKEN, base64HashedToken)
-                                    .add(HttpHeaders.NX_USER, username)
-                                    .build();
+        return headers.newBuilder()
+                      .add(HttpHeaders.NX_TS, String.valueOf(ts))
+                      .add(HttpHeaders.NX_RD, String.valueOf(random))
+                      .add(HttpHeaders.NX_TOKEN, base64HashedToken)
+                      .add(HttpHeaders.NX_USER, username)
+                      .build();
     }
 
     @Override
@@ -75,7 +76,7 @@ public class PortalSSOAuthInterceptor implements Interceptor {
         Request original = chain.request();
         Request request = chain.request()
                                .newBuilder()
-                               .headers(computeHeaders())
+                               .headers(computeHeaders(original.headers()))
                                .method(original.method(), original.body())
                                .build();
         return chain.proceed(request);

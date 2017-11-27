@@ -38,13 +38,14 @@ import org.nuxeo.client.objects.user.UserManager;
 import org.nuxeo.client.objects.workflow.Workflow;
 import org.nuxeo.client.objects.workflow.Workflows;
 import org.nuxeo.client.spi.NuxeoClientRemoteException;
+import org.nuxeo.client.spi.auth.PortalSSOAuthInterceptor;
 import org.nuxeo.common.utils.FileUtils;
 
 /**
  * Tests the basic operation of client. This test is isolated from test framework because it unit tests the operation
  * used in framework to init server and to clean it.
  *
- * @since 3.0.0
+ * @since 3.0
  */
 public class ITBase {
 
@@ -228,20 +229,47 @@ public class ITBase {
         assertEquals("SerialDocumentReview", workflow.getName());
     }
 
+    /**
+     * @return A {@link NuxeoClient} filled with Nuxeo Server URL and default basic authentication.
+     */
     public static NuxeoClient createClient() {
         return createClient(LOGIN, PASSWORD);
     }
 
+    /**
+     * @return A {@link NuxeoClient} filled with Nuxeo Server URL and input basic authentication.
+     */
     public static NuxeoClient createClient(String login, String password) {
         return createClientBuilder(login, password).connect();
     }
 
+    /**
+     * @return A {@link NuxeoClient} filled with Nuxeo Server URL and default Portal SSO authentication.
+     */
+    public static NuxeoClient createClientPortalSSO() {
+        return createClientBuilderPortalSSO().connect();
+    }
+
+    /**
+     * @return A {@link NuxeoClient.Builder} filled with Nuxeo Server URL and default basic authentication.
+     */
     public static NuxeoClient.Builder createClientBuilder() {
         return createClientBuilder(LOGIN, PASSWORD);
     }
 
+    /**
+     * @return A {@link NuxeoClient.Builder} filled with Nuxeo Server URL and input basic authentication.
+     */
     public static NuxeoClient.Builder createClientBuilder(String login, String password) {
         return new NuxeoClient.Builder().url(BASE_URL).authentication(login, password).timeout(60);
+    }
+
+    /**
+     * @return A {@link NuxeoClient.Builder} filled with Nuxeo Server URL and default Portal SSO authentication.
+     */
+    public static NuxeoClient.Builder createClientBuilderPortalSSO() {
+        return new NuxeoClient.Builder().url(BASE_URL).authentication(
+                new PortalSSOAuthInterceptor("Administrator", "nuxeo5secretkey"));
     }
 
     public static User createUser() {

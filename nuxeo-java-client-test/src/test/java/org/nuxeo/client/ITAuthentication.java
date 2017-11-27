@@ -27,7 +27,6 @@ import static org.junit.Assert.fail;
 import org.junit.Test;
 import org.nuxeo.client.objects.user.User;
 import org.nuxeo.client.spi.NuxeoClientRemoteException;
-import org.nuxeo.client.spi.auth.PortalSSOAuthInterceptor;
 
 /**
  * @since 0.1
@@ -68,10 +67,7 @@ public class ITAuthentication {
 
     @Test
     public void itCanChangeAuthMethod() {
-        NuxeoClient client = new NuxeoClient.Builder().url(ITBase.BASE_URL)
-                                                      .authentication(new PortalSSOAuthInterceptor("Administrator",
-                                                              "nuxeo5secretkey"))
-                                                      .connect();
+        NuxeoClient client = ITBase.createClientPortalSSO();
         User currentUser = client.getCurrentUser();
         assertEquals("Administrator", currentUser.getUserName());
     }
