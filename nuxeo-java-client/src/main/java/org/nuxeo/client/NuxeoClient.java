@@ -369,6 +369,8 @@ public class NuxeoClient extends AbstractBase<NuxeoClient> {
 
         protected final NuxeoConverterFactory converterFactory;
 
+        protected Interceptor authenticationMethod;
+
         protected NuxeoResponseCache cache;
 
         public Builder() {
@@ -393,7 +395,12 @@ public class NuxeoClient extends AbstractBase<NuxeoClient> {
         }
 
         public Builder authentication(Interceptor authenticationMethod) {
-            okhttpBuilder.addInterceptor(authenticationMethod);
+            this.authenticationMethod = authenticationMethod;
+            return this;
+        }
+
+        public Builder interceptor(Interceptor interceptor) {
+            okhttpBuilder.addInterceptor(interceptor);
             return this;
         }
 
@@ -417,6 +424,11 @@ public class NuxeoClient extends AbstractBase<NuxeoClient> {
          * Builds a {@link NuxeoClient} and log it, it will throw a {@link NuxeoClientException} if failed.
          */
         public NuxeoClient connect() {
+            // check authentication
+            if (authenticationMethod == null) {
+                throw new NuxeoClientException("Your client need an authentication method to connect to Nuxeo server");
+            }
+            okhttpBuilder.interceptors().add(0, authenticationMethod);
             // init client
             NuxeoClient client = new NuxeoClient(this);
             // login client on server

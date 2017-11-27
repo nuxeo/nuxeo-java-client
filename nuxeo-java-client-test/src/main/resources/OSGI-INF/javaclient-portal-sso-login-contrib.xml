@@ -26,7 +26,10 @@
   <extension point="specificChains" target="org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService">
     <specificAuthenticationChain name="Automation">
       <urlPatterns>
+        <!-- used in Builder#connect method -->
         <url>(.*)/automation.*</url>
+        <!-- used in ITUpload#itCanUploadFilesWithPortalSSOAuthentication -->
+        <url>(.*)/upload.*</url>
       </urlPatterns>
       <replacementChain>
         <plugin>AUTOMATION_BASIC_AUTH</plugin>

@@ -19,6 +19,8 @@
  */
 package org.nuxeo.client.spi;
 
+import org.apache.commons.lang3.StringUtils;
+
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -76,6 +78,17 @@ public class NuxeoClientRemoteException extends NuxeoClientException {
 
     public String getErrorBody() {
         return errorBody;
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder s = new StringBuilder(getClass().getName());
+        s.append(": HTTP/").append(status);
+        String message = getLocalizedMessage();
+        if (StringUtils.isNotBlank(message)) {
+            s.append(": ").append(message);
+        }
+        return s.toString();
     }
 
 }
