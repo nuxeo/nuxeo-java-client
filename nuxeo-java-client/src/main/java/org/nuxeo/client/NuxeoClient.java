@@ -236,7 +236,7 @@ public class NuxeoClient extends AbstractBase<NuxeoClient> {
     }
 
     public <T> T fetchResponse(Call<T> call) {
-        if (isCacheEnabled()) {
+        if (useCache(call)) {
             String cacheKey = computeCacheKey(call);
             T result = nuxeoCache.getBody(cacheKey);
             if (result != null) {
@@ -289,7 +289,7 @@ public class NuxeoClient extends AbstractBase<NuxeoClient> {
                 }
                 throw new NuxeoClientRemoteException(httpCode, httpMessage, errorBody, null);
             }
-            if (isCacheEnabled()) {
+            if (useCache(call)) {
                 nuxeoCache.put(computeCacheKey(call), response);
             }
             T body = response.body();
@@ -340,11 +340,15 @@ public class NuxeoClient extends AbstractBase<NuxeoClient> {
         }
     }
 
+    protected boolean useCache(Call<?> call) {
+        return isCacheEnabled() && "GET".equals(call.request().method());
+    }
+
     /**
      * Compute the cache key with request
      */
-    protected String computeCacheKey(Call<?> methodResult) {
-        Request originalRequest = methodResult.request();
+    protected String computeCacheKey(Call<?> call) {
+        Request originalRequest = call.request();
         MessageDigest digest;
         try {
             digest = MessageDigest.getInstance(ConstantsV1.MD_5);

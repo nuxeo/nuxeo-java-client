@@ -167,8 +167,7 @@ public class ITRepository extends AbstractITBase {
         // Retrieve a document from query
         Document document = client.repository().fetchDocumentByPath("/folder_1/note_0");
         assertEquals("Note 0", document.getPropertyValue("dc:title"));
-        // Two entries in the cache because we fetched current user on #connect() call
-        assertEquals(2, client.getNuxeoCache().size());
+        assertEquals(1, client.getNuxeoCache().size());
 
         // Update this document
         Document documentUpdated = Document.createWithId(document.getId(), document.getType());
@@ -176,15 +175,21 @@ public class ITRepository extends AbstractITBase {
         documentUpdated = client.repository().updateDocument(documentUpdated);
         assertEquals("note updated", documentUpdated.getPropertyValue("dc:title"));
 
+        // Update this document again (check update request doesn't go through cache - JAVACLIENT-138)
+        documentUpdated = Document.createWithId(document.getId(), document.getType());
+        documentUpdated.setPropertyValue("dc:title", "note updated again");
+        documentUpdated = client.repository().updateDocument(documentUpdated);
+        assertEquals("note updated again", documentUpdated.getPropertyValue("dc:title"));
+
         // Retrieve again this document within cache
         document = client.repository().fetchDocumentByPath("/folder_1/note_0");
         assertEquals("Note 0", document.getPropertyValue("dc:title"));
-        assertEquals(3, client.getNuxeoCache().size());
+        assertEquals(1, client.getNuxeoCache().size());
 
         // Refresh the cache and check the update has been recovered.
         client.getNuxeoCache().invalidateAll();
         document = client.repository().fetchDocumentByPath("/folder_1/note_0");
-        assertEquals("note updated", document.getPropertyValue("dc:title"));
+        assertEquals("note updated again", document.getPropertyValue("dc:title"));
         assertEquals(1, client.getNuxeoCache().size());
     }
 
