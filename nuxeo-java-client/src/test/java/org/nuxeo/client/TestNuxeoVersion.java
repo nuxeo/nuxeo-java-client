@@ -51,6 +51,8 @@ public class TestNuxeoVersion {
         // Compare majors
         assertTrue(NuxeoVersion.LTS_7_10.isGreaterThan(NuxeoVersion.LTS_7_10));
         assertTrue(NuxeoVersion.LTS_8_10.isGreaterThan(NuxeoVersion.LTS_7_10));
+        assertTrue(NuxeoVersion.LTS_9_10.isGreaterThan(NuxeoVersion.LTS_7_10));
+        assertTrue(NuxeoVersion.LTS_9_10.isGreaterThan(NuxeoVersion.LTS_8_10));
         assertFalse(NuxeoVersion.LTS_7_10.isGreaterThan(NuxeoVersion.LTS_8_10));
 
         // Compare minor

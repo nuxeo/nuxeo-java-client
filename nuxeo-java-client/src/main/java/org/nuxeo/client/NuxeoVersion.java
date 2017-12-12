@@ -34,6 +34,8 @@ public class NuxeoVersion {
 
     public static final NuxeoVersion LTS_8_10 = new NuxeoVersion(8, 10, 0, false);
 
+    public static final NuxeoVersion LTS_9_10 = new NuxeoVersion(9, 10, 0, false);
+
     private static final Pattern NUXEO_VERSION_PATTERN = Pattern.compile(
             "(\\d+)\\.(\\d+)(?:-HF(\\d+))?(-SNAPSHOT)?(-I\\d{8}_\\d{4})?");
 
