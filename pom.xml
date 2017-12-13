@@ -326,25 +326,29 @@
     </plugins>
   </reporting>
 
-  <distributionManagement>
-    <site>
-      <id>maven-website</id>
-      <url>scpexe://gironde.nuxeo.com/home/mavenweb/site/</url>
-    </site>
+  <repositories>
     <repository>
-      <id>public-releases</id>
-      <url>
-        http://mavenin.nuxeo.com/nexus/content/repositories/public-releases
-      </url>
+      <id>public</id>
+      <url>http://maven.nuxeo.org/nexus/content/groups/public</url>
+      <releases>
+        <enabled>true</enabled>
+      </releases>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
     </repository>
-    <snapshotRepository>
-      <id>public-snapshots</id>
-      <url>
-        http://mavenin.nuxeo.com/nexus/content/repositories/public-snapshots
-      </url>
-      <uniqueVersion>true</uniqueVersion>
-    </snapshotRepository>
-  </distributionManagement>
+    <repository>
+      <id>public-snapshot</id>
+      <url>http://maven.nuxeo.org/nexus/content/groups/public-snapshot</url>
+      <releases>
+        <enabled>false</enabled>
+      </releases>
+      <snapshots>
+        <updatePolicy>always</updatePolicy>
+        <enabled>true</enabled>
+      </snapshots>
+    </repository>
+  </repositories>
 
   <pluginRepositories>
     <pluginRepository>
@@ -371,5 +375,17 @@
       </snapshots>
     </pluginRepository>
   </pluginRepositories>
+
+  <distributionManagement>
+    <repository>
+      <id>public-releases</id>
+      <url>http://mavenin.nuxeo.com/nexus/content/repositories/public-releases</url>
+    </repository>
+    <snapshotRepository>
+      <id>public-snapshots</id>
+      <url>http://mavenin.nuxeo.com/nexus/content/repositories/public-snapshots</url>
+      <uniqueVersion>true</uniqueVersion>
+    </snapshotRepository>
+  </distributionManagement>
 
 </project>
