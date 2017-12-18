@@ -19,6 +19,7 @@
 package org.nuxeo.client;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.nio.charset.Charset;
 
@@ -42,6 +43,14 @@ public class TestMediaType {
         assertEquals("application", mediaType.type());
         assertEquals("json", mediaType.subtype());
         assertEquals(Charset.forName("UTF-8"), mediaType.charset());
+    }
+
+    @Test
+    public void testEqualsTypeSubTypeWithoutSuffix() {
+        MediaType mediaType1 = MediaType.parse("application/json; charset=UTF-8");
+        MediaType mediaType2 = MediaType.parse("application/json+nxentity; charset=UTF-8");
+        assertTrue(mediaType1.equalsTypeSubTypeWithoutSuffix(mediaType2));
+        assertTrue(mediaType2.equalsTypeSubTypeWithoutSuffix(mediaType1));
     }
 
 }

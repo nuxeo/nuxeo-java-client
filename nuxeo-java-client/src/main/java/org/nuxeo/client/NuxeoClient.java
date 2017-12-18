@@ -284,7 +284,7 @@ public class NuxeoClient extends AbstractBase<NuxeoClient> {
                 // content type could be null
                 MediaType mediaType = MediaType.fromOkHttpMediaType(response.raw().body().contentType());
                 if (!StringUtils.EMPTY.equals(errorBody)
-                        && MediaTypes.APPLICATION_JSON.equalsTypeStartsWithSubType(mediaType)) {
+                        && MediaTypes.APPLICATION_JSON.equalsTypeSubTypeWithoutSuffix(mediaType)) {
                     throw converterFactory.readJSON(errorBody, NuxeoClientRemoteException.class);
                 }
                 throw new NuxeoClientRemoteException(httpCode, httpMessage, errorBody, null);
