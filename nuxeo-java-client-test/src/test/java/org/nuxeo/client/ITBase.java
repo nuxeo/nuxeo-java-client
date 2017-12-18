@@ -229,6 +229,21 @@ public class ITBase {
         assertEquals("SerialDocumentReview", workflow.getName());
     }
 
+    @Test
+    public void itCanFailServerSide() {
+        NuxeoClient client = createClient();
+        // create a document under a non existent parent
+        Document doc = Document.createWithName("file", "File");
+        doc.setPropertyValue("dc:title", "File");
+        try {
+            client.repository().createDocumentByPath("/absent", doc);
+            fail("Previous call should have failed.");
+        } catch (NuxeoClientRemoteException e) {
+            assertEquals(404, e.getStatus());
+            assertEquals("/absent", e.getMessage());
+        }
+    }
+
     /**
      * @return A {@link NuxeoClient} filled with Nuxeo Server URL and default basic authentication.
      */

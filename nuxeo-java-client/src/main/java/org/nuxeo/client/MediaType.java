@@ -21,6 +21,7 @@ package org.nuxeo.client;
 
 import java.nio.charset.Charset;
 import java.util.Locale;
+import java.util.function.UnaryOperator;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -104,8 +105,14 @@ public final class MediaType {
         return equalsType(mediaType) && StringUtils.equals(subtype, mediaType.subtype);
     }
 
-    public boolean equalsTypeStartsWithSubType(MediaType mediaType) {
-        return equalsType(mediaType) && subtype.startsWith(mediaType.subtype);
+    public boolean equalsTypeSubTypeWithoutSuffix(MediaType mediaType) {
+        if (equalsType(mediaType)) {
+            UnaryOperator<String> removeSuffix = s -> s.replaceAll("\\+.*", "");
+            String thisSubtype = removeSuffix.apply(subtype);
+            String givenSubtype = removeSuffix.apply(mediaType.subtype);
+            return thisSubtype.equals(givenSubtype);
+        }
+        return false;
     }
 
     /**
@@ -138,8 +145,9 @@ public final class MediaType {
      */
     public static MediaType parse(String string) {
         Matcher typeSubtype = TYPE_SUBTYPE.matcher(string);
-        if (!typeSubtype.lookingAt())
+        if (!typeSubtype.lookingAt()) {
             return null;
+        }
         String type = typeSubtype.group(1).toLowerCase(Locale.US);
         String subtype = typeSubtype.group(2).toLowerCase(Locale.US);
 
@@ -148,12 +156,14 @@ public final class MediaType {
         Matcher parameter = PARAMETER.matcher(string);
         for (int s = typeSubtype.end(); s < string.length(); s = parameter.end()) {
             parameter.region(s, string.length());
-            if (!parameter.lookingAt())
+            if (!parameter.lookingAt()) {
                 return null; // This is not a well-formed media type.
+            }
 
             String name = parameter.group(1);
-            if (name == null)
+            if (name == null) {
                 continue;
+            }
             if (name.equalsIgnoreCase("nuxeo-entity")) {
                 String nuxeoEntityParameter = parameter.group(2) != null ? parameter.group(2) // Value is a token.
                         : parameter.group(3); // Value is a quoted string.
