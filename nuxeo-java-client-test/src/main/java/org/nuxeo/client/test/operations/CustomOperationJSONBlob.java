@@ -23,8 +23,6 @@ import org.nuxeo.ecm.automation.core.annotations.OperationMethod;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
 
-import net.sf.json.JSONObject;
-
 /**
  * Custom operation returning a custom json blob
  */
@@ -36,12 +34,8 @@ public class CustomOperationJSONBlob {
     @OperationMethod
     public Blob run() {
 
-        JSONObject attributes = new JSONObject();
-        attributes.put("entity-type", "custom-json-object");
-        attributes.put("userId", "1");
-        attributes.put("token", "token");
-
-        return Blobs.createBlob(attributes.toString(), "application/json");
+        return Blobs.createBlob("{\"entity-type\":\"custom-json-object\", \"userId\":\"1\", \"token\":\"token\"}",
+                "application/json");
     }
 
 }
