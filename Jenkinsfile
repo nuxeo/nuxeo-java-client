@@ -1,11 +1,14 @@
 /*
- * (C) Copyright 2017 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2017-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Contributors:
  *     Thomas Roger <troger@nuxeo.com>
  *     Kevin Leturc <kleturc@nuxeo.com>
  */
 properties([
+        [$class: 'BuildDiscarderProperty', strategy: [$class: 'LogRotator', daysToKeepStr: '60', numToKeepStr: '60', artifactNumToKeepStr: '1']],
+        disableConcurrentBuilds(),
+        [$class: 'RebuildSettings', autoRebuild: false, rebuildDisabled: false],
         pipelineTriggers([
                 triggers: [
                         [
