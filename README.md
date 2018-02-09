@@ -108,8 +108,7 @@ String url = "http://localhost:8080/nuxeo";
 And given credentials (by default using the Basic Auth) :
 
 ```java
-import org.nuxeo.client.api.NuxeoClient;
-import org.nuxeo.client.api.NuxeoClientBuilder;
+import org.nuxeo.client.NuxeoClient;
 
 NuxeoClient nuxeoClient = new NuxeoClient.Builder()
                                          .url(url)
@@ -726,8 +725,7 @@ We provide a "in memory" cache implementation using [Guava](https://github.com/g
 
 To use it, just set the cache during client construction:
 ```java
-import org.nuxeo.client.NuxeoClient.NuxeoClient;
-import org.nuxeo.client.NuxeoClient.Builder;
+import org.nuxeo.client.NuxeoClient;
 
 NuxeoClient client = new NuxeoClient.Builder()
                                        .url(url).authentication(username, password)
@@ -739,7 +737,7 @@ NuxeoClient client = new NuxeoClient.Builder()
 
 - `org.nuxeo.client.cache.ResultCacheInMemory` provide some parameters for invalidations mechanism
 
-- `org.nuxeo.client.api.NuxeoClient.NuxeoClientBuilder#cache` can be used to give any cache implementing the interface `org.nuxeo.client.api.cache.NuxeoResponseCache`.
+- `org.nuxeo.client.NuxeoClient.Builder#cache` can be used to give any cache implementing the interface `org.nuxeo.client.cache.NuxeoResponseCache`.
 
 #### Errors/Exceptions
 
