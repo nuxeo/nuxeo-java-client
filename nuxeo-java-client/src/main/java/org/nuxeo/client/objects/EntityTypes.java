@@ -25,6 +25,20 @@ public class EntityTypes {
 
     public static final String ACP = "acls";
 
+    /**
+     * This API is available since Nuxeo Server 10.2.
+     *
+     * @since 3.1
+     */
+    public static final String ANNOTATION = "annotation";
+
+    /**
+     * This API is available since Nuxeo Server 10.2.
+     *
+     * @since 3.1
+     */
+    public static final String ANNOTATIONS = "annotations";
+
     public static final String AUDIT = "logEntries";
 
     public static final String BLOBS = "blobs";

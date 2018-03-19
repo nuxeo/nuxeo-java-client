@@ -39,6 +39,8 @@ import org.nuxeo.client.methods.RepositoryAPI;
 import org.nuxeo.client.objects.acl.ACE;
 import org.nuxeo.client.objects.acl.ACL;
 import org.nuxeo.client.objects.acl.ACP;
+import org.nuxeo.client.objects.annotation.Annotation;
+import org.nuxeo.client.objects.annotation.Annotations;
 import org.nuxeo.client.objects.audit.Audit;
 import org.nuxeo.client.objects.blob.FileBlob;
 import org.nuxeo.client.objects.task.Task;
@@ -568,6 +570,96 @@ public class Document extends RepositoryEntity<RepositoryAPI, Document> {
             for (int i = 0; i < Array.getLength(value); i++) {
                 rejectIfDateFound(key, Array.get(value, i));
             }
+        }
+    }
+
+    /* Annotations */
+
+    /**
+     * This API is available since Nuxeo Server 10.2.
+     *
+     * @since 3.1
+     */
+    public Annotation createAnnotation(String annotationId, String entity) {
+        return createAnnotation(annotationId, DEFAULT_FILE_CONTENT, entity);
+    }
+
+
+    /**
+     * This API is available since Nuxeo Server 10.2.
+     *
+     * @since 3.1
+     */
+    public Annotation createAnnotation(String annotationId, String xpath, String entity) {
+        Annotation annotation = new Annotation(annotationId, uid, xpath);
+        annotation.setEntity(entity);
+        return createAnnotation(annotation);
+    }
+
+    /**
+     * This API is available since Nuxeo Server 10.2.
+     *
+     * @since 3.1
+     */
+    public Annotation createAnnotation(Annotation annotation) {
+        if (repositoryName == null) {
+            return fetchResponse(api.createAnnotation(uid, annotation));
+        }
+        return fetchResponse(api.createAnnotation(uid, annotation, repositoryName));
+    }
+
+    /**
+     * Fetches annotations for {@link #DEFAULT_FILE_CONTENT} blob.
+     * <p />
+     * This API is available since Nuxeo Server 10.2.
+     *
+     * @since 3.1
+     */
+    public Annotations fetchAnnotations() {
+        return fetchAnnotations(DEFAULT_FILE_CONTENT);
+    }
+
+    /**
+     * This API is available since Nuxeo Server 10.2.
+     *
+     * @since 3.1
+     */
+    public Annotations fetchAnnotations(String xpath) {
+        if (repositoryName == null) {
+            return fetchResponse(api.fetchAnnotationsByXPath(uid, xpath));
+        }
+        return fetchResponse(api.fetchAnnotationsByXPath(uid, repositoryName, xpath));
+    }
+
+    /**
+     * This API is available since Nuxeo Server 10.2.
+     *
+     * @since 3.1
+     */
+    public Annotation fetchAnnotationById(String annotationId) {
+        if (repositoryName == null) {
+            return fetchResponse(api.fetchAnnotationById(uid, annotationId));
+        }
+        return fetchResponse(api.fetchAnnotationById(uid, annotationId, repositoryName));
+    }
+
+    /**
+     * This API is available since Nuxeo Server 10.2.
+     *
+     * @since 3.1
+     */
+    public Annotation updateAnnotation(Annotation annotation) {
+        if (repositoryName == null) {
+            return fetchResponse(api.updateAnnotation(uid, annotation));
+        }
+        return fetchResponse(api.updateAnnotation(uid, annotation, repositoryName));
+    }
+
+    public void deleteAnnotation(String annotationId) {
+        if (repositoryName == null) {
+            fetchResponse(api.deleteAnnotation(uid, annotationId));
+        } else {
+            fetchResponse(api.deleteAnnotation(uid, annotationId, repositoryName));
         }
     }
 
