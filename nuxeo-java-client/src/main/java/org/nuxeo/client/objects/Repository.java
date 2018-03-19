@@ -22,6 +22,8 @@ package org.nuxeo.client.objects;
 import org.nuxeo.client.NuxeoClient;
 import org.nuxeo.client.methods.RepositoryAPI;
 import org.nuxeo.client.objects.acl.ACP;
+import org.nuxeo.client.objects.annotation.Annotation;
+import org.nuxeo.client.objects.annotation.Annotations;
 import org.nuxeo.client.objects.audit.Audit;
 import org.nuxeo.client.objects.blob.FileBlob;
 import org.nuxeo.client.objects.workflow.Graph;
@@ -448,6 +450,65 @@ public class Repository extends RepositoryEntity<RepositoryAPI, Repository> {
 
     public void fetchWorkflowModels(Callback<Workflows> callback) {
         fetchResponse(api.fetchWorkflowModels(), callback);
+    }
+
+
+    /* Annotations */
+
+    /**
+     * This API is available since Nuxeo Server 10.2.
+     *
+     * @since 3.1
+     */
+    public Annotation createAnnotation(Annotation annotation) {
+        if (repositoryName == null) {
+            return fetchResponse(api.createAnnotation(annotation.getDocumentId(), annotation));
+        }
+        return fetchResponse(api.createAnnotation(annotation.getDocumentId(), annotation, repositoryName));
+    }
+
+    /**
+     * This API is available since Nuxeo Server 10.2.
+     *
+     * @since 3.1
+     */
+    public Annotations fetchAnnotationsByXPath(String documentId, String xpath) {
+        if (repositoryName == null) {
+            return fetchResponse(api.fetchAnnotationsByXPath(documentId, xpath));
+        }
+        return fetchResponse(api.fetchAnnotationsByXPath(documentId, repositoryName, xpath));
+    }
+
+    /**
+     * This API is available since Nuxeo Server 10.2.
+     *
+     * @since 3.1
+     */
+    public Annotation fetchAnnotationById(String documentId, String annotationId) {
+        if (repositoryName == null) {
+            return fetchResponse(api.fetchAnnotationById(documentId, annotationId));
+        }
+        return fetchResponse(api.fetchAnnotationById(documentId, annotationId, repositoryName));
+    }
+
+    /**
+     * This API is available since Nuxeo Server 10.2.
+     *
+     * @since 3.1
+     */
+    public Annotation updateAnnotation(Annotation annotation) {
+        if (repositoryName == null) {
+            return fetchResponse(api.updateAnnotation(annotation.getDocumentId(), annotation));
+        }
+        return fetchResponse(api.updateAnnotation(annotation.getDocumentId(), annotation, repositoryName));
+    }
+
+    public void deleteAnnotation(String documentId, String annotationId) {
+        if (repositoryName == null) {
+            fetchResponse(api.deleteAnnotation(documentId, annotationId));
+        } else {
+            fetchResponse(api.deleteAnnotation(documentId, annotationId, repositoryName));
+        }
     }
 
 }

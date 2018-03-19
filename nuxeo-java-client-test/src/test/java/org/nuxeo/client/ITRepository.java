@@ -40,6 +40,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
@@ -58,6 +59,8 @@ import org.nuxeo.client.objects.Field;
 import org.nuxeo.client.objects.RecordSet;
 import org.nuxeo.client.objects.acl.ACE;
 import org.nuxeo.client.objects.acl.ACP;
+import org.nuxeo.client.objects.annotation.Annotation;
+import org.nuxeo.client.objects.annotation.Annotations;
 import org.nuxeo.client.objects.audit.Audit;
 import org.nuxeo.client.objects.audit.LogEntry;
 import org.nuxeo.client.objects.blob.Blob;
@@ -342,10 +345,8 @@ public class ITRepository extends AbstractITBase {
         Document root = nuxeoClient.repository().fetchDocumentRoot();
         Audit audit = root.fetchAudit();
         assertFalse(audit.getLogEntries().isEmpty());
-        List<String> categories = audit.getLogEntries()
-                                       .stream()
-                                       .map(LogEntry::getCategory)
-                                       .collect(Collectors.toList());
+        List<String> categories = audit.getLogEntries().stream().map(LogEntry::getCategory).collect(
+                Collectors.toList());
         assertTrue(categories.contains("eventDocumentCategory"));
     }
 
@@ -389,9 +390,8 @@ public class ITRepository extends AbstractITBase {
 
     @Test
     public void itCanUseEnrichers() {
-        Document document = nuxeoClient.enrichersForDocument("acls", "breadcrumb")
-                                       .repository()
-                                       .fetchDocumentByPath("/folder_2");
+        Document document = nuxeoClient.enrichersForDocument("acls", "breadcrumb").repository().fetchDocumentByPath(
+                "/folder_2");
         assertNotNull(document);
         assertEquals(1, ((List) document.getContextParameters().get("acls")).size());
         assertEquals(1, document.<Documents> getContextParameter("breadcrumb").size());
@@ -404,9 +404,8 @@ public class ITRepository extends AbstractITBase {
     @Test
     public void itCanUseBreadcrumb() {
         // Test deserialization
-        Document document = nuxeoClient.enrichersForDocument("breadcrumb")
-                                       .repository()
-                                       .fetchDocumentByPath("/folder_2/file");
+        Document document = nuxeoClient.enrichersForDocument("breadcrumb").repository().fetchDocumentByPath(
+                "/folder_2/file");
         assertNotNull(document);
         Documents documents = document.getContextParameter("breadcrumb");
         assertNotNull(documents);
@@ -693,6 +692,39 @@ public class ITRepository extends AbstractITBase {
                         + " Please convert it to String with ISO 8601 format \"yyyy-MM-dd'T'HH:mm:ss.SSSXXX\" before"
                         + " setting it as property.",
                 key, valueType.getTypeName());
+    }
+
+    @Test
+    public void itCanManageAnnotations() {
+        assumeTrue("itCanManageAnnotations works only since Nuxeo 10.2",
+                // TODO change the version to LTS
+                nuxeoClient.getServerVersion().isGreaterThan(new NuxeoVersion(10, 2, 0, true)));
+        Document file = nuxeoClient.repository().fetchDocumentByPath("/folder_2/file");
+
+        file.createAnnotation("ANNOTATION_ID_001", "<entity />");
+        file.createAnnotation("ANNOTATION_ID_002", "<entity />");
+
+        Annotation annotation = file.fetchAnnotationById("ANNOTATION_ID_001");
+        assertEquals(file.getId(), annotation.getDocumentId());
+        assertEquals(Document.DEFAULT_FILE_CONTENT, annotation.getXPath());
+        assertEquals("<entity />", annotation.getEntity());
+
+        Annotations annotations = file.fetchAnnotations();
+        assertEquals(2, annotations.size());
+        List<Annotation> annotationList = annotations.getAnnotations();
+        annotationList.sort(Comparator.comparing(Annotation::getId));
+        assertEquals("ANNOTATION_ID_001", annotationList.get(0).getId());
+        assertEquals("ANNOTATION_ID_002", annotationList.get(1).getId());
+
+        annotation.setEntity("<entity>UPDATED</entity>");
+        file.updateAnnotation(annotation);
+
+        annotation = file.fetchAnnotationById("ANNOTATION_ID_001");
+        assertEquals("<entity>UPDATED</entity>", annotation.getEntity());
+
+        file.deleteAnnotation("ANNOTATION_ID_001");
+        annotations = file.fetchAnnotations();
+        assertEquals(1, annotations.size());
     }
 
 }

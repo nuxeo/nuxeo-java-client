@@ -22,6 +22,8 @@ package org.nuxeo.client.methods;
 import org.nuxeo.client.objects.Document;
 import org.nuxeo.client.objects.Documents;
 import org.nuxeo.client.objects.acl.ACP;
+import org.nuxeo.client.objects.annotation.Annotation;
+import org.nuxeo.client.objects.annotation.Annotations;
 import org.nuxeo.client.objects.audit.Audit;
 import org.nuxeo.client.objects.blob.FileBlob;
 import org.nuxeo.client.objects.task.Task;
@@ -229,5 +231,97 @@ public interface RepositoryAPI {
 
     @GET("repo/{repositoryName}/id/{documentId}/@task")
     Call<Task> fetchTaskById(@Path("documentId") String documentId, @Path("repositoryName") String repositoryName);
+
+    /* Annotations */
+
+    /**
+     * This API is available since Nuxeo Server 10.2.
+     *
+     * @since 3.1
+     */
+    @POST("id/{documentId}/@annotation")
+    Call<Annotation> createAnnotation(@Path("documentId") String documentId, @Body Annotation annotation);
+
+    /**
+     * This API is available since Nuxeo Server 10.2.
+     *
+     * @since 3.1
+     */
+    @POST("repo/{repositoryName}/id/{documentId}/@annotation")
+    Call<Annotation> createAnnotation(@Path("documentId") String documentId, @Body Annotation annotation,
+            @Path("repositoryName") String repositoryName);
+
+    /**
+     * This API is available since Nuxeo Server 10.2.
+     *
+     * @since 3.1
+     */
+    @GET("id/{documentId}/@annotation")
+    Call<Annotations> fetchAnnotationsByXPath(@Path("documentId") String documentId,
+            @Query(value = "xpath", encoded = true) String xpath);
+
+    /**
+     * This API is available since Nuxeo Server 10.2.
+     *
+     * @since 3.1
+     */
+    @GET("repo/{repositoryName}/id/{documentId}/@annotation")
+    Call<Annotations> fetchAnnotationsByXPath(@Path("documentId") String documentId,
+            @Path("repositoryName") String repositoryName, @Query(value = "xpath", encoded = true) String xpath);
+
+    /**
+     * This API is available since Nuxeo Server 10.2.
+     *
+     * @since 3.1
+     */
+    @GET("id/{documentId}/@annotation/{annotationId}")
+    Call<Annotation> fetchAnnotationById(@Path("documentId") String documentId,
+            @Path(value = "annotationId", encoded = true) String annotationId);
+
+    /**
+     * This API is available since Nuxeo Server 10.2.
+     *
+     * @since 3.1
+     */
+    @GET("repo/{repositoryName}/id/{documentId}/@annotation/{annotationId}")
+    Call<Annotation> fetchAnnotationById(@Path("documentId") String documentId,
+            @Path(value = "annotationId", encoded = true) String annotationId,
+            @Path("repositoryName") String repositoryName);
+
+    /**
+     * This API is available since Nuxeo Server 10.2.
+     *
+     * @since 3.1
+     */
+    @PUT("id/{documentId}/@annotation")
+    Call<Annotation> updateAnnotation(@Path("documentId") String documentId, @Body Annotation annotation);
+
+    /**
+     * This API is available since Nuxeo Server 10.2.
+     *
+     * @since 3.1
+     */
+    @PUT("repo/{repositoryName}/id/{documentId}/@annotation")
+    Call<Annotation> updateAnnotation(@Path("documentId") String documentId, @Body Annotation annotation,
+            @Path("repositoryName") String repositoryName);
+
+    /**
+     * This API is available since Nuxeo Server 10.2.
+     *
+     * @since 3.1
+     */
+    @DELETE("id/{documentId}/@annotation/{annotationId}")
+    Call<ResponseBody> deleteAnnotation(@Path("documentId") String documentId,
+            @Path(value = "annotationId", encoded = true) String annotationId);
+
+    /**
+     * This API is available since Nuxeo Server 10.2.
+     *
+     * @since 3.1
+     */
+    @DELETE("repo/{repositoryName}/id/{documentId}/@annotation/{annotationId}")
+    Call<ResponseBody> deleteAnnotation(@Path("documentId") String documentId,
+            @Path(value = "annotationId", encoded = true) String annotationId,
+            @Path("repositoryName") String repositoryName);
 
 }
