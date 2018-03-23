@@ -83,6 +83,11 @@ public abstract class AbstractITBase {
                    .param("document", "/folder_2/file")
                    .input(fileBlob)
                    .execute();
+        // page providers can leverage Elasticsearch so wait for indexing before starting tests
+        nuxeoClient.operation("Elasticsearch.WaitForIndexing")
+                   .param("refresh", true)
+                   .param("waitForAudit", true)
+                   .execute();
     }
 
     @After
