@@ -727,4 +727,21 @@ public class ITRepository extends AbstractITBase {
         assertEquals(1, annotations.size());
     }
 
+    @Test
+    public void itCanTrashUntrashDocument() {
+        assumeTrue("itCanTrashUntrashDocument works only since Nuxeo 10.2",
+                // TODO change the version to LTS
+                nuxeoClient.getServerVersion().isGreaterThan(new NuxeoVersion(10, 2, 0, true)));
+        Document file = nuxeoClient.repository().fetchDocumentByPath("/folder_2/file");
+
+        assertFalse(file.isTrashed());
+
+        file = file.trash();
+        assertTrue(file.isTrashed());
+
+        file = file.untrash();
+        assertFalse(file.isTrashed());
+
+    }
+
 }

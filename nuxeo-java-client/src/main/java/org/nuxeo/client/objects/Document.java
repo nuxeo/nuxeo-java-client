@@ -61,6 +61,8 @@ public class Document extends RepositoryEntity<RepositoryAPI, Document> {
 
     public static final String DEFAULT_FILE_CONTENT = "file:content";
 
+    protected static final String DELETED_STATE = "deleted";
+
     protected String path;
 
     protected String type;
@@ -105,6 +107,9 @@ public class Document extends RepositoryEntity<RepositoryAPI, Document> {
      */
     @JsonProperty("isProxy")
     protected boolean isProxy;
+
+    @JsonProperty("isTrashed")
+    protected Boolean isTrashed;
 
     /**
      * For internal marshalling purpose.
@@ -661,6 +666,33 @@ public class Document extends RepositoryEntity<RepositoryAPI, Document> {
         } else {
             fetchResponse(api.deleteAnnotation(uid, annotationId, repositoryName));
         }
+    }
+
+    /* Trash management */
+
+    /**
+     * @since 3.1
+     */
+    public boolean isTrashed() {
+        return isTrashed != null ? isTrashed : DELETED_STATE.equals(state);
+    }
+
+    /**
+     * This API is available since Nuxeo Server 10.2.
+     *
+     * @since 3.1
+     */
+    public Document trash() {
+        return nuxeoClient.operation(Operations.TRASH_DOCUMENT).input(this).execute();
+    }
+
+    /**
+     * This API is available since Nuxeo Server 10.2.
+     *
+     * @since 3.1
+     */
+    public Document untrash() {
+        return nuxeoClient.operation(Operations.UNTRASH_DOCUMENT).input(this).execute();
     }
 
     @Override
