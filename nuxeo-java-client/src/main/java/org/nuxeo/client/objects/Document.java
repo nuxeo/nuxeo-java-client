@@ -683,7 +683,7 @@ public class Document extends RepositoryEntity<RepositoryAPI, Document> {
      * @since 3.1
      */
     public Document trash() {
-        return nuxeoClient.operation(Operations.TRASH_DOCUMENT).input(this).execute();
+        return nuxeoClient.operation(Operations.DOCUMENT_TRASH).input(this).execute();
     }
 
     /**
@@ -692,7 +692,7 @@ public class Document extends RepositoryEntity<RepositoryAPI, Document> {
      * @since 3.1
      */
     public Document untrash() {
-        return nuxeoClient.operation(Operations.UNTRASH_DOCUMENT).input(this).execute();
+        return nuxeoClient.operation(Operations.DOCUMENT_UNTRASH).input(this).execute();
     }
 
     @Override

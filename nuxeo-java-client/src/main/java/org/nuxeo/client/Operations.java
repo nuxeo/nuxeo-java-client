@@ -41,13 +41,13 @@ public class Operations {
      * 
      * @since 3.1
      */
-    public static final String TRASH_DOCUMENT = "Document.Trash";
+    public static final String DOCUMENT_TRASH = "Document.Trash";
 
     /**
      * This operation is available since Nuxeo 10.1.
      * 
      * @since 3.1
      */
-    public static final String UNTRASH_DOCUMENT = "Document.Untrash";
+    public static final String DOCUMENT_UNTRASH = "Document.Untrash";
 
 }
