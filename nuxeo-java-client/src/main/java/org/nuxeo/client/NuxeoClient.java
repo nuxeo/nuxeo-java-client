@@ -99,7 +99,7 @@ public class NuxeoClient extends AbstractBase<NuxeoClient> {
 
     protected String computeUserAgent() {
         String nuxeoPart = " NuxeoJavaClient/";
-        try (InputStream inputStream = getClass().getResourceAsStream("/config.properties")) {
+        try (InputStream inputStream = getClass().getResourceAsStream("/META-INF/nuxeo-java-client.properties")) {
             Properties properties = new Properties();
             properties.load(inputStream);
             String nuxeoVersion = properties.getProperty("nuxeo.java.client.version");
