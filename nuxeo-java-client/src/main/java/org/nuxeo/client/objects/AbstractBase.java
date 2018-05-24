@@ -33,6 +33,7 @@ import okhttp3.Request;
 
 import org.nuxeo.client.HttpHeaders;
 
+import okhttp3.internal.Version;
 import retrofit2.Retrofit;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;

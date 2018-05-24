@@ -1,4 +1,11 @@
 Manifest-Version: 1.0
+Name: org/nuxeo/client/
+Specification-Title: Java Utility Classes
+Specification-Version: 1.2
+Specification-Vendor: Example Tech, Inc.
+Implementation-Title: java.util
+Implementation-Version: build57
+Implementation-Vendor: Example Tech, Inc.
 Bundle-ManifestVersion: 2
 Bundle-Name: Nuxeo Java Client
 Bundle-SymbolicName: org.nuxeo.java.client;singleton:=true
