@@ -43,6 +43,9 @@ public class HttpHeaders {
 
     public static final String NX_TS = "NX_TS";
 
+    /** @since 3.1 */
+    public static final String USER_AGENT = "User-Agent";
+
     public static final String X_AUTHENTICATION_TOKEN = "X-Authentication-Token";
 
     public static final String X_PROPERTIES = "X-NXproperties";
@@ -57,5 +60,4 @@ public class HttpHeaders {
 
     public static final String CONTENT_TYPE_APPLICATION_OCTET_STREAM = CONTENT_TYPE + ": "
             + MediaTypes.APPLICATION_OCTET_STREAM_S;
-
 }

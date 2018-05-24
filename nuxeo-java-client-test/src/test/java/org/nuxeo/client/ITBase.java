@@ -24,6 +24,7 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 
@@ -40,6 +41,10 @@ import org.nuxeo.client.objects.workflow.Workflows;
 import org.nuxeo.client.spi.NuxeoClientRemoteException;
 import org.nuxeo.client.spi.auth.PortalSSOAuthInterceptor;
 import org.nuxeo.common.utils.FileUtils;
+
+import okhttp3.Interceptor;
+import okhttp3.Request;
+import okhttp3.Response;
 
 /**
  * Tests the basic operation of client. This test is isolated from test framework because it unit tests the operation
@@ -244,6 +249,20 @@ public class ITBase {
         }
     }
 
+    @Test
+    public void itCanSendClientVersionAsUserAgent() {
+        NuxeoClient client = createClient();
+        // bind an interceptor in order to get the user agent
+        UserAgentInterceptor interceptor = new UserAgentInterceptor();
+        client.addOkHttpInterceptor(interceptor);
+        // do a call to intercept header
+        client.repository().fetchDocumentRoot();
+
+        String userAgent = interceptor.userAgent;
+        assertNotNull(userAgent);
+        assertTrue("User-Agent is not correct=" + userAgent, userAgent.startsWith("okhttp/3.9.1 NuxeoJavaClient/3."));
+    }
+
     /**
      * @return A {@link NuxeoClient} filled with Nuxeo Server URL and default basic authentication.
      */
@@ -306,6 +325,19 @@ public class ITBase {
         group.setGroupLabel("Toto Group");
         group.setMemberGroups(Collections.singletonList("members"));
         return group;
+    }
+
+    public static class UserAgentInterceptor implements Interceptor {
+
+        public String userAgent;
+
+        @Override
+        public Response intercept(Chain chain) throws IOException {
+            Request request = chain.request();
+            userAgent = request.header(HttpHeaders.USER_AGENT);
+            return chain.proceed(request);
+        }
+
     }
 
 }

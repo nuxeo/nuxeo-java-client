@@ -20,11 +20,13 @@
 package org.nuxeo.client;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.List;
+import java.util.Properties;
 import java.util.function.UnaryOperator;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -58,6 +60,7 @@ import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
 import okhttp3.ResponseBody;
+import okhttp3.internal.Version;
 import retrofit2.Call;
 import retrofit2.Callback;
 
@@ -82,6 +85,8 @@ public class NuxeoClient extends AbstractBase<NuxeoClient> {
         converterFactory = builder.converterFactory;
         // nuxeo cache
         nuxeoCache = builder.cache;
+        // define user agent
+        header(HttpHeaders.USER_AGENT, computeUserAgent());
     }
 
     /**
@@ -90,6 +95,19 @@ public class NuxeoClient extends AbstractBase<NuxeoClient> {
     protected void addOkHttpInterceptor(Interceptor interceptor) {
         okhttpBuilder.addInterceptor(interceptor);
         buildRetrofit();
+    }
+
+    protected String computeUserAgent() {
+        String nuxeoPart = " NuxeoJavaClient/";
+        try (InputStream inputStream = getClass().getResourceAsStream("/config.properties")) {
+            Properties properties = new Properties();
+            properties.load(inputStream);
+            String nuxeoVersion = properties.getProperty("nuxeo.java.client.version");
+            nuxeoPart += nuxeoVersion;
+        } catch (IOException e) {
+            nuxeoPart += "Unknown";
+        }
+        return Version.userAgent() + nuxeoPart;
     }
 
     /*******************************
