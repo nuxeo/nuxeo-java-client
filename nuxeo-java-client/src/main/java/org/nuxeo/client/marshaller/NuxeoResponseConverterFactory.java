@@ -75,7 +75,7 @@ public final class NuxeoResponseConverterFactory<T> implements Converter<Respons
         MediaType mediaType = MediaType.fromOkHttpMediaType(body.contentType());
         if (!MediaTypes.APPLICATION_JSON.equalsTypeSubType(mediaType)
                 && !MediaTypes.APPLICATION_JSON_NXENTITY.equalsTypeSubType(mediaType)) {
-            if (mediaType.type().equals(MediaTypes.MULTIPART_S)) {
+            if (mediaType != null && mediaType.type().equals(MediaTypes.MULTIPART_S)) {
                 List<Blob> blobs = new ArrayList<>();
                 try (InputStream is = body.byteStream()) {
                     MimeMultipart mp = new MimeMultipart(new ByteArrayDataSource(is, mediaType.toString()));
