@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2017 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2017-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,7 +18,6 @@
  */
 package org.nuxeo.client.objects.blob;
 
-import java.io.IOException;
 import java.io.InputStream;
 
 import org.nuxeo.client.MediaTypes;
@@ -45,7 +44,7 @@ public class StreamBlob extends AbstractBlob {
     }
 
     @Override
-    public InputStream getStream() throws IOException {
+    public InputStream getStream() {
         return inputStream;
     }
 

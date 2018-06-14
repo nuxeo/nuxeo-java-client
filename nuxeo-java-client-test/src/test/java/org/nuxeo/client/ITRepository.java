@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2016-2017 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2016-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,7 +29,6 @@ import static org.junit.Assert.fail;
 import static org.junit.Assume.assumeTrue;
 
 import java.io.File;
-import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.Month;
@@ -611,7 +610,7 @@ public class ITRepository extends AbstractITBase {
      * This test needs dataset.xsd schema deployed on Nuxeo server to work.
      */
     @Test
-    public void itCanHandleComplexProperties() throws IOException, NoSuchFieldException, IllegalAccessException {
+    public void itCanHandleComplexProperties() {
         // DataSet doctype comes from nuxeo-automation-test
         Document folder = nuxeoClient.repository().fetchDocumentByPath("/folder_1");
         Document document = Document.createWithName("dataSet1", "DataSet");

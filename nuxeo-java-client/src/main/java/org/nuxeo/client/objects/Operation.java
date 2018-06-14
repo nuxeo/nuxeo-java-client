@@ -156,7 +156,7 @@ public class Operation extends ConnectableEntity<OperationAPI, Operation> {
             }
 
             @Override
-            public long contentLength() throws IOException {
+            public long contentLength() {
                 return blob.getLength();
             }
 
