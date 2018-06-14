@@ -186,28 +186,42 @@ Documents docs = nuxeoClient.operation("Repository.Query")
 ```
 
 ```java
+import org.nuxeo.client.objects.blob.Blob;
+import org.nuxeo.client.objects.blob.Blobs;
 import org.nuxeo.client.objects.blob.FileBlob;
+import org.nuxeo.client.objects.blob.StreamBlob;
 
 // To upload|download blob(s)
 
-FileBlob fileBlob = new FileBlob(io.File file);
-fileBlob = nuxeoClient.operation(Operations.BLOB_ATTACH_ON_DOCUMENT)
-                      .param("document", "/folder/file")
-                      .input(fileBlob)
-                      .execute();
+Blob fileBlob = new FileBlob(File file);
+nuxeoClient.operation(Operations.BLOB_ATTACH_ON_DOCUMENT)
+           .voidOperation(true)
+           .param("document", "/folder/file")
+           .input(fileBlob)
+           .execute();
+
+// or with stream
+Blob streamBlob = new StreamBlob(InputStream stream, String filename);
+nuxeoClient.operation(Operations.BLOB_ATTACH_ON_DOCUMENT)
+           .voidOperation(true)
+           .param("document", "/folder/file")
+           .input(streamBlob)
+           .execute();
 
 Blobs inputBlobs = new Blobs();
-inputBlobs.add(io.File file1);
-inputBlobs.add(io.File file2);
+inputBlobs.add(File file1);
+inputBlobs.add(new StreamBlob(InputStream stream, String filename2));
 Blobs blobs = nuxeoClient.operation(Operations.BLOB_ATTACH_ON_DOCUMENT)
+                         .voidOperation(true)
                          .param("xpath", "files:files")
                          .param("document", "/folder/file")
                          .input(inputBlobs)
                          .execute();
 
-FileBlob resultBlob = nuxeoClient.operation(DOCUMENT_GET_BLOB)
-                                 .input("folder/file")
-                                 .execute();
+// you need to close the stream or to get the file
+Blob blob = nuxeoClient.operation(Operations.DOCUMENT_GET_BLOB)
+                       .input("folder/file")
+                       .execute();
 ```
 
 #### Repository API

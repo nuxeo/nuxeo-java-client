@@ -26,6 +26,7 @@ import org.nuxeo.client.objects.annotation.Annotation;
 import org.nuxeo.client.objects.annotation.Annotations;
 import org.nuxeo.client.objects.audit.Audit;
 import org.nuxeo.client.objects.blob.FileBlob;
+import org.nuxeo.client.objects.blob.StreamBlob;
 import org.nuxeo.client.objects.workflow.Graph;
 import org.nuxeo.client.objects.workflow.Workflow;
 import org.nuxeo.client.objects.workflow.Workflows;
@@ -307,6 +308,10 @@ public class Repository extends RepositoryEntity<RepositoryAPI, Repository> {
 
     /* Blobs - Sync */
 
+    /**
+     * @deprecated since 3.1, use {@link #streamBlobByPath(String, String)} instead
+     */
+    @Deprecated
     public FileBlob fetchBlobByPath(String documentPath, String fieldPath) {
         if (repositoryName == null) {
             return fetchResponse(api.fetchBlobByPath(documentPath, fieldPath));
@@ -314,6 +319,10 @@ public class Repository extends RepositoryEntity<RepositoryAPI, Repository> {
         return fetchResponse(api.fetchBlobByPath(documentPath, fieldPath, repositoryName));
     }
 
+    /**
+     * @deprecated since 3.1, use {@link #streamBlobById(String, String)} instead
+     */
+    @Deprecated
     public FileBlob fetchBlobById(String documentId, String fieldPath) {
         if (repositoryName == null) {
             return fetchResponse(api.fetchBlobById(documentId, fieldPath));
@@ -321,8 +330,26 @@ public class Repository extends RepositoryEntity<RepositoryAPI, Repository> {
         return fetchResponse(api.fetchBlobById(documentId, fieldPath, repositoryName));
     }
 
+    public StreamBlob streamBlobByPath(String documentPath, String fieldPath) {
+        if (repositoryName == null) {
+            return fetchResponse(api.streamBlobByPath(documentPath, fieldPath));
+        }
+        return fetchResponse(api.streamBlobByPath(documentPath, fieldPath, repositoryName));
+    }
+
+    public StreamBlob streamBlobById(String documentId, String fieldPath) {
+        if (repositoryName == null) {
+            return fetchResponse(api.streamBlobById(documentId, fieldPath));
+        }
+        return fetchResponse(api.streamBlobById(documentId, fieldPath, repositoryName));
+    }
+
     /* Blobs - Async */
 
+    /**
+     * @deprecated since 3.1, use {@link #streamBlobByPath(String, String, Callback)} instead
+     */
+    @Deprecated
     public void fetchBlobByPath(String documentPath, String fieldPath, Callback<FileBlob> callback) {
         if (repositoryName == null) {
             fetchResponse(api.fetchBlobByPath(documentPath, fieldPath), callback);
@@ -331,11 +358,31 @@ public class Repository extends RepositoryEntity<RepositoryAPI, Repository> {
         }
     }
 
+    /**
+     * @deprecated since 3.1, use {@link #streamBlobById(String, String, Callback)} instead
+     */
+    @Deprecated
     public void fetchBlobById(String documentId, String fieldPath, Callback<FileBlob> callback) {
         if (repositoryName == null) {
             fetchResponse(api.fetchBlobById(documentId, fieldPath), callback);
         } else {
             fetchResponse(api.fetchBlobById(documentId, fieldPath, repositoryName), callback);
+        }
+    }
+
+    public void streamBlobByPath(String documentPath, String fieldPath, Callback<StreamBlob> callback) {
+        if (repositoryName == null) {
+            fetchResponse(api.streamBlobByPath(documentPath, fieldPath), callback);
+        } else {
+            fetchResponse(api.streamBlobByPath(documentPath, fieldPath, repositoryName), callback);
+        }
+    }
+
+    public void streamBlobById(String documentId, String fieldPath, Callback<StreamBlob> callback) {
+        if (repositoryName == null) {
+            fetchResponse(api.streamBlobById(documentId, fieldPath), callback);
+        } else {
+            fetchResponse(api.streamBlobById(documentId, fieldPath, repositoryName), callback);
         }
     }
 

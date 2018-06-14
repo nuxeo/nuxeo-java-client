@@ -18,9 +18,9 @@
  */
 package org.nuxeo.client.objects.blob;
 
-import java.io.InputStream;
+import static org.nuxeo.client.MediaTypes.APPLICATION_OCTET_STREAM_S;
 
-import org.nuxeo.client.MediaTypes;
+import java.io.InputStream;
 
 /**
  * @since 3.0
@@ -30,22 +30,24 @@ public class StreamBlob extends AbstractBlob {
     private final InputStream inputStream;
 
     public StreamBlob(InputStream inputStream, String filename) {
-        this(inputStream, filename, MediaTypes.APPLICATION_OCTET_STREAM_S);
+        this(inputStream, filename, APPLICATION_OCTET_STREAM_S);
+    }
+
+    public StreamBlob(InputStream inputStream, String filename, long length) {
+        this(inputStream, filename, APPLICATION_OCTET_STREAM_S, length);
     }
 
     public StreamBlob(InputStream inputStream, String filename, String mimeType) {
-        super(filename, mimeType);
-        this.inputStream = inputStream;
+        this(inputStream, filename, mimeType, -1);
     }
 
-    @Override
-    public int getLength() {
-        return -1;
+    public StreamBlob(InputStream inputStream, String filename, String mimeType, long length) {
+        super(filename, mimeType, length);
+        this.inputStream = inputStream;
     }
 
     @Override
     public InputStream getStream() {
         return inputStream;
     }
-
 }

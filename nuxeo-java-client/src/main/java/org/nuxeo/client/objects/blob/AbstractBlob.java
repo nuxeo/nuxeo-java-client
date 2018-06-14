@@ -27,9 +27,23 @@ public abstract class AbstractBlob implements Blob {
 
     protected final String mimeType;
 
+    private final long length;
+
+    /**
+     * @deprecated since 3.1, implementation should decide about length strategy
+     */
+    @Deprecated
     public AbstractBlob(String filename, String mimeType) {
+        this(filename, mimeType, -1);
+    }
+
+    /**
+     * @since 3.1
+     */
+    protected AbstractBlob(String filename, String mimeType, long length) {
         this.filename = filename;
         this.mimeType = mimeType;
+        this.length = length;
     }
 
     @Override
@@ -40,6 +54,21 @@ public abstract class AbstractBlob implements Blob {
     @Override
     public String getMimeType() {
         return mimeType;
+    }
+
+    @Override
+    @Deprecated
+    public int getLength() {
+        long length = getContentLength();
+        if (length > (long) Integer.MAX_VALUE) {
+            return -1;
+        }
+        return (int) length;
+    }
+
+    @Override
+    public long getContentLength() {
+        return length;
     }
 
 }

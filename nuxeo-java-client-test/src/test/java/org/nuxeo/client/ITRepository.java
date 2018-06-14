@@ -47,7 +47,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
+import java.util.function.BiFunction;
 import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.junit.Test;
@@ -66,6 +68,7 @@ import org.nuxeo.client.objects.audit.LogEntry;
 import org.nuxeo.client.objects.blob.Blob;
 import org.nuxeo.client.objects.blob.Blobs;
 import org.nuxeo.client.objects.blob.FileBlob;
+import org.nuxeo.client.objects.blob.StreamBlob;
 import org.nuxeo.client.objects.user.User;
 import org.nuxeo.client.spi.NuxeoClientRemoteException;
 import org.nuxeo.common.utils.FileUtils;
@@ -214,65 +217,91 @@ public class ITRepository extends AbstractITBase {
         }
     }
 
+    /**
+     * @deprecated since 3.1
+     */
     @Test
-    public void itCanFetchBlob() {
-        Document file = nuxeoClient.repository().fetchDocumentByPath("/folder_2/file");
+    @Deprecated
+    public void itCanFetchBlobFromDocument() {
+        Document file = nuxeoClient.repository().fetchDocumentByPath(FOLDER_2_FILE);
         FileBlob blob = file.fetchBlob();
         assertNotNull(blob);
         assertEquals("blob.json", blob.getFilename());
         assertEquals("text/plain", blob.getMimeType());
+        assertContentEquals("blob.json", blob);
     }
 
     @Test
-    public void itCanFetchBlobByPath() {
-        Document file = nuxeoClient.repository().fetchDocumentByPath("/folder_2/file");
+    public void itCanStreamBlobFromDocument() {
+        Document file = nuxeoClient.repository().fetchDocumentByPath(FOLDER_2_FILE);
+        StreamBlob blob = file.streamBlob();
+        assertNotNull(blob);
+        assertEquals("blob.json", blob.getFilename());
+        assertEquals("text/plain", blob.getMimeType());
+        assertContentEquals("blob.json", blob);
+    }
+
+    /**
+     * @deprecated since 3.1
+     */
+    @Test
+    @Deprecated
+    public void itCanFetchBlobByPathFromRepository() {
+        itCanFetchBlobFromRepository(Document::getPath, nuxeoClient.repository()::fetchBlobByPath);
+    }
+
+    /**
+     * @deprecated since 3.1
+     */
+    @Test
+    @Deprecated
+    public void itCanFetchBlobByIdFromRepository() {
+        itCanFetchBlobFromRepository(Document::getUid, nuxeoClient.repository()::fetchBlobById);
+    }
+
+    @Test
+    public void itCanStreamBlobByPathFromRepository() {
+        itCanFetchBlobFromRepository(Document::getPath, nuxeoClient.repository()::streamBlobByPath);
+    }
+
+    @Test
+    public void itCanStreamBlobByIdFromRepository() {
+        itCanFetchBlobFromRepository(Document::getUid, nuxeoClient.repository()::streamBlobById);
+    }
+
+    protected void itCanFetchBlobFromRepository(Function<Document, String> firstArg,
+            BiFunction<String, String, Blob> fetcher) {
+        Document file = nuxeoClient.repository().fetchDocumentByPath(FOLDER_2_FILE);
 
         // Attach a blob
         File temp1 = FileUtils.getResourceFileFromContext("sample.jpg");
-        File temp2 = FileUtils.getResourceFileFromContext("sample.jpg");
+        File temp2 = FileUtils.getResourceFileFromContext("blob.json");
         Blobs inputBlobs = new Blobs();
         inputBlobs.add(temp1);
         inputBlobs.add(temp2);
-        Blobs blobs = nuxeoClient.operation(BLOB_ATTACH_ON_DOCUMENT)
+        // Execute with void header
+        Void aVoid = nuxeoClient.operation(BLOB_ATTACH_ON_DOCUMENT)
+                                 .voidOperation(true)
                                  .param("document", file.getPath())
                                  .param("xpath", "files:files")
                                  .input(inputBlobs)
                                  .execute();
-        assertNotNull(blobs);
-        Blob blob0 = blobs.getBlobs().get(0);
-        Blob blob1 = blobs.getBlobs().get(1);
-        assertEquals("sample.jpg", blob0.getFilename());
-        assertEquals("sample.jpg", blob1.getFilename());
-        assertEquals("image/jpeg", blob0.getMimeType());
-        assertEquals("image/jpeg", blob1.getMimeType());
 
-        // Fetch blob by path
-        FileBlob blob = nuxeoClient.repository().fetchBlobByPath(file.getPath(), "files:files/0/file");
+        assertNull(aVoid);
+
+        // Retrieve blob by id
+        Blob sample = fetcher.apply(firstArg.apply(file), "files:files/0/file");
+        assertNotNull(sample);
+        assertEquals("sample.jpg", sample.getFilename());
+        assertEquals("image/jpeg", sample.getMimeType());
+        assertContentEquals("sample.jpg", sample);
+
+        Blob blob = fetcher.apply(firstArg.apply(file), "files:files/1/file");
         assertNotNull(blob);
-    }
+        assertEquals("blob.json", blob.getFilename());
+        assertEquals("text/plain", blob.getMimeType());
+        assertContentEquals("blob.json", blob);
 
-    @Test
-    public void itCanFetchBlobById() {
-        Document file = nuxeoClient.repository().fetchDocumentByPath("/folder_2/file");
-
-        // Attach a blob
-        File temp1 = FileUtils.getResourceFileFromContext("sample.jpg");
-        File temp2 = FileUtils.getResourceFileFromContext("sample.jpg");
-        Blobs inputBlobs = new Blobs();
-        inputBlobs.add(temp1);
-        inputBlobs.add(temp2);
-        Blobs blobs = nuxeoClient.operation(BLOB_ATTACH_ON_DOCUMENT)
-                                 .param("document", file.getPath())
-                                 .param("xpath", "files:files")
-                                 .input(inputBlobs)
-                                 .execute();
-        assertNotNull(blobs);
-        assertEquals("sample.jpg", blobs.getBlobs().get(0).getFilename());
-        assertEquals("sample.jpg", blobs.getBlobs().get(1).getFilename());
-
-        // Fetch blob by id
-        FileBlob blob = nuxeoClient.repository().fetchBlobById(file.getUid(), "files:files/0/file");
-        assertNotNull(blob);
     }
 
     @Test
@@ -405,7 +434,7 @@ public class ITRepository extends AbstractITBase {
     public void itCanUseBreadcrumb() {
         // Test deserialization
         Document document = nuxeoClient.enrichersForDocument("breadcrumb").repository().fetchDocumentByPath(
-                "/folder_2/file");
+                FOLDER_2_FILE);
         assertNotNull(document);
         Documents documents = document.getContextParameter("breadcrumb");
         assertNotNull(documents);
@@ -413,13 +442,13 @@ public class ITRepository extends AbstractITBase {
         Document folder2 = documents.getDocument(0);
         Document file = documents.getDocument(1);
         assertEquals("/folder_2", folder2.getPath());
-        assertEquals("/folder_2/file", file.getPath());
+        assertEquals(FOLDER_2_FILE, file.getPath());
 
         // Test connect
         Documents children = folder2.fetchChildren();
         assertNotNull(children);
         assertEquals(1, children.size());
-        assertEquals("/folder_2/file", children.getDocument(0).getPath());
+        assertEquals(FOLDER_2_FILE, children.getDocument(0).getPath());
     }
 
     @Test
@@ -699,7 +728,7 @@ public class ITRepository extends AbstractITBase {
         assumeTrue("itCanManageAnnotations works only since Nuxeo 10.2",
                 // TODO change the version to LTS
                 nuxeoClient.getServerVersion().isGreaterThan(new NuxeoVersion(10, 2, 0, true)));
-        Document file = nuxeoClient.repository().fetchDocumentByPath("/folder_2/file");
+        Document file = nuxeoClient.repository().fetchDocumentByPath(FOLDER_2_FILE);
 
         file.createAnnotation("ANNOTATION_ID_001", "<entity />");
         file.createAnnotation("ANNOTATION_ID_002", "<entity />");
@@ -732,7 +761,7 @@ public class ITRepository extends AbstractITBase {
         assumeTrue("itCanTrashUntrashDocument works only since Nuxeo 10.2",
                 // TODO change the version to LTS
                 nuxeoClient.getServerVersion().isGreaterThan(new NuxeoVersion(10, 2, 0, true)));
-        Document file = nuxeoClient.repository().fetchDocumentByPath("/folder_2/file");
+        Document file = nuxeoClient.repository().fetchDocumentByPath(FOLDER_2_FILE);
 
         assertFalse(file.isTrashed());
 

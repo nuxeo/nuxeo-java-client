@@ -19,17 +19,25 @@
  */
 package org.nuxeo.client;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
+import static org.nuxeo.client.Operations.BLOB_ATTACH_ON_DOCUMENT;
 import static org.nuxeo.client.Operations.ES_WAIT_FOR_INDEXING;
 
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
 import java.util.Collection;
 import java.util.stream.Collectors;
 
+import org.apache.commons.io.IOUtils;
 import org.junit.After;
 import org.junit.Before;
 import org.nuxeo.client.objects.Document;
 import org.nuxeo.client.objects.Documents;
 import org.nuxeo.client.objects.Repository;
+import org.nuxeo.client.objects.blob.Blob;
 import org.nuxeo.client.objects.blob.FileBlob;
 import org.nuxeo.client.objects.operation.DocRefs;
 import org.nuxeo.client.objects.user.UserManager;
@@ -39,6 +47,8 @@ import org.nuxeo.common.utils.FileUtils;
  * @since 0.1
  */
 public abstract class AbstractITBase {
+
+    public static final String FOLDER_2_FILE = "/folder_2/file";
 
     protected final NuxeoClient nuxeoClient = ITBase.createClient().schemas("*");
 
@@ -81,8 +91,9 @@ public abstract class AbstractITBase {
         // Attach a light blob
         File file = FileUtils.getResourceFileFromContext("blob.json");
         FileBlob fileBlob = new FileBlob(file, "blob.json", "text/plain");
-        nuxeoClient.operation(Operations.BLOB_ATTACH_ON_DOCUMENT)
-                   .param("document", "/folder_2/file")
+        nuxeoClient.operation(BLOB_ATTACH_ON_DOCUMENT)
+                   .voidOperation(true)
+                   .param("document", FOLDER_2_FILE)
                    .input(fileBlob)
                    .execute();
         // page providers can leverage Elasticsearch so wait for indexing before starting tests
@@ -113,6 +124,25 @@ public abstract class AbstractITBase {
         UserManager userManager = nuxeoClient.userManager();
         userGroupInterceptor.getUsersToDelete().forEach(userManager::deleteUser);
         userGroupInterceptor.getGroupsToDelete().forEach(userManager::deleteGroup);
+    }
+
+    /**
+     * @since 3.1
+     */
+    protected void assertContentEquals(String expectedFilePath, Blob blob) {
+        try {
+            File expectedBlobFile = FileUtils.getResourceFileFromContext(expectedFilePath);
+            assertEquals(IOUtils.toString(blob.getStream(), UTF_8),
+                    new String(Files.readAllBytes(expectedBlobFile.toPath())));
+        } catch (IOException e) {
+            fail("Unable to read response or expected file, e=" + e);
+        } finally {
+            try {
+                blob.getStream().close();
+            } catch (IOException e) {
+                fail("Unable to close the stream, e=" + e);
+            }
+        }
     }
 
 }
