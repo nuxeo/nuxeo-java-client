@@ -31,7 +31,8 @@ import java.util.Map;
 import org.junit.Test;
 import org.nuxeo.client.methods.BatchUploadAPI;
 import org.nuxeo.client.objects.Document;
-import org.nuxeo.client.objects.blob.FileBlob;
+import org.nuxeo.client.objects.blob.Blob;
+import org.nuxeo.client.objects.blob.StreamBlob;
 import org.nuxeo.client.objects.upload.BatchUpload;
 import org.nuxeo.client.objects.upload.BatchUploadManager;
 import org.nuxeo.client.spi.NuxeoClientRemoteException;
@@ -182,8 +183,9 @@ public class ITUpload extends AbstractITBase {
         doc.setPropertyValue("dc:title", "new title");
         doc = nuxeoClient.repository().createDocumentByPath("/", doc);
         assertNotNull(doc);
-        FileBlob blob = batchUpload.operation(BLOB_ATTACH_ON_DOCUMENT).param("document", doc).execute();
+        Blob blob = batchUpload.operation(BLOB_ATTACH_ON_DOCUMENT).param("document", doc).execute();
         assertNotNull(blob);
+        assertContentEquals("sample.jpg", blob);
     }
 
     /**
@@ -214,12 +216,11 @@ public class ITUpload extends AbstractITBase {
         // return docId
 
         // GET request with docId to get file
-        FileBlob blob = nuxeoClient.repository().fetchBlobById(doc.getId(), Document.DEFAULT_FILE_CONTENT);
+        StreamBlob blob = nuxeoClient.repository().streamBlobById(doc.getId(), Document.DEFAULT_FILE_CONTENT);
         assertNotNull(blob);
         assertEquals("sample.jpg", blob.getFilename());
-        assertEquals(file.length(), blob.getLength());
-        assertNotNull(blob.getFile());
-        assertEquals(file.length(), blob.getFile().length());
+        assertEquals(file.length(), blob.getContentLength());
+        assertContentEquals("sample.jpg", blob);
     }
 
 }

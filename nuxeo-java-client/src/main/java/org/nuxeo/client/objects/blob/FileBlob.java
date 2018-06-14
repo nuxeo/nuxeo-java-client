@@ -34,7 +34,20 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
  */
 public class FileBlob extends AbstractBlob {
 
-    protected final File file;
+    /**
+     * Non-final since bridge for backward compatibility.
+     */
+    protected File file;
+
+    /**
+     * @since 3.1
+     * @deprecated since 3.1, used to create a bridge for backward compatibility in NuxeoResponseConverter
+     */
+    @Deprecated
+    protected FileBlob(String filename, String mediaType, long length) {
+        super(filename, mediaType, length);
+        this.file = null;
+    }
 
     public FileBlob(File file) {
         this(file, file.getName());
@@ -45,17 +58,8 @@ public class FileBlob extends AbstractBlob {
     }
 
     public FileBlob(File file, String filename, String mediaType) {
-        super(filename, mediaType);
+        super(filename, mediaType, file.length());
         this.file = file;
-    }
-
-    @Override
-    public int getLength() {
-        long length = file.length();
-        if (length > (long) Integer.MAX_VALUE) {
-            return -1;
-        }
-        return (int) length;
     }
 
     @Override
@@ -75,8 +79,8 @@ public class FileBlob extends AbstractBlob {
     }
 
     @JsonIgnore
-    protected String formatLength(int len) {
-        int k = len / 1024;
+    protected String formatLength(long len) {
+        long k = len / 1024;
         if (k <= 0) {
             return len + " B";
         } else if (k < 1024) {
@@ -88,7 +92,7 @@ public class FileBlob extends AbstractBlob {
 
     @Override
     public String toString() {
-        return filename + " - " + mimeType + " - " + formatLength(getLength());
+        return filename + " - " + mimeType + " - " + formatLength(getContentLength());
     }
 
 }

@@ -33,13 +33,13 @@ import retrofit2.Converter;
 /**
  * @since 0.1
  */
-public final class NuxeoRequestConverterFactory<T> implements Converter<T, RequestBody> {
+public final class NuxeoRequestConverter<T> implements Converter<T, RequestBody> {
 
     protected final JavaType javaType;
 
     protected final ObjectMapper objectMapper;
 
-    NuxeoRequestConverterFactory(ObjectMapper objectMapper, JavaType javaType) {
+    protected NuxeoRequestConverter(ObjectMapper objectMapper, JavaType javaType) {
         this.objectMapper = objectMapper;
         this.javaType = javaType;
     }

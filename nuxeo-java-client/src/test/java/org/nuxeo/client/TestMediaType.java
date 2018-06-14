@@ -30,6 +30,16 @@ import org.junit.Test;
  */
 public class TestMediaType {
 
+    /**
+     * @since 3.1
+     */
+    @Test
+    public void testMalformed() {
+        MediaType mediaType = MediaType.parse("what");
+        assertEquals("application", mediaType.type());
+        assertEquals("octet-stream", mediaType.subtype());
+    }
+
     @Test
     public void testTypeSubType() {
         MediaType mediaType = MediaType.parse("application/json");

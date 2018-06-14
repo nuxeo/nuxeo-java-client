@@ -40,6 +40,8 @@ import org.nuxeo.client.Responses;
 import org.nuxeo.client.objects.blob.Blob;
 import org.nuxeo.client.objects.blob.Blobs;
 import org.nuxeo.client.objects.blob.FileBlob;
+import org.nuxeo.client.objects.blob.FileStreamBlob;
+import org.nuxeo.client.objects.blob.StreamBlob;
 import org.nuxeo.client.spi.NuxeoClientException;
 import org.nuxeo.client.util.IOUtils;
 
@@ -53,7 +55,7 @@ import retrofit2.Converter;
 /**
  * @since 0.1
  */
-public final class NuxeoResponseConverterFactory<T> implements Converter<ResponseBody, T> {
+public final class NuxeoResponseConverter<T> implements Converter<ResponseBody, T> {
 
     protected final JavaType javaType;
 
@@ -61,7 +63,7 @@ public final class NuxeoResponseConverterFactory<T> implements Converter<Respons
 
     protected final Map<String, Class<?>> entityTypeToClass;
 
-    protected NuxeoResponseConverterFactory(ObjectMapper objectMapper, JavaType javaType,
+    protected NuxeoResponseConverter(ObjectMapper objectMapper, JavaType javaType,
             Map<String, Class<?>> entityTypeToClass) {
         this.objectMapper = objectMapper;
         this.javaType = javaType;
@@ -90,10 +92,21 @@ public final class NuxeoResponseConverterFactory<T> implements Converter<Respons
                     throw new IOException(reason);
                 }
                 return (T) new Blobs(blobs);
-            } else {
+            }
+            // there's post treatment in NuxeoClient on blob
+            else if (javaType.getRawClass().equals(StreamBlob.class)) {
+                return (T) new StreamBlob(body.byteStream(), null, mediaType.toString());
+            }
+            // deprecated since 3.1
+            else if (javaType.getRawClass().equals(FileBlob.class)) {
                 // IOUtils.copyToTempFile close the input stream for us
                 File tmpFile = IOUtils.copyToTempFile(body.byteStream());
                 return (T) new FileBlob(tmpFile);
+            }
+            // automation case
+            else {
+                // for backward compatibility we need to return a FileBlob
+                return (T) new FileStreamBlob(body.byteStream());
             }
         }
         // Checking the type of the method clientside - aka object for Automation calls.

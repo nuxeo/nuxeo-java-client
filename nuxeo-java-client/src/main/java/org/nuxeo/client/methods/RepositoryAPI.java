@@ -26,6 +26,7 @@ import org.nuxeo.client.objects.annotation.Annotation;
 import org.nuxeo.client.objects.annotation.Annotations;
 import org.nuxeo.client.objects.audit.Audit;
 import org.nuxeo.client.objects.blob.FileBlob;
+import org.nuxeo.client.objects.blob.StreamBlob;
 import org.nuxeo.client.objects.task.Task;
 import org.nuxeo.client.objects.workflow.Graph;
 import org.nuxeo.client.objects.workflow.Workflow;
@@ -159,20 +160,52 @@ public interface RepositoryAPI {
 
     /* Blobs */
 
+    /**
+     * @deprecated since 3.1
+     */
+    @Deprecated
     @GET("path{documentPath}/@blob/{fieldPath}")
     Call<FileBlob> fetchBlobByPath(@Path(value = "documentPath", encoded = true) String documentPath,
             @Path(value = "fieldPath", encoded = true) String fieldPath);
 
+    /**
+     * @deprecated since 3.1
+     */
+    @Deprecated
     @GET("id/{documentId}/@blob/{fieldPath}")
     Call<FileBlob> fetchBlobById(@Path("documentId") String documentId,
             @Path(value = "fieldPath", encoded = true) String fieldPath);
 
+    /**
+     * @deprecated since 3.1
+     */
+    @Deprecated
     @GET("repo/{repositoryName}/path{documentPath}/@blob/{fieldPath}")
     Call<FileBlob> fetchBlobByPath(@Path(value = "documentPath", encoded = true) String documentPath,
             @Path(value = "fieldPath", encoded = true) String fieldPath, @Path("repositoryName") String repositoryName);
 
+    /**
+     * @deprecated since 3.1
+     */
+    @Deprecated
     @GET("repo/{repositoryName}/id/{documentId}/@blob/{fieldPath}")
     Call<FileBlob> fetchBlobById(@Path("documentId") String documentId,
+            @Path(value = "fieldPath", encoded = true) String fieldPath, @Path("repositoryName") String repositoryName);
+
+    @GET("path{documentPath}/@blob/{fieldPath}")
+    Call<StreamBlob> streamBlobByPath(@Path(value = "documentPath", encoded = true) String documentPath,
+            @Path(value = "fieldPath", encoded = true) String fieldPath);
+
+    @GET("id/{documentId}/@blob/{fieldPath}")
+    Call<StreamBlob> streamBlobById(@Path("documentId") String documentId,
+            @Path(value = "fieldPath", encoded = true) String fieldPath);
+
+    @GET("repo/{repositoryName}/path{documentPath}/@blob/{fieldPath}")
+    Call<StreamBlob> streamBlobByPath(@Path(value = "documentPath", encoded = true) String documentPath,
+            @Path(value = "fieldPath", encoded = true) String fieldPath, @Path("repositoryName") String repositoryName);
+
+    @GET("repo/{repositoryName}/id/{documentId}/@blob/{fieldPath}")
+    Call<StreamBlob> streamBlobById(@Path("documentId") String documentId,
             @Path(value = "fieldPath", encoded = true) String fieldPath, @Path("repositoryName") String repositoryName);
 
     /* Workflows */

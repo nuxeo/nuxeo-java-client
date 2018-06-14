@@ -151,7 +151,11 @@ public class ITBase {
         // Attach a blob
         File file = FileUtils.getResourceFileFromContext("sample.jpg");
         FileBlob fileBlob = new FileBlob(file);
-        client.operation(BLOB_ATTACH_ON_DOCUMENT).param("document", "/file").input(fileBlob).execute();
+        client.operation(BLOB_ATTACH_ON_DOCUMENT)
+              .voidOperation(true)
+              .param("document", "/file")
+              .input(fileBlob)
+              .execute();
 
         client.repository().deleteDocument(doc);
     }

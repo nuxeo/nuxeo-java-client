@@ -73,14 +73,14 @@ public class NuxeoConverterFactory extends Converter.Factory {
     @Override
     public Converter<ResponseBody, ?> responseBodyConverter(Type type, Annotation[] annotations, Retrofit client) {
         JavaType javaType = mapper.getTypeFactory().constructType(type);
-        return new NuxeoResponseConverterFactory<>(mapper, javaType, entityTypeToClass);
+        return new NuxeoResponseConverter<>(mapper, javaType, entityTypeToClass);
     }
 
     @Override
     public Converter<?, RequestBody> requestBodyConverter(Type type, Annotation[] parameterAnnotations,
             Annotation[] methodAnnotations, Retrofit retrofit) {
         JavaType javaType = mapper.getTypeFactory().constructType(type);
-        return new NuxeoRequestConverterFactory<>(mapper, javaType);
+        return new NuxeoRequestConverter<>(mapper, javaType);
     }
 
     /**

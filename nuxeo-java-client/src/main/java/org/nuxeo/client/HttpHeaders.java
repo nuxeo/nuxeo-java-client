@@ -31,6 +31,9 @@ public class HttpHeaders {
 
     public static final String CONTENT_TYPE = "Content-Type";
 
+    /** @since 3.1 */
+    public static final String CONTENT_LENGTH = "Content-Length";
+
     public static final String DEPTH = "depth";
 
     public static final String NUXEO_TX_TIMEOUT = "Nuxeo-Transaction-Timeout";

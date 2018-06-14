@@ -43,6 +43,7 @@ import org.nuxeo.client.objects.annotation.Annotation;
 import org.nuxeo.client.objects.annotation.Annotations;
 import org.nuxeo.client.objects.audit.Audit;
 import org.nuxeo.client.objects.blob.FileBlob;
+import org.nuxeo.client.objects.blob.StreamBlob;
 import org.nuxeo.client.objects.task.Task;
 import org.nuxeo.client.objects.workflow.Workflow;
 import org.nuxeo.client.objects.workflow.Workflows;
@@ -482,10 +483,18 @@ public class Document extends RepositoryEntity<RepositoryAPI, Document> {
 
     /* Blobs Sync */
 
+    /**
+     * @deprecated since 3.1, use {@link #streamBlob()} instead
+     */
+    @Deprecated
     public FileBlob fetchBlob() {
         return fetchBlob(DEFAULT_FILE_CONTENT);
     }
 
+    /**
+     * @deprecated since 3.1, use {@link #streamBlob(String)} instead
+     */
+    @Deprecated
     public FileBlob fetchBlob(String fieldPath) {
         if (repositoryName == null) {
             return fetchResponse(api.fetchBlobById(uid, fieldPath));
@@ -493,17 +502,47 @@ public class Document extends RepositoryEntity<RepositoryAPI, Document> {
         return fetchResponse(api.fetchBlobById(uid, fieldPath, repositoryName));
     }
 
+    public StreamBlob streamBlob() {
+        return streamBlob(DEFAULT_FILE_CONTENT);
+    }
+
+    public StreamBlob streamBlob(String fieldPath) {
+        if (repositoryName == null) {
+            return fetchResponse(api.streamBlobById(uid, fieldPath));
+        }
+        return fetchResponse(api.streamBlobById(uid, fieldPath, repositoryName));
+    }
+
     /* Blobs Async */
 
+    /**
+     * @deprecated since 3.1, use {@link #streamBlob(Callback)} instead
+     */
+    @Deprecated
     public void fetchBlob(Callback<FileBlob> callback) {
         fetchBlob(DEFAULT_FILE_CONTENT, callback);
     }
 
+    /**
+     * @deprecated since 3.1, use {@link #streamBlob(String, Callback)} instead
+     */
+    @Deprecated
     public void fetchBlob(String fieldPath, Callback<FileBlob> callback) {
         if (repositoryName == null) {
             fetchResponse(api.fetchBlobById(uid, fieldPath), callback);
         }
         fetchResponse(api.fetchBlobById(uid, fieldPath, repositoryName), callback);
+    }
+
+    public void streamBlob(Callback<StreamBlob> callback) {
+        streamBlob(DEFAULT_FILE_CONTENT, callback);
+    }
+
+    public void streamBlob(String fieldPath, Callback<StreamBlob> callback) {
+        if (repositoryName == null) {
+            fetchResponse(api.streamBlobById(uid, fieldPath), callback);
+        }
+        fetchResponse(api.streamBlobById(uid, fieldPath, repositoryName), callback);
     }
 
     /* Workflows Sync */

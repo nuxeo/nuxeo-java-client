@@ -36,9 +36,9 @@ public class MediaTypes {
 
     public static final MediaType APPLICATION_JSON_CHARSET_UTF_8 = MediaType.parse(APPLICATION_JSON_CHARSET_UTF_8_S);
 
-    public static final String APPLICATION_OCTET_STREAM_S = "application/octet-stream";
+    public static final String APPLICATION_OCTET_STREAM_S = MediaType.DEFAULT_STRING;
 
-    public static final MediaType APPLICATION_OCTET_STREAM = MediaType.parse(APPLICATION_OCTET_STREAM_S);
+    public static final MediaType APPLICATION_OCTET_STREAM = MediaType.DEFAULT;
 
     public static final String APPLICATION_NUXEO_EMPTY_LIST_S = "application/nuxeo-empty-list";
 

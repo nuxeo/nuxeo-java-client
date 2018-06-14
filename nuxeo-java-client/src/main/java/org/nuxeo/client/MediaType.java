@@ -41,6 +41,16 @@ public final class MediaType {
     private static final Pattern PARAMETER = Pattern.compile(
             ";\\s*(?:" + TOKEN + "=(?:" + TOKEN + "|" + QUOTED + "))?");
 
+    /**
+     * @since 3.1
+     */
+    protected static final String DEFAULT_STRING = "application/octet-stream";
+
+    /**
+     * @since 3.1
+     */
+    protected static final MediaType DEFAULT = parse(DEFAULT_STRING);
+
     private final String originalString;
 
     private final String type;
@@ -134,20 +144,27 @@ public final class MediaType {
         return originalString.hashCode();
     }
 
+    /**
+     * Returns a media type by parsing {@code mediaType}, or {@link #DEFAULT} if {@code mediaType} is null.
+     * 
+     * @return a media type by parsing {@code mediaType}, or {@link #DEFAULT} if {@code mediaType} is null
+     */
     public static MediaType fromOkHttpMediaType(okhttp3.MediaType mediaType) {
         if (mediaType == null) {
-            return null;
+            return DEFAULT;
         }
         return parse(mediaType.toString());
     }
 
     /**
-     * Returns a media type for {@code string}, or null if {@code string} is not a well-formed media type.
+     * Returns a media type for {@code string}, or {@link #DEFAULT} if {@code string} is not a well-formed media type.
+     *
+     * @return a media type for {@code string}, or {@link #DEFAULT} if {@code string} is not a well-formed media type
      */
     public static MediaType parse(String string) {
         Matcher typeSubtype = TYPE_SUBTYPE.matcher(string);
         if (!typeSubtype.lookingAt()) {
-            return null;
+            return DEFAULT;
         }
         String type = typeSubtype.group(1).toLowerCase(Locale.US);
         String subtype = typeSubtype.group(2).toLowerCase(Locale.US);
@@ -158,7 +175,7 @@ public final class MediaType {
         for (int s = typeSubtype.end(); s < string.length(); s = parameter.end()) {
             parameter.region(s, string.length());
             if (!parameter.lookingAt()) {
-                return null; // This is not a well-formed media type.
+                continue;
             }
 
             String name = parameter.group(1);
