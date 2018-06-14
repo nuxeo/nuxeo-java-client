@@ -27,6 +27,7 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.junit.Assume.assumeTrue;
+import static org.nuxeo.client.Operations.BLOB_ATTACH_ON_DOCUMENT;
 
 import java.io.File;
 import java.text.SimpleDateFormat;
@@ -232,7 +233,7 @@ public class ITRepository extends AbstractITBase {
         Blobs inputBlobs = new Blobs();
         inputBlobs.add(temp1);
         inputBlobs.add(temp2);
-        Blobs blobs = nuxeoClient.operation("Blob.AttachOnDocument")
+        Blobs blobs = nuxeoClient.operation(BLOB_ATTACH_ON_DOCUMENT)
                                  .param("document", file.getPath())
                                  .param("xpath", "files:files")
                                  .input(inputBlobs)
@@ -260,7 +261,7 @@ public class ITRepository extends AbstractITBase {
         Blobs inputBlobs = new Blobs();
         inputBlobs.add(temp1);
         inputBlobs.add(temp2);
-        Blobs blobs = nuxeoClient.operation("Blob.AttachOnDocument")
+        Blobs blobs = nuxeoClient.operation(BLOB_ATTACH_ON_DOCUMENT)
                                  .param("document", file.getPath())
                                  .param("xpath", "files:files")
                                  .input(inputBlobs)

@@ -22,6 +22,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+import static org.nuxeo.client.Operations.BLOB_ATTACH_ON_DOCUMENT;
 
 import java.io.File;
 import java.io.IOException;
@@ -150,7 +151,7 @@ public class ITBase {
         // Attach a blob
         File file = FileUtils.getResourceFileFromContext("sample.jpg");
         FileBlob fileBlob = new FileBlob(file);
-        client.operation("Blob.AttachOnDocument").param("document", "/file").input(fileBlob).execute();
+        client.operation(BLOB_ATTACH_ON_DOCUMENT).param("document", "/file").input(fileBlob).execute();
 
         client.repository().deleteDocument(doc);
     }

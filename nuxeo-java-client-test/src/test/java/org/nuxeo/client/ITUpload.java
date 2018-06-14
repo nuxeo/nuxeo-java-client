@@ -22,6 +22,7 @@ package org.nuxeo.client;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.fail;
+import static org.nuxeo.client.Operations.BLOB_ATTACH_ON_DOCUMENT;
 
 import java.io.File;
 import java.util.List;
@@ -181,7 +182,7 @@ public class ITUpload extends AbstractITBase {
         doc.setPropertyValue("dc:title", "new title");
         doc = nuxeoClient.repository().createDocumentByPath("/", doc);
         assertNotNull(doc);
-        FileBlob blob = batchUpload.operation("Blob.AttachOnDocument").param("document", doc).execute();
+        FileBlob blob = batchUpload.operation(BLOB_ATTACH_ON_DOCUMENT).param("document", doc).execute();
         assertNotNull(blob);
     }
 

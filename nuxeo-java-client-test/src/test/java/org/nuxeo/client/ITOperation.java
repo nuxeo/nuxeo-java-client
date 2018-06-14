@@ -24,6 +24,13 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.junit.Assume.assumeTrue;
+import static org.nuxeo.client.Operations.BLOB_ATTACH_ON_DOCUMENT;
+import static org.nuxeo.client.Operations.DIRECTORY_ENTRIES;
+import static org.nuxeo.client.Operations.DOCUMENT_GET_BLOB;
+import static org.nuxeo.client.Operations.DOCUMENT_GET_BLOBS;
+import static org.nuxeo.client.Operations.DOCUMENT_GET_BLOBS_BY_PROPERTY;
+import static org.nuxeo.client.Operations.DOCUMENT_UPDATE;
+import static org.nuxeo.client.Operations.REPOSITORY_GET_DOCUMENT;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -63,7 +70,7 @@ public class ITOperation extends AbstractITBase {
 
     @Test
     public void itCanExecuteOperationOnDocument() {
-        Document result = nuxeoClient.operation("Repository.GetDocument").param("value", "/").execute();
+        Document result = nuxeoClient.operation(REPOSITORY_GET_DOCUMENT).param("value", "/").execute();
         assertNotNull(result);
     }
 
@@ -78,8 +85,8 @@ public class ITOperation extends AbstractITBase {
     @Test
     public void itCanExecuteOperationWithBlobs() throws IOException {
         // Get a blob
-        Document result = nuxeoClient.operation("Repository.GetDocument").param("value", FOLDER_2_FILE).execute();
-        FileBlob blob = nuxeoClient.operation("Document.GetBlob").input(result).execute();
+        Document result = nuxeoClient.operation(REPOSITORY_GET_DOCUMENT).param("value", FOLDER_2_FILE).execute();
+        FileBlob blob = nuxeoClient.operation(DOCUMENT_GET_BLOB).input(result).execute();
         assertNotNull(blob);
         List<String> lines = Files.readAllLines(blob.getFile().toPath());
         assertEquals("[", lines.get(0));
@@ -88,14 +95,14 @@ public class ITOperation extends AbstractITBase {
         File temp1 = FileUtils.getResourceFileFromContext("sample.jpg");
         FileBlob fileBlob = new FileBlob(temp1);
         int length = fileBlob.getLength();
-        blob = nuxeoClient.operation("Blob.AttachOnDocument")
+        blob = nuxeoClient.operation(BLOB_ATTACH_ON_DOCUMENT)
                           .param("document", FOLDER_2_FILE)
                           .input(fileBlob)
                           .execute();
         assertNotNull(blob);
         assertEquals("sample.jpg", blob.getFilename());
         assertEquals(length, blob.getLength());
-        FileBlob resultBlob = nuxeoClient.operation("Document.GetBlob").input(FOLDER_2_FILE).execute();
+        FileBlob resultBlob = nuxeoClient.operation(DOCUMENT_GET_BLOB).input(FOLDER_2_FILE).execute();
         assertNotNull(resultBlob);
         assertEquals(length, resultBlob.getLength());
         // Attach a blobs and get them
@@ -103,7 +110,7 @@ public class ITOperation extends AbstractITBase {
         Blobs inputBlobs = new Blobs();
         inputBlobs.add(temp1);
         inputBlobs.add(temp2);
-        Blobs blobs = nuxeoClient.operation("Blob.AttachOnDocument")
+        Blobs blobs = nuxeoClient.operation(BLOB_ATTACH_ON_DOCUMENT)
                                  .param("document", FOLDER_2_FILE)
                                  .param("xpath", "files:files")
                                  .input(inputBlobs)
@@ -111,7 +118,7 @@ public class ITOperation extends AbstractITBase {
         assertNotNull(blobs);
         assertEquals("sample.jpg", blobs.getBlobs().get(0).getFilename());
         assertEquals("sample.jpg", blobs.getBlobs().get(1).getFilename());
-        Blobs resultBlobs = nuxeoClient.operation("Document.GetBlobs").input(FOLDER_2_FILE).execute();
+        Blobs resultBlobs = nuxeoClient.operation(DOCUMENT_GET_BLOBS).input(FOLDER_2_FILE).execute();
         assertNotNull(resultBlobs);
         assertEquals(3, resultBlobs.size());
     }
@@ -122,7 +129,7 @@ public class ITOperation extends AbstractITBase {
         File temp1 = FileUtils.getResourceFileFromContext("sample.jpg");
         int length = (int) temp1.length();
         StreamBlob byteBlob = new StreamBlob(new FileInputStream(temp1), "sample.jpg");
-        FileBlob blob = nuxeoClient.operation("Blob.AttachOnDocument")
+        FileBlob blob = nuxeoClient.operation(BLOB_ATTACH_ON_DOCUMENT)
                                    .param("document", FOLDER_2_FILE)
                                    .input(byteBlob)
                                    .execute();
@@ -130,7 +137,7 @@ public class ITOperation extends AbstractITBase {
         assertEquals("sample.jpg", blob.getFilename());
         assertEquals(length, blob.getLength());
 
-        FileBlob resultBlob = nuxeoClient.operation("Document.GetBlob").input(FOLDER_2_FILE).execute();
+        FileBlob resultBlob = nuxeoClient.operation(DOCUMENT_GET_BLOB).input(FOLDER_2_FILE).execute();
         assertNotNull(resultBlob);
         assertEquals(length, resultBlob.getLength());
     }
@@ -144,7 +151,7 @@ public class ITOperation extends AbstractITBase {
                 nuxeoClient.getServerVersion().isGreaterThan(NuxeoVersion.LTS_8_10));
 
         // Get blobs
-        Blobs resultBlobs = nuxeoClient.operation("Document.GetBlobsByProperty").input(FOLDER_2_FILE).execute();
+        Blobs resultBlobs = nuxeoClient.operation(DOCUMENT_GET_BLOBS_BY_PROPERTY).input(FOLDER_2_FILE).execute();
         assertNotNull(resultBlobs);
         assertTrue(resultBlobs.getBlobs().isEmpty());
     }
@@ -154,14 +161,14 @@ public class ITOperation extends AbstractITBase {
         // TODO rework this test
         Thread t = new Thread(() -> {
             try {
-                Document result = nuxeoClient.operation("Repository.GetDocument").param("value", "/").execute();
+                Document result = nuxeoClient.operation(REPOSITORY_GET_DOCUMENT).param("value", "/").execute();
                 assertNotNull(result);
             } catch (Exception e) {
             }
         });
         Thread t2 = new Thread(() -> {
             try {
-                Document result = nuxeoClient.operation("Repository.GetDocument").param("value", "/").execute();
+                Document result = nuxeoClient.operation(REPOSITORY_GET_DOCUMENT).param("value", "/").execute();
                 assertNotNull(result);
             } catch (Exception e) {
             }
@@ -183,21 +190,21 @@ public class ITOperation extends AbstractITBase {
 
     @Test
     public void itCanExecuteOperationWithDocumentRefs() {
-        Document result = nuxeoClient.operation("Repository.GetDocument").param("value", "/").execute();
+        Document result = nuxeoClient.operation(REPOSITORY_GET_DOCUMENT).param("value", "/").execute();
         assertNotNull(result);
         DocRef doc = new DocRef(result.getId());
-        result = nuxeoClient.operation("Document.Update").input(doc).param("properties", null).execute();
+        result = nuxeoClient.operation(DOCUMENT_UPDATE).input(doc).param("properties", null).execute();
         assertNotNull(result);
         DocRefs docRefs = new DocRefs();
         docRefs.add(doc);
-        Documents docs = nuxeoClient.operation("Document.Update").input(docRefs).param("properties", null).execute();
+        Documents docs = nuxeoClient.operation(DOCUMENT_UPDATE).input(docRefs).param("properties", null).execute();
         assertNotNull(docs);
         assertEquals(1, docs.size());
     }
 
     @Test
     public void itCanFetchDirectoriesJsonBlob() {
-        String result = nuxeoClient.operation("Directory.Entries").param("directoryName", "continent").execute();
+        String result = nuxeoClient.operation(DIRECTORY_ENTRIES).param("directoryName", "continent").execute();
         List<Map<String, Serializable>> directoryExamples = nuxeoClient.getConverterFactory().readJSON(result,
                 List.class, Map.class);
         assertNotNull(directoryExamples);
