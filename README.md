@@ -173,7 +173,7 @@ To use the Operation API, `org.nuxeo.client.NuxeoClient#operation(String)` is th
 import org.nuxeo.client.objects.Document;
 
 // Fetch the root document
-Document doc = nuxeoClient.operation("Repository.GetDocument").param("value", "/").execute();
+Document doc = nuxeoClient.operation(Operations.REPOSITORY_GET_DOCUMENT).param("value", "/").execute();
 ```
 
 ```java
@@ -191,7 +191,7 @@ import org.nuxeo.client.objects.blob.FileBlob;
 // To upload|download blob(s)
 
 FileBlob fileBlob = new FileBlob(io.File file);
-fileBlob = nuxeoClient.operation("Blob.AttachOnDocument")
+fileBlob = nuxeoClient.operation(Operations.BLOB_ATTACH_ON_DOCUMENT)
                       .param("document", "/folder/file")
                       .input(fileBlob)
                       .execute();
@@ -199,13 +199,13 @@ fileBlob = nuxeoClient.operation("Blob.AttachOnDocument")
 Blobs inputBlobs = new Blobs();
 inputBlobs.add(io.File file1);
 inputBlobs.add(io.File file2);
-Blobs blobs = nuxeoClient.operation("Blob.AttachOnDocument")
+Blobs blobs = nuxeoClient.operation(Operations.BLOB_ATTACH_ON_DOCUMENT)
                          .param("xpath", "files:files")
                          .param("document", "/folder/file")
                          .input(inputBlobs)
                          .execute();
 
-FileBlob resultBlob = nuxeoClient.operation("Document.GetBlob")
+FileBlob resultBlob = nuxeoClient.operation(DOCUMENT_GET_BLOB)
                                  .input("folder/file")
                                  .execute();
 ```
@@ -419,7 +419,7 @@ or with operation:
 Document doc = new Document("file", "File");
 doc.set("dc:title", "new title");
 doc = nuxeoClient.repository().createDocumentByPath("/folder_1", doc);
-Blob blob = batchUpload.operation("Blob.AttachOnDocument").param("document", doc).execute();
+Blob blob = batchUpload.operation(Operations.BLOB_ATTACH_ON_DOCUMENT).param("document", doc).execute();
 ```
 
 #### Directories

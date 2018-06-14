@@ -27,6 +27,11 @@ public class Operations {
 
     public static final String BLOB_ATTACH_ON_DOCUMENT = "Blob.AttachOnDocument";
 
+    /**
+     * @since 3.1
+     */
+    public static final String DIRECTORY_ENTRIES = "Directory.Entries";
+
     public static final String DOCUMENT_ADD_PERMISSION = "Document.AddPermission";
 
     public static final String DOCUMENT_REMOVE_PERMISSION = "Document.RemovePermission";
@@ -35,6 +40,21 @@ public class Operations {
      * CAUTION: Only available for Nuxeo Server greater than LTS 2016 - 8.10
      */
     public static final String DOCUMENT_REMOVE_PROXIES = "Document.RemoveProxies";
+
+    /**
+     * @since 3.1
+     */
+    public static final String DOCUMENT_GET_BLOB = "Document.GetBlob";
+
+    /**
+     * @since 3.1
+     */
+    public static final String DOCUMENT_GET_BLOBS = "Document.GetBlobs";
+
+    /**
+     * @since 3.1
+     */
+    public static final String DOCUMENT_GET_BLOBS_BY_PROPERTY = "Document.GetBlobsByProperty";
 
     /**
      * This operation is available since Nuxeo 10.1.
@@ -50,4 +70,20 @@ public class Operations {
      */
     public static final String DOCUMENT_UNTRASH = "Document.Untrash";
 
+    /**
+     * @since 3.1
+     */
+    public static final String DOCUMENT_UPDATE = "Document.Update";
+
+    /**
+     * This operation is available since {@link NuxeoVersion#LTS_8_10}.
+     *
+     * @since 3.1
+     */
+    public static final String ES_WAIT_FOR_INDEXING = "Elasticsearch.WaitForIndexing";
+
+    /**
+     * @since 3.1
+     */
+    public static final String REPOSITORY_GET_DOCUMENT = "Repository.GetDocument";
 }

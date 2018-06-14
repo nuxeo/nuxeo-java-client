@@ -19,6 +19,8 @@
  */
 package org.nuxeo.client;
 
+import static org.nuxeo.client.Operations.ES_WAIT_FOR_INDEXING;
+
 import java.io.File;
 import java.util.Collection;
 import java.util.stream.Collectors;
@@ -84,10 +86,7 @@ public abstract class AbstractITBase {
                    .input(fileBlob)
                    .execute();
         // page providers can leverage Elasticsearch so wait for indexing before starting tests
-        nuxeoClient.operation("Elasticsearch.WaitForIndexing")
-                   .param("refresh", true)
-                   .param("waitForAudit", true)
-                   .execute();
+        nuxeoClient.operation(ES_WAIT_FOR_INDEXING).param("refresh", true).param("waitForAudit", true).execute();
     }
 
     @After
