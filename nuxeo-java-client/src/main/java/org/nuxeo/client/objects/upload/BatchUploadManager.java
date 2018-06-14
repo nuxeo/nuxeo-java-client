@@ -66,8 +66,7 @@ public class BatchUploadManager extends AbstractConnectable<BatchUploadAPI, Batc
         return getBatch(batchId).upload(fileIdx, file, name, fileType);
     }
 
-    public BatchUpload upload(String batchId, String fileIdx, File file, String name, String fileType,
-            long length) {
+    public BatchUpload upload(String batchId, String fileIdx, File file, String name, String fileType, long length) {
         return getBatch(batchId).upload(fileIdx, file, name, fileType, length);
     }
 

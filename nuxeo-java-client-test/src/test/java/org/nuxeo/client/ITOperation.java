@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2016-2017 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2016-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -139,7 +139,7 @@ public class ITOperation extends AbstractITBase {
      * JAVACLIENT-101
      */
     @Test
-    public void itCanExecuteOperationReturningEmptyBlobs() throws IOException {
+    public void itCanExecuteOperationReturningEmptyBlobs() {
         assumeTrue("itCanExecuteOperationReturningEmptyBlobs works only since Nuxeo 8.10",
                 nuxeoClient.getServerVersion().isGreaterThan(NuxeoVersion.LTS_8_10));
 
@@ -196,7 +196,7 @@ public class ITOperation extends AbstractITBase {
     }
 
     @Test
-    public void itCanFetchDirectoriesJsonBlob() throws IOException {
+    public void itCanFetchDirectoriesJsonBlob() {
         String result = nuxeoClient.operation("Directory.Entries").param("directoryName", "continent").execute();
         List<Map<String, Serializable>> directoryExamples = nuxeoClient.getConverterFactory().readJSON(result,
                 List.class, Map.class);

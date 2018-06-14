@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2016-2017 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2016-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -43,8 +43,8 @@ public abstract class AbstractITBase {
     protected final RepositoryInterceptor repositoryInterceptor = new RepositoryInterceptor();
 
     // TODO this is weird that deleting documents doesn't cancel workflow on them, maybe there's an asynchronous task
-    // TODO which is also weird is: if we not cancel workflows it mess up ACP in ITRepository#itCanManagePermissions on
-    // acp.getAcls().get(0).getAces().size() test
+    // TODO which is also weird is: if we don't cancel workflows it mess up ACP in ITRepository#itCanManagePermissions
+    // on acp.getAcls().get(0).getAces().size() test
     protected final WorkflowInterceptor workflowInterceptor = new WorkflowInterceptor();
 
     protected final UserGroupInterceptor userGroupInterceptor = new UserGroupInterceptor();
@@ -103,9 +103,8 @@ public abstract class AbstractITBase {
                 // Before we need to search all proxies
                 Documents proxyIdsToDelete = repository.query(
                         "SELECT * FROM Document WHERE ecm:isProxy=1 and ecm:proxyTargetId IN "
-                                + docIdsToDelete.stream()
-                                                .map(id -> "'" + id + "'")
-                                                .collect(Collectors.joining(",", "(", ")")));
+                                + docIdsToDelete.stream().map(id -> "'" + id + "'").collect(
+                                        Collectors.joining(",", "(", ")")));
                 // Then delete them
                 proxyIdsToDelete.getDocuments().stream().map(Document::getId).forEach(repository::deleteDocument);
             }
