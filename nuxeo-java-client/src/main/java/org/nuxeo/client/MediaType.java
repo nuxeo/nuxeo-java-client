@@ -40,6 +40,8 @@ public final class MediaType {
 
     private static final Pattern PARAMETER = Pattern.compile(";\\s*(?:" + TOKEN + "=(?:" + TOKEN + "|" + QUOTED + "))?");
 
+    private static final MediaType DEFAULT = MediaTypes.APPLICATION_OCTET_STREAM;
+
     private final String originalString;
 
     private final String type;
@@ -135,7 +137,7 @@ public final class MediaType {
 
     public static MediaType fromOkHttpMediaType(okhttp3.MediaType mediaType) {
         if (mediaType == null) {
-            return null;
+            return DEFAULT;
         }
         return parse(mediaType.toString());
     }
