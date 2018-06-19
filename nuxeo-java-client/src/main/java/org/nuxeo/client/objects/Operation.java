@@ -19,7 +19,6 @@
  */
 package org.nuxeo.client.objects;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -28,6 +27,7 @@ import java.util.Map;
 
 import org.nuxeo.client.HttpHeaders;
 import org.nuxeo.client.NuxeoClient;
+import org.nuxeo.client.Requests;
 import org.nuxeo.client.methods.OperationAPI;
 import org.nuxeo.client.objects.blob.Blob;
 import org.nuxeo.client.objects.blob.Blobs;
@@ -35,14 +35,9 @@ import org.nuxeo.client.objects.operation.OperationBody;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-import okhttp3.MediaType;
 import okhttp3.MultipartBody;
 import okhttp3.MultipartBody.Part;
 import okhttp3.RequestBody;
-import okhttp3.internal.Util;
-import okio.BufferedSink;
-import okio.Okio;
-import okio.Source;
 import retrofit2.Call;
 import retrofit2.Callback;
 
@@ -122,7 +117,7 @@ public class Operation extends ConnectableEntity<OperationAPI, Operation> {
         Object input = body.getInput();
         if (input instanceof Blob) { // If input is blob or blobs -> use multipart
             Blob blob = (Blob) input;
-            RequestBody fbody = create(blob);
+            RequestBody fbody = Requests.create(blob);
             Part formData = Part.createFormData(INPUT_PART, blob.getFilename(), fbody);
             return api.execute(operationId, body, Collections.singletonList(formData));
         } else if (input instanceof Blobs) { // If input is blob or blobs -> use multipart
@@ -130,7 +125,7 @@ public class Operation extends ConnectableEntity<OperationAPI, Operation> {
             List<MultipartBody.Part> fileParts = new ArrayList<>();
             for (int i = 0; i < blobs.size(); i++) {
                 Blob blob = blobs.get(i);
-                RequestBody fbody = create(blob);
+                RequestBody fbody = Requests.create(blob);
                 fileParts.add(
                         MultipartBody.Part.createFormData(INPUT_PARTS + String.valueOf(i), blob.getFilename(), fbody));
             }
@@ -142,36 +137,11 @@ public class Operation extends ConnectableEntity<OperationAPI, Operation> {
 
     /**
      * Returns a new request body that transmits the content of {@link InputStream}.
+     *
+     * @deprecated since 3.1, use {@link Requests#create(Blob)} instead
      */
     public static RequestBody create(Blob blob) {
-        if (blob == null) {
-            throw new NullPointerException("content == null");
-        }
-
-        return new RequestBody() {
-
-            @Override
-            public MediaType contentType() {
-                return MediaType.parse(blob.getMimeType());
-            }
-
-            @Override
-            public long contentLength() {
-                return blob.getContentLength();
-            }
-
-            @Override
-            public void writeTo(BufferedSink sink) throws IOException {
-                Source source = null;
-                try {
-                    source = Okio.source(blob.getStream());
-                    sink.writeAll(source);
-                } finally {
-                    Util.closeQuietly(source);
-                }
-            }
-
-        };
+        return Requests.create(blob);
     }
 
     /*******************************
