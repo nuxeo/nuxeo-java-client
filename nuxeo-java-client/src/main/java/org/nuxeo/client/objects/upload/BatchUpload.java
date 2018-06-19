@@ -19,25 +19,28 @@
  */
 package org.nuxeo.client.objects.upload;
 
+import static org.nuxeo.client.ConstantsV1.UPLOAD_CHUNKED_TYPE;
+import static org.nuxeo.client.ConstantsV1.UPLOAD_NORMAL_TYPE;
+
 import java.io.BufferedInputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.io.FilenameUtils;
 import org.nuxeo.client.ConstantsV1;
 import org.nuxeo.client.MediaTypes;
 import org.nuxeo.client.NuxeoClient;
+import org.nuxeo.client.Requests;
 import org.nuxeo.client.methods.BatchUploadAPI;
 import org.nuxeo.client.objects.AbstractConnectable;
+import org.nuxeo.client.objects.blob.Blob;
+import org.nuxeo.client.objects.blob.FileBlob;
 import org.nuxeo.client.objects.operation.OperationBody;
 import org.nuxeo.client.spi.NuxeoClientException;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-import okhttp3.MediaType;
 import okhttp3.RequestBody;
 
 /**
@@ -118,46 +121,77 @@ public class BatchUpload extends AbstractConnectable<BatchUploadAPI, BatchUpload
         uploadedSize = size;
     }
 
+    /**
+     * @deprecated since 3.1, use {@link #upload(String, Blob)} instead
+     */
+    @Deprecated
     public BatchUpload upload(String fileIdx, File file) {
-        return upload(fileIdx, file, file.getName());
+        return upload(fileIdx, new FileBlob(file));
     }
 
+    /**
+     * @deprecated since 3.1, use {@link #upload(String, Blob)} instead
+     */
+    @Deprecated
     public BatchUpload upload(String fileIdx, File file, String name) {
-        return upload(fileIdx, file, name, FilenameUtils.getExtension(file.getName()));
+        return upload(fileIdx, new FileBlob(file, name));
     }
 
+    /**
+     * @deprecated since 3.1, use {@link #upload(String, Blob)} instead
+     */
+    @Deprecated
     public BatchUpload upload(String fileIdx, File file, String name, String fileType) {
-        return upload(fileIdx, file, name, fileType, file.length());
+        return upload(fileIdx, new FileBlob(file, name, fileType));
     }
 
+    /**
+     * @deprecated since 3.1, use {@link #upload(String, Blob)} instead
+     */
+    @Deprecated
     public BatchUpload upload(String fileIdx, File file, String name, String fileType, long length) {
+        // length parameter is kinda weird because we have it in File -> forget it
+        return upload(fileIdx, new FileBlob(file, name, fileType));
+    }
+
+    /**
+     * Uploads the given blob to the current {@link BatchUpload} for given index.
+     *
+     * @since 3.1
+     */
+    public BatchUpload upload(String fileIdx, Blob blob) {
+        String filename = blob.getFilename();
+        String mimeType = blob.getMimeType();
+        long length = blob.getContentLength();
         if (chunkSize == 0) {
-            // Post file
-            RequestBody fbody = RequestBody.create(MediaType.parse(fileType), file);
-            BatchUpload response = fetchResponse(api.upload(name, Long.toString(length), fileType,
-                    ConstantsV1.UPLOAD_NORMAL_TYPE, "0", "1", batchId, fileIdx, fbody));
-            response.name = name;
+            // Post blob
+            RequestBody fbody = Requests.create(blob);
+            BatchUpload response = fetchResponse(
+                    api.upload(filename, length, mimeType, UPLOAD_NORMAL_TYPE, 0, 1, batchId, fileIdx, fbody));
+            response.name = filename;
             response.batchId = batchId;
             response.fileIdx = fileIdx;
             return response;
         }
+        if (length <= 0) {
+            throw new NuxeoClientException("You have to give blob length in order to upload it by chunk");
+        }
         BatchUpload response = null;
-        int contentLength;
+        int bufferLength;
         byte[] buffer = new byte[chunkSize];
-        int chunkIndex = 0;
-        long chunkCount = (file.length() + chunkSize - 1) / chunkSize;
-        try (BufferedInputStream bis = new BufferedInputStream(new FileInputStream(file))) {
-            while ((contentLength = bis.read(buffer)) > 0) {
+        long chunkIndex = 0;
+        long chunkCount = (length + chunkSize - 1) / chunkSize;
+        try (BufferedInputStream bis = new BufferedInputStream(blob.getStream())) {
+            while ((bufferLength = bis.read(buffer)) > 0) {
                 // Post chunk as a stream
                 RequestBody requestBody = RequestBody.create(MediaTypes.APPLICATION_OCTET_STREAM.toOkHttpMediaType(),
-                        buffer, 0, contentLength);
-                response = fetchResponse(api.upload(name, Long.toString(length), fileType,
-                        ConstantsV1.UPLOAD_CHUNKED_TYPE, Integer.toString(chunkIndex), Long.toString(chunkCount),
-                        batchId, fileIdx, requestBody));
+                        buffer, 0, bufferLength);
+                response = fetchResponse(api.upload(filename, length, mimeType, UPLOAD_CHUNKED_TYPE, chunkIndex,
+                        chunkCount, batchId, fileIdx, requestBody));
                 chunkIndex++;
             }
             if (response != null) {
-                response.name = name;
+                response.name = filename;
                 // batchId and fileIdx are retrieved
                 // set back the internal value in order to upload with same settings
                 response.chunkSize = chunkSize;
@@ -221,7 +255,7 @@ public class BatchUpload extends AbstractConnectable<BatchUploadAPI, BatchUpload
     public BatchUpload chunkSize(int chunkSize) {
         this.chunkSize = chunkSize;
         // For consistency
-        this.uploadType = ConstantsV1.UPLOAD_CHUNKED_TYPE;
+        this.uploadType = UPLOAD_CHUNKED_TYPE;
         return this;
     }
 

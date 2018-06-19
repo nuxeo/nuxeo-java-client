@@ -32,6 +32,7 @@ import org.junit.Test;
 import org.nuxeo.client.methods.BatchUploadAPI;
 import org.nuxeo.client.objects.Document;
 import org.nuxeo.client.objects.blob.Blob;
+import org.nuxeo.client.objects.blob.FileBlob;
 import org.nuxeo.client.objects.blob.StreamBlob;
 import org.nuxeo.client.objects.upload.BatchUpload;
 import org.nuxeo.client.objects.upload.BatchUploadManager;
@@ -85,8 +86,9 @@ public class ITUpload extends AbstractITBase {
         String batchId = batchUpload.getBatchId();
         assertNotNull(batchId);
         File file = FileUtils.getResourceFileFromContext(filename1);
+        FileBlob fileBlob = new FileBlob(file);
 
-        batchUpload = batchUpload.upload("1", file);
+        batchUpload = batchUpload.upload("1", fileBlob);
         assertBatchUpload(batchId, "1", filename1, batchUpload);
 
         // Check the batch by fetching it again
@@ -100,7 +102,8 @@ public class ITUpload extends AbstractITBase {
 
         // Upload another file and check files
         file = FileUtils.getResourceFileFromContext(filename2);
-        batchUpload.upload("2", file);
+        fileBlob = new FileBlob(file);
+        batchUpload.upload("2", fileBlob);
         List<BatchUpload> batchUploads = batchUpload.fetchBatchUploads();
         assertNotNull(batchUploads);
         assertEquals(2, batchUploads.size());
@@ -127,7 +130,8 @@ public class ITUpload extends AbstractITBase {
 
         // Upload file chunks
         File file = FileUtils.getResourceFileFromContext("sample.jpg");
-        batchUpload = batchUpload.upload("1", file);
+        FileBlob fileBlob = new FileBlob(file);
+        batchUpload = batchUpload.upload("1", fileBlob);
         assertNotNull(batchUpload);
         assertEquals(batchId, batchUpload.getBatchId());
         assertEquals("1", batchUpload.getFileIdx());
@@ -155,7 +159,8 @@ public class ITUpload extends AbstractITBase {
         BatchUpload batchUpload = batchUploadManager.createBatch();
         assertNotNull(batchUpload);
         File file = FileUtils.getResourceFileFromContext("sample.jpg");
-        batchUpload = batchUpload.upload("1", file);
+        FileBlob fileBlob = new FileBlob(file);
+        batchUpload = batchUpload.upload("1", fileBlob);
         assertNotNull(batchUpload);
 
         // Getting a doc and attaching the batch file
@@ -175,7 +180,8 @@ public class ITUpload extends AbstractITBase {
         BatchUpload batchUpload = batchUploadManager.createBatch();
         assertNotNull(batchUpload);
         File file = FileUtils.getResourceFileFromContext("sample.jpg");
-        batchUpload = batchUpload.upload("1", file);
+        FileBlob fileBlob = new FileBlob(file);
+        batchUpload = batchUpload.upload("1", fileBlob);
         assertNotNull(batchUpload);
 
         // Getting a doc and attaching the batch file
@@ -202,8 +208,9 @@ public class ITUpload extends AbstractITBase {
 
         // POST request with blob and batch id to upload blob
         File file = FileUtils.getResourceFileFromContext("sample.jpg");
+        FileBlob fileBlob = new FileBlob(file);
         batchUpload = batchUploadManager.getBatch(batchId);
-        batchUpload = batchUpload.upload("1", file);
+        batchUpload = batchUpload.upload("1", fileBlob);
         assertNotNull(batchUpload);
         // return batchId and fileIdx
 
