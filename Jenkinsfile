@@ -47,6 +47,27 @@ node(env.SLAVE) {
                     sh "${mvnHome}/bin/mvn ${mvnGoals} -P ${env.TARGET_PLATFORM}"
                 }
 
+                // do analysis only on VS Nuxeo master job
+                if (env.STATUS_CONTEXT_NAME == 'nuxeo/master') {
+                    stage('analysis') {
+                        withEnv(['MAVEN_OPTS=-Xmx1g -server']) {
+                            withCredentials([usernamePassword(credentialsId: 'c4ced779-af65-4bce-9551-4e6c0e0dcfe5', passwordVariable: 'SONARCLOUD_PWD', usernameVariable: '')]) {
+                                if (env.BRANCH_NAME != 'master') {
+                                    TARGET_OPTION = "-Dsonar.branch.target=master"
+                                } else {
+                                    TARGET_OPTION = ""
+                                }
+                                sh """#!/bin/bash -ex
+                                        mvn clean verify sonar:sonar -Dsonar.login=$SONARCLOUD_PWD \
+                                          -Dsonar.branch.name=${env.BRANCH_NAME} $TARGET_OPTION \
+                                          -P ${env.TARGET_PLATFORM},qa,sonar \
+                                          -Dit.jacoco.destFile=$WORKSPACE/target/jacoco-it.exec
+                                    """
+                            }
+                        }
+                    }
+                }
+
                 stage('post build') {
                     step([$class        : 'WarningsPublisher', canComputeNew: false, canResolveRelativePaths: false,
                           consoleParsers: [[parserName: 'Maven']], defaultEncoding: '', excludePattern: '',

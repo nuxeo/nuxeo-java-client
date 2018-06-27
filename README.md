@@ -10,7 +10,8 @@ Here is the [Documentation Website](http://nuxeo.github.io/nuxeo-java-client).
 [![Jenkins master vs 9.10](https://img.shields.io/jenkins/s/https/qa2.nuxeo.org/jenkins/job/9.10/job/nuxeo-java-client-vs-9.10/job/master.svg?label=Nuxeo%209.10)](https://qa2.nuxeo.org/jenkins/job/9.10/job/nuxeo-java-client-vs-9.10/job/master/)
 [![Jenkins master vs 8.10](https://img.shields.io/jenkins/s/https/qa2.nuxeo.org/jenkins/job/8.10/job/nuxeo-java-client-vs-8.10/job/master.svg?label=Nuxeo%208.10)](https://qa2.nuxeo.org/jenkins/job/8.10/job/nuxeo-java-client-vs-8.10/job/master/)
 [![Jenkins master vs 7.10](https://img.shields.io/jenkins/s/https/qa2.nuxeo.org/jenkins/job/7.10/job/nuxeo-java-client-vs-7.10/job/master.svg?label=Nuxeo%207.10)](https://qa2.nuxeo.org/jenkins/job/7.10/job/nuxeo-java-client-vs-7.10/job/master/)
-[![Dependency Status](https://www.versioneye.com/user/projects/59637bee0fb24f00583adf8e/badge.svg?style=flat-square)](https://www.versioneye.com/user/projects/59637bee0fb24f00583adf8e)
+[![Sonar coverage](https://sonarcloud.io/api/project_badges/measure?project=org.nuxeo.client:nuxeo-java-client-parent&metric=coverage)](https://sonarcloud.io/dashboard?id=org.nuxeo.client%3Anuxeo-java-client)
+[![Sonar LoC](https://sonarcloud.io/api/project_badges/measure?project=org.nuxeo.client:nuxeo-java-client-parent&metric=ncloc)](https://sonarcloud.io/dashboard?id=org.nuxeo.client%3Anuxeo-java-client)
 
 ## Building
 
