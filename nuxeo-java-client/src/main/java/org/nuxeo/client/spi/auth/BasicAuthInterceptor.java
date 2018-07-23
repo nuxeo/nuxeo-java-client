@@ -19,12 +19,14 @@
  */
 package org.nuxeo.client.spi.auth;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
+
 import java.io.IOException;
+import java.util.Base64;
 
 import org.nuxeo.client.HttpHeaders;
 import org.nuxeo.client.MediaTypes;
 import org.nuxeo.client.spi.NuxeoClientException;
-import org.nuxeo.client.util.Base64;
 
 import okhttp3.Interceptor;
 import okhttp3.Request;
@@ -42,7 +44,7 @@ public class BasicAuthInterceptor implements Interceptor {
             throw new NuxeoClientException("'username' and 'password' must be set");
         }
         String info = username + ":" + password;
-        token = "Basic " + Base64.encode(info, Base64.DONT_BREAK_LINES);
+        token = "Basic " + Base64.getEncoder().encodeToString(info.getBytes(UTF_8));
     }
 
     @Override

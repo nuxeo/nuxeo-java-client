@@ -86,4 +86,8 @@ public class Operations {
      * @since 3.1
      */
     public static final String REPOSITORY_GET_DOCUMENT = "Repository.GetDocument";
+
+    private Operations() {
+        // no instance allowed
+    }
 }

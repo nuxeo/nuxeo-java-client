@@ -19,21 +19,26 @@
  */
 package org.nuxeo.client.objects.task;
 
+import java.io.Serializable;
 import java.util.Calendar;
 import java.util.List;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
  * @since 1.0
  */
-public class TaskVariables {
+public class TaskVariables implements Serializable {
 
     protected String comment;
 
-    protected List<String> assignees;
+    protected List<String> assignees; // NOSONAR
 
-    protected Calendar end_date;
+    @JsonProperty("end_date")
+    protected Calendar endDate;
 
-    protected List<String> participants;
+    protected List<String> participants; // NOSONAR
 
     public String getComment() {
         return comment;
@@ -51,12 +56,30 @@ public class TaskVariables {
         this.assignees = assignees;
     }
 
-    public Calendar getEnd_date() {
-        return end_date;
+    /**
+     * @deprecated since 3.2, use {@link #getEndDate()} instead
+     */
+    @Deprecated
+    @JsonIgnore
+    public Calendar getEnd_date() { // NOSONAR
+        return getEndDate();
     }
 
-    public void setEnd_date(Calendar end_date) {
-        this.end_date = end_date;
+    public Calendar getEndDate() {
+        return endDate;
+    }
+
+    /**
+     * @deprecated since 3.2, use {@link #setEndDate(Calendar)} instead
+     */
+    @Deprecated
+    @JsonIgnore
+    public void setEnd_date(Calendar endDate) { // NOSONAR
+        setEndDate(endDate);
+    }
+
+    public void setEndDate(Calendar endDate) {
+        this.endDate = endDate;
     }
 
     public List<String> getParticipants() {

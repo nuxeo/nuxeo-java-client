@@ -94,7 +94,7 @@ public class UserManager extends AbstractConnectable<UserManagerAPI, UserManager
     }
 
     public User updateUser(String userName, User user) {
-        return fetchResponse(api.fetchUser(userName));
+        return fetchResponse(api.updateUser(userName, user));
     }
 
     public User updateUser(User user) {

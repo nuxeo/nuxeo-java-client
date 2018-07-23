@@ -24,19 +24,15 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
-import java.util.function.BiFunction;
-import java.util.function.Function;
+
+import org.nuxeo.client.HttpHeaders;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import okhttp3.Interceptor;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
-
-import org.nuxeo.client.HttpHeaders;
-
-import okhttp3.internal.Version;
 import retrofit2.Retrofit;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
 
 /**
  * @param <B> The type of object extending this one.
@@ -188,9 +184,9 @@ public class AbstractBase<B extends AbstractBase<B>> {
     /**
      * Replaces the current fetch properties associate to group type by the input one. Possible values are:
      * <ul>
-     *     <li>memberUsers</li>
-     *     <li>memberGroups</li>
-     *     <li>parentGroups</li>
+     * <li>memberUsers</li>
+     * <li>memberGroups</li>
+     * <li>parentGroups</li>
      * </ul>
      */
     public B fetchPropertiesForGroup(String fetchProperty, String... fetchProperties) {
@@ -218,7 +214,7 @@ public class AbstractBase<B extends AbstractBase<B>> {
      * Replaces the current schemas by the input one.
      */
     public B schemas(String property, String... properties) {
-        return schemas(false, property,properties);
+        return schemas(false, property, properties);
     }
 
     /**

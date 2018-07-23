@@ -54,13 +54,13 @@ public class Task extends Entity {
 
     protected Calendar dueDate;
 
-    protected List<String> comments;
+    protected List<String> comments; // NOSONAR
 
     @JsonProperty("targetDocumentIds")
-    protected List<Map<String, String>> targetDocumentIds;
+    protected List<Map<String, String>> targetDocumentIds; // NOSONAR
 
     @JsonProperty("actors")
-    protected List<Map<String, String>> actors;
+    protected List<Map<String, String>> actors; // NOSONAR
 
     protected TaskVariables variables;
 
@@ -157,7 +157,7 @@ public class Task extends Entity {
 
     @JsonIgnore
     public void setTargetDocumentIds(List<String> ids) {
-        targetDocumentIds = ids.stream().map(id -> Collections.singletonMap("id", id)).collect(Collectors.toList());
+        targetDocumentIds = ids.stream().map(i -> Collections.singletonMap("id", i)).collect(Collectors.toList());
     }
 
     @JsonIgnore
@@ -167,7 +167,7 @@ public class Task extends Entity {
 
     @JsonIgnore
     public void setActors(List<String> ids) {
-        actors = ids.stream().map(id -> Collections.singletonMap("id", id)).collect(Collectors.toList());
+        actors = ids.stream().map(i -> Collections.singletonMap("id", i)).collect(Collectors.toList());
     }
 
     public TaskVariables getVariables() {

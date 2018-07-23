@@ -180,14 +180,14 @@ public class BatchUpload extends AbstractConnectable<BatchUploadAPI, BatchUpload
         int bufferLength;
         byte[] buffer = new byte[chunkSize];
         long chunkIndex = 0;
-        long chunkCount = (length + chunkSize - 1) / chunkSize;
+        long chunkNumber = (length + chunkSize - 1) / chunkSize;
         try (BufferedInputStream bis = new BufferedInputStream(blob.getStream())) {
             while ((bufferLength = bis.read(buffer)) > 0) {
                 // Post chunk as a stream
                 RequestBody requestBody = RequestBody.create(MediaTypes.APPLICATION_OCTET_STREAM.toOkHttpMediaType(),
                         buffer, 0, bufferLength);
                 response = fetchResponse(api.upload(filename, length, mimeType, UPLOAD_CHUNKED_TYPE, chunkIndex,
-                        chunkCount, batchId, fileIdx, requestBody));
+                        chunkNumber, batchId, fileIdx, requestBody));
                 chunkIndex++;
             }
             if (response != null) {

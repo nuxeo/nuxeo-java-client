@@ -140,6 +140,7 @@ public class Operation extends ConnectableEntity<OperationAPI, Operation> {
      *
      * @deprecated since 3.1, use {@link Requests#create(Blob)} instead
      */
+    @Deprecated
     public static RequestBody create(Blob blob) {
         return Requests.create(blob);
     }

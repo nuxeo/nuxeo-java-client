@@ -33,7 +33,7 @@ import org.nuxeo.client.util.IOUtils;
 @Deprecated
 public class FileStreamBlob extends FileBlob {
 
-    protected final InputStream inputStream;
+    protected final transient InputStream inputStream;
 
     public FileStreamBlob(InputStream inputStream) {
         super(null, null, -1);

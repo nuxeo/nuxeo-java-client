@@ -26,7 +26,9 @@ import org.apache.commons.io.IOUtils;
 
 /**
  * @since 0.1
+ * @deprecated since 3.1
  */
+@Deprecated
 public class Base64 {
 
     /* ******** P U B L I C F I E L D S ******** */

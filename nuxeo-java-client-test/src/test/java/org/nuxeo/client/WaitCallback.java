@@ -18,6 +18,12 @@
  */
 package org.nuxeo.client;
 
+import static java.util.concurrent.TimeUnit.MILLISECONDS;
+import static java.util.concurrent.TimeUnit.SECONDS;
+import static org.awaitility.Awaitility.with;
+
+import java.util.concurrent.atomic.AtomicBoolean;
+
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -27,7 +33,7 @@ import retrofit2.Response;
  */
 public class WaitCallback<T> implements Callback<T> {
 
-    private volatile boolean hasBeenCalled;
+    private final AtomicBoolean hasBeenCalled = new AtomicBoolean(false);
 
     private volatile T body;
 
@@ -35,20 +41,18 @@ public class WaitCallback<T> implements Callback<T> {
 
     @Override
     public void onResponse(Call<T> call, Response<T> response) {
-        hasBeenCalled = true;
+        hasBeenCalled.set(true);
         body = response.body();
     }
 
     @Override
     public void onFailure(Call<T> call, Throwable t) {
-        hasBeenCalled = true;
+        hasBeenCalled.set(true);
         exception = new Exception(t);
     }
 
     public T waitForResponse() throws Exception {
-        while (!hasBeenCalled) {
-            Thread.sleep(100);
-        }
+        with().pollInSameThread().await().atLeast(100, MILLISECONDS).and().atMost(20, SECONDS).untilTrue(hasBeenCalled);
         if (exception != null) {
             throw exception;
         }

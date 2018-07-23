@@ -22,11 +22,12 @@ package org.nuxeo.client.spi.auth;
 import java.io.IOException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.Base64;
 import java.util.Date;
 import java.util.Random;
 
 import org.nuxeo.client.HttpHeaders;
-import org.nuxeo.client.util.Base64;
+import org.nuxeo.client.spi.NuxeoClientException;
 
 import okhttp3.Headers;
 import okhttp3.Interceptor;
@@ -59,10 +60,10 @@ public class PortalSSOAuthInterceptor implements Interceptor {
         try {
             hashedToken = MessageDigest.getInstance("MD5").digest(clearToken.getBytes());
         } catch (NoSuchAlgorithmException e) {
-            throw new RuntimeException("Cannot compute token", e);
+            throw new NuxeoClientException("Cannot compute token", e);
         }
 
-        String base64HashedToken = Base64.encode(hashedToken);
+        String base64HashedToken = Base64.getEncoder().encodeToString(hashedToken);
         return headers.newBuilder()
                       .add(HttpHeaders.NX_TS, String.valueOf(ts))
                       .add(HttpHeaders.NX_RD, String.valueOf(random))

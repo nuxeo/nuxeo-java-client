@@ -32,6 +32,10 @@ import java.util.TimeZone;
  */
 public class Dates {
 
+    private Dates() {
+        // no instance allowed
+    }
+
     public static Calendar parse(String str) throws ParseException {
         if (str == null) {
             return null;
@@ -165,9 +169,8 @@ public class Dates {
     /**
      * Return -1 if no more content to read or the offset of the expected TZ
      *
-     * @throws java.text.ParseException
      */
-    private static int readMilliseconds(Calendar cal, String str, int off) throws ParseException {
+    private static int readMilliseconds(Calendar cal, String str, int off) {
         int e = str.indexOf('Z', off);
         if (e == -1) {
             e = str.indexOf('+', off);

@@ -18,6 +18,7 @@
  */
 package org.nuxeo.client;
 
+import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -88,6 +89,11 @@ public class NuxeoVersion {
 
     public boolean equals(NuxeoVersion version) {
         return version != null && equals(version.version());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(majorVersion, minorVersion, hotfix, snapshot);
     }
 
     @Override

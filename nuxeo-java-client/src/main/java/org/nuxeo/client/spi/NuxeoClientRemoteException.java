@@ -41,7 +41,7 @@ public class NuxeoClientRemoteException extends NuxeoClientException {
      */
     @Deprecated
     @JsonProperty("code")
-    protected String exceptionClassName;
+    protected final String exceptionClassName;
 
     protected final int status;
 
@@ -61,6 +61,7 @@ public class NuxeoClientRemoteException extends NuxeoClientException {
         super(message, cause);
         this.status = status;
         this.errorBody = errorBody;
+        this.exceptionClassName = null; // NOSONAR
     }
 
     /**

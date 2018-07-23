@@ -40,4 +40,7 @@ public class ConstantsV1 {
 
     public static final String UPLOAD_NORMAL_TYPE = "normal";
 
+    private ConstantsV1() {
+        // no instance allowed
+    }
 }
