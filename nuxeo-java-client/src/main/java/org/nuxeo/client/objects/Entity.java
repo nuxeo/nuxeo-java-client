@@ -18,6 +18,7 @@
  */
 package org.nuxeo.client.objects;
 
+import java.io.Serializable;
 import java.util.Objects;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -27,7 +28,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  *
  * @since 3.0
  */
-public class Entity {
+public class Entity implements Serializable {
 
     @JsonProperty("entity-type")
     protected final String entityType;

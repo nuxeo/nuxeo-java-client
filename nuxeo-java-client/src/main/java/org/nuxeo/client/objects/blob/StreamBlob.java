@@ -27,7 +27,7 @@ import java.io.InputStream;
  */
 public class StreamBlob extends AbstractBlob {
 
-    private final InputStream inputStream;
+    private final transient InputStream inputStream;
 
     public StreamBlob(InputStream inputStream, String filename) {
         this(inputStream, filename, APPLICATION_OCTET_STREAM_S);

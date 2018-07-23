@@ -28,7 +28,6 @@ import org.nuxeo.client.objects.config.Schema;
 import org.nuxeo.client.objects.config.SchemaField;
 
 import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.TreeNode;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -48,7 +47,7 @@ public class DocTypesSchemasDeserializer extends StdDeserializer<Map<String, Sch
 
     @Override
     public Map<String, Schema> deserialize(JsonParser jp, DeserializationContext ctxt)
-            throws IOException, JsonProcessingException {
+            throws IOException {
         TreeNode node = jp.readValueAsTree();
         return deserializeSchemas((ObjectNode) node);
     }

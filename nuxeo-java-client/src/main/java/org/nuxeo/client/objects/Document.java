@@ -86,7 +86,7 @@ public class Document extends RepositoryEntity<RepositoryAPI, Document> {
     protected Map<String, Object> properties = new HashMap<>();
 
     @JsonIgnore
-    protected transient Map<String, Object> dirtyProperties = new HashMap<>();
+    protected Map<String, Object> dirtyProperties = new HashMap<>();
 
     @JsonDeserialize(contentUsing = EntityValueDeserializer.class)
     protected Map<String, Object> contextParameters = new HashMap<>();
@@ -419,13 +419,13 @@ public class Document extends RepositoryEntity<RepositoryAPI, Document> {
      * @since 1.0
      * @param aceId ACE ID.
      * @param username User Name.
-     * @param ACLName Name of the ACL (local, inherited...).
+     * @param aclName Name of the ACL (local, inherited...).
      */
-    public void removePermission(String aceId, String username, String ACLName) {
+    public void removePermission(String aceId, String username, String aclName) {
         Map<String, Object> params = new HashMap<>();
         params.put("id", aceId);
         params.put("user", username);
-        params.put("acl", ACLName);
+        params.put("acl", aclName);
         nuxeoClient.operation(Operations.DOCUMENT_REMOVE_PERMISSION).input(this).parameters(params).execute();
     }
 

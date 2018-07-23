@@ -19,18 +19,19 @@
  */
 package org.nuxeo.client.objects.task;
 
+import java.io.Serializable;
 import java.util.List;
 
 /**
  * @since 1.0
  */
-public class TaskInfo {
+public class TaskInfo implements Serializable {
 
-    protected List<TaskInfoItem> taskActions;
+    protected List<TaskInfoItem> taskActions; // NOSONAR
 
     protected TaskInfoItem layoutResource;
 
-    protected List<TaskInfoItem> schemas;
+    protected List<TaskInfoItem> schemas; // NOSONAR
 
     public List<TaskInfoItem> getTaskActions() {
         return taskActions;
@@ -56,7 +57,7 @@ public class TaskInfo {
         this.schemas = schemas;
     }
 
-    public static class TaskInfoItem {
+    public static class TaskInfoItem implements Serializable {
 
         protected String name;
 

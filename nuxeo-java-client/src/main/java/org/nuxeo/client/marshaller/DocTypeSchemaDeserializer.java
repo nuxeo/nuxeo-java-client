@@ -27,7 +27,6 @@ import java.util.List;
 import org.nuxeo.client.objects.config.Schema;
 
 import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.ObjectCodec;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -50,7 +49,7 @@ public class DocTypeSchemaDeserializer extends StdDeserializer<List<Schema>> {
 
     @Override
     public List<Schema> deserialize(JsonParser p, DeserializationContext ctxt)
-            throws IOException, JsonProcessingException {
+            throws IOException {
         ArrayNode schemas = p.readValueAsTree();
         if (schemas.size() == 0) {
             return Collections.emptyList();

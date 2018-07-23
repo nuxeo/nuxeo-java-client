@@ -27,7 +27,7 @@ public abstract class AbstractBlob implements Blob {
 
     protected final String mimeType;
 
-    private final long length;
+    protected final long length;
 
     /**
      * @deprecated since 3.1, implementation should decide about length strategy
@@ -59,11 +59,11 @@ public abstract class AbstractBlob implements Blob {
     @Override
     @Deprecated
     public int getLength() {
-        long length = getContentLength();
-        if (length > (long) Integer.MAX_VALUE) {
+        long contentLength = getContentLength();
+        if (contentLength > (long) Integer.MAX_VALUE) {
             return -1;
         }
-        return (int) length;
+        return (int) contentLength;
     }
 
     @Override

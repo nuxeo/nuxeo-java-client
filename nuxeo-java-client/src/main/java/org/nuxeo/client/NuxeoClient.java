@@ -336,12 +336,7 @@ public class NuxeoClient extends AbstractBase<NuxeoClient> {
                 String filename = null;
                 String contentDisposition = headers.get("Content-Disposition");
                 if (contentDisposition != null) {
-                    filename = contentDisposition.replaceFirst(".*filename\\*?=(UTF-8'')?(.*)", "$2");
-                    try {
-                        filename = URLDecoder.decode(filename, "UTF-8");
-                    } catch (UnsupportedEncodingException e) {
-                        // May not happen
-                    }
+                    filename = decodeFilename(contentDisposition);
                 }
                 if (filename == null) {
                     filename = blob.getFilename();
@@ -376,6 +371,16 @@ public class NuxeoClient extends AbstractBase<NuxeoClient> {
         }
     }
 
+    protected String decodeFilename(String contentDisposition) {
+        String filename = contentDisposition.replaceFirst(".*filename\\*?=(UTF-8'')?(.*)", "$2");
+        try {
+            filename = URLDecoder.decode(filename, "UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            // May not happen
+        }
+        return filename;
+    }
+
     protected boolean useCache(Call<?> call) {
         return isCacheEnabled() && "GET".equals(call.request().method());
     }
@@ -392,10 +397,10 @@ public class NuxeoClient extends AbstractBase<NuxeoClient> {
             return null;
         }
         digest.update((originalRequest.toString() + originalRequest.headers().toString()).getBytes());
-        byte messageDigest[] = digest.digest();
+        byte[] messageDigest = digest.digest();
         StringBuilder hexString = new StringBuilder();
         for (byte msg : messageDigest) {
-            hexString.append(Integer.toHexString(0xFF & msg));
+            hexString.append(String.format("%02X", msg));
         }
         return hexString.toString();
     }

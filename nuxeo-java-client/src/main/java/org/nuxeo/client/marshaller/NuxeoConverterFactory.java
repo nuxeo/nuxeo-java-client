@@ -51,7 +51,6 @@ public class NuxeoConverterFactory extends Converter.Factory {
     }
 
     public static NuxeoConverterFactory create() {
-        // TODO JAVACLIENT-21
         ObjectMapper mapper = new ObjectMapper();
         mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
         return create(mapper);

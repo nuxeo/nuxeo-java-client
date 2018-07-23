@@ -63,4 +63,8 @@ public class HttpHeaders {
 
     public static final String CONTENT_TYPE_APPLICATION_OCTET_STREAM = CONTENT_TYPE + ": "
             + MediaTypes.APPLICATION_OCTET_STREAM_S;
+
+    private HttpHeaders() {
+        // no instance allowed
+    }
 }
