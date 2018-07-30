@@ -105,7 +105,8 @@
     <sonar.host.url>https://sonarcloud.io</sonar.host.url>
     <sonar.organization>nuxeo</sonar.organization>
     <sonar.dynamicAnalysis>reuseReports</sonar.dynamicAnalysis>
-    <it.jacoco.destFile>${project.basedir}/target/jacoco-it.exec</it.jacoco.destFile>
+    <it.jacoco.destFile>${session.executionRootDirectory}/target/jacoco-it.exec</it.jacoco.destFile>
+    <sonar.jacoco.reportPaths>${it.jacoco.destFile}</sonar.jacoco.reportPaths>
     <!-- for use in maven-surefire-plugin, maven-failsafe-plugin, jacoco-maven-plugin -->
     <it.failsafe.argLine></it.failsafe.argLine>
     <!-- for javadoc plugin -->
