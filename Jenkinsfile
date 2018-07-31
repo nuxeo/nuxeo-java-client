@@ -39,12 +39,13 @@ node(env.SLAVE) {
 
                     def jdk = tool name: 'java-8-oracle'
                     env.JAVA_HOME = "${jdk}"
-                    def mvnHome = tool name: 'maven-3', type: 'hudson.tasks.Maven$MavenInstallation'
                     def mvnGoals = 'clean install'
                     if (masterBuild) {
                         mvnGoals += ' deploy'
                     }
-                    sh "${mvnHome}/bin/mvn ${mvnGoals} -P ${env.TARGET_PLATFORM}"
+                    withMaven(maven: 'maven-3') { 
+                       sh "mvn ${mvnGoals} -P ${env.TARGET_PLATFORM}"
+                    }
                 }
 
                 // do analysis only on VS Nuxeo master job
@@ -57,12 +58,14 @@ node(env.SLAVE) {
                                 } else {
                                     TARGET_OPTION = ""
                                 }
-                                sh """#!/bin/bash -ex
-                                        mvn clean verify sonar:sonar -Dsonar.login=$SONARCLOUD_PWD \
+                                withMaven(maven: 'maven-3') {
+                                    sh """
+                                      mvn clean verify sonar:sonar -Dsonar.login=$SONARCLOUD_PWD \
                                           -Dsonar.branch.name=${env.BRANCH_NAME} $TARGET_OPTION \
                                           -P ${env.TARGET_PLATFORM},qa,sonar \
                                           -Dit.jacoco.destFile=$WORKSPACE/target/jacoco-it.exec
                                     """
+                                }
                             }
                         }
                     }
