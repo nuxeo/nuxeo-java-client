@@ -49,7 +49,7 @@ node(env.SLAVE) {
                     // do analysis only on VS Nuxeo master job
                     if (env.STATUS_CONTEXT_NAME == 'nuxeo/master') {
                         stage('analysis') {
-                            withMaven(maven: 'maven-3', mavenOpts='-Xmx1g -server') {
+                            withMaven(maven: 'maven-3', mavenOpts: '-Xmx1g -server') {
                                 withCredentials([usernamePassword(credentialsId: 'c4ced779-af65-4bce-9551-4e6c0e0dcfe5', passwordVariable: 'SONARCLOUD_PWD', usernameVariable: '')]) {
                                     if (env.BRANCH_NAME != 'master') {
                                         TARGET_OPTION = "-Dsonar.branch.target=master"
