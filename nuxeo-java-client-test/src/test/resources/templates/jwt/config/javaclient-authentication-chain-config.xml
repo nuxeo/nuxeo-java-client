@@ -1,29 +1,26 @@
-<component name="org.nuxeo.ecm.platform.authenticator.portal.sso.config">
+<component name="org.nuxeo.client.test.chain.auth">
 
   <require>org.nuxeo.ecm.platform.ui.web.auth.WebEngineConfig</require>
-  <require>org.nuxeo.ecm.platform.login.Portal</require>
-
-  <extension target="org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService" point="authenticators">
-    <authenticationPlugin name="PORTAL_AUTH">
-      <loginModulePlugin>Trusting_LM</loginModulePlugin>
-      <parameters>
-        <!-- define here shared secret between the portal and Nuxeo server -->
-        <parameter name="secret">nuxeo5secretkey</parameter>
-        <parameter name="maxAge">3600</parameter>
-      </parameters>
-    </authenticationPlugin>
-  </extension>
 
   <extension target="org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService" point="chain">
     <authenticationChain>
       <plugins>
+        <!-- Nuxeo 10.3 plugins -->
         <plugin>BASIC_AUTH</plugin>
+        <plugin>TOKEN_AUTH</plugin>
+        <plugin>OAUTH2_AUTH</plugin>
+        <plugin>JWT_AUTH</plugin>
+        <plugin>FORM_AUTH</plugin>
+        <plugin>WEBENGINE_FORM_AUTH</plugin>
+        <plugin>ANONYMOUS_AUTH</plugin>
+        <plugin>WEBSERVICES_AUTH</plugin>
+        <!-- Specific authentication for java client tests -->
         <plugin>PORTAL_AUTH</plugin>
       </plugins>
     </authenticationChain>
   </extension>
 
-  <extension point="specificChains" target="org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService">
+  <extension target="org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService" point="specificChains">
     <specificAuthenticationChain name="Automation">
       <urlPatterns>
         <!-- used in Builder#connect method -->
@@ -33,6 +30,13 @@
       </urlPatterns>
       <replacementChain>
         <plugin>AUTOMATION_BASIC_AUTH</plugin>
+        <plugin>TOKEN_AUTH</plugin>
+        <plugin>OAUTH2_AUTH</plugin>
+        <plugin>JWT_AUTH</plugin>
+        <plugin>FORM_AUTH</plugin>
+        <plugin>WEBENGINE_FORM_AUTH</plugin>
+        <plugin>ANONYMOUS_AUTH</plugin>
+        <plugin>WEBSERVICES_AUTH</plugin>
         <plugin>PORTAL_AUTH</plugin>
       </replacementChain>
     </specificAuthenticationChain>

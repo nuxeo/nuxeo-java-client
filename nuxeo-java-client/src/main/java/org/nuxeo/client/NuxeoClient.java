@@ -316,7 +316,7 @@ public class NuxeoClient extends AbstractBase<NuxeoClient> {
             T body = response.body();
             Headers headers = response.headers();
             if (body instanceof ResponseBody) {
-                throw new IllegalStateException("Internal client error, everything should be mapped to a type.");
+                throw new NuxeoClientException("Internal client error, everything should be mapped to a type");
             } else if (body == null) {
                 if (httpCode == 204 && MediaTypes.APPLICATION_NUXEO_EMPTY_LIST_S.equals(headers.get("Content-Type"))) {
                     return retrofit2.Response.success((T) new Blobs(), response.raw());
