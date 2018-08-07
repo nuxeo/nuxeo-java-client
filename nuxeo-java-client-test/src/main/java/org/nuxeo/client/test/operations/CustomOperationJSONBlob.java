@@ -25,6 +25,8 @@ import org.nuxeo.ecm.core.api.Blobs;
 
 /**
  * Custom operation returning a custom json blob
+ *
+ * TODO to replace by automation scripting when LTS 2017 - 9.10 is deprecated: https://jira.nuxeo.com/browse/NXP-25020
  */
 @Operation(id = CustomOperationJSONBlob.ID, category = "Document", label = "CustomOperationJSONBlob")
 public class CustomOperationJSONBlob {
