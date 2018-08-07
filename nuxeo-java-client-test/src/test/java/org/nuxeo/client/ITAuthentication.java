@@ -24,6 +24,8 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+import static org.junit.Assume.assumeTrue;
+import static org.nuxeo.client.ITBase.createClient;
 
 import org.junit.Test;
 import org.nuxeo.client.objects.user.User;
@@ -37,10 +39,8 @@ public class ITAuthentication {
 
     @Test
     public void itCanLoginAndLogout() {
-        NuxeoClient.Builder builder = ITBase.createClientBuilder();
-
         // Login
-        NuxeoClient client = builder.connect();
+        NuxeoClient client = createClient();
         User currentUser = client.getCurrentUser();
         assertNotNull(currentUser);
         assertEquals("Administrator", currentUser.getUserName());
@@ -60,7 +60,7 @@ public class ITAuthentication {
     @Test
     public void itCanFailOnLogin() {
         try {
-            ITBase.createClientBuilder("wrong", "credentials").connect();
+            createClient("wrong", "credentials");
             fail("Should be non authorized");
         } catch (NuxeoClientRemoteException reason) {
             assertEquals(401, reason.getStatus());
@@ -68,15 +68,25 @@ public class ITAuthentication {
     }
 
     @Test
-    public void itCanChangeAuthMethod() {
+    public void itCanLoginWithPortalSSO() {
         NuxeoClient client = ITBase.createClientPortalSSO();
         User currentUser = client.getCurrentUser();
         assertEquals("Administrator", currentUser.getUserName());
     }
 
     @Test
+    public void itCanLoginWithJWT() {
+        assumeTrue("itCanChangeLoginWithJWT works only since Nuxeo 10.3",
+                // TODO change the version to LTS
+                createClient().getServerVersion().isGreaterThan(new NuxeoVersion(10, 3, 0, true)));
+        NuxeoClient client = ITBase.createClientJWT();
+        User currentUser = client.getCurrentUser();
+        assertEquals("Administrator", currentUser.getUserName());
+    }
+
+    @Test
     public void itCanLoginWithLongCredentials() {
-        UserManager userManager = ITBase.createClientBuilder().connect().userManager();
+        UserManager userManager = createClient().userManager();
 
         String email = "verylongmailaddress0123456789@nuxeo.com";
         String password = "verylongpassword0123456789";
@@ -87,7 +97,7 @@ public class ITAuthentication {
         user.setPassword(password);
         userManager.createUser(user);
         // now test
-        User currentUser = ITBase.createClient(email, password).getCurrentUser();
+        User currentUser = createClient(email, password).getCurrentUser();
         assertEquals(email, currentUser.getUserName());
         assertFalse(currentUser.isAdministrator());
         // delete it

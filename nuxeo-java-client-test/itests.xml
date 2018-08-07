@@ -16,7 +16,7 @@
     <!-- install templates -->
     <for list="${nuxeo.templates}" delimiter="," param="template">
       <sequential>
-        <copy todir="${nuxeo.nxserver}/">
+        <copy todir="${nuxeo.nxserver}/" overwrite="true">
           <fileset dir="src/test/resources/templates/@{template}" includes="**" />
         </copy>
       </sequential>

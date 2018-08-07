@@ -40,6 +40,8 @@ import org.nuxeo.client.objects.user.UserManager;
 import org.nuxeo.client.objects.workflow.Workflow;
 import org.nuxeo.client.objects.workflow.Workflows;
 import org.nuxeo.client.spi.NuxeoClientRemoteException;
+import org.nuxeo.client.spi.auth.BasicAuthInterceptor;
+import org.nuxeo.client.spi.auth.JWTAuthInterceptor;
 import org.nuxeo.client.spi.auth.PortalSSOAuthInterceptor;
 import org.nuxeo.common.utils.FileUtils;
 
@@ -286,7 +288,16 @@ public class ITBase {
      * @return A {@link NuxeoClient} filled with Nuxeo Server URL and default Portal SSO authentication.
      */
     public static NuxeoClient createClientPortalSSO() {
-        return createClientBuilderPortalSSO().connect();
+        return createClientBuilder(new PortalSSOAuthInterceptor(LOGIN, "nuxeo5secretkey")).connect();
+    }
+
+    /**
+     * @return A {@link NuxeoClient} filled with Nuxeo Server URL and JWT authentication.
+     */
+    public static NuxeoClient createClientJWT() {
+        // never expires token for Administrator
+        String jwt = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJBZG1pbmlzdHJhdG9yIiwiaXNzIjoibnV4ZW8ifQ.mRxcrdaRtzYqoINJjGJZVZIRuij6yevVxmH3NdVU4IzpJh4PDDFbfzOpsruimUWauAWAeZKLBi4bekicrN5jKQ";
+        return createClientBuilder(new JWTAuthInterceptor(jwt)).connect();
     }
 
     /**
@@ -300,15 +311,14 @@ public class ITBase {
      * @return A {@link NuxeoClient.Builder} filled with Nuxeo Server URL and input basic authentication.
      */
     public static NuxeoClient.Builder createClientBuilder(String login, String password) {
-        return new NuxeoClient.Builder().url(BASE_URL).authentication(login, password).timeout(60);
+        return createClientBuilder(new BasicAuthInterceptor(login, password));
     }
 
     /**
-     * @return A {@link NuxeoClient.Builder} filled with Nuxeo Server URL and default Portal SSO authentication.
+     * @return A {@link NuxeoClient.Builder} filled with Nuxeo Server URL and given authentication.
      */
-    public static NuxeoClient.Builder createClientBuilderPortalSSO() {
-        return new NuxeoClient.Builder().url(BASE_URL).authentication(
-                new PortalSSOAuthInterceptor("Administrator", "nuxeo5secretkey"));
+    protected static NuxeoClient.Builder createClientBuilder(Interceptor authenticationMethod) {
+        return new NuxeoClient.Builder().url(BASE_URL).authentication(authenticationMethod).timeout(60);
     }
 
     public static User createUser() {

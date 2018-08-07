@@ -1,0 +1,10 @@
+<component name="org.nuxeo.client.test.jwt.auth">
+
+  <extension target="org.nuxeo.ecm.jwt.JWTService" point="configuration">
+    <configuration>
+      <maxTTL>60</maxTTL> <!-- in seconds -->
+      <secret>abracadabra</secret>
+    </configuration>
+  </extension>
+
+</component>

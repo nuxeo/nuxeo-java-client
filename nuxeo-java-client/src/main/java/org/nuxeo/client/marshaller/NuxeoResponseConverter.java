@@ -125,6 +125,7 @@ public final class NuxeoResponseConverter<T> implements Converter<ResponseBody, 
             if (entityClass == null) {
                 return (T) bodyString;
             }
+            objectMapper.readerFor(Object.class);
             return (T) readJSON(bodyString, entityClass);
         }
         // Delegate other cases to jackson
