@@ -19,6 +19,8 @@
  */
 package org.nuxeo.client.objects;
 
+import static java.util.Collections.emptyMap;
+
 import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
@@ -30,6 +32,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.function.BiConsumer;
+import java.util.function.Function;
 
 import org.nuxeo.client.ConstantsV1;
 import org.nuxeo.client.NuxeoClient;
@@ -39,8 +42,6 @@ import org.nuxeo.client.methods.RepositoryAPI;
 import org.nuxeo.client.objects.acl.ACE;
 import org.nuxeo.client.objects.acl.ACL;
 import org.nuxeo.client.objects.acl.ACP;
-import org.nuxeo.client.objects.annotation.Annotation;
-import org.nuxeo.client.objects.annotation.Annotations;
 import org.nuxeo.client.objects.audit.Audit;
 import org.nuxeo.client.objects.blob.FileBlob;
 import org.nuxeo.client.objects.blob.StreamBlob;
@@ -617,96 +618,6 @@ public class Document extends RepositoryEntity<RepositoryAPI, Document> {
         }
     }
 
-    /* Annotations */
-
-    /**
-     * This API is available since Nuxeo Server 10.2.
-     *
-     * @since 3.1
-     */
-    public Annotation createAnnotation(String annotationId, String entity) {
-        return createAnnotation(annotationId, DEFAULT_FILE_CONTENT, entity);
-    }
-
-
-    /**
-     * This API is available since Nuxeo Server 10.2.
-     *
-     * @since 3.1
-     */
-    public Annotation createAnnotation(String annotationId, String xpath, String entity) {
-        Annotation annotation = new Annotation(annotationId, uid, xpath);
-        annotation.setEntity(entity);
-        return createAnnotation(annotation);
-    }
-
-    /**
-     * This API is available since Nuxeo Server 10.2.
-     *
-     * @since 3.1
-     */
-    public Annotation createAnnotation(Annotation annotation) {
-        if (repositoryName == null) {
-            return fetchResponse(api.createAnnotation(uid, annotation));
-        }
-        return fetchResponse(api.createAnnotation(uid, annotation, repositoryName));
-    }
-
-    /**
-     * Fetches annotations for {@link #DEFAULT_FILE_CONTENT} blob.
-     * <p />
-     * This API is available since Nuxeo Server 10.2.
-     *
-     * @since 3.1
-     */
-    public Annotations fetchAnnotations() {
-        return fetchAnnotations(DEFAULT_FILE_CONTENT);
-    }
-
-    /**
-     * This API is available since Nuxeo Server 10.2.
-     *
-     * @since 3.1
-     */
-    public Annotations fetchAnnotations(String xpath) {
-        if (repositoryName == null) {
-            return fetchResponse(api.fetchAnnotationsByXPath(uid, xpath));
-        }
-        return fetchResponse(api.fetchAnnotationsByXPath(uid, repositoryName, xpath));
-    }
-
-    /**
-     * This API is available since Nuxeo Server 10.2.
-     *
-     * @since 3.1
-     */
-    public Annotation fetchAnnotationById(String annotationId) {
-        if (repositoryName == null) {
-            return fetchResponse(api.fetchAnnotationById(uid, annotationId));
-        }
-        return fetchResponse(api.fetchAnnotationById(uid, annotationId, repositoryName));
-    }
-
-    /**
-     * This API is available since Nuxeo Server 10.2.
-     *
-     * @since 3.1
-     */
-    public Annotation updateAnnotation(Annotation annotation) {
-        if (repositoryName == null) {
-            return fetchResponse(api.updateAnnotation(uid, annotation));
-        }
-        return fetchResponse(api.updateAnnotation(uid, annotation, repositoryName));
-    }
-
-    public void deleteAnnotation(String annotationId) {
-        if (repositoryName == null) {
-            fetchResponse(api.deleteAnnotation(uid, annotationId));
-        } else {
-            fetchResponse(api.deleteAnnotation(uid, annotationId, repositoryName));
-        }
-    }
-
     /* Trash management */
 
     /**
@@ -734,6 +645,28 @@ public class Document extends RepositoryEntity<RepositoryAPI, Document> {
         return nuxeoClient.operation(Operations.DOCUMENT_UNTRASH).input(this).execute();
     }
 
+    /* Web adapter */
+
+    /**
+     * Gets an {@link Adapter adapter} object to build requests against Nuxeo Server Web Adapter.
+     *
+     * @param adapter the adapter to hit
+     * @since 3.2
+     */
+    public Adapter adapter(String adapter) {
+        return new Adapter(this, adapter);
+    }
+
+    /**
+     * Gets an {@link Adapter adapter} object to build requests against Nuxeo Server Web Adapter.
+     *
+     * @param creator the function used to instantiate a specific {@link Adapter adapter}
+     * @since 3.2
+     */
+    public <A extends Adapter> A adapter(Function<Document, A> creator) {
+        return creator.apply(this);
+    }
+
     @Override
     public void reconnectWith(NuxeoClient nuxeoClient) {
         super.reconnectWith(nuxeoClient);
@@ -745,6 +678,211 @@ public class Document extends RepositoryEntity<RepositoryAPI, Document> {
         // Re-connect possible objects
         properties.forEach(reconnect);
         contextParameters.forEach(reconnect);
+    }
+
+    /**
+     * Adapter is basic class to handle requests against web adapters.
+     *
+     * @since 3.2
+     */
+    @SuppressWarnings("unchecked")
+    public static class Adapter extends AbstractConnectable<RepositoryAPI, Adapter> {
+
+        protected final String repositoryName;
+
+        protected final String documentId;
+
+        protected final String adapter;
+
+        public Adapter(Document document, String adapter) {
+            super(RepositoryAPI.class, document.nuxeoClient);
+            this.repositoryName = document.repositoryName;
+            this.documentId = document.uid;
+            this.adapter = adapter;
+        }
+
+        /**
+         * Sends a GET request directly on adapter url.
+         *
+         * @since 3.2
+         */
+        public <O> O get() {
+            return get("");
+        }
+
+        /**
+         * Sends a GET request on adapter url suffixed by given input.
+         *
+         * @param pathSuffix the path to append to the end of hit adapter
+         * @since 3.2
+         */
+        public <O> O get(String pathSuffix) {
+            return get(pathSuffix, emptyMap());
+        }
+
+        /**
+         * Sends a GET request directly on adapter url and filled with query parameters.
+         *
+         * @param queryParams the query parameters to append to url
+         * @since 3.2
+         */
+        public <O> O get(Map<String, String> queryParams) {
+            return get("", queryParams);
+        }
+
+        /**
+         * Sends a GET request on adapter url suffixed by given input and filled with query parameters.
+         *
+         * @param pathSuffix the path to append to the end of hit adapter
+         * @param queryParams the query parameters to append to url
+         * @since 3.2
+         */
+        public <O> O get(String pathSuffix, Map<String, String> queryParams) {
+            if (repositoryName == null) {
+                return (O) fetchResponse(api.fetchForAdapter(documentId, adapter, pathSuffix, queryParams));
+            }
+            return (O) fetchResponse(api.fetchForAdapter(repositoryName, documentId, adapter, pathSuffix, queryParams));
+        }
+
+        /**
+         * Sends a POST request directly on adapter url.
+         *
+         * @param object the object to send as body
+         * @since 3.2
+         */
+        public <O> O post(O object) {
+            return post("", object);
+        }
+
+        /**
+         * Sends a POST request on adapter url suffixed by given input.
+         *
+         * @param pathSuffix the path to append to the end of hit adapter
+         * @param object the object to send as body
+         * @since 3.2
+         */
+        public <O> O post(String pathSuffix, O object) {
+            return post(pathSuffix, emptyMap(), object);
+        }
+
+        /**
+         * Sends a POST request directly on adapter url and filled with query parameters.
+         *
+         * @param queryParams the query parameters to append to url
+         * @param object the object to send as body
+         * @since 3.2
+         */
+        public <O> O post(Map<String, String> queryParams, O object) {
+            return post("", queryParams, object);
+        }
+
+        /**
+         * Sends a POST request on adapter url suffixed by given input and filled with query parameters.
+         *
+         * @param pathSuffix the path to append to the end of hit adapter
+         * @param queryParams the query parameters to append to url
+         * @param object the object to send as body
+         * @since 3.2
+         */
+        public <O> O post(String pathSuffix, Map<String, String> queryParams, O object) {
+            if (repositoryName == null) {
+                return (O) fetchResponse(api.createForAdapter(documentId, adapter, pathSuffix, queryParams, object));
+            }
+            return (O) fetchResponse(
+                    api.createForAdapter(repositoryName, documentId, adapter, pathSuffix, queryParams, object));
+        }
+
+        /**
+         * Sends a PUT request directly on adapter url.
+         *
+         * @param object the object to send as body
+         * @since 3.2
+         */
+        public <O> O put(O object) {
+            return put("", object);
+        }
+
+        /**
+         * Sends a PUT request on adapter url suffixed by given input.
+         *
+         * @param pathSuffix the path to append to the end of hit adapter
+         * @param object the object to send as body
+         * @since 3.2
+         */
+        public <O> O put(String pathSuffix, O object) {
+            return put(pathSuffix, emptyMap(), object);
+        }
+
+        /**
+         * Sends a PUT request directly on adapter url and filled with query parameters.
+         *
+         * @param queryParams the query parameters to append to url
+         * @param object the object to send as body
+         * @since 3.2
+         */
+        public <O> O put(Map<String, String> queryParams, O object) {
+            return put("", queryParams, object);
+        }
+
+        /**
+         * Sends a PUT request on adapter url suffixed by given input and filled with query parameters.
+         *
+         * @param pathSuffix the path to append to the end of hit adapter
+         * @param queryParams the query parameters to append to url
+         * @param object the object to send as body
+         * @since 3.2
+         */
+        public <O> O put(String pathSuffix, Map<String, String> queryParams, O object) {
+            if (repositoryName == null) {
+                return (O) fetchResponse(api.updateForAdapter(documentId, adapter, pathSuffix, queryParams, object));
+            }
+            return (O) fetchResponse(
+                    api.updateForAdapter(repositoryName, documentId, adapter, pathSuffix, queryParams, object));
+        }
+
+        /**
+         * Sends a DELETE request directly on adapter url.
+         *
+         * @since 3.2
+         */
+        public void delete() {
+            delete("");
+        }
+
+        /**
+         * Sends a DELETE request on adapter url suffixed by given input.
+         *
+         * @param pathSuffix the path to append to the end of hit adapter
+         * @since 3.2
+         */
+        public void delete(String pathSuffix) {
+            delete(pathSuffix, emptyMap());
+        }
+
+        /**
+         * Sends a DELETE request directly on adapter url and filled with query parameters.
+         *
+         * @param queryParams the query parameters to append to url
+         * @since 3.2
+         */
+        public void delete(Map<String, String> queryParams) {
+            delete("", queryParams);
+        }
+
+        /**
+         * Sends a DELETE request on adapter url suffixed by given input and filled with query parameters.
+         *
+         * @param pathSuffix the path to append to the end of hit adapter
+         * @param queryParams the query parameters to append to url
+         * @since 3.2
+         */
+        public void delete(String pathSuffix, Map<String, String> queryParams) {
+            if (repositoryName == null) {
+                fetchResponse(api.deleteForAdapter(documentId, adapter, pathSuffix, queryParams));
+            } else {
+                fetchResponse(api.deleteForAdapter(repositoryName, documentId, adapter, pathSuffix, queryParams));
+            }
+        }
     }
 
 }

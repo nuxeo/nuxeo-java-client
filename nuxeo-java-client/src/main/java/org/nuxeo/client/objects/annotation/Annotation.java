@@ -43,10 +43,9 @@ public class Annotation extends Entity {
         super(EntityTypes.ANNOTATION);
     }
 
-    public Annotation(String id, String documentId, String xpath) {
+    public Annotation(String id, String xpath) {
         this();
         this.id = id;
-        this.documentId = documentId;
         this.xpath = xpath;
     }
 
@@ -56,6 +55,10 @@ public class Annotation extends Entity {
 
     public String getDocumentId() {
         return documentId;
+    }
+
+    protected void setDocumentId(String documentId) {
+        this.documentId = documentId;
     }
 
     public String getXPath() {

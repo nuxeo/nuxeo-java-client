@@ -28,6 +28,7 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.junit.Assume.assumeTrue;
 import static org.nuxeo.client.Operations.BLOB_ATTACH_ON_DOCUMENT;
+import static org.nuxeo.client.objects.Document.DEFAULT_FILE_CONTENT;
 
 import java.io.File;
 import java.text.SimpleDateFormat;
@@ -62,6 +63,7 @@ import org.nuxeo.client.objects.RecordSet;
 import org.nuxeo.client.objects.acl.ACE;
 import org.nuxeo.client.objects.acl.ACP;
 import org.nuxeo.client.objects.annotation.Annotation;
+import org.nuxeo.client.objects.annotation.AnnotationAdapter;
 import org.nuxeo.client.objects.annotation.Annotations;
 import org.nuxeo.client.objects.audit.Audit;
 import org.nuxeo.client.objects.audit.LogEntry;
@@ -281,11 +283,11 @@ public class ITRepository extends AbstractITBase {
         inputBlobs.add(temp2);
         // Execute with void header
         Void aVoid = nuxeoClient.operation(BLOB_ATTACH_ON_DOCUMENT)
-                                 .voidOperation(true)
-                                 .param("document", file.getPath())
-                                 .param("xpath", "files:files")
-                                 .input(inputBlobs)
-                                 .execute();
+                                .voidOperation(true)
+                                .param("document", file.getPath())
+                                .param("xpath", "files:files")
+                                .input(inputBlobs)
+                                .execute();
 
         assertNull(aVoid);
 
@@ -729,30 +731,42 @@ public class ITRepository extends AbstractITBase {
                 // TODO change the version to LTS
                 nuxeoClient.getServerVersion().isGreaterThan(new NuxeoVersion(10, 2, 0, true)));
         Document file = nuxeoClient.repository().fetchDocumentByPath(FOLDER_2_FILE);
+        AnnotationAdapter annotationAdapter = file.adapter(AnnotationAdapter::new);
 
-        file.createAnnotation("ANNOTATION_ID_001", "<entity />");
-        file.createAnnotation("ANNOTATION_ID_002", "<entity />");
+        // create two annotations
+        Annotation annotation = new Annotation("ANNOTATION_ID_001", DEFAULT_FILE_CONTENT);
+        annotation.setEntity("<entity />");
+        annotationAdapter.create(annotation);
 
-        Annotation annotation = file.fetchAnnotationById("ANNOTATION_ID_001");
+        annotation = new Annotation("ANNOTATION_ID_002", DEFAULT_FILE_CONTENT);
+        annotation.setEntity("<entity />");
+        annotationAdapter.create(annotation);
+
+        String annotationId = "ANNOTATION_ID_001";
+
+        // fetch annotation by id
+        annotation = annotationAdapter.fetch(annotationId);
         assertEquals(file.getId(), annotation.getDocumentId());
-        assertEquals(Document.DEFAULT_FILE_CONTENT, annotation.getXPath());
+        assertEquals(DEFAULT_FILE_CONTENT, annotation.getXPath());
         assertEquals("<entity />", annotation.getEntity());
 
-        Annotations annotations = file.fetchAnnotations();
+        // fetch all annotations
+        Annotations annotations = annotationAdapter.list();
         assertEquals(2, annotations.size());
         List<Annotation> annotationList = annotations.getAnnotations();
         annotationList.sort(Comparator.comparing(Annotation::getId));
         assertEquals("ANNOTATION_ID_001", annotationList.get(0).getId());
         assertEquals("ANNOTATION_ID_002", annotationList.get(1).getId());
 
+        // regular annotation update
         annotation.setEntity("<entity>UPDATED</entity>");
-        file.updateAnnotation(annotation);
-
-        annotation = file.fetchAnnotationById("ANNOTATION_ID_001");
+        annotationAdapter.update(annotation);
+        annotation = annotationAdapter.fetch(annotationId);
         assertEquals("<entity>UPDATED</entity>", annotation.getEntity());
 
-        file.deleteAnnotation("ANNOTATION_ID_001");
-        annotations = file.fetchAnnotations();
+        // regular annotation remove
+        annotationAdapter.remove(annotationId);
+        annotations = annotationAdapter.list();
         assertEquals(1, annotations.size());
     }
 
