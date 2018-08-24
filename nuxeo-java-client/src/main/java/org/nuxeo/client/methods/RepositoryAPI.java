@@ -19,11 +19,11 @@
  */
 package org.nuxeo.client.methods;
 
+import java.util.Map;
+
 import org.nuxeo.client.objects.Document;
 import org.nuxeo.client.objects.Documents;
 import org.nuxeo.client.objects.acl.ACP;
-import org.nuxeo.client.objects.annotation.Annotation;
-import org.nuxeo.client.objects.annotation.Annotations;
 import org.nuxeo.client.objects.audit.Audit;
 import org.nuxeo.client.objects.blob.FileBlob;
 import org.nuxeo.client.objects.blob.StreamBlob;
@@ -41,6 +41,7 @@ import retrofit2.http.POST;
 import retrofit2.http.PUT;
 import retrofit2.http.Path;
 import retrofit2.http.Query;
+import retrofit2.http.QueryMap;
 
 public interface RepositoryAPI {
 
@@ -265,96 +266,67 @@ public interface RepositoryAPI {
     @GET("repo/{repositoryName}/id/{documentId}/@task")
     Call<Task> fetchTaskById(@Path("documentId") String documentId, @Path("repositoryName") String repositoryName);
 
-    /* Annotations */
+    /* Web adapter */
 
     /**
-     * This API is available since Nuxeo Server 10.2.
-     *
-     * @since 3.1
+     * @since 3.2
      */
-    @POST("id/{documentId}/@annotation")
-    Call<Annotation> createAnnotation(@Path("documentId") String documentId, @Body Annotation annotation);
+    @POST("id/{documentId}/@{adapter}/{pathSuffix}")
+    Call<Object> createForAdapter(@Path("documentId") String documentId, @Path("adapter") String adapter,
+            @Path("pathSuffix") String pathSuffix, @QueryMap(encoded = true) Map<String, String> queryParams,
+            @Body Object object);
 
     /**
-     * This API is available since Nuxeo Server 10.2.
-     *
-     * @since 3.1
+     * @since 3.2
      */
-    @POST("repo/{repositoryName}/id/{documentId}/@annotation")
-    Call<Annotation> createAnnotation(@Path("documentId") String documentId, @Body Annotation annotation,
-            @Path("repositoryName") String repositoryName);
+    @POST("repo/{repositoryName}/id/{documentId}/@{adapter}/{pathSuffix}")
+    Call<Object> createForAdapter(@Path("repositoryName") String repositoryName, @Path("documentId") String documentId,
+            @Path("adapter") String adapter, @Path("pathSuffix") String pathSuffix,
+            @QueryMap(encoded = true) Map<String, String> queryParams, @Body Object object);
 
     /**
-     * This API is available since Nuxeo Server 10.2.
-     *
-     * @since 3.1
+     * @since 3.2
      */
-    @GET("id/{documentId}/@annotation")
-    Call<Annotations> fetchAnnotationsByXPath(@Path("documentId") String documentId,
-            @Query(value = "xpath", encoded = true) String xpath);
+    @GET("id/{documentId}/@{adapter}/{pathSuffix}")
+    Call<Object> fetchForAdapter(@Path("documentId") String documentId, @Path("adapter") String adapter,
+            @Path("pathSuffix") String pathSuffix, @QueryMap(encoded = true) Map<String, String> queryParams);
 
     /**
-     * This API is available since Nuxeo Server 10.2.
-     *
-     * @since 3.1
+     * @since 3.2
      */
-    @GET("repo/{repositoryName}/id/{documentId}/@annotation")
-    Call<Annotations> fetchAnnotationsByXPath(@Path("documentId") String documentId,
-            @Path("repositoryName") String repositoryName, @Query(value = "xpath", encoded = true) String xpath);
+    @GET("repo/{repositoryName}/id/{documentId}/@{adapter}/{pathSuffix}")
+    Call<Object> fetchForAdapter(@Path("repositoryName") String repositoryName, @Path("documentId") String documentId,
+            @Path("adapter") String adapter, @Path("pathSuffix") String pathSuffix,
+            @QueryMap(encoded = true) Map<String, String> queryParams);
 
     /**
-     * This API is available since Nuxeo Server 10.2.
-     *
-     * @since 3.1
+     * @since 3.2
      */
-    @GET("id/{documentId}/@annotation/{annotationId}")
-    Call<Annotation> fetchAnnotationById(@Path("documentId") String documentId,
-            @Path(value = "annotationId", encoded = true) String annotationId);
+    @PUT("id/{documentId}/@{adapter}/{pathSuffix}")
+    Call<Object> updateForAdapter(@Path("documentId") String documentId, @Path("adapter") String adapter,
+            @Path("pathSuffix") String pathSuffix, @QueryMap(encoded = true) Map<String, String> queryParams,
+            @Body Object object);
 
     /**
-     * This API is available since Nuxeo Server 10.2.
-     *
-     * @since 3.1
+     * @since 3.2
      */
-    @GET("repo/{repositoryName}/id/{documentId}/@annotation/{annotationId}")
-    Call<Annotation> fetchAnnotationById(@Path("documentId") String documentId,
-            @Path(value = "annotationId", encoded = true) String annotationId,
-            @Path("repositoryName") String repositoryName);
+    @PUT("repo/{repositoryName}/id/{documentId}/@{adapter}/{pathSuffix}")
+    Call<Object> updateForAdapter(@Path("repositoryName") String repositoryName, @Path("documentId") String documentId,
+            @Path("adapter") String adapter, @Path("pathSuffix") String pathSuffix,
+            @QueryMap(encoded = true) Map<String, String> queryParams, @Body Object object);
 
     /**
-     * This API is available since Nuxeo Server 10.2.
-     *
-     * @since 3.1
+     * @since 3.2
      */
-    @PUT("id/{documentId}/@annotation")
-    Call<Annotation> updateAnnotation(@Path("documentId") String documentId, @Body Annotation annotation);
+    @DELETE("id/{documentId}/@{adapter}/{pathSuffix}")
+    Call<ResponseBody> deleteForAdapter(@Path("documentId") String documentId, @Path("adapter") String adapter,
+            @Path("pathSuffix") String pathSuffix, @QueryMap(encoded = true) Map<String, String> queryParams);
 
     /**
-     * This API is available since Nuxeo Server 10.2.
-     *
-     * @since 3.1
+     * @since 3.2
      */
-    @PUT("repo/{repositoryName}/id/{documentId}/@annotation")
-    Call<Annotation> updateAnnotation(@Path("documentId") String documentId, @Body Annotation annotation,
-            @Path("repositoryName") String repositoryName);
-
-    /**
-     * This API is available since Nuxeo Server 10.2.
-     *
-     * @since 3.1
-     */
-    @DELETE("id/{documentId}/@annotation/{annotationId}")
-    Call<ResponseBody> deleteAnnotation(@Path("documentId") String documentId,
-            @Path(value = "annotationId", encoded = true) String annotationId);
-
-    /**
-     * This API is available since Nuxeo Server 10.2.
-     *
-     * @since 3.1
-     */
-    @DELETE("repo/{repositoryName}/id/{documentId}/@annotation/{annotationId}")
-    Call<ResponseBody> deleteAnnotation(@Path("documentId") String documentId,
-            @Path(value = "annotationId", encoded = true) String annotationId,
-            @Path("repositoryName") String repositoryName);
-
+    @DELETE("repo/{repositoryName}/id/{documentId}/@{adapter}/{pathSuffix}")
+    Call<ResponseBody> deleteForAdapter(@Path("repositoryName") String repositoryName,
+            @Path("documentId") String documentId, @Path("adapter") String adapter,
+            @Path("pathSuffix") String pathSuffix, @QueryMap(encoded = true) Map<String, String> queryParams);
 }

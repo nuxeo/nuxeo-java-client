@@ -109,7 +109,9 @@ public final class NuxeoResponseConverter<T> implements Converter<ResponseBody, 
                 return (T) new FileStreamBlob(body.byteStream());
             }
         }
-        // Checking the type of the method clientside - aka object for Automation calls.
+        // Checking the type of the method clientside
+        // When it's Object we look for entity-type in header and then in payload to deduce java type
+        // Mechanism used for Operation and Document Adapter
         if (javaType.getRawClass().equals(Object.class)) {
             String entityType = mediaType.nuxeoEntity();
             String bodyString = Responses.bodyToString(body);

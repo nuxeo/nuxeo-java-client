@@ -42,6 +42,8 @@ import org.nuxeo.client.objects.EntityTypes;
 import org.nuxeo.client.objects.Operation;
 import org.nuxeo.client.objects.RecordSet;
 import org.nuxeo.client.objects.Repository;
+import org.nuxeo.client.objects.annotation.Annotation;
+import org.nuxeo.client.objects.annotation.Annotations;
 import org.nuxeo.client.objects.blob.Blob;
 import org.nuxeo.client.objects.blob.Blobs;
 import org.nuxeo.client.objects.blob.FileBlob;
@@ -424,6 +426,8 @@ public class NuxeoClient extends AbstractBase<NuxeoClient> {
             converterFactory = NuxeoConverterFactory.create();
             retrofitBuilder.addConverterFactory(converterFactory);
             // init default values
+            registerEntity(EntityTypes.ANNOTATION, Annotation.class);
+            registerEntity(EntityTypes.ANNOTATIONS, Annotations.class);
             registerEntity(EntityTypes.DOCUMENT, Document.class);
             registerEntity(EntityTypes.DOCUMENTS, Documents.class);
             registerEntity(EntityTypes.RECORDSET, RecordSet.class);
