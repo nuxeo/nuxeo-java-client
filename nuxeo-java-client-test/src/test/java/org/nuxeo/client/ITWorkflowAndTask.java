@@ -140,8 +140,11 @@ public class ITWorkflowAndTask extends AbstractITBase {
     public void itCanFetchTaskFromDoc() {
         Task task = fetchAllTasks().get(0);
         Document target = nuxeoClient.repository().fetchDocumentById(task.getTargetDocumentIds().get(0));
-        task = target.fetchTask();
-        assertNotNull(task);
+        Tasks tasks = target.fetchTasks();
+        assertNotNull(tasks);
+        assertEquals(1, tasks.size());
+        assertEquals(task.getId(), tasks.get(0).getId());
+        assertEquals(task.getWorkflowInstanceId(), tasks.get(0).getWorkflowInstanceId());
     }
 
     @Test
