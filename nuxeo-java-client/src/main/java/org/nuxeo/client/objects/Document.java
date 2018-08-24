@@ -46,6 +46,7 @@ import org.nuxeo.client.objects.audit.Audit;
 import org.nuxeo.client.objects.blob.FileBlob;
 import org.nuxeo.client.objects.blob.StreamBlob;
 import org.nuxeo.client.objects.task.Task;
+import org.nuxeo.client.objects.task.Tasks;
 import org.nuxeo.client.objects.workflow.Workflow;
 import org.nuxeo.client.objects.workflow.Workflows;
 import org.nuxeo.client.spi.NuxeoClientException;
@@ -580,11 +581,16 @@ public class Document extends RepositoryEntity<RepositoryAPI, Document> {
 
     /* Task */
 
+    /**
+     * @deprecated since 3.2, this method has never worked, use {@link #fetchTasks()} instead
+     */
+    @Deprecated
     public Task fetchTask() {
-        if (repositoryName == null) {
-            return fetchResponse(api.fetchTaskById(uid));
-        }
-        return fetchResponse(api.fetchTaskById(uid, repositoryName));
+        return adapter("task").get();
+    }
+
+    public Tasks fetchTasks() {
+        return adapter("task").get();
     }
 
     /**

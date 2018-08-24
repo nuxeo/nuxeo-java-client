@@ -258,14 +258,6 @@ public interface RepositoryAPI {
     @GET("workflowModel")
     Call<Workflows> fetchWorkflowModels();
 
-    /* Tasks */
-
-    @GET("id/{documentId}/@task")
-    Call<Task> fetchTaskById(@Path("documentId") String documentId);
-
-    @GET("repo/{repositoryName}/id/{documentId}/@task")
-    Call<Task> fetchTaskById(@Path("documentId") String documentId, @Path("repositoryName") String repositoryName);
-
     /* Web adapter */
 
     /**

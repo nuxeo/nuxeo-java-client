@@ -51,7 +51,9 @@ import org.nuxeo.client.objects.blob.FileStreamBlob;
 import org.nuxeo.client.objects.blob.StreamBlob;
 import org.nuxeo.client.objects.config.ConfigManager;
 import org.nuxeo.client.objects.directory.DirectoryManager;
+import org.nuxeo.client.objects.task.Task;
 import org.nuxeo.client.objects.task.TaskManager;
+import org.nuxeo.client.objects.task.Tasks;
 import org.nuxeo.client.objects.upload.BatchUploadManager;
 import org.nuxeo.client.objects.user.User;
 import org.nuxeo.client.objects.user.UserManager;
@@ -431,6 +433,8 @@ public class NuxeoClient extends AbstractBase<NuxeoClient> {
             registerEntity(EntityTypes.DOCUMENT, Document.class);
             registerEntity(EntityTypes.DOCUMENTS, Documents.class);
             registerEntity(EntityTypes.RECORDSET, RecordSet.class);
+            registerEntity(EntityTypes.TASK, Task.class);
+            registerEntity(EntityTypes.TASKS, Tasks.class);
             registerEntity(EntityTypes.USER, User.class);
         }
 
