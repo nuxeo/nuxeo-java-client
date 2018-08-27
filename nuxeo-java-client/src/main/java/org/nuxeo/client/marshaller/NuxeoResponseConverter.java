@@ -19,6 +19,8 @@
  */
 package org.nuxeo.client.marshaller;
 
+import static org.nuxeo.client.ConstantsV1.ENTITY_TYPE;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -32,11 +34,8 @@ import javax.mail.MessagingException;
 import javax.mail.internet.MimeMultipart;
 import javax.mail.util.ByteArrayDataSource;
 
-import org.apache.commons.lang3.StringUtils;
-import org.nuxeo.client.ConstantsV1;
 import org.nuxeo.client.MediaType;
 import org.nuxeo.client.MediaTypes;
-import org.nuxeo.client.Responses;
 import org.nuxeo.client.objects.blob.Blob;
 import org.nuxeo.client.objects.blob.Blobs;
 import org.nuxeo.client.objects.blob.FileBlob;
@@ -46,8 +45,8 @@ import org.nuxeo.client.spi.NuxeoClientException;
 import org.nuxeo.client.util.IOUtils;
 
 import com.fasterxml.jackson.databind.JavaType;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.ObjectReader;
 
 import okhttp3.ResponseBody;
 import retrofit2.Converter;
@@ -109,41 +108,28 @@ public final class NuxeoResponseConverter<T> implements Converter<ResponseBody, 
                 return (T) new FileStreamBlob(body.byteStream());
             }
         }
-        // Checking the type of the method clientside
-        // When it's Object we look for entity-type in header and then in payload to deduce java type
-        // Mechanism used for Operation and Document Adapter
-        if (javaType.getRawClass().equals(Object.class)) {
-            String entityType = mediaType.nuxeoEntity();
-            String bodyString = Responses.bodyToString(body);
-            body.close();
-            if (entityType == null) {
-                // Handle the legacy case when no 'entity-type' header has been set in the response but
-                // `entity-type` is written in the json payload
-                entityType = bodyString.replaceFirst(".*\"" + ConstantsV1.ENTITY_TYPE + "\":\"([^\"]*)\".*", "$1");
-                entityType = StringUtils.trimToNull(entityType);
-            }
-            Class<?> entityClass = entityTypeToClass.get(entityType);
-            // If we can't find an appropriate class to map response just return the plain text
-            if (entityClass == null) {
-                return (T) bodyString;
-            }
-            objectMapper.readerFor(Object.class);
-            return (T) readJSON(bodyString, entityClass);
-        }
-        // Delegate other cases to jackson
         try (Reader reader = body.charStream()) {
-            ObjectReader objectReader = objectMapper.readerFor(javaType);
-            return objectReader.readValue(reader);
+            // Checking the type of the method client side
+            if (javaType.getRawClass().equals(Object.class)) {
+                // When it's Object we look for entity-type in header and then in payload to deduce java type, in this
+                // case, convert the reader to a JsonNode
+                // This mechanism is used for Operation and Document Adapter
+                JsonNode payload = objectMapper.readTree(reader);
+                if (payload.path(ENTITY_TYPE).isTextual()) {
+                    String entityType = payload.get(ENTITY_TYPE).textValue();
+                    Class<?> entityClass = entityTypeToClass.get(entityType);
+                    if (entityClass != null) {
+                        return objectMapper.readerFor(entityClass).readValue(payload);
+                    }
+                }
+                // If we can't find an appropriate class to map response just return the plain text
+                return (T) objectMapper.writeValueAsString(payload);
+            } else {
+                // Delegate other cases to jackson
+                return objectMapper.readerFor(javaType).readValue(reader);
+            }
         } catch (IOException reason) {
             throw new NuxeoClientException("Error during deserialization of HTTP body", reason);
-        }
-    }
-
-    public <U> U readJSON(String value, Class<U> javaType) {
-        try {
-            return objectMapper.readValue(value, javaType);
-        } catch (IOException reason) {
-            throw new NuxeoClientException("Converter Read Issue.", reason);
         }
     }
 
