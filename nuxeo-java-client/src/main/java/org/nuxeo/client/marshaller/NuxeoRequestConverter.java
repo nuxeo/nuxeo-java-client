@@ -22,7 +22,6 @@ package org.nuxeo.client.marshaller;
 import java.io.IOException;
 
 import org.nuxeo.client.MediaTypes;
-import org.nuxeo.client.spi.NuxeoClientException;
 
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -48,14 +47,6 @@ public final class NuxeoRequestConverter<T> implements Converter<T, RequestBody>
     public RequestBody convert(T value) throws IOException {
         byte[] bytes = objectMapper.writeValueAsBytes(value);
         return RequestBody.create(MediaTypes.APPLICATION_JSON_CHARSET_UTF_8.toOkHttpMediaType(), bytes);
-    }
-
-    public String writeJSON(Object object) {
-        try {
-            return objectMapper.writeValueAsString(object);
-        } catch (IOException reason) {
-            throw new NuxeoClientException("Converter Write Issue. See NuxeoRequestConverterFactory#writeJSON", reason);
-        }
     }
 
 }
