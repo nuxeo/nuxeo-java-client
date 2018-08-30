@@ -27,6 +27,11 @@
     <copy todir="${nuxeo.nxserver}/bundles/">
       <artifact:file key="org.nuxeo.ecm.platform:nuxeo-platform-login-portal-sso" />
     </copy>
+    <!-- configure JWT secret -->
+    <antcall target="set-conf">
+      <param name="name" value="nuxeo.jwt.secret" />
+      <param name="value" value="abracadabra" />
+    </antcall>
   </target>
 
 </project>
