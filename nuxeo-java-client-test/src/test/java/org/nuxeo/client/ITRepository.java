@@ -20,6 +20,7 @@
  */
 package org.nuxeo.client;
 
+import static java.util.Comparator.comparing;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -27,7 +28,9 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.junit.Assume.assumeTrue;
+import static org.nuxeo.client.ITBase.LOGIN;
 import static org.nuxeo.client.Operations.BLOB_ATTACH_ON_DOCUMENT;
+import static org.nuxeo.client.Operations.ES_WAIT_FOR_INDEXING;
 import static org.nuxeo.client.objects.Document.DEFAULT_FILE_CONTENT;
 
 import java.io.File;
@@ -41,7 +44,6 @@ import java.time.temporal.ChronoUnit;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
@@ -62,15 +64,18 @@ import org.nuxeo.client.objects.Field;
 import org.nuxeo.client.objects.RecordSet;
 import org.nuxeo.client.objects.acl.ACE;
 import org.nuxeo.client.objects.acl.ACP;
-import org.nuxeo.client.objects.annotation.Annotation;
-import org.nuxeo.client.objects.annotation.AnnotationAdapter;
-import org.nuxeo.client.objects.annotation.Annotations;
 import org.nuxeo.client.objects.audit.Audit;
 import org.nuxeo.client.objects.audit.LogEntry;
 import org.nuxeo.client.objects.blob.Blob;
 import org.nuxeo.client.objects.blob.Blobs;
 import org.nuxeo.client.objects.blob.FileBlob;
 import org.nuxeo.client.objects.blob.StreamBlob;
+import org.nuxeo.client.objects.comment.Annotation;
+import org.nuxeo.client.objects.comment.AnnotationAdapter;
+import org.nuxeo.client.objects.comment.Annotations;
+import org.nuxeo.client.objects.comment.Comment;
+import org.nuxeo.client.objects.comment.CommentAdapter;
+import org.nuxeo.client.objects.comment.Comments;
 import org.nuxeo.client.objects.user.User;
 import org.nuxeo.client.spi.NuxeoClientRemoteException;
 import org.nuxeo.common.utils.FileUtils;
@@ -734,40 +739,67 @@ public class ITRepository extends AbstractITBase {
         AnnotationAdapter annotationAdapter = file.adapter(AnnotationAdapter::new);
 
         // create two annotations
-        Annotation annotation = new Annotation("ANNOTATION_ID_001", DEFAULT_FILE_CONTENT);
+        Annotation annotation = new Annotation();
+        annotation.setAuthor(LOGIN);
+        annotation.setXpath(DEFAULT_FILE_CONTENT);
+        annotation.setEntityId("ANNOTATION_ID_001");
         annotation.setEntity("<entity />");
-        annotationAdapter.create(annotation);
+        annotation = annotationAdapter.create(annotation);
+        String annotation1Id = annotation.getId();
 
-        annotation = new Annotation("ANNOTATION_ID_002", DEFAULT_FILE_CONTENT);
+        annotation = new Annotation();
+        annotation.setAuthor(LOGIN);
+        annotation.setXpath(DEFAULT_FILE_CONTENT);
+        annotation.setEntityId("ANNOTATION_ID_002");
         annotation.setEntity("<entity />");
-        annotationAdapter.create(annotation);
-
-        String annotationId = "ANNOTATION_ID_001";
-
-        // fetch annotation by id
-        annotation = annotationAdapter.fetch(annotationId);
-        assertEquals(file.getId(), annotation.getDocumentId());
-        assertEquals(DEFAULT_FILE_CONTENT, annotation.getXPath());
-        assertEquals("<entity />", annotation.getEntity());
+        annotation = annotationAdapter.create(annotation);
+        String annotation2Id = annotation.getId();
 
         // fetch all annotations
         Annotations annotations = annotationAdapter.list();
         assertEquals(2, annotations.size());
-        List<Annotation> annotationList = annotations.getAnnotations();
-        annotationList.sort(Comparator.comparing(Annotation::getId));
-        assertEquals("ANNOTATION_ID_001", annotationList.get(0).getId());
-        assertEquals("ANNOTATION_ID_002", annotationList.get(1).getId());
+        assertEquals(annotation1Id, annotations.get(0).getId());
+        assertEquals("ANNOTATION_ID_001", annotations.get(0).getEntityId());
+        assertEquals(annotation2Id, annotations.get(1).getId());
+        assertEquals("ANNOTATION_ID_002", annotations.get(1).getEntityId());
+
+        // fetch annotation by id
+        annotation = annotationAdapter.fetch(annotation1Id);
+        assertEquals(annotation1Id, annotation.getId());
+        assertEquals(file.getId(), annotation.getParentId());
+        assertEquals(DEFAULT_FILE_CONTENT, annotation.getXPath());
+        assertEquals("ANNOTATION_ID_001", annotation.getEntityId());
+        assertEquals("<entity />", annotation.getEntity());
+
+        // fetch annotation by external id
+        annotation = annotationAdapter.fetchByEntityId("ANNOTATION_ID_001");
+        assertEquals(annotation1Id, annotation.getId());
+        assertEquals(file.getId(), annotation.getParentId());
+        assertEquals(DEFAULT_FILE_CONTENT, annotation.getXPath());
+        assertEquals("ANNOTATION_ID_001", annotation.getEntityId());
+        assertEquals("<entity />", annotation.getEntity());
 
         // regular annotation update
         annotation.setEntity("<entity>UPDATED</entity>");
         annotationAdapter.update(annotation);
-        annotation = annotationAdapter.fetch(annotationId);
+        annotation = annotationAdapter.fetch(annotation1Id);
         assertEquals("<entity>UPDATED</entity>", annotation.getEntity());
 
+        // by entity id annotation update
+        annotation.setEntity("<entity>UPDATED AGAIN</entity>");
+        annotationAdapter.updateByEntityId("ANNOTATION_ID_001", annotation);
+        annotation = annotationAdapter.fetch(annotation1Id);
+        assertEquals("<entity>UPDATED AGAIN</entity>", annotation.getEntity());
+
         // regular annotation remove
-        annotationAdapter.remove(annotationId);
+        annotationAdapter.remove(annotation1Id);
         annotations = annotationAdapter.list();
         assertEquals(1, annotations.size());
+
+        // by entity id annotation remove
+        annotationAdapter.removeByEntityId("ANNOTATION_ID_002");
+        annotations = annotationAdapter.list();
+        assertEquals(0, annotations.size());
     }
 
     @Test
@@ -785,6 +817,147 @@ public class ITRepository extends AbstractITBase {
         file = file.untrash();
         assertFalse(file.isTrashed());
 
+    }
+
+    @Test
+    public void itCanManageComments() {
+        assumeTrue("itCanManageAnnotations works only since Nuxeo 10.3",
+                // TODO change the version to LTS
+                nuxeoClient.getServerVersion().isGreaterThan(new NuxeoVersion(10, 3, 0, true)));
+        Document file = nuxeoClient.repository().fetchDocumentByPath(FOLDER_2_FILE);
+        CommentAdapter commentAdapter = file.adapter(CommentAdapter::new);
+
+        String comment1Text = "Just a little comment";
+        String comment2Text = "It looks like the beginning of a discussion";
+
+        // create two comments
+        Comment comment = new Comment();
+        comment.setAuthor(LOGIN);
+        comment.setText(comment1Text);
+        comment.setEntityId("COMMENT_ID_001");
+        comment.setEntity("<entity />");
+        comment = commentAdapter.create(comment);
+        String comment1Id = comment.getId();
+
+        comment = new Comment();
+        comment.setAuthor(LOGIN);
+        comment.setText(comment2Text);
+        comment.setEntityId("COMMENT_ID_002");
+        comment.setEntity("<entity />");
+        comment = commentAdapter.create(comment);
+        String comment2Id = comment.getId();
+
+        // fetch all comments
+        Comments comments = commentAdapter.list();
+        assertEquals(2, comments.size());
+        assertEquals(comment1Id, comments.get(0).getId());
+        assertEquals("COMMENT_ID_001", comments.get(0).getEntityId());
+        assertEquals(comment2Id, comments.get(1).getId());
+        assertEquals("COMMENT_ID_002", comments.get(1).getEntityId());
+
+        // fetch comment by id
+        comment = commentAdapter.fetch(comment1Id);
+        assertEquals(comment1Id, comment.getId());
+        assertEquals(file.getId(), comment.getParentId());
+        assertEquals("COMMENT_ID_001", comment.getEntityId());
+        assertEquals("<entity />", comment.getEntity());
+
+        // fetch comment by external id
+        comment = commentAdapter.fetchByEntityId("COMMENT_ID_001");
+        assertEquals(comment1Id, comment.getId());
+        assertEquals(file.getId(), comment.getParentId());
+        assertEquals("COMMENT_ID_001", comment.getEntityId());
+        assertEquals("<entity />", comment.getEntity());
+
+        // regular comment update
+        comment.setEntity("<entity>UPDATED</entity>");
+        commentAdapter.update(comment);
+        comment = commentAdapter.fetch(comment1Id);
+        assertEquals("<entity>UPDATED</entity>", comment.getEntity());
+
+        // by entity id comment update
+        comment.setEntity("<entity>UPDATED AGAIN</entity>");
+        commentAdapter.updateByEntityId("COMMENT_ID_001", comment);
+        comment = commentAdapter.fetch(comment1Id);
+        assertEquals("<entity>UPDATED AGAIN</entity>", comment.getEntity());
+
+        // regular comment remove
+        commentAdapter.remove(comment1Id);
+        comments = commentAdapter.list();
+        assertEquals(1, comments.size());
+
+        // by entity id comment remove
+        commentAdapter.removeByEntityId("COMMENT_ID_002");
+        comments = commentAdapter.list();
+        assertEquals(0, comments.size());
+    }
+
+    @Test
+    public void itCanManageAnnotationReplies() {
+        assumeTrue("itCanManageAnnotationReplies works only since Nuxeo 10.3",
+                // TODO change the version to LTS
+                nuxeoClient.getServerVersion().isGreaterThan(new NuxeoVersion(10, 3, 0, true)));
+        Document file = nuxeoClient.repository().fetchDocumentByPath(FOLDER_2_FILE);
+        AnnotationAdapter annotationAdapter = file.adapter(AnnotationAdapter::new);
+
+        String annotationText = "Just a little comment";
+        String replyText = "And so a little reply";
+
+        // create one annotation and its reply
+        Annotation annotation = new Annotation();
+        annotation.setAuthor(LOGIN);
+        annotation.setText(annotationText);
+        annotation.setXpath(DEFAULT_FILE_CONTENT);
+        annotation.setEntityId("ANNOTATION_ID");
+        annotation.setEntity("<entity />");
+        annotation = annotationAdapter.create(annotation);
+        String annotationId = annotation.getId();
+
+        Comment reply = new Comment();
+        reply.setAuthor(LOGIN);
+        reply.setText(replyText);
+        reply.setEntityId("REPLY_ID");
+        reply.setEntity("<entity />");
+        CommentAdapter repliesAdapter = annotationAdapter.repliesAdapter(annotationId);
+        reply = repliesAdapter.create(reply);
+        String replyId = reply.getId();
+
+        // fetch all annotations
+        Annotations annotations = annotationAdapter.list();
+        assertEquals(1, annotations.size());
+        assertEquals(annotationId, annotations.get(0).getId());
+        assertEquals("ANNOTATION_ID", annotations.get(0).getEntityId());
+        // then replies
+        Comments replies = repliesAdapter.list();
+        assertEquals(1, replies.size());
+        assertEquals(replyId, replies.get(0).getId());
+        assertEquals("REPLY_ID", replies.get(0).getEntityId());
+
+        // wait for async operations (ES refresh)
+        nuxeoClient.operation(ES_WAIT_FOR_INDEXING).param("refresh", true).execute();
+
+        // fetch all annotations/comments with query
+        Documents comments = nuxeoClient.repository().query("SELECT * FROM Comment WHERE comment:ancestorIds = '"
+                + file.getId() + "' AND (ecm:primaryType != 'Annotation' OR annotation:xpath='file:content')");
+        assertEquals(2, comments.size());
+        comments.getDocuments().sort(comparing(Document::getType));
+        assertEquals(annotationId, comments.getDocument(0).getId());
+        assertEquals("ANNOTATION_ID", comments.getDocument(0).getPropertyValue("externalEntity:entityId"));
+        assertEquals(replyId, comments.getDocument(1).getId());
+        assertEquals("REPLY_ID", comments.getDocument(1).getPropertyValue("externalEntity:entityId"));
+
+        // delete annotation
+        annotationAdapter.remove(annotationId);
+
+        // wait for async operations (listener to delete replies)
+        nuxeoClient.operation(ES_WAIT_FOR_INDEXING).param("refresh", true).execute();
+        // check reply has been deleted
+        try {
+            nuxeoClient.repository().fetchDocumentById(replyId);
+            fail("Reply should have been deleted");
+        } catch (NuxeoClientRemoteException e) {
+            assertEquals(404, e.getStatus());
+        }
     }
 
 }

@@ -42,13 +42,15 @@ import org.nuxeo.client.objects.EntityTypes;
 import org.nuxeo.client.objects.Operation;
 import org.nuxeo.client.objects.RecordSet;
 import org.nuxeo.client.objects.Repository;
-import org.nuxeo.client.objects.annotation.Annotation;
-import org.nuxeo.client.objects.annotation.Annotations;
 import org.nuxeo.client.objects.blob.Blob;
 import org.nuxeo.client.objects.blob.Blobs;
 import org.nuxeo.client.objects.blob.FileBlob;
 import org.nuxeo.client.objects.blob.FileStreamBlob;
 import org.nuxeo.client.objects.blob.StreamBlob;
+import org.nuxeo.client.objects.comment.Annotation;
+import org.nuxeo.client.objects.comment.Annotations;
+import org.nuxeo.client.objects.comment.Comment;
+import org.nuxeo.client.objects.comment.Comments;
 import org.nuxeo.client.objects.config.ConfigManager;
 import org.nuxeo.client.objects.directory.DirectoryManager;
 import org.nuxeo.client.objects.task.Task;
@@ -430,6 +432,8 @@ public class NuxeoClient extends AbstractBase<NuxeoClient> {
             // init default values
             registerEntity(EntityTypes.ANNOTATION, Annotation.class);
             registerEntity(EntityTypes.ANNOTATIONS, Annotations.class);
+            registerEntity(EntityTypes.COMMENT, Comment.class);
+            registerEntity(EntityTypes.COMMENTS, Comments.class);
             registerEntity(EntityTypes.DOCUMENT, Document.class);
             registerEntity(EntityTypes.DOCUMENTS, Documents.class);
             registerEntity(EntityTypes.RECORDSET, RecordSet.class);

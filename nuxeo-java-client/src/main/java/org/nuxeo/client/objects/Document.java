@@ -21,6 +21,7 @@ package org.nuxeo.client.objects;
 
 import static java.util.Collections.emptyMap;
 
+import java.io.Serializable;
 import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
@@ -700,11 +701,22 @@ public class Document extends RepositoryEntity<RepositoryAPI, Document> {
 
         protected final String adapter;
 
-        public Adapter(Document document, String adapter) {
-            super(RepositoryAPI.class, document.nuxeoClient);
-            this.repositoryName = document.repositoryName;
-            this.documentId = document.uid;
+        protected Adapter(NuxeoClient nuxeoClient, String repositoryName, String documentId, String adapter) {
+            super(RepositoryAPI.class, nuxeoClient);
+            this.repositoryName = repositoryName;
+            this.documentId = documentId;
             this.adapter = adapter;
+        }
+
+        public Adapter(Document document, String adapter) {
+            this(document.nuxeoClient, document.repositoryName, document.uid, adapter);
+        }
+
+        /**
+         * @return the document id on which this adapter has been created
+         */
+        public String getDocumentId() {
+            return documentId;
         }
 
         /**
@@ -732,7 +744,7 @@ public class Document extends RepositoryEntity<RepositoryAPI, Document> {
          * @param queryParams the query parameters to append to url
          * @since 3.2
          */
-        public <O> O get(Map<String, String> queryParams) {
+        public <O> O get(Map<String, Serializable> queryParams) {
             return get("", queryParams);
         }
 
@@ -743,7 +755,7 @@ public class Document extends RepositoryEntity<RepositoryAPI, Document> {
          * @param queryParams the query parameters to append to url
          * @since 3.2
          */
-        public <O> O get(String pathSuffix, Map<String, String> queryParams) {
+        public <O> O get(String pathSuffix, Map<String, Serializable> queryParams) {
             if (repositoryName == null) {
                 return (O) fetchResponse(api.fetchForAdapter(documentId, adapter, pathSuffix, queryParams));
             }
@@ -778,7 +790,7 @@ public class Document extends RepositoryEntity<RepositoryAPI, Document> {
          * @param object the object to send as body
          * @since 3.2
          */
-        public <O> O post(Map<String, String> queryParams, O object) {
+        public <O> O post(Map<String, Serializable> queryParams, O object) {
             return post("", queryParams, object);
         }
 
@@ -790,7 +802,7 @@ public class Document extends RepositoryEntity<RepositoryAPI, Document> {
          * @param object the object to send as body
          * @since 3.2
          */
-        public <O> O post(String pathSuffix, Map<String, String> queryParams, O object) {
+        public <O> O post(String pathSuffix, Map<String, Serializable> queryParams, O object) {
             if (repositoryName == null) {
                 return (O) fetchResponse(api.createForAdapter(documentId, adapter, pathSuffix, queryParams, object));
             }
@@ -826,7 +838,7 @@ public class Document extends RepositoryEntity<RepositoryAPI, Document> {
          * @param object the object to send as body
          * @since 3.2
          */
-        public <O> O put(Map<String, String> queryParams, O object) {
+        public <O> O put(Map<String, Serializable> queryParams, O object) {
             return put("", queryParams, object);
         }
 
@@ -838,7 +850,7 @@ public class Document extends RepositoryEntity<RepositoryAPI, Document> {
          * @param object the object to send as body
          * @since 3.2
          */
-        public <O> O put(String pathSuffix, Map<String, String> queryParams, O object) {
+        public <O> O put(String pathSuffix, Map<String, Serializable> queryParams, O object) {
             if (repositoryName == null) {
                 return (O) fetchResponse(api.updateForAdapter(documentId, adapter, pathSuffix, queryParams, object));
             }
@@ -871,7 +883,7 @@ public class Document extends RepositoryEntity<RepositoryAPI, Document> {
          * @param queryParams the query parameters to append to url
          * @since 3.2
          */
-        public void delete(Map<String, String> queryParams) {
+        public void delete(Map<String, Serializable> queryParams) {
             delete("", queryParams);
         }
 
@@ -882,7 +894,7 @@ public class Document extends RepositoryEntity<RepositoryAPI, Document> {
          * @param queryParams the query parameters to append to url
          * @since 3.2
          */
-        public void delete(String pathSuffix, Map<String, String> queryParams) {
+        public void delete(String pathSuffix, Map<String, Serializable> queryParams) {
             if (repositoryName == null) {
                 fetchResponse(api.deleteForAdapter(documentId, adapter, pathSuffix, queryParams));
             } else {

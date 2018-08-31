@@ -1,4 +1,4 @@
-package org.nuxeo.client.objects.annotation;
+package org.nuxeo.client.objects.comment;
 
 import static java.util.Collections.singletonMap;
 import static org.nuxeo.client.objects.Document.DEFAULT_FILE_CONTENT;
@@ -17,8 +17,8 @@ public class AnnotationAdapter extends Document.Adapter {
     }
 
     public Annotation create(Annotation annotation) {
-        // enforce document id from adapter
-        annotation.setDocumentId(documentId);
+        // enforce parent id from adapter
+        annotation.setParentId(documentId);
         return post(annotation);
     }
 
@@ -37,14 +37,36 @@ public class AnnotationAdapter extends Document.Adapter {
         return get(annotationId);
     }
 
+    public Annotation fetchByEntityId(String entityId) {
+        return get("external/" + entityId);
+    }
+
     public Annotation update(Annotation annotation) {
-        // enforce document id from adapter
-        annotation.setDocumentId(documentId);
-        return put(annotation);
+        return update(annotation.getId(), annotation);
+    }
+
+    public Annotation update(String annotationId, Annotation annotation) {
+        // enforce parent id from adapter
+        annotation.setParentId(documentId);
+        return put(annotationId, annotation);
+    }
+
+    public Annotation updateByEntityId(String entityId, Annotation annotation) {
+        // enforce parent id from adapter
+        annotation.setParentId(documentId);
+        return put("external/" + entityId, annotation);
     }
 
     public void remove(String annotationId) {
         delete(annotationId);
+    }
+
+    public void removeByEntityId(String entityId) {
+        delete("external/" + entityId);
+    }
+
+    public CommentAdapter repliesAdapter(String commentId) {
+        return new CommentAdapter(nuxeoClient, repositoryName, commentId);
     }
 
 }

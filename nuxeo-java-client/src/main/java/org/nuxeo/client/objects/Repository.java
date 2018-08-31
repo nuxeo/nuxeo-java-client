@@ -19,6 +19,8 @@
  */
 package org.nuxeo.client.objects;
 
+import java.util.function.Function;
+
 import org.nuxeo.client.NuxeoClient;
 import org.nuxeo.client.methods.RepositoryAPI;
 import org.nuxeo.client.objects.acl.ACP;
@@ -495,6 +497,19 @@ public class Repository extends RepositoryEntity<RepositoryAPI, Repository> {
 
     public void fetchWorkflowModels(Callback<Workflows> callback) {
         fetchResponse(api.fetchWorkflowModels(), callback);
+    }
+
+    public Document.Adapter newDocumentAdapter(String documentId, String adapter) {
+        return new Document.Adapter(nuxeoClient, repositoryName, documentId, adapter);
+    }
+
+    public <A extends Document.Adapter> A newDocumentAdapter(String documentId, Function<Document, A> creator) {
+        // create a document mock to meet API
+        Document document = new Document();
+        document.nuxeoClient = nuxeoClient;
+        document.repositoryName = repositoryName;
+        document.uid = documentId;
+        return creator.apply(document);
     }
 
 }
