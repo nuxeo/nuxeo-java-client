@@ -27,7 +27,6 @@ import org.nuxeo.client.objects.acl.ACP;
 import org.nuxeo.client.objects.audit.Audit;
 import org.nuxeo.client.objects.blob.FileBlob;
 import org.nuxeo.client.objects.blob.StreamBlob;
-import org.nuxeo.client.objects.task.Task;
 import org.nuxeo.client.objects.workflow.Graph;
 import org.nuxeo.client.objects.workflow.Workflow;
 import org.nuxeo.client.objects.workflow.Workflows;
@@ -265,15 +264,15 @@ public interface RepositoryAPI {
      */
     @POST("id/{documentId}/@{adapter}/{pathSuffix}")
     Call<Object> createForAdapter(@Path("documentId") String documentId, @Path("adapter") String adapter,
-            @Path("pathSuffix") String pathSuffix, @QueryMap(encoded = true) Map<String, String> queryParams,
-            @Body Object object);
+            @Path(value = "pathSuffix", encoded = true) String pathSuffix,
+            @QueryMap(encoded = true) Map<String, String> queryParams, @Body Object object);
 
     /**
      * @since 3.2
      */
     @POST("repo/{repositoryName}/id/{documentId}/@{adapter}/{pathSuffix}")
     Call<Object> createForAdapter(@Path("repositoryName") String repositoryName, @Path("documentId") String documentId,
-            @Path("adapter") String adapter, @Path("pathSuffix") String pathSuffix,
+            @Path("adapter") String adapter, @Path(value = "pathSuffix", encoded = true) String pathSuffix,
             @QueryMap(encoded = true) Map<String, String> queryParams, @Body Object object);
 
     /**
@@ -281,14 +280,15 @@ public interface RepositoryAPI {
      */
     @GET("id/{documentId}/@{adapter}/{pathSuffix}")
     Call<Object> fetchForAdapter(@Path("documentId") String documentId, @Path("adapter") String adapter,
-            @Path("pathSuffix") String pathSuffix, @QueryMap(encoded = true) Map<String, String> queryParams);
+            @Path(value = "pathSuffix", encoded = true) String pathSuffix,
+            @QueryMap(encoded = true) Map<String, String> queryParams);
 
     /**
      * @since 3.2
      */
     @GET("repo/{repositoryName}/id/{documentId}/@{adapter}/{pathSuffix}")
     Call<Object> fetchForAdapter(@Path("repositoryName") String repositoryName, @Path("documentId") String documentId,
-            @Path("adapter") String adapter, @Path("pathSuffix") String pathSuffix,
+            @Path("adapter") String adapter, @Path(value = "pathSuffix", encoded = true) String pathSuffix,
             @QueryMap(encoded = true) Map<String, String> queryParams);
 
     /**
@@ -296,15 +296,15 @@ public interface RepositoryAPI {
      */
     @PUT("id/{documentId}/@{adapter}/{pathSuffix}")
     Call<Object> updateForAdapter(@Path("documentId") String documentId, @Path("adapter") String adapter,
-            @Path("pathSuffix") String pathSuffix, @QueryMap(encoded = true) Map<String, String> queryParams,
-            @Body Object object);
+            @Path(value = "pathSuffix", encoded = true) String pathSuffix,
+            @QueryMap(encoded = true) Map<String, String> queryParams, @Body Object object);
 
     /**
      * @since 3.2
      */
     @PUT("repo/{repositoryName}/id/{documentId}/@{adapter}/{pathSuffix}")
     Call<Object> updateForAdapter(@Path("repositoryName") String repositoryName, @Path("documentId") String documentId,
-            @Path("adapter") String adapter, @Path("pathSuffix") String pathSuffix,
+            @Path("adapter") String adapter, @Path(value = "pathSuffix", encoded = true) String pathSuffix,
             @QueryMap(encoded = true) Map<String, String> queryParams, @Body Object object);
 
     /**
@@ -312,7 +312,8 @@ public interface RepositoryAPI {
      */
     @DELETE("id/{documentId}/@{adapter}/{pathSuffix}")
     Call<ResponseBody> deleteForAdapter(@Path("documentId") String documentId, @Path("adapter") String adapter,
-            @Path("pathSuffix") String pathSuffix, @QueryMap(encoded = true) Map<String, String> queryParams);
+            @Path(value = "pathSuffix", encoded = true) String pathSuffix,
+            @QueryMap(encoded = true) Map<String, String> queryParams);
 
     /**
      * @since 3.2
@@ -320,5 +321,6 @@ public interface RepositoryAPI {
     @DELETE("repo/{repositoryName}/id/{documentId}/@{adapter}/{pathSuffix}")
     Call<ResponseBody> deleteForAdapter(@Path("repositoryName") String repositoryName,
             @Path("documentId") String documentId, @Path("adapter") String adapter,
-            @Path("pathSuffix") String pathSuffix, @QueryMap(encoded = true) Map<String, String> queryParams);
+            @Path(value = "pathSuffix", encoded = true) String pathSuffix,
+            @QueryMap(encoded = true) Map<String, String> queryParams);
 }
