@@ -19,6 +19,7 @@
  */
 package org.nuxeo.client.methods;
 
+import java.io.Serializable;
 import java.util.Map;
 
 import org.nuxeo.client.objects.Document;
@@ -262,65 +263,65 @@ public interface RepositoryAPI {
     /**
      * @since 3.2
      */
-    @POST("id/{documentId}/@{adapter}/{pathSuffix}")
-    Call<Object> createForAdapter(@Path("documentId") String documentId, @Path("adapter") String adapter,
+    @POST("id/{parentId}/@{adapter}/{pathSuffix}")
+    Call<Object> createForAdapter(@Path("parentId") String documentId, @Path("adapter") String adapter,
             @Path(value = "pathSuffix", encoded = true) String pathSuffix,
-            @QueryMap(encoded = true) Map<String, String> queryParams, @Body Object object);
+            @QueryMap(encoded = true) Map<String, Serializable> queryParams, @Body Object object);
 
     /**
      * @since 3.2
      */
-    @POST("repo/{repositoryName}/id/{documentId}/@{adapter}/{pathSuffix}")
-    Call<Object> createForAdapter(@Path("repositoryName") String repositoryName, @Path("documentId") String documentId,
+    @POST("repo/{repositoryName}/id/{parentId}/@{adapter}/{pathSuffix}")
+    Call<Object> createForAdapter(@Path("repositoryName") String repositoryName, @Path("parentId") String documentId,
             @Path("adapter") String adapter, @Path(value = "pathSuffix", encoded = true) String pathSuffix,
-            @QueryMap(encoded = true) Map<String, String> queryParams, @Body Object object);
+            @QueryMap(encoded = true) Map<String, Serializable> queryParams, @Body Object object);
 
     /**
      * @since 3.2
      */
-    @GET("id/{documentId}/@{adapter}/{pathSuffix}")
-    Call<Object> fetchForAdapter(@Path("documentId") String documentId, @Path("adapter") String adapter,
+    @GET("id/{parentId}/@{adapter}/{pathSuffix}")
+    Call<Object> fetchForAdapter(@Path("parentId") String documentId, @Path("adapter") String adapter,
             @Path(value = "pathSuffix", encoded = true) String pathSuffix,
-            @QueryMap(encoded = true) Map<String, String> queryParams);
+            @QueryMap(encoded = true) Map<String, Serializable> queryParams);
 
     /**
      * @since 3.2
      */
-    @GET("repo/{repositoryName}/id/{documentId}/@{adapter}/{pathSuffix}")
-    Call<Object> fetchForAdapter(@Path("repositoryName") String repositoryName, @Path("documentId") String documentId,
+    @GET("repo/{repositoryName}/id/{parentId}/@{adapter}/{pathSuffix}")
+    Call<Object> fetchForAdapter(@Path("repositoryName") String repositoryName, @Path("parentId") String documentId,
             @Path("adapter") String adapter, @Path(value = "pathSuffix", encoded = true) String pathSuffix,
-            @QueryMap(encoded = true) Map<String, String> queryParams);
+            @QueryMap(encoded = true) Map<String, Serializable> queryParams);
 
     /**
      * @since 3.2
      */
-    @PUT("id/{documentId}/@{adapter}/{pathSuffix}")
-    Call<Object> updateForAdapter(@Path("documentId") String documentId, @Path("adapter") String adapter,
+    @PUT("id/{parentId}/@{adapter}/{pathSuffix}")
+    Call<Object> updateForAdapter(@Path("parentId") String documentId, @Path("adapter") String adapter,
             @Path(value = "pathSuffix", encoded = true) String pathSuffix,
-            @QueryMap(encoded = true) Map<String, String> queryParams, @Body Object object);
+            @QueryMap(encoded = true) Map<String, Serializable> queryParams, @Body Object object);
 
     /**
      * @since 3.2
      */
-    @PUT("repo/{repositoryName}/id/{documentId}/@{adapter}/{pathSuffix}")
-    Call<Object> updateForAdapter(@Path("repositoryName") String repositoryName, @Path("documentId") String documentId,
+    @PUT("repo/{repositoryName}/id/{parentId}/@{adapter}/{pathSuffix}")
+    Call<Object> updateForAdapter(@Path("repositoryName") String repositoryName, @Path("parentId") String documentId,
             @Path("adapter") String adapter, @Path(value = "pathSuffix", encoded = true) String pathSuffix,
-            @QueryMap(encoded = true) Map<String, String> queryParams, @Body Object object);
+            @QueryMap(encoded = true) Map<String, Serializable> queryParams, @Body Object object);
 
     /**
      * @since 3.2
      */
-    @DELETE("id/{documentId}/@{adapter}/{pathSuffix}")
-    Call<ResponseBody> deleteForAdapter(@Path("documentId") String documentId, @Path("adapter") String adapter,
+    @DELETE("id/{parentId}/@{adapter}/{pathSuffix}")
+    Call<ResponseBody> deleteForAdapter(@Path("parentId") String documentId, @Path("adapter") String adapter,
             @Path(value = "pathSuffix", encoded = true) String pathSuffix,
-            @QueryMap(encoded = true) Map<String, String> queryParams);
+            @QueryMap(encoded = true) Map<String, Serializable> queryParams);
 
     /**
      * @since 3.2
      */
-    @DELETE("repo/{repositoryName}/id/{documentId}/@{adapter}/{pathSuffix}")
+    @DELETE("repo/{repositoryName}/id/{parentId}/@{adapter}/{pathSuffix}")
     Call<ResponseBody> deleteForAdapter(@Path("repositoryName") String repositoryName,
-            @Path("documentId") String documentId, @Path("adapter") String adapter,
+            @Path("parentId") String documentId, @Path("adapter") String adapter,
             @Path(value = "pathSuffix", encoded = true) String pathSuffix,
-            @QueryMap(encoded = true) Map<String, String> queryParams);
+            @QueryMap(encoded = true) Map<String, Serializable> queryParams);
 }

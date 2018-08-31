@@ -39,6 +39,20 @@ public class EntityTypes {
      */
     public static final String ANNOTATIONS = "annotations";
 
+    /**
+     * This API is available since Nuxeo Server 10.3.
+     *
+     * @since 3.2
+     */
+    public static final String COMMENT = "comment";
+
+    /**
+     * This API is available since Nuxeo Server 10.3.
+     *
+     * @since 3.2
+     */
+    public static final String COMMENTS = "comments";
+
     public static final String AUDIT = "logEntries";
 
     public static final String BLOBS = "blobs";

@@ -16,39 +16,29 @@
  * Contributors:
  *     Kevin Leturc <kleturc@nuxeo.com>
  */
-package org.nuxeo.client.objects.annotation;
+package org.nuxeo.client.objects.comment;
 
-import java.util.List;
-
-import org.nuxeo.client.objects.Entity;
 import org.nuxeo.client.objects.EntityTypes;
-
-import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
  * This API is available since Nuxeo Server 10.2.
  *
  * @since 3.1
  */
-public class Annotations extends Entity {
+public class Annotation extends Comment {
 
-    @JsonProperty("entries")
-    protected List<Annotation> annotations;
+    protected String xpath;
 
-    public Annotations() {
-        super(EntityTypes.ANNOTATIONS);
+    public Annotation() {
+        super(EntityTypes.ANNOTATION);
     }
 
-    public List<Annotation> getAnnotations() {
-        return annotations;
+    public String getXPath() {
+        return xpath;
     }
 
-    public Annotation get(int id) {
-        return annotations.get(id);
-    }
-
-    public int size() {
-        return annotations.size();
+    public void setXpath(String xpath) {
+        this.xpath = xpath;
     }
 
 }
