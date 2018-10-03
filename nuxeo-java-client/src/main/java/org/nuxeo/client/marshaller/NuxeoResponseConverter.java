@@ -74,8 +74,7 @@ public final class NuxeoResponseConverter<T> implements Converter<ResponseBody, 
     public T convert(ResponseBody body) throws IOException {
         // Checking if multipart outputs.
         MediaType mediaType = MediaType.fromOkHttpMediaType(body.contentType());
-        if (!MediaTypes.APPLICATION_JSON.equalsTypeSubType(mediaType)
-                && !MediaTypes.APPLICATION_JSON_NXENTITY.equalsTypeSubType(mediaType)) {
+        if (!MediaTypes.APPLICATION_JSON.equalsTypeSubTypeWithoutSuffix(mediaType)) {
             if (mediaType.type().equals(MediaTypes.MULTIPART_S)) {
                 List<Blob> blobs = new ArrayList<>();
                 try (InputStream is = body.byteStream()) {
