@@ -90,10 +90,10 @@
     <apache.commons.version>3.6</apache.commons.version>
     <awaitility.version>3.1.1</awaitility.version>
     <commons-io.version>2.5</commons-io.version>
-    <fasterxml.version>2.7.4</fasterxml.version>
     <guava.version>23.5-jre</guava.version>
-    <junit.version>4.12</junit.version>
+    <jackson.version>2.9.7</jackson.version>
     <javax.mail.version>1.4.7</javax.mail.version>
+    <junit.version>4.12</junit.version>
     <okhttp.version>3.9.1</okhttp.version>
     <okio.version>1.13.0</okio.version>
     <retrofit.version>2.3.0</retrofit.version>
@@ -143,17 +143,17 @@
       <dependency>
         <groupId>com.fasterxml.jackson.core</groupId>
         <artifactId>jackson-annotations</artifactId>
-        <version>${fasterxml.version}</version>
+        <version>${jackson.version}</version>
       </dependency>
       <dependency>
         <groupId>com.fasterxml.jackson.core</groupId>
         <artifactId>jackson-core</artifactId>
-        <version>${fasterxml.version}</version>
+        <version>${jackson.version}</version>
       </dependency>
       <dependency>
         <groupId>com.fasterxml.jackson.core</groupId>
         <artifactId>jackson-databind</artifactId>
-        <version>${fasterxml.version}</version>
+        <version>${jackson.version}</version>
       </dependency>
       <dependency>
         <groupId>com.google.guava</groupId>
