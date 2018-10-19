@@ -13,7 +13,6 @@
         <plugin>FORM_AUTH</plugin>
         <plugin>WEBENGINE_FORM_AUTH</plugin>
         <plugin>ANONYMOUS_AUTH</plugin>
-        <plugin>WEBSERVICES_AUTH</plugin>
         <!-- Specific authentication for java client tests -->
         <plugin>PORTAL_AUTH</plugin>
       </plugins>
@@ -36,7 +35,6 @@
         <plugin>FORM_AUTH</plugin>
         <plugin>WEBENGINE_FORM_AUTH</plugin>
         <plugin>ANONYMOUS_AUTH</plugin>
-        <plugin>WEBSERVICES_AUTH</plugin>
         <plugin>PORTAL_AUTH</plugin>
       </replacementChain>
     </specificAuthenticationChain>
