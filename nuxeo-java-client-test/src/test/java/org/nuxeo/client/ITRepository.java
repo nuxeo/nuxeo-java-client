@@ -35,6 +35,7 @@ import static org.nuxeo.client.objects.Document.DEFAULT_FILE_CONTENT;
 
 import java.io.File;
 import java.text.SimpleDateFormat;
+import java.time.Instant;
 import java.time.LocalDate;
 import java.time.Month;
 import java.time.ZoneId;
@@ -829,6 +830,7 @@ public class ITRepository extends AbstractITBase {
 
         String comment1Text = "Just a little comment";
         String comment2Text = "It looks like the beginning of a discussion";
+        Instant date = Instant.now();
 
         // create two comments
         Comment comment = new Comment();
@@ -836,6 +838,8 @@ public class ITRepository extends AbstractITBase {
         comment.setText(comment1Text);
         comment.setEntityId("COMMENT_ID_001");
         comment.setEntity("<entity />");
+        comment.setCreationDate(date);
+        comment.setModificationDate(date);
         comment = commentAdapter.create(comment);
         String comment1Id = comment.getId();
 
@@ -844,6 +848,8 @@ public class ITRepository extends AbstractITBase {
         comment.setText(comment2Text);
         comment.setEntityId("COMMENT_ID_002");
         comment.setEntity("<entity />");
+        comment.setCreationDate(date);
+        comment.setModificationDate(date);
         comment = commentAdapter.create(comment);
         String comment2Id = comment.getId();
 
@@ -854,6 +860,10 @@ public class ITRepository extends AbstractITBase {
         assertEquals("COMMENT_ID_001", comments.get(0).getEntityId());
         assertEquals(comment2Id, comments.get(1).getId());
         assertEquals("COMMENT_ID_002", comments.get(1).getEntityId());
+        assertEquals(date, comments.get(0).getCreationDate());
+        assertEquals(date, comments.get(1).getCreationDate());
+        assertEquals(date, comments.get(0).getModificationDate());
+        assertEquals(date, comments.get(1).getModificationDate());
 
         // fetch comment by id
         comment = commentAdapter.fetch(comment1Id);
