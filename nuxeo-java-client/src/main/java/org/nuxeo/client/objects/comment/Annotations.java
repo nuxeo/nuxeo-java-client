@@ -20,35 +20,34 @@ package org.nuxeo.client.objects.comment;
 
 import java.util.List;
 
-import org.nuxeo.client.objects.Entity;
+import org.nuxeo.client.objects.Entities;
 import org.nuxeo.client.objects.EntityTypes;
-
-import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
  * This API is available since Nuxeo Server 10.2.
  *
  * @since 3.1
  */
-public class Annotations extends Entity {
-
-    @JsonProperty("entries")
-    protected List<Annotation> annotations;
+public class Annotations extends Entities<Annotation> {
 
     public Annotations() {
         super(EntityTypes.ANNOTATIONS);
     }
 
+    /**
+     * @deprecated since 3.2, use {@link #getEntries()} instead.
+     */
+    @Deprecated
     public List<Annotation> getAnnotations() {
-        return annotations;
+        return getEntries();
     }
 
+    /**
+     * @deprecated since 3.2, use {@link #getEntry(int)} ()} instead.
+     */
+    @Deprecated
     public Annotation get(int id) {
-        return annotations.get(id);
-    }
-
-    public int size() {
-        return annotations.size();
+        return getEntry(id);
     }
 
 }

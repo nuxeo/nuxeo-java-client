@@ -18,37 +18,18 @@
  */
 package org.nuxeo.client.objects.comment;
 
-import java.util.List;
-
-import org.nuxeo.client.objects.Entity;
+import org.nuxeo.client.objects.Entities;
 import org.nuxeo.client.objects.EntityTypes;
-
-import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
  * This API is available since Nuxeo Server 10.3.
  *
  * @since 3.2
  */
-public class Comments extends Entity {
-
-    @JsonProperty("entries")
-    protected List<Comment> comments;
+public class Comments extends Entities<Comment> {
 
     public Comments() {
         super(EntityTypes.COMMENTS);
-    }
-
-    public List<Comment> getComments() {
-        return comments;
-    }
-
-    public Comment get(int id) {
-        return comments.get(id);
-    }
-
-    public int size() {
-        return comments.size();
     }
 
 }

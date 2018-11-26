@@ -51,14 +51,14 @@ public class ITDirectory extends AbstractITBase {
         assertNull(continent.getParent());
         DirectoryEntries directoryEntries = continent.fetchEntries();
         assertNotNull(directoryEntries);
-        assertEquals(7, directoryEntries.getDirectoryEntries().size());
+        assertEquals(7, directoryEntries.size());
     }
 
     @Test
     public void itCanGetDirectoryEntries() {
         DirectoryEntries directoryEntries = nuxeoClient.directoryManager().directory("continent").fetchEntries();
         assertNotNull(directoryEntries);
-        assertEquals(7, directoryEntries.getDirectoryEntries().size());
+        assertEquals(7, directoryEntries.size());
     }
 
     @Test
