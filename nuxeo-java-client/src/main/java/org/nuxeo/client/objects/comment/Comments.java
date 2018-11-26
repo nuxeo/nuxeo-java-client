@@ -36,10 +36,10 @@ public class Comments extends Entity {
     protected List<Comment> comments;
 
     public Comments() {
-        super(EntityTypes.ANNOTATIONS);
+        super(EntityTypes.COMMENTS);
     }
 
-    public List<Comment> getAnnotations() {
+    public List<Comment> getComments() {
         return comments;
     }
 

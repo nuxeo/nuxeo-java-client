@@ -20,7 +20,7 @@
  */
 package org.nuxeo.client;
 
-import static java.util.Comparator.comparing;
+import static java.util.Collections.singletonList;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -676,8 +676,8 @@ public class ITRepository extends AbstractITBase {
         assertEquals("dataSet1", document.getTitle());
 
         // Here we are using a sub class DataSet of Document which let the dev implementing business logic.
-        roles = Collections.singletonList("BenchmarkIndicator");
-        fields = Collections.singletonList(
+        roles = singletonList("BenchmarkIndicator");
+        fields = singletonList(
                 new Field("string", "description", roles, "columnName", "sqlTypeHint", "name"));
         DataSet dataset = new DataSet(document.getId());
         dataset.setFields(fields);
@@ -739,20 +739,14 @@ public class ITRepository extends AbstractITBase {
         Document file = nuxeoClient.repository().fetchDocumentByPath(FOLDER_2_FILE);
         AnnotationAdapter annotationAdapter = file.adapter(AnnotationAdapter::new);
 
+        String annotationText = "Just a little comment on my annotation";
+
         // create two annotations
-        Annotation annotation = new Annotation();
-        annotation.setAuthor(LOGIN);
-        annotation.setXpath(DEFAULT_FILE_CONTENT);
-        annotation.setEntityId("ANNOTATION_ID_001");
-        annotation.setEntity("<entity />");
+        Annotation annotation = newAnnotation(annotationText, "ANNOTATION_ID_001");
         annotation = annotationAdapter.create(annotation);
         String annotation1Id = annotation.getId();
 
-        annotation = new Annotation();
-        annotation.setAuthor(LOGIN);
-        annotation.setXpath(DEFAULT_FILE_CONTENT);
-        annotation.setEntityId("ANNOTATION_ID_002");
-        annotation.setEntity("<entity />");
+        annotation = newAnnotation(annotationText, "ANNOTATION_ID_002");
         annotation = annotationAdapter.create(annotation);
         String annotation2Id = annotation.getId();
 
@@ -833,23 +827,11 @@ public class ITRepository extends AbstractITBase {
         Instant date = Instant.now();
 
         // create two comments
-        Comment comment = new Comment();
-        comment.setAuthor(LOGIN);
-        comment.setText(comment1Text);
-        comment.setEntityId("COMMENT_ID_001");
-        comment.setEntity("<entity />");
-        comment.setCreationDate(date);
-        comment.setModificationDate(date);
+        Comment comment = newComment(comment1Text, date, "COMMENT_ID_001");
         comment = commentAdapter.create(comment);
         String comment1Id = comment.getId();
 
-        comment = new Comment();
-        comment.setAuthor(LOGIN);
-        comment.setText(comment2Text);
-        comment.setEntityId("COMMENT_ID_002");
-        comment.setEntity("<entity />");
-        comment.setCreationDate(date);
-        comment.setModificationDate(date);
+        comment = newComment(comment2Text, date, "COMMENT_ID_002");
         comment = commentAdapter.create(comment);
         String comment2Id = comment.getId();
 
@@ -914,20 +896,11 @@ public class ITRepository extends AbstractITBase {
         String replyText = "And so a little reply";
 
         // create one annotation and its reply
-        Annotation annotation = new Annotation();
-        annotation.setAuthor(LOGIN);
-        annotation.setText(annotationText);
-        annotation.setXpath(DEFAULT_FILE_CONTENT);
-        annotation.setEntityId("ANNOTATION_ID");
-        annotation.setEntity("<entity />");
+        Annotation annotation = newAnnotation(annotationText, "ANNOTATION_ID");
         annotation = annotationAdapter.create(annotation);
         String annotationId = annotation.getId();
 
-        Comment reply = new Comment();
-        reply.setAuthor(LOGIN);
-        reply.setText(replyText);
-        reply.setEntityId("REPLY_ID");
-        reply.setEntity("<entity />");
+        Comment reply = newComment(replyText, Instant.now(), "REPLY_ID");
         CommentAdapter repliesAdapter = annotationAdapter.repliesAdapter(annotationId);
         reply = repliesAdapter.create(reply);
         String replyId = reply.getId();
@@ -946,21 +919,18 @@ public class ITRepository extends AbstractITBase {
         // wait for async operations (ES refresh)
         nuxeoClient.operation(ES_WAIT_FOR_INDEXING).param("refresh", true).execute();
 
-        // fetch all annotations/comments with query
-        Documents comments = nuxeoClient.repository().query("SELECT * FROM Comment WHERE comment:ancestorIds = '"
-                + file.getId() + "' AND (ecm:primaryType != 'Annotation' OR annotation:xpath='file:content')");
-        assertEquals(2, comments.size());
-        comments.getDocuments().sort(comparing(Document::getType));
-        assertEquals(annotationId, comments.getDocument(0).getId());
-        assertEquals("ANNOTATION_ID", comments.getDocument(0).getPropertyValue("externalEntity:entityId"));
-        assertEquals(replyId, comments.getDocument(1).getId());
-        assertEquals("REPLY_ID", comments.getDocument(1).getPropertyValue("externalEntity:entityId"));
+        // fetch all replies
+        replies = annotationAdapter.fetchComments(singletonList(annotationId));
+        assertEquals(1, replies.size());
+        assertEquals(replyId, replies.get(0).getId());
+        assertEquals("REPLY_ID", replies.get(0).getEntityId());
 
         // delete annotation
         annotationAdapter.remove(annotationId);
 
         // wait for async operations (listener to delete replies)
         nuxeoClient.operation(ES_WAIT_FOR_INDEXING).param("refresh", true).execute();
+
         // check reply has been deleted
         try {
             nuxeoClient.repository().fetchDocumentById(replyId);
@@ -968,6 +938,27 @@ public class ITRepository extends AbstractITBase {
         } catch (NuxeoClientRemoteException e) {
             assertEquals(404, e.getStatus());
         }
+    }
+
+    private Annotation newAnnotation(String annotationText, String entityId) {
+        Annotation annotation = new Annotation();
+        annotation.setAuthor(LOGIN);
+        annotation.setText(annotationText);
+        annotation.setXpath(DEFAULT_FILE_CONTENT);
+        annotation.setEntityId(entityId);
+        annotation.setEntity("<entity />");
+        return annotation;
+    }
+
+    private Comment newComment(String commentText, Instant date, String entityId) {
+        Comment comment = new Comment();
+        comment.setAuthor(LOGIN);
+        comment.setText(commentText);
+        comment.setEntityId(entityId);
+        comment.setEntity("<entity />");
+        comment.setCreationDate(date);
+        comment.setModificationDate(date);
+        return comment;
     }
 
 }
