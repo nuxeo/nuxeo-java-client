@@ -27,6 +27,7 @@ import static org.nuxeo.client.Operations.BLOB_ATTACH_ON_DOCUMENT;
 import java.io.File;
 import java.io.IOException;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import org.junit.Assert;
@@ -235,6 +236,7 @@ public class ITBase {
         assertNotNull(workflows);
         // Assert basic server workflow definitions
         assertEquals(2, workflows.size());
+        workflows.sort(Comparator.comparing(Workflow::getName));
         Workflow workflow = workflows.getEntry(0);
         assertEquals("ParallelDocumentReview", workflow.getName());
         workflow = workflows.getEntry(1);
