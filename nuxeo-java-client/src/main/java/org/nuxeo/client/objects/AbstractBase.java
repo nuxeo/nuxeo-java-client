@@ -18,12 +18,15 @@
  */
 package org.nuxeo.client.objects;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 import org.nuxeo.client.HttpHeaders;
 
@@ -102,7 +105,54 @@ public class AbstractBase<B extends AbstractBase<B>> {
     }
 
     /**
-     * Replaces the header value with the input one seperated by ','.
+     * Replaces the header value with input one.
+     *
+     * @since 3.2
+     */
+    public B header(String header, boolean value) {
+        return header(false, header, Boolean.toString(value));
+    }
+
+    /**
+     * Replaces the header value with the input one separated by ','.
+     *
+     * @since 3.2
+     */
+    public B header(String header, int value, int... values) {
+        return header(false, header, value, values);
+    }
+
+    /**
+     * Replaces or appends the header value with the input one separated by ','.
+     *
+     * @since 3.2
+     */
+    public B header(boolean append, String header, int value, int... values) {
+        return header(append, header, Integer.toString(value),
+                IntStream.of(values).mapToObj(Integer::toString).toArray(String[]::new));
+    }
+
+    /**
+     * Replaces the header value with the input one separated by ','.
+     *
+     * @since 3.2
+     */
+    public B header(String header, Serializable value, Serializable... values) {
+        return header(false, header, value, values);
+    }
+
+    /**
+     * Replaces or appends the header value with the input one separated by ','.
+     *
+     * @since 3.2
+     */
+    public B header(boolean append, String header, Serializable value, Serializable... values) {
+        return header(append, header, value.toString(),
+                Stream.of(values).map(Serializable::toString).toArray(String[]::new));
+    }
+
+    /**
+     * Replaces the header value with the input one separated by ','.
      */
     public B header(String header, String value, String... values) {
         return header(false, header, value, values);
@@ -118,7 +168,7 @@ public class AbstractBase<B extends AbstractBase<B>> {
             List<String> vNew = new ArrayList<>(1 + values.length);
             vNew.add(value);
             vNew.addAll(Arrays.asList(values));
-            if (append) {
+            if (append && vOld != null) {
                 vNew.addAll(vOld);
             }
             return vNew;
@@ -198,6 +248,7 @@ public class AbstractBase<B extends AbstractBase<B>> {
      *
      * @see org.nuxeo.ecm.core.io.registry.context.DepthValues
      */
+    @SuppressWarnings("JavadocReference")
     public B depth(String value) {
         return header(HttpHeaders.DEPTH, value);
     }
