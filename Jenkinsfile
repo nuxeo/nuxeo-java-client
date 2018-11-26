@@ -72,8 +72,6 @@ node(env.SLAVE) {
                               consoleParsers: [[parserName: 'Maven']], defaultEncoding: '', excludePattern: '',
                               healthy       : '', includePattern: '', messagesPattern: '', unHealthy: ''])
                         archive 'nuxeo-java-client/target/*.jar, nuxeo-java-client-test/target/tomcat/log/*.log'
-                        junit 'nuxeo-java-client/target/surefire-reports/*.xml'
-                        junit 'nuxeo-java-client-test/target/failsafe-reports/*.xml'
                         if (masterBuild) {
                             step([$class: 'JiraIssueUpdater', issueSelector: [$class: 'DefaultIssueSelector'], scm: scm])
                         }
@@ -93,6 +91,7 @@ node(env.SLAVE) {
              body: "Build failed ${env.BUILD_URL}.")
         throw e
     } finally {
+        junit '**/target/surefire-reports/*.xml, **/target/failsafe-reports/*.xml, **/target/failsafe-reports/**/*.xml'
         step([$class : 'CheckStylePublisher', canComputeNew: false, defaultEncoding: '', healthy: '',
               pattern: 'ftest/target/checkstyle-result.xml', unHealthy: ''])
     }
