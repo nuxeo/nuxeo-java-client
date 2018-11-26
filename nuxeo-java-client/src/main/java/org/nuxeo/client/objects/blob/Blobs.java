@@ -20,50 +20,47 @@
 package org.nuxeo.client.objects.blob;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.List;
 
-import org.nuxeo.client.objects.Entity;
+import org.nuxeo.client.objects.Entities;
 import org.nuxeo.client.objects.EntityTypes;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
  * @since 0.1
  */
-public class Blobs extends Entity {
-
-    @JsonProperty("entries")
-    protected final List<Blob> blobs = new ArrayList<>();
+public class Blobs extends Entities<Blob> {
 
     public Blobs() {
         super(EntityTypes.BLOBS);
     }
 
     public Blobs(List<? extends Blob> blobs) {
-        this();
-        this.blobs.addAll(blobs);
+        super(EntityTypes.BLOBS, blobs);
     }
 
     public List<Blob> getBlobs() {
-        return blobs;
+        return getEntries();
     }
 
-    @JsonIgnore
-    public int size() {
-        return blobs.size();
-    }
-
+    /**
+     * @deprecated since 3.2, use {@link #addEntry(Object)} instead
+     */
+    @Deprecated
     @JsonIgnore
     public void add(File file) {
         FileBlob blob = new FileBlob(file);
-        blobs.add(blob);
+        super.addEntry(blob);
     }
 
+    /**
+     * @deprecated since 3.2, use {@link #addEntry(Object)} instead
+     */
+    @Deprecated
     @JsonIgnore
     public boolean add(Blob blob) {
-        return blobs.add(blob);
+        return super.addEntry(blob);
     }
 
 }

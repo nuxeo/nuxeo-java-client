@@ -18,34 +18,39 @@
  */
 package org.nuxeo.client.objects.directory;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.nuxeo.client.NuxeoClient;
 import org.nuxeo.client.objects.Connectable;
-import org.nuxeo.client.objects.Entity;
+import org.nuxeo.client.objects.Entities;
 import org.nuxeo.client.objects.EntityTypes;
-
-import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
  * @since 3.0
  */
-public class Directories extends Entity implements Connectable {
-
-    @JsonProperty("entries")
-    protected List<Directory> directories = new ArrayList<>();
+public class Directories extends Entities<Directory> implements Connectable {
 
     public Directories() {
         super(EntityTypes.DIRECTORIES);
     }
 
+    /**
+     * @since 3.2
+     */
+    public Directories(List<? extends Directory> entries) {
+        super(EntityTypes.DIRECTORIES, entries);
+    }
+
+    /**
+     * @deprecated since 3.2, use {@link #getEntries()} instead
+     */
+    @Deprecated
     public List<Directory> getDirectories() {
-        return directories;
+        return getEntries();
     }
 
     public Directory getDirectory(String name) {
-        for (Directory directory : directories) {
+        for (Directory directory : entries) {
             if (directory.getName().equals(name)) {
                 return directory;
             }
@@ -53,13 +58,17 @@ public class Directories extends Entity implements Connectable {
         return null;
     }
 
+    /**
+     * @deprecated since 3.2, use {@link #getEntry(int)} instead
+     */
+    @Deprecated
     public Directory getDirectory(int index) {
-        return directories.get(index);
+        return super.getEntry(index);
     }
 
     @Override
     public void reconnectWith(NuxeoClient nuxeoClient) {
-        for (Directory directory : directories) {
+        for (Directory directory : entries) {
             directory.reconnectWith(nuxeoClient);
         }
     }

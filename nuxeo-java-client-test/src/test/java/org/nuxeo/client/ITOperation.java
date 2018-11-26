@@ -124,8 +124,8 @@ public class ITOperation extends AbstractITBase {
         // Attach a blobs and get them
         File temp2 = FileUtils.getResourceFileFromContext("sample.jpg");
         Blobs inputBlobs = new Blobs();
-        inputBlobs.add(temp1);
-        inputBlobs.add(temp2);
+        inputBlobs.addEntry(new FileBlob(temp1));
+        inputBlobs.addEntry(new FileBlob(temp2));
         // Execute with void header
         aVoid = nuxeoClient.operation(BLOB_ATTACH_ON_DOCUMENT)
                            .voidOperation(true)

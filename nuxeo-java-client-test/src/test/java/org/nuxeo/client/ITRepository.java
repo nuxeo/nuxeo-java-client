@@ -285,8 +285,8 @@ public class ITRepository extends AbstractITBase {
         File temp1 = FileUtils.getResourceFileFromContext("sample.jpg");
         File temp2 = FileUtils.getResourceFileFromContext("blob.json");
         Blobs inputBlobs = new Blobs();
-        inputBlobs.add(temp1);
-        inputBlobs.add(temp2);
+        inputBlobs.addEntry(new FileBlob(temp1));
+        inputBlobs.addEntry(new FileBlob(temp2));
         // Execute with void header
         Void aVoid = nuxeoClient.operation(BLOB_ATTACH_ON_DOCUMENT)
                                 .voidOperation(true)
@@ -753,10 +753,10 @@ public class ITRepository extends AbstractITBase {
         // fetch all annotations
         Annotations annotations = annotationAdapter.list();
         assertEquals(2, annotations.size());
-        assertEquals(annotation1Id, annotations.get(0).getId());
-        assertEquals("ANNOTATION_ID_001", annotations.get(0).getEntityId());
-        assertEquals(annotation2Id, annotations.get(1).getId());
-        assertEquals("ANNOTATION_ID_002", annotations.get(1).getEntityId());
+        assertEquals(annotation1Id, annotations.getEntry(0).getId());
+        assertEquals("ANNOTATION_ID_001", annotations.getEntry(0).getEntityId());
+        assertEquals(annotation2Id, annotations.getEntry(1).getId());
+        assertEquals("ANNOTATION_ID_002", annotations.getEntry(1).getEntityId());
 
         // fetch annotation by id
         annotation = annotationAdapter.fetch(annotation1Id);
@@ -838,14 +838,14 @@ public class ITRepository extends AbstractITBase {
         // fetch all comments
         Comments comments = commentAdapter.list();
         assertEquals(2, comments.size());
-        assertEquals(comment1Id, comments.get(0).getId());
-        assertEquals("COMMENT_ID_001", comments.get(0).getEntityId());
-        assertEquals(comment2Id, comments.get(1).getId());
-        assertEquals("COMMENT_ID_002", comments.get(1).getEntityId());
-        assertEquals(date, comments.get(0).getCreationDate());
-        assertEquals(date, comments.get(1).getCreationDate());
-        assertEquals(date, comments.get(0).getModificationDate());
-        assertEquals(date, comments.get(1).getModificationDate());
+        assertEquals(comment1Id, comments.getEntry(0).getId());
+        assertEquals("COMMENT_ID_001", comments.getEntry(0).getEntityId());
+        assertEquals(comment2Id, comments.getEntry(1).getId());
+        assertEquals("COMMENT_ID_002", comments.getEntry(1).getEntityId());
+        assertEquals(date, comments.getEntry(0).getCreationDate());
+        assertEquals(date, comments.getEntry(1).getCreationDate());
+        assertEquals(date, comments.getEntry(0).getModificationDate());
+        assertEquals(date, comments.getEntry(1).getModificationDate());
 
         // fetch comment by id
         comment = commentAdapter.fetch(comment1Id);
@@ -908,13 +908,13 @@ public class ITRepository extends AbstractITBase {
         // fetch all annotations
         Annotations annotations = annotationAdapter.list();
         assertEquals(1, annotations.size());
-        assertEquals(annotationId, annotations.get(0).getId());
-        assertEquals("ANNOTATION_ID", annotations.get(0).getEntityId());
+        assertEquals(annotationId, annotations.getEntry(0).getId());
+        assertEquals("ANNOTATION_ID", annotations.getEntry(0).getEntityId());
         // then replies
         Comments replies = repliesAdapter.list();
         assertEquals(1, replies.size());
-        assertEquals(replyId, replies.get(0).getId());
-        assertEquals("REPLY_ID", replies.get(0).getEntityId());
+        assertEquals(replyId, replies.getEntry(0).getId());
+        assertEquals("REPLY_ID", replies.getEntry(0).getEntityId());
 
         // wait for async operations (ES refresh)
         nuxeoClient.operation(ES_WAIT_FOR_INDEXING).param("refresh", true).execute();
@@ -922,8 +922,8 @@ public class ITRepository extends AbstractITBase {
         // fetch all replies
         replies = annotationAdapter.fetchComments(singletonList(annotationId));
         assertEquals(1, replies.size());
-        assertEquals(replyId, replies.get(0).getId());
-        assertEquals("REPLY_ID", replies.get(0).getEntityId());
+        assertEquals(replyId, replies.getEntry(0).getId());
+        assertEquals("REPLY_ID", replies.getEntry(0).getEntityId());
 
         // delete annotation
         annotationAdapter.remove(annotationId);

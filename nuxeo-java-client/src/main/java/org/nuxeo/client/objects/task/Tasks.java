@@ -21,33 +21,36 @@ package org.nuxeo.client.objects.task;
 
 import java.util.List;
 
-import org.nuxeo.client.objects.Entity;
+import org.nuxeo.client.objects.Entities;
 import org.nuxeo.client.objects.EntityTypes;
-
-import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
  * @since 1.0
  */
-public class Tasks extends Entity {
+public class Tasks extends Entities<Task> {
 
     public Tasks() {
         super(EntityTypes.TASKS);
     }
 
-    @JsonProperty("entries")
-    protected List<Task> tasks;
+    public Tasks(List<? extends Task> entries) {
+        super(EntityTypes.TASKS, entries);
+    }
 
+    /**
+     * @deprecated since 3.2, use {@link #getEntries()} instead
+     */
+    @Deprecated
     public List<Task> getTasks() {
-        return tasks;
+        return getEntries();
     }
 
+    /**
+     * @deprecated since 3.2, use {@link #getEntry(int)} instead
+     */
+    @Deprecated
     public Task get(int id) {
-        return tasks.get(id);
-    }
-
-    public int size() {
-        return tasks.size();
+        return getEntry(id);
     }
 
 }

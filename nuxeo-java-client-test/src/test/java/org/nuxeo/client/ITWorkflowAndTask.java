@@ -56,7 +56,7 @@ public class ITWorkflowAndTask extends AbstractITBase {
         document = Document.createWithName("note", "Note");
         document = nuxeoClient.repository().createDocumentByPath("/", document);
         // Fetch serial workflow model
-        serialWorkflow = nuxeoClient.repository().fetchWorkflowModels().get(1);
+        serialWorkflow = nuxeoClient.repository().fetchWorkflowModels().getEntry(1);
     }
 
     @Test
@@ -129,7 +129,7 @@ public class ITWorkflowAndTask extends AbstractITBase {
 
     @Test
     public void itCanFetchTask() {
-        Task task = fetchAllTasks().get(0);
+        Task task = fetchAllTasks().getEntry(0);
         String name = task.getName();
         task = nuxeoClient.taskManager().fetchTask(task.getId());
         assertNotNull(task);
@@ -138,18 +138,18 @@ public class ITWorkflowAndTask extends AbstractITBase {
 
     @Test
     public void itCanFetchTaskFromDoc() {
-        Task task = fetchAllTasks().get(0);
+        Task task = fetchAllTasks().getEntry(0);
         Document target = nuxeoClient.repository().fetchDocumentById(task.getTargetDocumentIds().get(0));
         Tasks tasks = target.fetchTasks();
         assertNotNull(tasks);
         assertEquals(1, tasks.size());
-        assertEquals(task.getId(), tasks.get(0).getId());
-        assertEquals(task.getWorkflowInstanceId(), tasks.get(0).getWorkflowInstanceId());
+        assertEquals(task.getId(), tasks.getEntry(0).getId());
+        assertEquals(task.getWorkflowInstanceId(), tasks.getEntry(0).getWorkflowInstanceId());
     }
 
     @Test
     public void itCanFetchTaskInfo() {
-        Task task = fetchAllTasks().get(0);
+        Task task = fetchAllTasks().getEntry(0);
         TaskInfo taskInfo = task.getTaskInfo();
         assertNotNull(taskInfo);
         List<TaskInfoItem> taskActions = taskInfo.getTaskActions();
@@ -162,7 +162,7 @@ public class ITWorkflowAndTask extends AbstractITBase {
     @Ignore("JAVACLIENT-82")
     @Test
     public void itCanCompleteATask() {
-        Task task = fetchAllTasks().get(0);
+        Task task = fetchAllTasks().getEntry(0);
         TaskCompletionRequest taskCompletionRequest = new TaskCompletionRequest();
         taskCompletionRequest.setComment("comment");
         taskCompletionRequest.setVariables(new HashMap<>());
@@ -173,7 +173,7 @@ public class ITWorkflowAndTask extends AbstractITBase {
     @Ignore("JAVACLIENT-81")
     @Test
     public void itCanDelegate() {
-        Task task = fetchAllTasks().get(0);
+        Task task = fetchAllTasks().getEntry(0);
         String name = task.getName();
         task = nuxeoClient.taskManager().delegate(task.getId(), "Administrator", "some comment");
         assertNotNull(task);
@@ -182,7 +182,7 @@ public class ITWorkflowAndTask extends AbstractITBase {
 
     @Test
     public void itCanReAssign() {
-        Task task = fetchAllTasks().get(0);
+        Task task = fetchAllTasks().getEntry(0);
         try {
             nuxeoClient.taskManager().reassign(task.getId(), "Administrator", "some comment");
             fail("Should fail: not possible to reassign this task");
@@ -194,7 +194,7 @@ public class ITWorkflowAndTask extends AbstractITBase {
     protected Tasks fetchAllTasks() {
         nuxeoClient.repository().fetchDocumentRoot().startWorkflowInstance(serialWorkflow);
         Workflows workflows = nuxeoClient.userManager().fetchWorkflowInstances();
-        Workflow workflow = workflows.get(0);
+        Workflow workflow = workflows.getEntry(0);
         return nuxeoClient.taskManager().fetchTasks("Administrator", workflow.getId(), workflow.getWorkflowModelName());
     }
 

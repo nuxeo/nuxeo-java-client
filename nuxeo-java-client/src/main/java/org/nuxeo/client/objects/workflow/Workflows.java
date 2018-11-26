@@ -21,33 +21,36 @@ package org.nuxeo.client.objects.workflow;
 
 import java.util.List;
 
-import org.nuxeo.client.objects.Entity;
+import org.nuxeo.client.objects.Entities;
 import org.nuxeo.client.objects.EntityTypes;
-
-import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
  * @since 0.1
  */
-public class Workflows extends Entity {
-
-    @JsonProperty("entries")
-    protected List<Workflow> workflows;
+public class Workflows extends Entities<Workflow> {
 
     public Workflows() {
         super(EntityTypes.WORKFLOWS);
     }
 
+    public Workflows(List<? extends Workflow> entries) {
+        super(EntityTypes.WORKFLOWS, entries);
+    }
+
+    /**
+     * @deprecated since 3.2, use {@link #getEntries()} instead
+     */
+    @Deprecated
     public List<Workflow> getWorkflows() {
-        return workflows;
+        return getEntries();
     }
 
+    /**
+     * @deprecated since 3.2, use {@link #getEntry(int)} instead
+     */
+    @Deprecated
     public Workflow get(int id) {
-        return workflows.get(id);
-    }
-
-    public int size() {
-        return workflows.size();
+        return getEntry(id);
     }
 
 }

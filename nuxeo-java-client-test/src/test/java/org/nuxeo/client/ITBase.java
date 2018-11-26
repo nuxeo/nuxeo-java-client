@@ -235,9 +235,9 @@ public class ITBase {
         assertNotNull(workflows);
         // Assert basic server workflow definitions
         assertEquals(2, workflows.size());
-        Workflow workflow = workflows.get(0);
+        Workflow workflow = workflows.getEntry(0);
         assertEquals("ParallelDocumentReview", workflow.getName());
-        workflow = workflows.get(1);
+        workflow = workflows.getEntry(1);
         assertEquals("SerialDocumentReview", workflow.getName());
     }
 
