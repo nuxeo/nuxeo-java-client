@@ -12,7 +12,7 @@ import org.nuxeo.client.objects.Document;
  *
  * @since 3.2
  */
-public class CommentAdapter extends Document.Adapter {
+public class CommentAdapter extends Document.AbstractAdapter<CommentAdapter> {
 
     protected static final String NAME = "comment";
 

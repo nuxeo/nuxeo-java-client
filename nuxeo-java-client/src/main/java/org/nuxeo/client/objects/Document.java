@@ -670,7 +670,7 @@ public class Document extends RepositoryEntity<RepositoryAPI, Document> {
      * @param creator the function used to instantiate a specific {@link Adapter adapter}
      * @since 3.2
      */
-    public <A extends Adapter> A adapter(Function<Document, A> creator) {
+    public <A extends AbstractAdapter> A adapter(Function<Document, A> creator) {
         return creator.apply(this);
     }
 
@@ -693,7 +693,26 @@ public class Document extends RepositoryEntity<RepositoryAPI, Document> {
      * @since 3.2
      */
     @SuppressWarnings("unchecked")
-    public static class Adapter extends AbstractConnectable<RepositoryAPI, Adapter> {
+    public static class Adapter extends AbstractAdapter<Adapter> {
+
+        protected Adapter(NuxeoClient nuxeoClient, String repositoryName, String documentId, String adapter) {
+            super(nuxeoClient, repositoryName, documentId, adapter);
+        }
+
+        public Adapter(Document document, String adapter) {
+            super(document, adapter);
+        }
+    }
+
+    /**
+     * Adapter is basic class to handle requests against web adapters.
+     *
+     * @param <A> The type of object extending this one.
+     * @since 3.2
+     */
+    @SuppressWarnings("unchecked")
+    public static abstract class AbstractAdapter<A extends AbstractAdapter<A>>
+            extends AbstractConnectable<RepositoryAPI, A> {
 
         protected final String repositoryName;
 
@@ -701,14 +720,14 @@ public class Document extends RepositoryEntity<RepositoryAPI, Document> {
 
         protected final String adapter;
 
-        protected Adapter(NuxeoClient nuxeoClient, String repositoryName, String documentId, String adapter) {
+        protected AbstractAdapter(NuxeoClient nuxeoClient, String repositoryName, String documentId, String adapter) {
             super(RepositoryAPI.class, nuxeoClient);
             this.repositoryName = repositoryName;
             this.documentId = documentId;
             this.adapter = adapter;
         }
 
-        public Adapter(Document document, String adapter) {
+        public AbstractAdapter(Document document, String adapter) {
             this(document.nuxeoClient, document.repositoryName, document.uid, adapter);
         }
 

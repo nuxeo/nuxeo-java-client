@@ -10,7 +10,7 @@ import org.nuxeo.client.objects.Document;
  *
  * @since 3.2
  */
-public class AnnotationAdapter extends Document.Adapter {
+public class AnnotationAdapter extends Document.AbstractAdapter<AnnotationAdapter> {
 
     public AnnotationAdapter(Document document) {
         super(document, "annotation");
