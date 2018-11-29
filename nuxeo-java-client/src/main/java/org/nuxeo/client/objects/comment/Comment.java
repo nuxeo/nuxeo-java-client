@@ -19,6 +19,7 @@
 package org.nuxeo.client.objects.comment;
 
 import java.time.Instant;
+import java.util.List;
 import java.util.Set;
 
 import org.nuxeo.client.objects.Entity;
@@ -51,6 +52,9 @@ public class Comment extends Entity {
     protected String origin;
 
     protected String entity;
+
+    // given by server
+    protected List<String> permissions; // NOSONAR
 
     /**
      * Protected constructor to extend Comment type.
@@ -133,5 +137,9 @@ public class Comment extends Entity {
 
     public void setEntity(String entity) {
         this.entity = entity;
+    }
+
+    public List<String> getPermissions() {
+        return permissions;
     }
 }
