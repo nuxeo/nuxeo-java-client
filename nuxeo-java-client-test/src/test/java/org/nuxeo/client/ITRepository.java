@@ -677,8 +677,7 @@ public class ITRepository extends AbstractITBase {
 
         // Here we are using a sub class DataSet of Document which let the dev implementing business logic.
         roles = singletonList("BenchmarkIndicator");
-        fields = singletonList(
-                new Field("string", "description", roles, "columnName", "sqlTypeHint", "name"));
+        fields = singletonList(new Field("string", "description", roles, "columnName", "sqlTypeHint", "name"));
         DataSet dataset = new DataSet(document.getId());
         dataset.setFields(fields);
 
@@ -938,6 +937,31 @@ public class ITRepository extends AbstractITBase {
         } catch (NuxeoClientRemoteException e) {
             assertEquals(404, e.getStatus());
         }
+    }
+
+    @Test
+    public void itCanRetrieveCommentPermissions() {
+        assumeTrue("itCanManageAnnotations works only since Nuxeo 10.3",
+                // TODO change the version to LTS
+                nuxeoClient.getServerVersion().isGreaterThan(new NuxeoVersion(10, 3, 0, true)));
+        Document file = nuxeoClient.repository().fetchDocumentByPath(FOLDER_2_FILE);
+        CommentAdapter commentAdapter = file.adapter(CommentAdapter::new);
+
+        String commentText = "Just a little comment";
+        Instant date = Instant.now();
+
+        // create comment
+        Comment comment = newComment(commentText, date, "COMMENT_ID_001");
+        comment = commentAdapter.create(comment);
+
+        // assert its permissions
+        assertEquals(
+                Arrays.asList("Write", "WriteVersion", "ReadProperties", "ReadCanCollect", "ReadSecurity", "Remove",
+                        "ReadVersion", "Read", "WriteLifeCycle", "Everything", "Moderate", "Version", "ReadChildren",
+                        "AddChildren", "Comment", "ReadLifeCycle", "RemoveChildren", "DataVisualization",
+                        "ReviewParticipant", "Unlock", "CanAskForPublishing", "RestrictedRead", "ReadWrite",
+                        "ReadRemove", "Browse", "WriteProperties", "WriteSecurity", "ManageWorkflows"),
+                comment.getPermissions());
     }
 
     private Annotation newAnnotation(String annotationText, String entityId) {
