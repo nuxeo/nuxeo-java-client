@@ -36,7 +36,7 @@ public class RecordSet extends Entity {
     protected int numberOfPages = -1;
 
     @JsonProperty("entries")
-    protected List<Map<String, String>> uuids;
+    protected List<Map<String, String>> uuids; // NOSONARA
 
     public RecordSet() {
         super(EntityTypes.DOCUMENTS);

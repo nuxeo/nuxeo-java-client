@@ -94,9 +94,9 @@ public class User extends Entity {
 
     protected String id;
 
-    protected Map<String, Object> properties = new HashMap<>();
+    protected Map<String, Object> properties = new HashMap<>(); // NOSONAR
 
-    protected List<ExtendedGroup> extendedGroups = new ArrayList<>();
+    protected List<ExtendedGroup> extendedGroups = new ArrayList<>(); // NOSONAR
 
     @JsonProperty("isAdministrator")
     protected boolean isAdministrator;

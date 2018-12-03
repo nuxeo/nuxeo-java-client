@@ -36,7 +36,7 @@ public class Comment extends Entity {
     protected String parentId;
 
     // computed server side
-    protected Set<String> ancestorIds;
+    protected Set<String> ancestorIds; // NOSONAR
 
     protected String author;
 

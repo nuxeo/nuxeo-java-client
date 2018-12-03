@@ -711,7 +711,7 @@ public class Document extends RepositoryEntity<RepositoryAPI, Document> {
      * @since 3.2
      */
     @SuppressWarnings("unchecked")
-    public static abstract class AbstractAdapter<A extends AbstractAdapter<A>>
+    public abstract static class AbstractAdapter<A extends AbstractAdapter<A>>
             extends AbstractConnectable<RepositoryAPI, A> {
 
         protected final String repositoryName;

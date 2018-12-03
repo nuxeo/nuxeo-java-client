@@ -30,9 +30,9 @@ import org.nuxeo.client.objects.EntityTypes;
  */
 public class Graph extends Entity {
 
-    protected List<Map<String, Object>> nodes;
+    protected List<Map<String, Object>> nodes; // NOSONAR
 
-    protected List<Map<String, Object>> transitions;
+    protected List<Map<String, Object>> transitions; // NOSONAR
 
     public Graph() {
         super(EntityTypes.GRAPH);

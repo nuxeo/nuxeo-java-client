@@ -53,7 +53,7 @@ public class LogEntry extends Entity {
 
     protected String logDate;
 
-    protected Map<String, Object> extended;
+    protected Map<String, Object> extended; // NOSONAR
 
     public LogEntry() {
         super(EntityTypes.LOGENTRY);

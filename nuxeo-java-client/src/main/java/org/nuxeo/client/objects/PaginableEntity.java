@@ -31,7 +31,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  */
 public class PaginableEntity<E> extends Entity {
 
-    protected List<E> entries;
+    protected List<E> entries; // NOSONAR
 
     protected int resultsCount;
 

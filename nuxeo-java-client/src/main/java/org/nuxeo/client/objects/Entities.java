@@ -16,7 +16,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
  */
 public class Entities<E> extends Entity implements Iterable<E> {
 
-    protected List<E> entries = new ArrayList<>();
+    protected List<E> entries = new ArrayList<>(); // NOSONAR
 
     protected Entities(String entityType) {
         super(entityType);
@@ -44,6 +44,7 @@ public class Entities<E> extends Entity implements Iterable<E> {
         return entries.size();
     }
 
+    @JsonIgnore
     public boolean isEmpty() {
         return entries.isEmpty();
     }
