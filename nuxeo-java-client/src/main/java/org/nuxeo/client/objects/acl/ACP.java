@@ -32,7 +32,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public class ACP extends Entity {
 
     @JsonProperty("acl")
-    protected List<ACL> acls;
+    protected List<ACL> acls; // NOSONAR
 
     public ACP() {
         super(EntityTypes.ACP);

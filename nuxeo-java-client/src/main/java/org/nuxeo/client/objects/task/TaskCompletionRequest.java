@@ -41,7 +41,7 @@ public class TaskCompletionRequest extends Entity {
 
     protected String comment;
 
-    private Map<String, Object> variables;
+    private Map<String, Object> variables; // NOSONAR
 
     public TaskCompletionRequest() {
         super(EntityTypes.TASK);

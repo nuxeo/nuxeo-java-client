@@ -47,9 +47,9 @@ public class Workflow extends Entity {
     protected String initiator;
 
     @JsonProperty("attachedDocumentIds")
-    protected List<Map<String, String>> attachedDocumentIds;
+    protected List<Map<String, String>> attachedDocumentIds; // NOSONAR
 
-    protected Map<String, Object> variables;
+    protected Map<String, Object> variables; // NOSONAR
 
     protected String graphResource;
 

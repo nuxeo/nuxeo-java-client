@@ -30,7 +30,7 @@ public class SchemaField implements Serializable {
 
     protected final boolean array;
 
-    protected final Map<String, SchemaField> complexFields;
+    protected final Map<String, SchemaField> complexFields; // NOSONAR
 
     public SchemaField(String type) {
         this(type, null);

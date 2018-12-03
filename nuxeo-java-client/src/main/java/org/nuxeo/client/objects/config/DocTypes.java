@@ -36,10 +36,10 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 public class DocTypes extends Entity implements Connectable {
 
     @JsonProperty("doctypes")
-    protected Map<String, DocType> docTypes;
+    protected Map<String, DocType> docTypes; // NOSONAR
 
     @JsonDeserialize(using = DocTypesSchemasDeserializer.class)
-    protected Map<String, Schema> schemas;
+    protected Map<String, Schema> schemas; // NOSONAR
 
     /**
      * For deserialization purpose

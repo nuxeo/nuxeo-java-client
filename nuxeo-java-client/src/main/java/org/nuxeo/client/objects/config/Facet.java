@@ -30,7 +30,7 @@ public class Facet extends Entity {
 
     protected String name;
 
-    protected List<Schema> schemas;
+    protected List<Schema> schemas; // NOSONAR
 
     public Facet() {
         super(EntityTypes.FACET);
