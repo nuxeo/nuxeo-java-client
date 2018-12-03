@@ -42,7 +42,7 @@ node(env.SLAVE) {
                             if (masterBuild) {
                                 mvnGoals += ' deploy'
                             } 
-                            sh "mvn ${mvnGoals} -P ${env.TARGET_PLATFORM}"
+                            sh "mvn ${mvnGoals} -P ${env.TARGET_PLATFORM},qa"
                         }
                     }
 
