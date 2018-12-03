@@ -56,6 +56,9 @@ public abstract class AbstractBlob implements Blob {
         return mimeType;
     }
 
+    /**
+     * @deprecated since 3.1, use {@link #getContentLength()} instead
+     */
     @Override
     @Deprecated
     public int getLength() {
