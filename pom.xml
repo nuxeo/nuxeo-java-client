@@ -109,8 +109,6 @@
     <sonar.jacoco.reportPaths>${it.jacoco.destFile}</sonar.jacoco.reportPaths>
     <!-- for use in maven-surefire-plugin, maven-failsafe-plugin, jacoco-maven-plugin -->
     <it.failsafe.argLine></it.failsafe.argLine>
-    <!-- for javadoc plugin -->
-    <additionalparam>-Xdoclint:none</additionalparam>
   </properties>
 
   <dependencyManagement>
@@ -296,6 +294,9 @@
                 <goals>
                   <goal>jar</goal>
                 </goals>
+                <configuration>
+                  <doclint>none</doclint>
+                </configuration>
               </execution>
             </executions>
           </plugin>
