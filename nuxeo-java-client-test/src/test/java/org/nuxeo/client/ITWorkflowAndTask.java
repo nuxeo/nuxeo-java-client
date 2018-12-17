@@ -24,8 +24,10 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.junit.Ignore;
 import org.junit.Test;
@@ -56,7 +58,7 @@ public class ITWorkflowAndTask extends AbstractITBase {
         document = Document.createWithName("note", "Note");
         document = nuxeoClient.repository().createDocumentByPath("/", document);
         // Fetch serial workflow model
-        serialWorkflow = nuxeoClient.repository().fetchWorkflowModels().getEntry(1);
+        serialWorkflow = nuxeoClient.repository().fetchWorkflowModel("SerialDocumentReview");
     }
 
     @Test
@@ -159,15 +161,18 @@ public class ITWorkflowAndTask extends AbstractITBase {
 
     }
 
-    @Ignore("JAVACLIENT-82")
     @Test
     public void itCanCompleteATask() {
         Task task = fetchAllTasks().getEntry(0);
         TaskCompletionRequest taskCompletionRequest = new TaskCompletionRequest();
         taskCompletionRequest.setComment("comment");
-        taskCompletionRequest.setVariables(new HashMap<>());
+        Map<String, Object> variables = new HashMap<>();
+        variables.put("comment", "Please review");
+        variables.put("participants", Collections.singletonList("user:Administrator"));
+        taskCompletionRequest.setVariables(variables);
         task = nuxeoClient.taskManager().complete(task.getId(), "start_review", taskCompletionRequest);
         assertNotNull(task);
+        assertEquals("ended", task.getState());
     }
 
     @Ignore("JAVACLIENT-81")

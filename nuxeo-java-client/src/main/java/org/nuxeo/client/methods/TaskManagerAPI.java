@@ -51,7 +51,7 @@ public interface TaskManagerAPI {
             @Query("comment") String comment);
 
     @PUT("task/{taskId}/{action}")
-    Call<Task> complete(@Path("taskId") String taskId, @Query("action") String action,
+    Call<Task> complete(@Path("taskId") String taskId, @Path("action") String action,
             @Body TaskCompletionRequest taskCompletionRequest);
 
 }
