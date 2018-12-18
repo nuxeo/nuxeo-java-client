@@ -19,15 +19,14 @@
  */
 package org.nuxeo.client;
 
+import static java.util.Collections.singletonList;
+import static java.util.Collections.singletonMap;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.junit.Ignore;
 import org.junit.Test;
@@ -165,14 +164,13 @@ public class ITWorkflowAndTask extends AbstractITBase {
     public void itCanCompleteATask() {
         Task task = fetchAllTasks().getEntry(0);
         TaskCompletionRequest taskCompletionRequest = new TaskCompletionRequest();
-        taskCompletionRequest.setComment("comment");
-        Map<String, Object> variables = new HashMap<>();
-        variables.put("comment", "Please review");
-        variables.put("participants", Collections.singletonList("user:Administrator"));
-        taskCompletionRequest.setVariables(variables);
+        taskCompletionRequest.setComment("Please review");
+        taskCompletionRequest.setVariables(singletonMap("participants", singletonList("user:Administrator")));
         task = nuxeoClient.taskManager().complete(task.getId(), "start_review", taskCompletionRequest);
         assertNotNull(task);
         assertEquals("ended", task.getState());
+        assertEquals(1, task.getComments().size());
+        assertEquals("Please review", task.getComments().get(0).getText());
     }
 
     @Ignore("JAVACLIENT-81")

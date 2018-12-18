@@ -54,7 +54,7 @@ public class Task extends Entity {
 
     protected Calendar dueDate;
 
-    protected List<String> comments; // NOSONAR
+    protected List<TaskComment> comments; // NOSONAR
 
     @JsonProperty("targetDocumentIds")
     protected List<Map<String, String>> targetDocumentIds; // NOSONAR
@@ -142,11 +142,11 @@ public class Task extends Entity {
         this.dueDate = dueDate;
     }
 
-    public List<String> getComments() {
+    public List<TaskComment> getComments() {
         return comments;
     }
 
-    public void setComments(List<String> comments) {
+    public void setComments(List<TaskComment> comments) {
         this.comments = comments;
     }
 
