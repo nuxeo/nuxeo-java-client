@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2016-2017 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2016-2018 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -43,12 +43,15 @@ public interface TaskManagerAPI {
     Call<Task> fetchTask(@Path("taskId") String taskId);
 
     @PUT("task/{taskId}/reassign")
-    Call<Task> reassign(@Path("taskId") String taskId, @Query("actors") String actors, @Query("comment") String comment);
+    Call<Task> reassign(@Path("taskId") String taskId, @Query("actors") String actors,
+            @Query("comment") String comment);
 
     @PUT("task/{taskId}/delegate")
-    Call<Task> delegate(@Path("taskId") String taskId, @Query("actors") String actors, @Query("comment") String comment);
+    Call<Task> delegate(@Path("taskId") String taskId, @Query("actors") String actors,
+            @Query("comment") String comment);
 
     @PUT("task/{taskId}/{action}")
-    Call<Task> complete(@Path("taskId") String taskId, @Query("action") String action, @Body TaskCompletionRequest taskCompletionRequest);
+    Call<Task> complete(@Path("taskId") String taskId, @Query("action") String action,
+            @Body TaskCompletionRequest taskCompletionRequest);
 
 }
