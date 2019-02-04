@@ -39,7 +39,7 @@ public class Responses {
         BufferedSource source = body.source();
         // Buffer the entire body.
         source.request(Long.MAX_VALUE);
-        Buffer buffer = source.buffer();
+        Buffer buffer = source.getBuffer();
         return buffer.clone().readString(Charset.defaultCharset());
     }
 
