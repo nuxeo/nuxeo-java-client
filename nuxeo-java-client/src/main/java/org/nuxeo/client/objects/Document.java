@@ -25,6 +25,8 @@ import java.io.Serializable;
 import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
@@ -262,9 +264,69 @@ public class Document extends RepositoryEntity<RepositoryAPI, Document> {
         return properties;
     }
 
+    /**
+     * Since 3.3, behavior of this method has been improved to handle xpath.
+     * <p>
+     * Note that what's called xpath in this context is not an actual XPath as specified by the w3c. Main differences
+     * are that in our xpath:
+     * <ul>
+     * <li>Indexes start at 0 instead of 1</li>
+     * <li>Predicates are not supported</li>
+     * <li>You must express {@code foos/foo[i]/bar} as {@code foos/i/bar}</li>
+     * </ul>
+     * <p>
+     * This API can't traverse fetched properties.
+     *
+     * @param xpath the Nuxeo xpath to resolve
+     * @return the property value referenced by the given Nuxeo xpath
+     */
     @SuppressWarnings("unchecked")
-    public <T> T getPropertyValue(String key) {
-        return (T) properties.get(key);
+    public <T> T getPropertyValue(String xpath) {
+        List<String> segments = Arrays.asList(xpath.split("/"));
+        return (T) getPropertyValue(properties, segments);
+    }
+
+    /**
+     * @param value the object from which to resolve given {@code segments}
+     * @param segments the remaining segments to resolve on given {@code value}
+     * @return the resolved value of given {@code segments}
+     */
+    @SuppressWarnings("unchecked")
+    protected Object getPropertyValue(Object value, List<String> segments) {
+        // test if we have finished to resolve xpath
+        if (segments.isEmpty()) {
+            return value;
+        }
+        String segment = segments.get(0);
+        List<String> subSegments = segments.subList(1, segments.size());
+        if (value instanceof Map) {
+            if (segment.matches("\\d+") || "*".equals(segment)) {
+                throw new NuxeoClientException("Unable to get map element with segment=" + segment);
+            }
+            return getPropertyValue(((Map) value).get(segment), subSegments);
+        } else if (value instanceof List) {
+            if (segment.matches("\\d+")) { // get specific index
+                int index = Integer.parseInt(segment);
+                List<Object> list = (List<Object>) value;
+                return getPropertyValue(list.size() > index ? list.get(index) : null, subSegments);
+            } else if ("*".equals(segment)) { // do a projection
+                List<Object> list = (List<Object>) value;
+                List<Object> result = new ArrayList<>(list.size());
+                for (Object element : list) {
+                    result.add(getPropertyValue(element, subSegments));
+                }
+                return result;
+            } else {
+                throw new NuxeoClientException("Unable to get list element with segment=" + segment);
+            }
+        } else if (value != null) {
+            // we can't traverse java object that are not Map or List
+            throw new NuxeoClientException(
+                    "Unable to traverse " + value.getClass().getSimpleName() + " object with segment=" + segment);
+        } else {
+            // value is missing
+            return null;
+        }
     }
 
     /**
@@ -294,26 +356,19 @@ public class Document extends RepositoryEntity<RepositoryAPI, Document> {
         }
     }
 
+    /**
+     * Get the dirty properties.
+     */
+    public Map<String, Object> getDirtyProperties() {
+        return dirtyProperties;
+    }
+
     public void setDirtyProperties(Map<String, Object> dirtyProperties) {
         this.dirtyProperties.clear();
         if (dirtyProperties != null) {
             rejectIfDateFound(null, dirtyProperties);
             this.dirtyProperties.putAll(dirtyProperties);
         }
-    }
-
-    public void setContextParameters(Map<String, Object> contextParameters) {
-        this.contextParameters.clear();
-        if (contextParameters != null) {
-            this.contextParameters.putAll(contextParameters);
-        }
-    }
-
-    /**
-     * Get the dirty properties.
-     */
-    public Map<String, Object> getDirtyProperties() {
-        return dirtyProperties;
     }
 
     /**
@@ -327,6 +382,13 @@ public class Document extends RepositoryEntity<RepositoryAPI, Document> {
 
     public Map<String, Object> getContextParameters() {
         return contextParameters;
+    }
+
+    public void setContextParameters(Map<String, Object> contextParameters) {
+        this.contextParameters.clear();
+        if (contextParameters != null) {
+            this.contextParameters.putAll(contextParameters);
+        }
     }
 
     /*------------*

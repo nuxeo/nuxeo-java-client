@@ -26,7 +26,6 @@ import static org.nuxeo.client.Operations.BLOB_ATTACH_ON_DOCUMENT;
 
 import java.io.File;
 import java.util.List;
-import java.util.Map;
 
 import org.junit.Test;
 import org.nuxeo.client.methods.BatchUploadAPI;
@@ -170,7 +169,7 @@ public class ITUpload extends AbstractITBase {
         assertNotNull(doc);
         doc.setPropertyValue("file:content", batchUpload.getBatchBlob());
         doc = doc.updateDocument();
-        assertEquals("sample.jpg", ((Map) doc.getPropertyValue("file:content")).get("name"));
+        assertEquals("sample.jpg", doc.getPropertyValue("file:content/name"));
     }
 
     @Test
