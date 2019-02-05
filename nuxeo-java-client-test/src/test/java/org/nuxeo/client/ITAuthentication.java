@@ -77,8 +77,7 @@ public class ITAuthentication {
     @Test
     public void itCanLoginWithJWT() {
         assumeTrue("itCanChangeLoginWithJWT works only since Nuxeo 10.3",
-                // TODO change the version to LTS
-                createClient().getServerVersion().isGreaterThan(new NuxeoVersion(10, 3, 0, true)));
+                createClient().getServerVersion().isGreaterThan(NuxeoVersion.LTS_10_10));
         NuxeoClient client = ITBase.createClientJWT();
         User currentUser = client.getCurrentUser();
         assertEquals("Administrator", currentUser.getUserName());
