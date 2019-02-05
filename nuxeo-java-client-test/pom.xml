@@ -36,6 +36,13 @@
       <scope>provided</scope>
     </dependency>
     <dependency>
+      <groupId>org.nuxeo.ecm.distribution</groupId>
+      <artifactId>nuxeo-server-tomcat</artifactId>
+      <version>${nuxeo.tested.version}</version>
+      <type>zip</type>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
       <groupId>org.nuxeo.ecm.platform</groupId>
       <artifactId>nuxeo-platform-login-portal-sso</artifactId>
       <version>${nuxeo.tested.version}</version>
@@ -74,21 +81,21 @@
         <activeByDefault>true</activeByDefault>
       </activation>
       <properties>
-        <!-- TODO update this version to 10.x -->
+        <!-- TODO update this version to 11.10 -->
         <!-- this version is used to get the base dependency graph to depend on the tested version -->
-        <nuxeo.distribution.version>10.2</nuxeo.distribution.version>
-        <nuxeo.tested.version>[10.0,11.0)</nuxeo.tested.version>
+        <nuxeo.distribution.version>11.1-SNAPSHOT</nuxeo.distribution.version>
+        <nuxeo.tested.version>[11.0,12.0)</nuxeo.tested.version>
         <nuxeo.templates>default,jwt</nuxeo.templates>
       </properties>
-      <dependencies>
-        <dependency>
-          <groupId>org.nuxeo.ecm.distribution</groupId>
-          <artifactId>nuxeo-server-tomcat</artifactId>
-          <version>${nuxeo.tested.version}</version>
-          <type>zip</type>
-          <scope>provided</scope>
-        </dependency>
-      </dependencies>
+    </profile>
+    <profile>
+      <id>10.10</id>
+      <properties>
+        <!-- this version is used to get the base dependency graph to depend on the tested version -->
+        <nuxeo.distribution.version>10.10</nuxeo.distribution.version>
+        <nuxeo.tested.version>[10.10,11.0)</nuxeo.tested.version>
+        <nuxeo.templates>default,jwt</nuxeo.templates>
+      </properties>
     </profile>
     <profile>
       <id>9.10</id>
@@ -97,15 +104,6 @@
         <nuxeo.distribution.version>9.10</nuxeo.distribution.version>
         <nuxeo.tested.version>[9.10,10.0)</nuxeo.tested.version>
       </properties>
-      <dependencies>
-        <dependency>
-          <groupId>org.nuxeo.ecm.distribution</groupId>
-          <artifactId>nuxeo-server-tomcat</artifactId>
-          <version>${nuxeo.tested.version}</version>
-          <type>zip</type>
-          <scope>provided</scope>
-        </dependency>
-      </dependencies>
     </profile>
     <profile>
       <id>8.10</id>
@@ -114,33 +112,6 @@
         <nuxeo.distribution.version>8.10</nuxeo.distribution.version>
         <nuxeo.tested.version>[8.10,9.0)</nuxeo.tested.version>
       </properties>
-      <dependencies>
-        <dependency>
-          <groupId>org.nuxeo.ecm.distribution</groupId>
-          <artifactId>nuxeo-server-tomcat</artifactId>
-          <version>${nuxeo.tested.version}</version>
-          <type>zip</type>
-          <scope>provided</scope>
-        </dependency>
-      </dependencies>
-    </profile>
-    <profile>
-      <id>7.10</id>
-      <properties>
-        <!-- this version is used to get the base dependency graph to depend on the tested version -->
-        <nuxeo.distribution.version>7.10</nuxeo.distribution.version>
-        <nuxeo.tested.version>[7.10.0,8.0)</nuxeo.tested.version>
-      </properties>
-      <dependencies>
-        <dependency>
-          <groupId>org.nuxeo.ecm.distribution</groupId>
-          <artifactId>nuxeo-distribution-tomcat</artifactId>
-          <classifier>nuxeo-cap</classifier>
-          <version>${nuxeo.tested.version}</version>
-          <type>zip</type>
-          <scope>provided</scope>
-        </dependency>
-      </dependencies>
     </profile>
   </profiles>
 
