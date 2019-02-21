@@ -25,12 +25,17 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.junit.Assume.assumeTrue;
+import static org.nuxeo.client.ITBase.JWT;
 import static org.nuxeo.client.ITBase.createClient;
+import static org.nuxeo.client.ITBase.createClientBuilder;
 
 import org.junit.Test;
+import org.nuxeo.client.objects.directory.Directory;
+import org.nuxeo.client.objects.directory.DirectoryEntry;
 import org.nuxeo.client.objects.user.User;
 import org.nuxeo.client.objects.user.UserManager;
 import org.nuxeo.client.spi.NuxeoClientRemoteException;
+import org.nuxeo.client.spi.auth.OAuth2AuthInterceptor;
 
 /**
  * @since 0.1
@@ -81,6 +86,31 @@ public class ITAuthentication {
         NuxeoClient client = ITBase.createClientJWT();
         User currentUser = client.getCurrentUser();
         assertEquals("Administrator", currentUser.getUserName());
+    }
+
+    @Test
+    public void itCanLoginWithOauth2AndJwtBearer() {
+        NuxeoClient adminClient = createClient();
+        assumeTrue("itCanLoginWithOauth2AndJwtBearer works only since Nuxeo 11.1",
+                adminClient.getServerVersion().isGreaterThan(NuxeoVersion.parse("11.1-SNAPSHOT")));
+
+        Directory oauth2Directory = adminClient.directoryManager().directory("oauth2Clients");
+        // create an oauth provider
+        DirectoryEntry providerEntry = new DirectoryEntry();
+        providerEntry.putProperty("name", "OAuth2 JWT");
+        providerEntry.putProperty("clientId", "oauth2Jwt");
+        providerEntry.putProperty("clientSecret", "strongSecret");
+        providerEntry.putProperty("redirectURIs", "nuxeo://not-used");
+        providerEntry.putProperty("autoGrant", "true");
+        providerEntry.putProperty("enabled", "true");
+        providerEntry = oauth2Directory.createEntry(providerEntry);
+        try {
+            OAuth2AuthInterceptor auth = OAuth2AuthInterceptor.obtainAuthFromJWTToken(ITBase.BASE_URL, "oauth2Jwt",
+                    "strongSecret", JWT);
+            createClientBuilder(auth).connect();
+        } finally {
+            oauth2Directory.deleteEntry(providerEntry.getId());
+        }
     }
 
     @Test
