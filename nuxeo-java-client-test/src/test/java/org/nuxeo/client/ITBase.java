@@ -64,6 +64,13 @@ public class ITBase {
 
     public static final String PASSWORD = "Administrator";
 
+    /**
+     * Token for Administration which never expires.
+     *
+     * @since 3.3
+     */
+    public static final String JWT = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJBZG1pbmlzdHJhdG9yIiwiaXNzIjoibnV4ZW8ifQ.mRxcrdaRtzYqoINJjGJZVZIRuij6yevVxmH3NdVU4IzpJh4PDDFbfzOpsruimUWauAWAeZKLBi4bekicrN5jKQ";
+
     public static final String DEFAULT_USER_LOGIN = "toto";
 
     public static final String DEFAULT_USER_PASSWORD = "totopwd";
@@ -297,9 +304,7 @@ public class ITBase {
      * @return A {@link NuxeoClient} filled with Nuxeo Server URL and JWT authentication.
      */
     public static NuxeoClient createClientJWT() {
-        // never expires token for Administrator
-        String jwt = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJBZG1pbmlzdHJhdG9yIiwiaXNzIjoibnV4ZW8ifQ.mRxcrdaRtzYqoINJjGJZVZIRuij6yevVxmH3NdVU4IzpJh4PDDFbfzOpsruimUWauAWAeZKLBi4bekicrN5jKQ";
-        return createClientBuilder(new JWTAuthInterceptor(jwt)).connect();
+        return createClientBuilder(new JWTAuthInterceptor(JWT)).connect();
     }
 
     /**
