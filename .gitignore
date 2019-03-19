@@ -30,3 +30,5 @@ nashorn_code_cache/
 local.properties
 build
 captures
+.java-version
+
