@@ -397,10 +397,11 @@
                 <onlyWhenRelease>true</onlyWhenRelease>
                 <excludes>
                   <!-- exclude test dependencies - we always test the latest version -->
-                  <exclude>org.nuxeo.ecm.distribution:nuxeo-server-tomcat</exclude>
-                  <exclude>org.nuxeo.ecm.automation:nuxeo-automation-core</exclude>
-                  <exclude>org.nuxeo.ecm.platform:nuxeo-platform-login-portal-sso</exclude>
+                  <exclude>org.nuxeo.*:*:*:*:test</exclude>
                 </excludes>
+                <includes>
+                  <include>org.nuxeo.client</include>
+                </includes>
               </requireReleaseDeps>
               <requireMavenVersion>
                 <version>[3.2,)</version>
