@@ -42,6 +42,7 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
+import java.time.temporal.TemporalUnit;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
@@ -51,6 +52,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
+import java.util.concurrent.TimeUnit;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -830,6 +832,9 @@ public class ITRepository extends AbstractITBase {
         comment = newComment(comment2Text, date, "COMMENT_ID_002");
         comment = commentAdapter.create(comment);
         String comment2Id = comment.getId();
+
+        // truncate date to millis as nuxeo server send millis
+        date = date.truncatedTo(ChronoUnit.MILLIS);
 
         // fetch all comments
         Comments comments = commentAdapter.list();

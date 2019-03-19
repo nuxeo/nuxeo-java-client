@@ -26,7 +26,10 @@ node(env.SLAVE) {
             timeout(30) {
                 def masterBuild = env.BRANCH_NAME == 'master' && env.STATUS_CONTEXT_NAME == 'nuxeo/master'
 
-                def jdk = tool name: 'java-8-oracle'
+                def jdk = tool name: 'java-11-openjdk'
+                if (env.STATUS_CONTEXT_NAME == 'nuxeo/8.10' || env.STATUS_CONTEXT_NAME == 'nuxeo/9.10') {
+                  jdk = tool name: 'java-8-oracle'
+                }
                 env.JAVA_HOME = "${jdk}"
 
                 def sha = stage('checkout') {
