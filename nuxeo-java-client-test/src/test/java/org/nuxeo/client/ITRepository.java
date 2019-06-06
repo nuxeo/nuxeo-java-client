@@ -21,6 +21,7 @@
 package org.nuxeo.client;
 
 import static java.util.Collections.singletonList;
+import static java.util.stream.Collectors.toList;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -42,7 +43,6 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
-import java.time.temporal.TemporalUnit;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
@@ -52,11 +52,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
-import java.util.concurrent.TimeUnit;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 
 import org.junit.Test;
 import org.nuxeo.client.cache.ResultCacheInMemory;
@@ -65,6 +63,7 @@ import org.nuxeo.client.objects.Document;
 import org.nuxeo.client.objects.Documents;
 import org.nuxeo.client.objects.Field;
 import org.nuxeo.client.objects.RecordSet;
+import org.nuxeo.client.objects.Repository;
 import org.nuxeo.client.objects.acl.ACE;
 import org.nuxeo.client.objects.acl.ACP;
 import org.nuxeo.client.objects.audit.Audit;
@@ -384,8 +383,7 @@ public class ITRepository extends AbstractITBase {
         Document root = nuxeoClient.repository().fetchDocumentRoot();
         Audit audit = root.fetchAudit();
         assertFalse(audit.getLogEntries().isEmpty());
-        List<String> categories = audit.getLogEntries().stream().map(LogEntry::getCategory).collect(
-                Collectors.toList());
+        List<String> categories = audit.getLogEntries().stream().map(LogEntry::getCategory).collect(toList());
         assertTrue(categories.contains("eventDocumentCategory"));
     }
 
@@ -429,8 +427,9 @@ public class ITRepository extends AbstractITBase {
 
     @Test
     public void itCanUseEnrichers() {
-        Document document = nuxeoClient.enrichersForDocument("acls", "breadcrumb").repository().fetchDocumentByPath(
-                "/folder_2");
+        Document document = nuxeoClient.enrichersForDocument("acls", "breadcrumb")
+                                       .repository()
+                                       .fetchDocumentByPath("/folder_2");
         assertNotNull(document);
         assertEquals(1, ((List) document.getContextParameters().get("acls")).size());
         assertEquals(1, document.<Documents> getContextParameter("breadcrumb").size());
@@ -443,8 +442,9 @@ public class ITRepository extends AbstractITBase {
     @Test
     public void itCanUseBreadcrumb() {
         // Test deserialization
-        Document document = nuxeoClient.enrichersForDocument("breadcrumb").repository().fetchDocumentByPath(
-                FOLDER_2_FILE);
+        Document document = nuxeoClient.enrichersForDocument("breadcrumb")
+                                       .repository()
+                                       .fetchDocumentByPath(FOLDER_2_FILE);
         assertNotNull(document);
         Documents documents = document.getContextParameter("breadcrumb");
         assertNotNull(documents);
@@ -815,7 +815,7 @@ public class ITRepository extends AbstractITBase {
 
     @Test
     public void itCanManageComments() {
-        assumeTrue("itCanManageAnnotations works only since Nuxeo 10.3",
+        assumeTrue("itCanManageComments works only since Nuxeo 10.3",
                 nuxeoClient.getServerVersion().isGreaterThan(NuxeoVersion.LTS_10_10));
         Document file = nuxeoClient.repository().fetchDocumentByPath(FOLDER_2_FILE);
         CommentAdapter commentAdapter = file.adapter(CommentAdapter::new);
@@ -942,7 +942,7 @@ public class ITRepository extends AbstractITBase {
 
     @Test
     public void itCanRetrieveCommentPermissions() {
-        assumeTrue("itCanManageAnnotations works only since Nuxeo 10.3",
+        assumeTrue("itCanRetrieveCommentPermissions works only since Nuxeo 10.3",
                 nuxeoClient.getServerVersion().isGreaterThan(NuxeoVersion.LTS_10_10));
         Document file = nuxeoClient.repository().fetchDocumentByPath(FOLDER_2_FILE);
         CommentAdapter commentAdapter = file.adapter(CommentAdapter::new);
@@ -962,6 +962,40 @@ public class ITRepository extends AbstractITBase {
                         "ReviewParticipant", "Unlock", "CanAskForPublishing", "RestrictedRead", "ReadWrite",
                         "ReadRemove", "Browse", "WriteProperties", "WriteSecurity", "ManageWorkflows"),
                 comment.getPermissions());
+    }
+
+    @Test
+    public void itCanInstantiateAnAdapterWithRepositoryAndUseIt() {
+        assumeTrue("itCanInstantiateAnAdapterWithRepositoryAndUseIt works only since Nuxeo 10.3",
+                nuxeoClient.getServerVersion().isGreaterThan(NuxeoVersion.LTS_10_10));
+        Repository repository = nuxeoClient.repository();
+        String folder2FileId = repository.fetchDocumentByPath(FOLDER_2_FILE).getId();
+        AnnotationAdapter annotationAdapter = repository.newDocumentAdapter(folder2FileId, AnnotationAdapter::new);
+
+        String annotationText = "Just a little comment";
+        String replyText = "And so a little reply";
+
+        // create one annotation and its reply
+        Annotation annotation = newAnnotation(annotationText, "ANNOTATION_ID");
+        annotation = annotationAdapter.create(annotation);
+        String annotationId = annotation.getId();
+
+        Comment reply = newComment(replyText, Instant.now(), "REPLY_ID");
+        CommentAdapter repliesAdapter = repository.newDocumentAdapter(annotationId, CommentAdapter::new);
+        reply = repliesAdapter.create(reply);
+        String replyId = reply.getId();
+
+        // fetch all annotations
+        Annotations annotations = annotationAdapter.list();
+        assertEquals(1, annotations.size());
+        assertEquals(annotationId, annotations.getEntry(0).getId());
+        assertEquals("ANNOTATION_ID", annotations.getEntry(0).getEntityId());
+        // then replies
+        Comments replies = repliesAdapter.list();
+        assertEquals(1, replies.size());
+        assertEquals(replyId, replies.getEntry(0).getId());
+        assertEquals("REPLY_ID", replies.getEntry(0).getEntityId());
+
     }
 
     private Annotation newAnnotation(String annotationText, String entityId) {

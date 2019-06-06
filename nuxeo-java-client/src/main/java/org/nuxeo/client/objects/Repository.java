@@ -499,11 +499,18 @@ public class Repository extends RepositoryEntity<RepositoryAPI, Repository> {
         fetchResponse(api.fetchWorkflowModels(), callback);
     }
 
+    /**
+     * @since 3.2
+     */
     public Document.Adapter newDocumentAdapter(String documentId, String adapter) {
         return new Document.Adapter(nuxeoClient, repositoryName, documentId, adapter);
     }
 
-    public <A extends Document.Adapter> A newDocumentAdapter(String documentId, Function<Document, A> creator) {
+    /**
+     * @since 3.2
+     * @apiNote method can take an {@link Document.AbstractAdapter AbstractAdapter} creator since 3.3.1
+     */
+    public <A extends Document.AbstractAdapter> A newDocumentAdapter(String documentId, Function<Document, A> creator) {
         // create a document mock to meet API
         Document document = new Document();
         document.nuxeoClient = nuxeoClient;
