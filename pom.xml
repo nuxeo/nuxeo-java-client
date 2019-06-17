@@ -98,8 +98,8 @@
     <okio.version>2.2.2</okio.version>
     <retrofit.version>2.5.0</retrofit.version>
     <!-- other properties -->
+    <java.version.release>8</java.version.release>
     <java.version.source>1.8</java.version.source>
-    <java.version.target>1.8</java.version.target>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <!-- sonar properties -->
     <sonar.host.url>https://sonarcloud.io</sonar.host.url>
@@ -205,6 +205,43 @@
   </dependencyManagement>
 
   <profiles>
+
+    <profile>
+      <id>java-8</id>
+      <activation>
+        <jdk>1.8</jdk>
+      </activation>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-compiler-plugin</artifactId>
+            <configuration>
+              <source>${java.version.source}</source>
+              <target>${java.version.source}</target>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+
+    <profile>
+      <id>java-11</id>
+      <activation>
+        <jdk>11</jdk>
+      </activation>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-compiler-plugin</artifactId>
+            <configuration>
+              <release>${java.version.release}</release>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
 
     <!-- For use by Nuxeo internal QA -->
     <profile>
@@ -544,14 +581,6 @@
             </goals>
           </execution>
         </executions>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-compiler-plugin</artifactId>
-        <configuration>
-          <source>${java.version.source}</source>
-          <target>${java.version.source}</target>
-        </configuration>
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
