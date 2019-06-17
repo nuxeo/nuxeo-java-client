@@ -4,7 +4,7 @@ The Nuxeo Java Client is a Java client library for Nuxeo Automation and REST API
 
 This is supported by Nuxeo and compatible with Nuxeo LTS 2015, Nuxeo LTS 2016 and latest Fast Tracks.
 
-Here is the [Documentation Website](http://nuxeo.github.io/nuxeo-java-client).
+Here is the [Documentation Website](https://doc.nuxeo.com/client-java).
 
 [![Jenkins master vs master](https://img.shields.io/jenkins/s/https/qa.nuxeo.org/jenkins/job/Client/job/nuxeo-java-client-vs-master/job/master.svg?label=Nuxeo%2010.x)](https://qa.nuxeo.org/jenkins/job/Client/job/nuxeo-java-client-vs-master/job/master/)
 [![Jenkins master vs 9.10](https://img.shields.io/jenkins/s/https/qa2.nuxeo.org/jenkins/job/9.10/job/nuxeo-java-client-vs-9.10/job/master.svg?label=Nuxeo%209.10)](https://qa2.nuxeo.org/jenkins/job/9.10/job/nuxeo-java-client-vs-9.10/job/master/)
