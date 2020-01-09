@@ -74,6 +74,15 @@ public class AbstractBase<B extends AbstractBase<B>> {
     }
 
     /**
+     * Sets retry on connection failure or not.
+     */
+    public B retryOnConnectionFailure(boolean enable) {
+        okhttpBuilder.retryOnConnectionFailure(enable);
+        buildRetrofit();
+        return (B) this;
+    }
+
+    /**
      * Sets the given timeout to connect, read and write timeout settings of client. The timeout unit is seconds.
      */
     @SuppressWarnings("unchecked")
