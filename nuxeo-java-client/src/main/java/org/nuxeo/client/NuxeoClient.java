@@ -32,6 +32,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.client.cache.NuxeoResponseCache;
 import org.nuxeo.client.marshaller.NuxeoConverterFactory;
 import org.nuxeo.client.objects.AbstractBase;
@@ -62,6 +64,7 @@ import org.nuxeo.client.objects.user.UserManager;
 import org.nuxeo.client.spi.NuxeoClientException;
 import org.nuxeo.client.spi.NuxeoClientRemoteException;
 import org.nuxeo.client.spi.auth.BasicAuthInterceptor;
+import org.nuxeo.client.util.LogInterceptor;
 
 import okhttp3.Headers;
 import okhttp3.Interceptor;
@@ -77,6 +80,8 @@ import retrofit2.Callback;
  * @since 0.1
  */
 public class NuxeoClient extends AbstractBase<NuxeoClient> {
+
+    private static final Logger log = LogManager.getLogger(LogInterceptor.class);
 
     public static final Pattern CMIS_PRODUCT_VERSION_PATTERN = Pattern.compile("\"productVersion\":\"(.*?)\"");
 
@@ -488,6 +493,10 @@ public class NuxeoClient extends AbstractBase<NuxeoClient> {
             okhttpBuilder.interceptors().add(0, authenticationMethod);
             // init client
             NuxeoClient client = new NuxeoClient(this);
+            // Adding log interceptor
+            if (log.isDebugEnabled()) {
+                client.addOkHttpInterceptor(new LogInterceptor());
+            }
             // login client on server
             client.currentUser = client.userManager().fetchCurrentUser();
             return client;
