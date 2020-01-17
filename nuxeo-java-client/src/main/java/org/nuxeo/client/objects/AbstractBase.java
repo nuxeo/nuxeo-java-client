@@ -74,12 +74,13 @@ public class AbstractBase<B extends AbstractBase<B>> {
     }
 
     /**
-     * Sets the given timeout to connect and read timeout settings of client. The timeout unit is seconds.
+     * Sets the given timeout to connect, read and write timeout settings of client. The timeout unit is seconds.
      */
     @SuppressWarnings("unchecked")
     public B timeout(long timeout) {
         okhttpBuilder.connectTimeout(timeout, TimeUnit.SECONDS);
         okhttpBuilder.readTimeout(timeout, TimeUnit.SECONDS);
+        okhttpBuilder.writeTimeout(timeout, TimeUnit.SECONDS);
         buildRetrofit();
         return (B) this;
     }
@@ -100,6 +101,16 @@ public class AbstractBase<B extends AbstractBase<B>> {
     @SuppressWarnings("unchecked")
     public B readTimeout(long readTimeout) {
         okhttpBuilder.readTimeout(readTimeout, TimeUnit.SECONDS);
+        buildRetrofit();
+        return (B) this;
+    }
+
+    /**
+     * The timeout unit is seconds.
+     */
+    @SuppressWarnings("unchecked")
+    public B writeTimeout(long writeTimeout) {
+        okhttpBuilder.writeTimeout(writeTimeout, TimeUnit.SECONDS);
         buildRetrofit();
         return (B) this;
     }
@@ -284,7 +295,7 @@ public class AbstractBase<B extends AbstractBase<B>> {
      * correctly isolate this configuration.
      * <p />
      * DON'T REMOVE FINAL KEYWORD, THIS METHOD IS USED IN A CONSTRUCTOR.
-     * 
+     *
      * @param base the base to replace
      */
     protected final void replaceWith(AbstractBase<?> base) {
