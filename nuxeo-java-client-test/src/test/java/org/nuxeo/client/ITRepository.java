@@ -955,13 +955,14 @@ public class ITRepository extends AbstractITBase {
         comment = commentAdapter.create(comment);
 
         // assert its permissions
-        assertEquals(
-                Arrays.asList("Write", "WriteVersion", "ReadProperties", "ReadCanCollect", "ReadSecurity", "Remove",
-                        "ReadVersion", "Read", "WriteLifeCycle", "Everything", "Moderate", "Version", "ReadChildren",
-                        "AddChildren", "Comment", "ReadLifeCycle", "RemoveChildren", "DataVisualization",
-                        "ReviewParticipant", "Unlock", "CanAskForPublishing", "RestrictedRead", "ReadWrite",
-                        "ReadRemove", "Browse", "WriteProperties", "WriteSecurity", "ManageWorkflows"),
-                comment.getPermissions());
+        assertTrue(comment.getPermissions().toString(),
+                comment.getPermissions()
+                       .containsAll(Arrays.asList("Write", "WriteVersion", "ReadProperties", "ReadCanCollect",
+                               "ReadSecurity", "Remove", "ReadVersion", "Read", "WriteLifeCycle", "Everything",
+                               "Moderate", "Version", "ReadChildren", "AddChildren", "Comment", "ReadLifeCycle",
+                               "RemoveChildren", "DataVisualization", "ReviewParticipant", "Unlock",
+                               "CanAskForPublishing", "RestrictedRead", "ReadWrite", "ReadRemove", "Browse",
+                               "WriteProperties", "WriteSecurity", "ManageWorkflows")));
     }
 
     @Test
