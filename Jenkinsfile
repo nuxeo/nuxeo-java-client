@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2017-2018 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2017-2020 Nuxeo (http://nuxeo.com/) and others.
  *
  * Contributors:
  *     Thomas Roger <troger@nuxeo.com>
@@ -45,6 +45,7 @@ node(env.SLAVE) {
                             if (masterBuild) {
                                 mvnGoals += ' deploy'
                             } 
+                            sh "mvn versions:resolve-ranges -P ${env.TARGET_PLATFORM},qa -DgenerateBackupPoms=false"
                             sh "mvn ${mvnGoals} -P ${env.TARGET_PLATFORM},qa"
                         }
                     }
@@ -59,12 +60,12 @@ node(env.SLAVE) {
                                     } else {
                                         TARGET_OPTION = ""
                                     }
-                                    sh """
+                                    sh '''
                                       mvn clean verify sonar:sonar -Dsonar.login=$SONARCLOUD_PWD \
                                           -Dsonar.branch.name=${env.BRANCH_NAME} $TARGET_OPTION \
                                           -P ${env.TARGET_PLATFORM},qa,sonar \
                                           -Dit.jacoco.destFile=$WORKSPACE/target/jacoco-it.exec
-                                    """
+                                    '''
                                 }
                             }
                         }
