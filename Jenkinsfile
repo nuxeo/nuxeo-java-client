@@ -61,9 +61,9 @@ node(env.SLAVE) {
                                         TARGET_OPTION = ""
                                     }
                                     sh '''
-                                      mvn clean verify sonar:sonar -Dsonar.login=$SONARCLOUD_PWD \
-                                          -Dsonar.branch.name=${env.BRANCH_NAME} $TARGET_OPTION \
-                                          -P ${env.TARGET_PLATFORM},qa,sonar \
+                                      mvn clean verify sonar:sonar -Dsonar.login="${SONARCLOUD_PWD}" \
+                                          -Dsonar.branch.name="${BRANCH_NAME}" $TARGET_OPTION \
+                                          -P "${TARGET_PLATFORM},qa,sonar" \
                                           -Dit.jacoco.destFile=$WORKSPACE/target/jacoco-it.exec
                                     '''
                                 }
