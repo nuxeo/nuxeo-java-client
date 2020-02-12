@@ -40,12 +40,14 @@ node(env.SLAVE) {
                 withBuildStatus("${env.STATUS_CONTEXT_NAME}", 'https://github.com/nuxeo/nuxeo-java-client', sha, "${BUILD_URL}") {
 
                     stage('build and test') {
-                        withMaven(maven: 'maven-3') { 
+                        withMaven(maven: 'maven-3') {
+                            def resolveRangeOpts = '-DgenerateBackupPoms=false'
                             def mvnGoals = 'clean install'
                             if (masterBuild) {
                                 mvnGoals += ' deploy'
-                            } 
-                            sh "mvn versions:resolve-ranges -P ${env.TARGET_PLATFORM},qa -DgenerateBackupPoms=false"
+                                resolveRangeOpts += ' -DallowSnapshots=true -DincludeProperties=nuxeo.tested.version'
+                            }
+                            sh "mvn versions:resolve-ranges -P ${env.TARGET_PLATFORM},qa ${resolveRangeOpts}"
                             sh "mvn ${mvnGoals} -P ${env.TARGET_PLATFORM},qa"
                         }
                     }
