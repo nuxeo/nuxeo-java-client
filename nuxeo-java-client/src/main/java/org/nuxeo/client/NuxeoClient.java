@@ -478,16 +478,25 @@ public class NuxeoClient extends AbstractBase<NuxeoClient> {
         }
 
         /**
-         * Builds a {@link NuxeoClient} and log it, it will throw a {@link NuxeoClientException} if failed.
+         * Builds a {@link NuxeoClient}.
+         *
+         * @since 3.6
          */
-        public NuxeoClient connect() {
+        public NuxeoClient build() {
             // check authentication
             if (authenticationMethod == null) {
                 throw new NuxeoClientException("Your client need an authentication method to connect to Nuxeo server");
             }
             okhttpBuilder.interceptors().add(0, authenticationMethod);
             // init client
-            NuxeoClient client = new NuxeoClient(this);
+            return new NuxeoClient(this);
+        }
+
+        /**
+         * Builds a {@link NuxeoClient} and log it, it will throw a {@link NuxeoClientException} if failed.
+         */
+        public NuxeoClient connect() {
+            NuxeoClient client = build();
             // login client on server
             client.currentUser = client.userManager().fetchCurrentUser();
             return client;
