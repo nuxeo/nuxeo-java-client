@@ -36,6 +36,7 @@ public class OAuth2AuthInterceptor implements Interceptor {
 
     protected OAuth2Token token;
 
+    // could be null
     protected OAuth2Client oAuth2Client;
 
     protected OAuth2AuthInterceptor(OAuth2Token token, OAuth2Client oAuth2Client) {
@@ -60,7 +61,16 @@ public class OAuth2AuthInterceptor implements Interceptor {
     }
 
     protected boolean needToRefresh() {
-        return Instant.now().plusSeconds(60).isAfter(token.getExpiresAt());
+        return oAuth2Client != null && Instant.now().plusSeconds(60).isAfter(token.getExpiresAt());
+    }
+
+    /**
+     * @since 3.6
+     */
+    public static OAuth2AuthInterceptor createAuthFromToken(String token) {
+        OAuth2Token oAuthToken = new OAuth2Token();
+        oAuthToken.setAccessToken(token);
+        return new OAuth2AuthInterceptor(oAuthToken, null);
     }
 
     public static OAuth2AuthInterceptor obtainAuthFromAuthorizationCode(String baseUrl, String clientId, String code) {
