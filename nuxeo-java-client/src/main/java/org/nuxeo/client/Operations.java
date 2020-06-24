@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2017-2018 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2017-2020 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -40,6 +40,16 @@ public class Operations {
      * CAUTION: Only available for Nuxeo Server greater than LTS 2016 - 8.10
      */
     public static final String DOCUMENT_REMOVE_PROXIES = "Document.RemoveProxies";
+
+    /**
+     * @since 3.6
+     */
+    public static final String DOCUMENT_CHECK_IN = "Document.CheckIn";
+
+    /**
+     * @since 3.6
+     */
+    public static final String DOCUMENT_GET_LAST_VERSION = "Document.GetLastVersion";
 
     /**
      * @since 3.1

@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2016-2018 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2016-2020 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -116,6 +116,28 @@ public class Document extends RepositoryEntity<RepositoryAPI, Document> {
 
     @JsonProperty("isTrashed")
     protected Boolean isTrashed;
+
+    /** @since 3.6 */
+    @JsonProperty("isRecord")
+    protected boolean isRecord;
+
+    /** @since 3.6 */
+    protected String retainUntil;
+
+    /** @since 3.6 */
+    @JsonProperty("hasLegalHold")
+    protected boolean hasLegalHold;
+
+    /** @since 3.6 */
+    @JsonProperty("isUnderRetentionOrLegalHold")
+    protected boolean isUnderRetentionOrLegalHold;
+
+    /** @since 3.6 */
+    @JsonProperty("isVersion")
+    protected boolean isVersion;
+
+    /** @since 3.6 */
+    protected String versionableId;
 
     /**
      * For internal marshalling purpose.
@@ -260,6 +282,90 @@ public class Document extends RepositoryEntity<RepositoryAPI, Document> {
         return name;
     }
 
+    /**
+     * @since 3.6
+     */
+    public boolean isRecord() {
+        return isRecord;
+    }
+
+    /**
+     * @since 3.6
+     */
+    public void setRecord(boolean record) {
+        isRecord = record;
+    }
+
+    /**
+     * @since 3.6
+     */
+    public String getRetainUntil() {
+        return retainUntil;
+    }
+
+    /**
+     * @since 3.6
+     */
+    public void setRetainUntil(String retainUntil) {
+        this.retainUntil = retainUntil;
+    }
+
+    /**
+     * @since 3.6
+     */
+    public boolean hasLegalHold() {
+        return hasLegalHold;
+    }
+
+    /**
+     * @since 3.6
+     */
+    public void setHasLegalHold(boolean hasLegalHold) {
+        this.hasLegalHold = hasLegalHold;
+    }
+
+    /**
+     * @since 3.6
+     */
+    public boolean isUnderRetentionOrLegalHold() {
+        return isUnderRetentionOrLegalHold;
+    }
+
+    /**
+     * @since 3.6
+     */
+    public void setUnderRetentionOrLegalHold(boolean underRetentionOrLegalHold) {
+        isUnderRetentionOrLegalHold = underRetentionOrLegalHold;
+    }
+
+    /**
+     * @since 3.6
+     */
+    public boolean isVersion() {
+        return isVersion;
+    }
+
+    /**
+     * @since 3.6
+     */
+    public void setVersion(boolean version) {
+        isVersion = version;
+    }
+
+    /**
+     * @since 3.6
+     */
+    public String getVersionableId() {
+        return versionableId;
+    }
+
+    /**
+     * @since 3.6
+     */
+    public void setVersionableId(String versionableId) {
+        this.versionableId = versionableId;
+    }
+
     public Map<String, Object> getProperties() {
         return properties;
     }
@@ -291,7 +397,7 @@ public class Document extends RepositoryEntity<RepositoryAPI, Document> {
      * @param segments the remaining segments to resolve on given {@code value}
      * @return the resolved value of given {@code segments}
      */
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     protected Object getPropertyValue(Object value, List<String> segments) {
         // test if we have finished to resolve xpath
         if (segments.isEmpty()) {
@@ -665,6 +771,7 @@ public class Document extends RepositoryEntity<RepositoryAPI, Document> {
         return isProxy;
     }
 
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     private void rejectIfDateFound(String key, Object value) {
         if (value instanceof Calendar || value instanceof Date) {
             throw new IllegalArgumentException(String.format(
@@ -754,7 +861,6 @@ public class Document extends RepositoryEntity<RepositoryAPI, Document> {
      *
      * @since 3.2
      */
-    @SuppressWarnings("unchecked")
     public static class Adapter extends AbstractAdapter<Adapter> {
 
         protected Adapter(NuxeoClient nuxeoClient, String repositoryName, String documentId, String adapter) {

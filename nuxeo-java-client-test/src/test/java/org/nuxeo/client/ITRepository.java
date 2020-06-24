@@ -31,6 +31,8 @@ import static org.junit.Assert.fail;
 import static org.junit.Assume.assumeTrue;
 import static org.nuxeo.client.ITBase.LOGIN;
 import static org.nuxeo.client.Operations.BLOB_ATTACH_ON_DOCUMENT;
+import static org.nuxeo.client.Operations.DOCUMENT_CHECK_IN;
+import static org.nuxeo.client.Operations.DOCUMENT_GET_LAST_VERSION;
 import static org.nuxeo.client.Operations.ES_WAIT_FOR_INDEXING;
 import static org.nuxeo.client.objects.Document.DEFAULT_FILE_CONTENT;
 
@@ -1018,6 +1020,24 @@ public class ITRepository extends AbstractITBase {
         comment.setCreationDate(date);
         comment.setModificationDate(date);
         return comment;
+    }
+
+    @Test
+    public void itCanCheckIfDocumentIsVersion() {
+        Document file = nuxeoClient.repository().fetchDocumentByPath("/folder_2/file");
+        assertNotNull(file);
+        assertFalse(file.isVersion());
+        assertTrue(file.isCheckedOut());
+
+        file = nuxeoClient.operation(DOCUMENT_CHECK_IN).input(file).context("version", "major").execute();
+        assertNotNull(file);
+        assertFalse(file.isVersion());
+        assertFalse(file.isCheckedOut());
+
+        Document version = nuxeoClient.operation(DOCUMENT_GET_LAST_VERSION).input(file).execute();
+        assertNotNull(version);
+        assertTrue(version.isVersion());
+        assertFalse(version.isCheckedOut());
     }
 
 }
