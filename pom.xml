@@ -633,6 +633,28 @@
         <enabled>true</enabled>
       </snapshots>
     </repository>
+    <repository>
+      <id>maven-public</id>
+      <url>https://packages.nuxeo.com/repository/maven-public/</url>
+      <releases>
+        <enabled>true</enabled>
+      </releases>
+      <snapshots>
+        <enabled>true</enabled>
+        <updatePolicy>always</updatePolicy>
+      </snapshots>
+    </repository>
+    <repository>
+      <id>maven-internal</id>
+      <url>https://packages.nuxeo.com/repository/maven-internal/</url>
+      <releases>
+        <enabled>true</enabled>
+      </releases>
+      <snapshots>
+        <enabled>true</enabled>
+        <updatePolicy>always</updatePolicy>
+      </snapshots>
+    </repository>
   </repositories>
 
   <pluginRepositories>
