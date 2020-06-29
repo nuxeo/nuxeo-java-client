@@ -31,19 +31,21 @@ public class TestNuxeoVersion {
 
     @Test
     public void testParseVersion() {
-        assertVersion(NuxeoVersion.parse("7.10"), 7, 10, 0, false);
-        assertVersion(NuxeoVersion.parse("7.10-HF05"), 7, 10, 5, false);
-        assertVersion(NuxeoVersion.parse("7.10-HF05-SNAPSHOT"), 7, 10, 5, true);
-        assertVersion(NuxeoVersion.parse("7.10-SNAPSHOT"), 7, 10, 0, true);
-        assertVersion(NuxeoVersion.parse("7.10-I20170818_1955"), 7, 10, 0, false);
+        assertVersion(NuxeoVersion.parse("7.10"), 7, 10, -1, 0, false);
+        assertVersion(NuxeoVersion.parse("7.10-HF05"), 7, 10, -1, 5, false);
+        assertVersion(NuxeoVersion.parse("7.10-HF05-SNAPSHOT"), 7, 10, -1, 5, true);
+        assertVersion(NuxeoVersion.parse("7.10-SNAPSHOT"), 7, 10, -1, 0, true);
+        assertVersion(NuxeoVersion.parse("7.10-I20170818_1955"), 7, 10, -1, 0, false);
+        assertVersion(NuxeoVersion.parse("11.2.2"), 11, 2, 2, 0, false);
     }
 
     @Test
     public void testVersion() {
-        assertEquals("7.10", new NuxeoVersion(7, 10, 0, false).version());
-        assertEquals("7.10-HF05", new NuxeoVersion(7, 10, 5, false).version());
-        assertEquals("7.10-HF05-SNAPSHOT", new NuxeoVersion(7, 10, 5, true).version());
-        assertEquals("7.10-SNAPSHOT", new NuxeoVersion(7, 10, 0, true).version());
+        assertEquals("7.10", new NuxeoVersion(7, 10, -1, 0, false).version());
+        assertEquals("7.10-HF05", new NuxeoVersion(7, 10, -1, 5, false).version());
+        assertEquals("7.10-HF05-SNAPSHOT", new NuxeoVersion(7, 10, -1, 5, true).version());
+        assertEquals("7.10-SNAPSHOT", new NuxeoVersion(7, 10, -1, 0, true).version());
+        assertEquals("11.2.2", new NuxeoVersion(11, 2, 2, 0, false).version());
     }
 
     @Test
@@ -56,8 +58,12 @@ public class TestNuxeoVersion {
         assertFalse(NuxeoVersion.LTS_7_10.isGreaterThan(NuxeoVersion.LTS_8_10));
 
         // Compare minor
-        assertTrue(NuxeoVersion.LTS_7_10.isGreaterThan(new NuxeoVersion(7, 1, 0, false)));
-        assertFalse(new NuxeoVersion(7, 1, 0, false).isGreaterThan(NuxeoVersion.LTS_7_10));
+        assertTrue(NuxeoVersion.LTS_7_10.isGreaterThan(new NuxeoVersion(7, 1, -1, 0, false)));
+        assertFalse(new NuxeoVersion(7, 1, -1, 0, false).isGreaterThan(NuxeoVersion.LTS_7_10));
+
+        // Compare build
+        assertTrue(new NuxeoVersion(11, 2, 2, 0, false).isGreaterThan(new NuxeoVersion(11, 2, 0, 0, false)));
+        assertFalse(new NuxeoVersion(11, 2, 0, 0, false).isGreaterThan(new NuxeoVersion(11, 2, 2, 0, false)));
 
         // Compare hotfix
         assertTrue(NuxeoVersion.LTS_7_10.hotfix(5).isGreaterThan(NuxeoVersion.LTS_7_10.hotfix(5)));
@@ -65,16 +71,19 @@ public class TestNuxeoVersion {
         assertFalse(NuxeoVersion.LTS_7_10.isGreaterThan(NuxeoVersion.LTS_7_10.hotfix(5)));
 
         // Compare both
-        assertTrue(new NuxeoVersion(8, 1, 0, false).isGreaterThan(NuxeoVersion.LTS_7_10));
-        assertFalse(NuxeoVersion.LTS_7_10.isGreaterThan(new NuxeoVersion(8, 1, 0, false)));
+        assertTrue(new NuxeoVersion(8, 1, -1, 0, false).isGreaterThan(NuxeoVersion.LTS_7_10));
+        assertFalse(NuxeoVersion.LTS_7_10.isGreaterThan(new NuxeoVersion(8, 1, -1, 0, false)));
         assertTrue(NuxeoVersion.LTS_8_10.hotfix((5)).isGreaterThan(NuxeoVersion.LTS_7_10.hotfix(10)));
+        assertTrue(new NuxeoVersion(11, 2, 2, 0, false).isGreaterThan(NuxeoVersion.LTS_10_10.hotfix(29)));
     }
 
-    public void assertVersion(NuxeoVersion version, int majorVersion, int minorVersion, int hotfix, boolean snapshot) {
-        assertEquals(version.majorVersion(), majorVersion);
-        assertEquals(version.minorVersion(), minorVersion);
-        assertEquals(version.hotfix(), hotfix);
-        assertEquals(version.snapshot(), snapshot);
+    public void assertVersion(NuxeoVersion version, int majorVersion, int minorVersion, int buildVersion, int hotfix,
+            boolean snapshot) {
+        assertEquals(majorVersion, version.majorVersion());
+        assertEquals(minorVersion, version.minorVersion());
+        assertEquals(buildVersion, version.buildVersion());
+        assertEquals(hotfix, version.hotfix());
+        assertEquals(snapshot, version.snapshot());
     }
 
 }
