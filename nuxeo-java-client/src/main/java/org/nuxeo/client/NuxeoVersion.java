@@ -31,28 +31,32 @@ import org.nuxeo.client.spi.NuxeoClientException;
  */
 public class NuxeoVersion {
 
-    public static final NuxeoVersion LTS_7_10 = new NuxeoVersion(7, 10, 0, false);
+    public static final NuxeoVersion LTS_7_10 = new NuxeoVersion(7, 10, -1, 0, false);
 
-    public static final NuxeoVersion LTS_8_10 = new NuxeoVersion(8, 10, 0, false);
+    public static final NuxeoVersion LTS_8_10 = new NuxeoVersion(8, 10, -1, 0, false);
 
-    public static final NuxeoVersion LTS_9_10 = new NuxeoVersion(9, 10, 0, false);
+    public static final NuxeoVersion LTS_9_10 = new NuxeoVersion(9, 10, -1, 0, false);
 
-    public static final NuxeoVersion LTS_10_10 = new NuxeoVersion(10, 10, 0, false);
+    public static final NuxeoVersion LTS_10_10 = new NuxeoVersion(10, 10, -1, 0, false);
 
     private static final Pattern NUXEO_VERSION_PATTERN = Pattern.compile(
-            "(\\d+)\\.(\\d+)(?:-HF(\\d+))?(-SNAPSHOT)?(-I\\d{8}_\\d{4})?");
+            "(\\d+)\\.(\\d+)(?:\\.(\\d+))?(?:-HF(\\d+))?(-SNAPSHOT)?(-I\\d{8}_\\d{4})?");
 
     private final int majorVersion;
 
     private final int minorVersion;
 
+    /** @since 3.6.0 */
+    private final int buildVersion;
+
     private final int hotfix;
 
     private final boolean snapshot;
 
-    protected NuxeoVersion(int majorVersion, int minorVersion, int hotfix, boolean snapshot) {
+    protected NuxeoVersion(int majorVersion, int minorVersion, int buildVersion, int hotfix, boolean snapshot) {
         this.majorVersion = majorVersion;
         this.minorVersion = minorVersion;
+        this.buildVersion = buildVersion;
         this.hotfix = hotfix;
         this.snapshot = snapshot;
     }
@@ -60,6 +64,9 @@ public class NuxeoVersion {
     public String version() {
         StringBuilder version = new StringBuilder();
         version.append(majorVersion()).append('.').append(minorVersion());
+        if (buildVersion() != -1) {
+            version.append('.').append(buildVersion());
+        }
         if (hotfix() != 0) {
             version.append("-HF").append(String.format("%02d", hotfix()));
         }
@@ -75,6 +82,14 @@ public class NuxeoVersion {
 
     public int minorVersion() {
         return minorVersion;
+    }
+
+    /**
+     * @return the build version or -1 if it is not a 11.x
+     * @since 3.6.0
+     */
+    public int buildVersion() {
+        return buildVersion;
     }
 
     public int hotfix() {
@@ -117,7 +132,7 @@ public class NuxeoVersion {
      * @return A new instance of {@link NuxeoVersion} with the same version + input hotfix number.
      */
     public NuxeoVersion hotfix(int hotfix) {
-        return new NuxeoVersion(majorVersion, minorVersion, hotfix, false);
+        return new NuxeoVersion(majorVersion, minorVersion, 0, hotfix, false);
     }
 
     /**
@@ -138,9 +153,14 @@ public class NuxeoVersion {
             // - same major and minor is greater
             return true;
         } else if (majorVersion == version.majorVersion() && minorVersion == version.minorVersion()) {
-            // Check hotfix only if major and minor are equals
-            // Here we assume that (X+1.Y') contains the needed fix in X.Y-HFZZ
-            return hotfix >= version.hotfix();
+            // Check build/hotfix only if major and minor are equals
+            if (buildVersion == -1 && version.buildVersion() == -1) {
+                // Here we assume that (X+1.Y') contains the needed fix in X.Y-HFZZ
+                return hotfix >= version.hotfix();
+            } else {
+                // Here we assume that a build version doesn't have HF
+                return buildVersion >= version.buildVersion();
+            }
         }
         return false;
     }
@@ -153,12 +173,16 @@ public class NuxeoVersion {
         }
         int majorVersion = Integer.parseInt(matcher.group(1));
         int minorVersion = Integer.parseInt(matcher.group(2));
-        int hotfix = 0;
+        int buildVersion = -1;
         if (matcher.group(3) != null) {
-            hotfix = Integer.parseInt(matcher.group(3));
+            buildVersion = Integer.parseInt(matcher.group(3));
         }
-        boolean snaphot = matcher.group(4) != null;
-        return new NuxeoVersion(majorVersion, minorVersion, hotfix, snaphot);
+        int hotfix = 0;
+        if (matcher.group(4) != null) {
+            hotfix = Integer.parseInt(matcher.group(4));
+        }
+        boolean snaphot = matcher.group(5) != null;
+        return new NuxeoVersion(majorVersion, minorVersion, buildVersion, hotfix, snaphot);
     }
 
 }
