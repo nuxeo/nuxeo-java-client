@@ -117,7 +117,11 @@ public class ITWorkflowAndTask extends AbstractITBase {
             nuxeoClient.repository().cancelWorkflowInstance(workflow.getId());
             fail("Should fail: wf instance already cancelled");
         } catch (NuxeoClientRemoteException reason) {
-            assertEquals(500, reason.getStatus());
+            int expectedStatus = 500;
+            if (nuxeoClient.getServerVersion().isGreaterThan(NuxeoVersion.LTS_10_10.hotfix(30))) {
+                expectedStatus = 400;
+            }
+            assertEquals(expectedStatus, reason.getStatus());
         }
     }
 
