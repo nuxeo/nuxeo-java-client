@@ -178,6 +178,24 @@ public class ITRepository extends AbstractITBase {
     }
 
     @Test
+    public void itCanQueryWithParameters() {
+        Documents documents = nuxeoClient.repository()
+                                         .query("SELECT * From Note WHERE ecm:isVersion = 0 AND dc:title = ? AND dc:source = ?",
+                                                 null, null, null, null, null, "Note 0", "Source 0");
+        assertEquals(1, documents.getDocuments().size());
+        Document document = documents.getDocuments().get(0);
+        assertEquals("Note", document.getType());
+        assertEquals("default", document.getRepositoryName());
+        assertEquals("project", document.getState());
+        assertEquals("Note 0", document.getTitle());
+
+        documents = nuxeoClient.repository()
+                               .query("SELECT * From Note WHERE ecm:isVersion = 0 AND dc:title = ? AND dc:source = ?",
+                                       null, null, null, null, null, "Note 0", "Source 1");
+        assertEquals(0, documents.getDocuments().size());
+    }
+
+    @Test
     public void itCanUseCaching() {
         // Re-build a client with cache
         NuxeoClient client = ITBase.createClientBuilder().cache(new ResultCacheInMemory()).connect().schemas("*");

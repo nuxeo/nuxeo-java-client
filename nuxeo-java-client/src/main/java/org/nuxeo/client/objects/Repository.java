@@ -21,6 +21,7 @@ package org.nuxeo.client.objects;
 
 import java.util.function.Function;
 
+import org.apache.commons.lang3.ArrayUtils;
 import org.nuxeo.client.NuxeoClient;
 import org.nuxeo.client.methods.RepositoryAPI;
 import org.nuxeo.client.objects.acl.ACP;
@@ -175,9 +176,19 @@ public class Repository extends RepositoryEntity<RepositoryAPI, Repository> {
         return fetchResponse(api.query(query));
     }
 
+    /**
+     * @deprecated since 3.7
+     */
+    @Deprecated
     public Documents query(String query, String pageSize, String currentPageIndex, String maxResults, String sortBy,
-            String sortOrder, String queryParams) {
-        return fetchResponse(api.query(query, pageSize, currentPageIndex, maxResults, sortBy, sortOrder, queryParams));
+            String sortOrder, String queryParam) {
+        return query(query, pageSize, currentPageIndex, maxResults, sortBy, sortOrder, queryParam, new String[0]);
+    }
+
+    public Documents query(String query, String pageSize, String currentPageIndex, String maxResults, String sortBy,
+            String sortOrder, String queryParam, String... queryParams) {
+        return fetchResponse(api.query(query, pageSize, currentPageIndex, maxResults, sortBy, sortOrder,
+                ArrayUtils.insert(0, queryParams, queryParam)));
     }
 
     public Documents queryByProvider(String providerName, String pageSize, String currentPageIndex, String maxResults,
@@ -192,8 +203,17 @@ public class Repository extends RepositoryEntity<RepositoryAPI, Repository> {
         fetchResponse(api.query(query), callback);
     }
 
+    /**
+     * @deprecated since 3.7
+     */
+    @Deprecated
     public void query(String query, String pageSize, String currentPageIndex, String maxResults, String sortBy,
             String sortOrder, String queryParams, Callback<Documents> callback) {
+        query(query, pageSize, currentPageIndex, maxResults, sortBy, sortOrder, new String[] { queryParams }, callback);
+    }
+
+    public void query(String query, String pageSize, String currentPageIndex, String maxResults, String sortBy,
+            String sortOrder, String[] queryParams, Callback<Documents> callback) {
         fetchResponse(api.query(query, pageSize, currentPageIndex, maxResults, sortBy, sortOrder, queryParams),
                 callback);
     }
