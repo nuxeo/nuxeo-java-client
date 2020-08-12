@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2016-2018 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2016-2020 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -399,6 +399,7 @@ public class ITRepository extends AbstractITBase {
                                                  .execute();
                 assertTrue(documents.getUuids().size() != 0);
             } catch (Exception e) {
+                // ignore
             }
         });
         Thread t2 = new Thread(() -> {
@@ -408,6 +409,7 @@ public class ITRepository extends AbstractITBase {
                                                  .execute();
                 assertTrue(documents.getUuids().size() != 0);
             } catch (Exception e) {
+                // ignore
             }
         });
         t.start();
@@ -433,7 +435,7 @@ public class ITRepository extends AbstractITBase {
                                        .repository()
                                        .fetchDocumentByPath("/folder_2");
         assertNotNull(document);
-        assertEquals(1, ((List) document.getContextParameters().get("acls")).size());
+        assertEquals(1, document.<List<Object>> getContextParameter("acls").size());
         assertEquals(1, document.<Documents> getContextParameter("breadcrumb").size());
     }
 
@@ -671,7 +673,7 @@ public class ITRepository extends AbstractITBase {
         document = nuxeoClient.repository().createDocumentByPath("/folder_1", document);
         assertNotNull(document);
         assertEquals("DataSet", document.getType());
-        List list = document.getPropertyValue("ds:fields");
+        List<Object> list = document.getPropertyValue("ds:fields");
         assertFalse(list.isEmpty());
         assertEquals(2, list.size());
         assertEquals("document", document.getEntityType());
