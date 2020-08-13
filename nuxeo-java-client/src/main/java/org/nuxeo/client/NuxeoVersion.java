@@ -132,7 +132,7 @@ public class NuxeoVersion {
      * @return A new instance of {@link NuxeoVersion} with the same version + input hotfix number.
      */
     public NuxeoVersion hotfix(int hotfix) {
-        return new NuxeoVersion(majorVersion, minorVersion, 0, hotfix, false);
+        return new NuxeoVersion(majorVersion, minorVersion, -1, hotfix, false);
     }
 
     /**
