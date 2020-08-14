@@ -58,6 +58,7 @@ import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
+import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
 import org.nuxeo.client.cache.ResultCacheInMemory;
 import org.nuxeo.client.objects.DataSet;
@@ -67,6 +68,7 @@ import org.nuxeo.client.objects.Field;
 import org.nuxeo.client.objects.RecordSet;
 import org.nuxeo.client.objects.Repository;
 import org.nuxeo.client.objects.acl.ACE;
+import org.nuxeo.client.objects.acl.ACL;
 import org.nuxeo.client.objects.acl.ACP;
 import org.nuxeo.client.objects.audit.Audit;
 import org.nuxeo.client.objects.audit.LogEntry;
@@ -378,6 +380,40 @@ public class ITRepository extends AbstractITBase {
         assertEquals(1, acp.getAcls().size());
         assertEquals(3, acp.getAcls().get(0).getAces().size());
         assertEquals("local", acp.getAcls().get(0).getName());
+    }
+
+    @Test
+    public void itCanManagePermissionsOnCustomACL() {
+        // Create a user
+        User user = nuxeoClient.userManager().createUser(ITBase.createUser());
+        // Add a first permission on a new ACL "testPerm"
+        Document folder = nuxeoClient.repository().fetchDocumentByPath("/folder_2");
+        // Settings
+        ACE ace = new ACE();
+        ace.setUsername(user.getUserName());
+        ace.setPermission("Write");
+        ace.setCreator("Administrator");
+        ace.setBlockInheritance(false);
+        folder.addPermission(ace, "testPerm");
+        // Check created permission
+        folder = nuxeoClient.repository().fetchDocumentByPath("/folder_2");
+        ACP acp = folder.fetchPermissions();
+        assertTrue(acp.getAcls().size() != 0);
+        assertEquals(2, acp.getAcls().size());
+        ACL testPermACL = acp.getAcls()
+                             .stream()
+                             .filter(a -> StringUtils.equals("testPerm", a.getName()))
+                             .findFirst()
+                             .orElseThrow(() -> new AssertionError("ACL with name: testPerm should exist"));
+        assertEquals(testPermACL.getAces().size(), 1);
+        String aceId = testPermACL.getAces().get(0).getId();
+        // ** DELETION **/
+        folder.removePermission(aceId, user.getUserName(), "testPerm");
+        // Final Check
+        folder = nuxeoClient.repository().fetchDocumentByPath("/folder_2");
+        acp = folder.fetchPermissions();
+        assertEquals(1, acp.getAcls().size());
+        assertEquals("inherited", acp.getAcls().get(0).getName());
     }
 
     @Test
