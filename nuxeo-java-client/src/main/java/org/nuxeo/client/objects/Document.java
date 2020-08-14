@@ -543,8 +543,20 @@ public class Document extends RepositoryEntity<RepositoryAPI, Document> {
      * @param ace the permission.
      */
     public Document addPermission(ACE ace) {
+        return addPermission(ace, ACL.LOCAL_ACL);
+    }
+
+    /**
+     * Add permission on the current document.
+     *
+     * @since 3.7
+     * @param ace the permission.
+     * @param aclName the ACL name where the permission is added.
+     */
+    public Document addPermission(ACE ace, String aclName) {
         Map<String, Object> params = toAutomationParameters(ace);
         params.put("user", ace.getUsername());
+        params.put("acl", aclName);
         return nuxeoClient.operation(Operations.DOCUMENT_ADD_PERMISSION).input(this).parameters(params).execute();
     }
 
@@ -558,7 +570,6 @@ public class Document extends RepositoryEntity<RepositoryAPI, Document> {
         params.put("comment", ace.getComment());
         params.put("notify", ace.isNotify());
         return params;
-
     }
 
     /**
@@ -616,8 +627,20 @@ public class Document extends RepositoryEntity<RepositoryAPI, Document> {
      * @param ace the permission.
      */
     public void addPermission(ACE ace, Callback<Document> callback) {
+        addPermission(ace, ACL.LOCAL_ACL, callback);
+    }
+
+    /**
+     * Add permission on the current document.
+     *
+     * @since 3.7
+     * @param ace the permission.
+     * @param aclName the ACL name where the permission is added.
+     */
+    public void addPermission(ACE ace, String aclName, Callback<Document> callback) {
         Map<String, Object> params = toAutomationParameters(ace);
         params.put("user", ace.getUsername());
+        params.put("acl", aclName);
         nuxeoClient.operation(Operations.DOCUMENT_ADD_PERMISSION).input(this).parameters(params).execute(callback);
     }
 
