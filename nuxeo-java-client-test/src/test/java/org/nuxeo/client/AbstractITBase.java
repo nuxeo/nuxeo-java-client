@@ -78,6 +78,7 @@ public abstract class AbstractITBase {
         for (int i = 0; i < 1; i++) {
             Document doc = Document.createWithName("note_" + i, "Note");
             doc.setPropertyValue("dc:title", "Note " + i);
+            doc.setPropertyValue("dc:source", "Source " + i);
             doc.setPropertyValue("note:note", "Note " + i);
             nuxeoClient.repository().createDocumentByPath("/folder_1", doc);
         }

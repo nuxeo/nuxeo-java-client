@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2016-2018 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2016-2020 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -101,11 +101,21 @@ public interface RepositoryAPI {
     @GET("query")
     Call<Documents> query(@Query("query") String query);
 
+    /**
+     * @deprecated since 3.7, use {{@link #query(String, String, String, String, String, String, String...)}} instead
+     */
     @GET("query")
+    @Deprecated
     Call<Documents> query(@Query("query") String query, @Query("pageSize") String pageSize,
             @Query("currentPageIndex") String currentPageIndex, @Query("maxResults") String maxResults,
             @Query("sortBy") String sortBy, @Query("sortOrder") String sortOrder,
             @Query("queryParams") String queryParams);
+
+    @GET("query")
+    Call<Documents> query(@Query("query") String query, @Query("pageSize") String pageSize,
+                          @Query("currentPageIndex") String currentPageIndex, @Query("maxResults") String maxResults,
+                          @Query("sortBy") String sortBy, @Query("sortOrder") String sortOrder,
+                          @Query("queryParams") String... queryParams);
 
     @GET("query/{providerName}")
     Call<Documents> queryByProvider(@Path("providerName") String providerName, @Query("pageSize") String pageSize,
