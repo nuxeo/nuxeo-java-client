@@ -25,6 +25,8 @@ import static org.nuxeo.client.ConstantsV1.UPLOAD_NORMAL_TYPE;
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.List;
 import java.util.Map;
 
@@ -161,13 +163,14 @@ public class BatchUpload extends AbstractConnectable<BatchUploadAPI, BatchUpload
      */
     public BatchUpload upload(String fileIdx, Blob blob) {
         String filename = blob.getFilename();
+        String encodedFilename = encodeToAsciiForHeader(filename);
         String mimeType = blob.getMimeType();
         long length = blob.getContentLength();
         if (chunkSize == 0) {
             // Post blob
             RequestBody fbody = Requests.create(blob);
             BatchUpload response = fetchResponse(
-                    api.upload(filename, length, mimeType, UPLOAD_NORMAL_TYPE, 0, 1, batchId, fileIdx, fbody));
+                    api.upload(encodedFilename, length, mimeType, UPLOAD_NORMAL_TYPE, 0, 1, batchId, fileIdx, fbody));
             response.name = filename;
             response.batchId = batchId;
             response.fileIdx = fileIdx;
@@ -186,7 +189,7 @@ public class BatchUpload extends AbstractConnectable<BatchUploadAPI, BatchUpload
                 // Post chunk as a stream
                 RequestBody requestBody = RequestBody.create(MediaTypes.APPLICATION_OCTET_STREAM.toOkHttpMediaType(),
                         buffer, 0, bufferLength);
-                response = fetchResponse(api.upload(filename, length, mimeType, UPLOAD_CHUNKED_TYPE, chunkIndex,
+                response = fetchResponse(api.upload(encodedFilename, length, mimeType, UPLOAD_CHUNKED_TYPE, chunkIndex,
                         chunkNumber, batchId, fileIdx, requestBody));
                 chunkIndex++;
             }
@@ -201,6 +204,14 @@ public class BatchUpload extends AbstractConnectable<BatchUploadAPI, BatchUpload
             return response;
         } catch (IOException reason) {
             throw new NuxeoClientException("Error during batch upload", reason);
+        }
+    }
+
+    protected String encodeToAsciiForHeader(String string) {
+        try {
+            return URLEncoder.encode(string, "UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            throw new NuxeoClientException("Unable to encode the header: " + string, e);
         }
     }
 
