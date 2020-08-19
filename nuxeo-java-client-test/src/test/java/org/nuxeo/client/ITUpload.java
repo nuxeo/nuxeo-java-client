@@ -229,4 +229,28 @@ public class ITUpload extends AbstractITBase {
         assertContentEquals("sample.jpg", blob);
     }
 
+    /*
+     * JAVACLIENT-208
+     */
+    @Test
+    public void itCanUploadFileWithNonAsciiCharacter() {
+        BatchUploadManager batchUploadManager = nuxeoClient.batchUploadManager();
+        BatchUpload batchUpload = batchUploadManager.createBatch();
+        assertNotNull(batchUpload);
+        File file = FileUtils.getResourceFileFromContext("sample.jpg");
+        FileBlob fileBlob = new FileBlob(file, "Ümlaut.pdf");
+        batchUpload = batchUpload.upload("1", fileBlob);
+        assertNotNull(batchUpload);
+
+        // Getting a doc and attaching the batch file
+        Document doc = Document.createWithName("file", "File");
+        doc.setPropertyValue("dc:title", "new title");
+        doc = nuxeoClient.repository().createDocumentByPath("/", doc);
+        assertNotNull(doc);
+        doc.setPropertyValue("file:content", batchUpload.getBatchBlob());
+        doc = doc.updateDocument();
+        assertEquals("Ümlaut.pdf", doc.getPropertyValue("file:content/name"));
+
+    }
+
 }
