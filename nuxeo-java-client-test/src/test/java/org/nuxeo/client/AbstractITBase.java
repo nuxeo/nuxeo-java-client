@@ -29,13 +29,11 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.util.Collection;
-import java.util.stream.Collectors;
 
 import org.apache.commons.io.IOUtils;
 import org.junit.After;
 import org.junit.Before;
 import org.nuxeo.client.objects.Document;
-import org.nuxeo.client.objects.Documents;
 import org.nuxeo.client.objects.Repository;
 import org.nuxeo.client.objects.blob.Blob;
 import org.nuxeo.client.objects.blob.FileBlob;
@@ -104,24 +102,18 @@ public abstract class AbstractITBase {
     @After
     public void tearDown() {
         Repository repository = nuxeoClient.repository();
-        // First remove proxies before removing documents
+
+        // First cleanup workflow
+        // since NXP-29100 they are cleaned when document is deleted but we can't wait for the Work to be completed
+        workflowInterceptor.getWorkflowIdsToDelete().forEach(repository::cancelWorkflowInstance);
+        // Second delete documents
         Collection<String> docIdsToDelete = repositoryInterceptor.getDocumentIdsToDelete();
         if (!docIdsToDelete.isEmpty()) {
-            if (nuxeoClient.getServerVersion().isGreaterThan(NuxeoVersion.LTS_8_10)) {
-                // Document.RemoveProxies was introduced in 8.3
-                nuxeoClient.operation(Operations.DOCUMENT_REMOVE_PROXIES).input(new DocRefs(docIdsToDelete)).execute();
-            } else {
-                // Before we need to search all proxies
-                Documents proxyIdsToDelete = repository.query(
-                        "SELECT * FROM Document WHERE ecm:isProxy=1 and ecm:proxyTargetId IN "
-                                + docIdsToDelete.stream().map(id -> "'" + id + "'").collect(
-                                        Collectors.joining(",", "(", ")")));
-                // Then delete them
-                proxyIdsToDelete.getDocuments().stream().map(Document::getId).forEach(repository::deleteDocument);
-            }
+            // delete proxies before deleting documents - as we can not delete document having a proxy
+            nuxeoClient.operation(Operations.DOCUMENT_REMOVE_PROXIES).input(new DocRefs(docIdsToDelete)).execute();
             docIdsToDelete.forEach(repository::deleteDocument);
         }
-        workflowInterceptor.getWorkflowIdsToDelete().forEach(repository::cancelWorkflowInstance);
+        // Finally delete users / groups
         UserManager userManager = nuxeoClient.userManager();
         userGroupInterceptor.getUsersToDelete().forEach(userManager::deleteUser);
         userGroupInterceptor.getGroupsToDelete().forEach(userManager::deleteGroup);
