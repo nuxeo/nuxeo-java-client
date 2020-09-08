@@ -976,9 +976,10 @@ public class Document extends RepositoryEntity<RepositoryAPI, Document> {
          * Sends a POST request directly on adapter url.
          *
          * @param object the object to send as body
+         * @implNote since 3.8, this API takes an {@link Object} instead of {@link O} to allow arbitrary POST requests
          * @since 3.2
          */
-        public <O> O post(O object) {
+        public <O> O post(Object object) {
             return post("", object);
         }
 
@@ -987,9 +988,10 @@ public class Document extends RepositoryEntity<RepositoryAPI, Document> {
          *
          * @param pathSuffix the path to append to the end of hit adapter
          * @param object the object to send as body
+         * @implNote since 3.8, this API takes an {@link Object} instead of {@link O} to allow arbitrary POST requests
          * @since 3.2
          */
-        public <O> O post(String pathSuffix, O object) {
+        public <O> O post(String pathSuffix, Object object) {
             return post(pathSuffix, emptyMap(), object);
         }
 
@@ -998,9 +1000,10 @@ public class Document extends RepositoryEntity<RepositoryAPI, Document> {
          *
          * @param queryParams the query parameters to append to url
          * @param object the object to send as body
+         * @implNote since 3.8, this API takes an {@link Object} instead of {@link O} to allow arbitrary POST requests
          * @since 3.2
          */
-        public <O> O post(Map<String, Serializable> queryParams, O object) {
+        public <O> O post(Map<String, Serializable> queryParams, Object object) {
             return post("", queryParams, object);
         }
 
@@ -1010,9 +1013,10 @@ public class Document extends RepositoryEntity<RepositoryAPI, Document> {
          * @param pathSuffix the path to append to the end of hit adapter
          * @param queryParams the query parameters to append to url
          * @param object the object to send as body
+         * @implNote since 3.8, this API takes an {@link Object} instead of {@link O} to allow arbitrary POST requests
          * @since 3.2
          */
-        public <O> O post(String pathSuffix, Map<String, Serializable> queryParams, O object) {
+        public <O> O post(String pathSuffix, Map<String, Serializable> queryParams, Object object) {
             if (repositoryName == null) {
                 return (O) fetchResponse(api.createForAdapter(documentId, adapter, pathSuffix, queryParams, object));
             }
