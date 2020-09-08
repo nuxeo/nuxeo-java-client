@@ -24,6 +24,7 @@ import static org.nuxeo.client.objects.Document.DEFAULT_FILE_CONTENT;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.nuxeo.client.NuxeoVersion;
 import org.nuxeo.client.objects.Document;
 import org.nuxeo.client.objects.ProxyRetrofitQueryMap;
 
@@ -33,6 +34,8 @@ import org.nuxeo.client.objects.ProxyRetrofitQueryMap;
  * @since 3.2
  */
 public class AnnotationAdapter extends Document.AbstractAdapter<AnnotationAdapter> {
+
+    protected static final int REPLIES_BATCH_SIZE = 50;
 
     public AnnotationAdapter(Document document) {
         super(document, "annotation");
@@ -64,8 +67,22 @@ public class AnnotationAdapter extends Document.AbstractAdapter<AnnotationAdapte
     }
 
     public Comments fetchComments(List<String> annotationIds) {
-        return get("comments",
-                new ProxyRetrofitQueryMap(singletonMap("annotationIds", new ArrayList<>(annotationIds))));
+        NuxeoVersion serverVersion = nuxeoClient.getServerVersion();
+        if ((serverVersion.isGreaterThan(NuxeoVersion.LTS_10_10.hotfix(32))
+                && !serverVersion.isGreaterThan(NuxeoVersion.parse("11.1")))
+                || serverVersion.isGreaterThan(NuxeoVersion.parse("11.3.37"))) {
+            return post("comments", annotationIds);
+        }
+        // do a loop on annotationIds to avoid the URI too long error
+        Comments comments = new Comments();
+        for (int i = 0; i < (annotationIds.size() - 1) / REPLIES_BATCH_SIZE + 1; i++) {
+            List<String> ids = annotationIds.subList(i * REPLIES_BATCH_SIZE,
+                    Math.min((i + 1) * REPLIES_BATCH_SIZE, annotationIds.size()));
+            Comments c = get("comments",
+                    new ProxyRetrofitQueryMap(singletonMap("annotationIds", new ArrayList<>(ids))));
+            comments.getEntries().addAll(c.getEntries());
+        }
+        return comments;
     }
 
     public Annotation update(Annotation annotation) {
