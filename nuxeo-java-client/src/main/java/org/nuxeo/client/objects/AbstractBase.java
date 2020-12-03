@@ -216,7 +216,7 @@ public class AbstractBase<B extends AbstractBase<B>> {
     }
 
     public B enrichers(boolean append, String type, String enricher, String... enrichers) {
-        return header(append, "enrichers." + type, enricher, enrichers);
+        return header(append, "enrichers-" + type, enricher, enrichers);
     }
 
     /**
@@ -234,7 +234,7 @@ public class AbstractBase<B extends AbstractBase<B>> {
     }
 
     public B fetchProperties(boolean append, String fetch, String fetchProperty, String... fetchProperties) {
-        return header(append, "fetch." + fetch, fetchProperty, fetchProperties);
+        return header(append, "fetch-" + fetch, fetchProperty, fetchProperties);
     }
 
     /**
