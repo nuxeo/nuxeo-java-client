@@ -93,6 +93,11 @@ public class EntityTypes {
 
     public static final String SCHEMA = "schema";
 
+    /**
+     * @since 3.9.0
+     */
+    public static final String STRING = "string";
+
     public static final String TASK = "task";
 
     public static final String TASKS = "tasks";

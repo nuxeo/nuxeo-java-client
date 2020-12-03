@@ -1,0 +1,15 @@
+<component name="org.nuxeo.client.test.automation">
+
+  <extension target="org.nuxeo.automation.scripting.internals.AutomationScriptingComponent" point="operation">
+    <scriptedOperation id="Scripting.TestString">
+      <inputType>Void</inputType>
+      <outputType>String</outputType>
+      <script>
+        function run(input, params) {
+          return "Hello test!";
+        }
+      </script>
+    </scriptedOperation>
+  </extension>
+
+</component>
