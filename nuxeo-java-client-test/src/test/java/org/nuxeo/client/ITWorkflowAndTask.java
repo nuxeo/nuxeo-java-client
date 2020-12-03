@@ -22,11 +22,13 @@ package org.nuxeo.client;
 import static java.util.Collections.singletonList;
 import static java.util.Collections.singletonMap;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.util.List;
+import java.util.function.Predicate;
 
 import org.junit.Ignore;
 import org.junit.Test;
@@ -46,6 +48,8 @@ import org.nuxeo.client.spi.NuxeoClientRemoteException;
  */
 public class ITWorkflowAndTask extends AbstractITBase {
 
+    public static final String SERIAL_MODEL_NAME = "SerialDocumentReview";
+
     private Document document;
 
     private Workflow serialWorkflow;
@@ -57,7 +61,7 @@ public class ITWorkflowAndTask extends AbstractITBase {
         document = Document.createWithName("note", "Note");
         document = nuxeoClient.repository().createDocumentByPath("/", document);
         // Fetch serial workflow model
-        serialWorkflow = nuxeoClient.repository().fetchWorkflowModel("SerialDocumentReview");
+        serialWorkflow = nuxeoClient.repository().fetchWorkflowModel(SERIAL_MODEL_NAME);
     }
 
     @Test
@@ -80,8 +84,8 @@ public class ITWorkflowAndTask extends AbstractITBase {
 
     @Test
     public void itCanStartWorkflowInstanceWithDocPath() {
-        Workflow workflow = nuxeoClient.repository().startWorkflowInstanceWithDocPath(document.getPath(),
-                serialWorkflow);
+        Workflow workflow = nuxeoClient.repository()
+                                       .startWorkflowInstanceWithDocPath(document.getPath(), serialWorkflow);
         assertNotNull(workflow);
         assertEquals("running", workflow.getState());
         // TODO check why we have this complexity to retrieve doc ids
@@ -98,9 +102,13 @@ public class ITWorkflowAndTask extends AbstractITBase {
 
     @Test
     public void itCanFetchDocWorflowInstances() {
-        nuxeoClient.repository().fetchDocumentRoot().startWorkflowInstance(serialWorkflow);
-        Workflows workflowInstances = nuxeoClient.repository().fetchDocumentRoot().fetchWorkflowInstances();
+        document.startWorkflowInstance(serialWorkflow);
+        Workflows workflowInstances = document.fetchWorkflowInstances();
         assertNotNull(workflowInstances);
+        assertFalse(workflowInstances.isEmpty());
+        assertTrue(workflowInstances.streamEntries()
+                                    .map(Workflow::getWorkflowModelName)
+                                    .anyMatch(Predicate.isEqual(SERIAL_MODEL_NAME)));
     }
 
     @Test
@@ -111,7 +119,7 @@ public class ITWorkflowAndTask extends AbstractITBase {
 
     @Test
     public void itCanCancelWorkflow() {
-        Workflow workflow = nuxeoClient.repository().fetchDocumentRoot().startWorkflowInstance(serialWorkflow);
+        Workflow workflow = document.startWorkflowInstance(serialWorkflow);
         nuxeoClient.repository().cancelWorkflowInstance(workflow.getId());
         try {
             nuxeoClient.repository().cancelWorkflowInstance(workflow.getId());
@@ -199,7 +207,7 @@ public class ITWorkflowAndTask extends AbstractITBase {
     }
 
     protected Tasks fetchAllTasks() {
-        nuxeoClient.repository().fetchDocumentRoot().startWorkflowInstance(serialWorkflow);
+        document.startWorkflowInstance(serialWorkflow);
         Workflows workflows = nuxeoClient.userManager().fetchWorkflowInstances();
         Workflow workflow = workflows.getEntry(0);
         return nuxeoClient.taskManager().fetchTasks("Administrator", workflow.getId(), workflow.getWorkflowModelName());
