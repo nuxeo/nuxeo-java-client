@@ -46,6 +46,7 @@ import org.nuxeo.client.objects.CustomJSONObject;
 import org.nuxeo.client.objects.Document;
 import org.nuxeo.client.objects.Documents;
 import org.nuxeo.client.objects.Operation;
+import org.nuxeo.client.objects.StringEntity;
 import org.nuxeo.client.objects.blob.Blob;
 import org.nuxeo.client.objects.blob.Blobs;
 import org.nuxeo.client.objects.blob.FileBlob;
@@ -224,8 +225,8 @@ public class ITOperation extends AbstractITBase {
     @Test
     public void itCanFetchDirectoriesJsonBlob() {
         String result = nuxeoClient.operation(DIRECTORY_ENTRIES).param("directoryName", "continent").execute();
-        List<Map<String, Serializable>> directoryExamples = nuxeoClient.getConverterFactory().readJSON(result,
-                List.class, Map.class);
+        List<Map<String, Serializable>> directoryExamples = nuxeoClient.getConverterFactory()
+                                                                       .readJSON(result, List.class, Map.class);
         assertNotNull(directoryExamples);
         assertEquals("europe", directoryExamples.get(0).get(DirectoryEntry.ID_PROPERTY));
     }
@@ -239,4 +240,10 @@ public class ITOperation extends AbstractITBase {
         assertEquals("1", result.getUserId());
     }
 
+    @Test
+    public void itCanFetchString() {
+        StringEntity result = nuxeoClient.operation("Scripting.TestString").execute();
+        assertNotNull(result);
+        assertEquals("Hello test!", result.getValue());
+    }
 }

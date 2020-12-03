@@ -42,6 +42,7 @@ import org.nuxeo.client.objects.EntityTypes;
 import org.nuxeo.client.objects.Operation;
 import org.nuxeo.client.objects.RecordSet;
 import org.nuxeo.client.objects.Repository;
+import org.nuxeo.client.objects.StringEntity;
 import org.nuxeo.client.objects.blob.Blob;
 import org.nuxeo.client.objects.blob.Blobs;
 import org.nuxeo.client.objects.blob.FileBlob;
@@ -437,6 +438,7 @@ public class NuxeoClient extends AbstractBase<NuxeoClient> {
             registerEntity(EntityTypes.DOCUMENT, Document.class);
             registerEntity(EntityTypes.DOCUMENTS, Documents.class);
             registerEntity(EntityTypes.RECORDSET, RecordSet.class);
+            registerEntity(EntityTypes.STRING, StringEntity.class);
             registerEntity(EntityTypes.TASK, Task.class);
             registerEntity(EntityTypes.TASKS, Tasks.class);
             registerEntity(EntityTypes.USER, User.class);
