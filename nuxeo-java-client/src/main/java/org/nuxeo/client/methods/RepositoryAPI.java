@@ -86,8 +86,8 @@ public interface RepositoryAPI {
             @Path("repositoryName") String repositoryName);
 
     @POST("repo/{repositoryName}/path{parentPath}")
-    Call<Document> createDocumentByPath(@Path("parentPath") String parentPath, @Body Document document,
-            @Path("repositoryName") String repositoryName);
+    Call<Document> createDocumentByPath(@Path(value = "parentPath", encoded = true) String parentPath,
+            @Body Document document, @Path("repositoryName") String repositoryName);
 
     @GET("path{documentPath}")
     Call<Document> fetchDocumentByPath(@Path(value = "documentPath", encoded = true) String docPath);
@@ -246,8 +246,8 @@ public interface RepositoryAPI {
     @GET("path{documentPath}/@workflow")
     Call<Workflows> fetchWorkflowInstancesByDocPath(@Path(value = "documentPath", encoded = true) String documentPath);
 
-    @GET("repo/{repositoryName}/id/{documentId}/@workflow")
-    Call<Workflows> fetchWorkflowInstancesByDocPath(@Path("documentPath") String documentPath,
+    @GET("repo/{repositoryName}/path{documentPath}/@workflow")
+    Call<Workflows> fetchWorkflowInstancesByDocPath(@Path(value = "documentPath", encoded = true) String documentPath,
             @Path("repositoryName") String repositoryName);
 
     @GET("workflow/{workflowInstanceId}")
