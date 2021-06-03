@@ -191,8 +191,19 @@ public class Repository extends RepositoryEntity<RepositoryAPI, Repository> {
                 ArrayUtils.insert(0, queryParams, queryParam)));
     }
 
+    /**
+     * @deprecated since 3.10, use {@link #queryByProvider(String, String, String, String, String, String, String...)}
+     *             instead
+     */
+    @Deprecated
     public Documents queryByProvider(String providerName, String pageSize, String currentPageIndex, String maxResults,
             String sortBy, String sortOrder, String queryParams) {
+        return fetchResponse(api.queryByProvider(providerName, pageSize, currentPageIndex, maxResults, sortBy,
+                sortOrder, queryParams));
+    }
+
+    public Documents queryByProvider(String providerName, String pageSize, String currentPageIndex, String maxResults,
+                                     String sortBy, String sortOrder, String... queryParams) {
         return fetchResponse(api.queryByProvider(providerName, pageSize, currentPageIndex, maxResults, sortBy,
                 sortOrder, queryParams));
     }
@@ -218,8 +229,19 @@ public class Repository extends RepositoryEntity<RepositoryAPI, Repository> {
                 callback);
     }
 
+    /**
+     * @deprecated since 3.10, use
+     *             {@link #queryByProvider(String, String, String, String, String, String, String[], Callback)} instead
+     */
+    @Deprecated
     public void queryByProvider(String providerName, String pageSize, String currentPageIndex, String maxResults,
             String sortBy, String sortOrder, String queryParams, Callback<Documents> callback) {
+        queryByProvider(providerName, pageSize, currentPageIndex, maxResults, sortBy, sortOrder,
+                new String[] { queryParams }, callback);
+    }
+
+    public void queryByProvider(String providerName, String pageSize, String currentPageIndex, String maxResults,
+                                String sortBy, String sortOrder, String[] queryParams, Callback<Documents> callback) {
         fetchResponse(api.queryByProvider(providerName, pageSize, currentPageIndex, maxResults, sortBy, sortOrder,
                 queryParams), callback);
     }
