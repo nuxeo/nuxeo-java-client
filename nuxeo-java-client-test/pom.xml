@@ -84,7 +84,7 @@
         <!-- TODO update this version to 11.10 -->
         <!-- this version is used to get the base dependency graph to depend on the tested version -->
         <nuxeo.distribution.version>11.1-SNAPSHOT</nuxeo.distribution.version>
-        <nuxeo.tested.version>[11.5,12.0)</nuxeo.tested.version>
+        <nuxeo.tested.version>[11.5.122,12.0)</nuxeo.tested.version>
         <nuxeo.templates>default,jwt</nuxeo.templates>
       </properties>
     </profile>

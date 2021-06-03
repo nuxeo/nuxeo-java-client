@@ -113,15 +113,25 @@ public interface RepositoryAPI {
 
     @GET("query")
     Call<Documents> query(@Query("query") String query, @Query("pageSize") String pageSize,
-                          @Query("currentPageIndex") String currentPageIndex, @Query("maxResults") String maxResults,
-                          @Query("sortBy") String sortBy, @Query("sortOrder") String sortOrder,
-                          @Query("queryParams") String... queryParams);
+            @Query("currentPageIndex") String currentPageIndex, @Query("maxResults") String maxResults,
+            @Query("sortBy") String sortBy, @Query("sortOrder") String sortOrder,
+            @Query("queryParams") String... queryParams);
+
+    /**
+     * @deprecated since 3.10, use {{@link #query(String, String, String, String, String, String, String...)}} instead
+     */
+    @GET("query/{providerName}")
+    @Deprecated
+    Call<Documents> queryByProvider(@Path("providerName") String providerName, @Query("pageSize") String pageSize,
+            @Query("currentPageIndex") String currentPageIndex, @Query("maxResults") String maxResults,
+            @Query("sortBy") String sortBy, @Query("sortOrder") String sortOrder,
+            @Query("queryParams") String queryParams);
 
     @GET("query/{providerName}")
     Call<Documents> queryByProvider(@Path("providerName") String providerName, @Query("pageSize") String pageSize,
             @Query("currentPageIndex") String currentPageIndex, @Query("maxResults") String maxResults,
             @Query("sortBy") String sortBy, @Query("sortOrder") String sortOrder,
-            @Query("queryParams") String queryParams);
+            @Query("queryParams") String... queryParams);
 
     /* Audit */
 
