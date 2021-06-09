@@ -122,7 +122,7 @@ public class ITOperation extends AbstractITBase {
         assertEquals(length, blob.getContentLength());
         assertContentEquals("sample.jpg", blob);
 
-        // Attach a blobs and get them
+        // Attach blobs and get them
         File temp2 = FileUtils.getResourceFileFromContext("sample.jpg");
         Blobs inputBlobs = new Blobs();
         inputBlobs.addEntry(new FileBlob(temp1));
@@ -160,6 +160,46 @@ public class ITOperation extends AbstractITBase {
         assertEquals("sample.jpg", blob.getFilename());
         assertEquals(length, blob.getContentLength());
         assertContentEquals("sample.jpg", blob);
+    }
+
+    // JAVACLIENT-218
+    @Test
+    public void itCanExecuteOperationWithBlobAndNonASCIIFilename() throws IOException {
+        // Attach a blob
+        File temp1 = FileUtils.getResourceFileFromContext("sample.jpg");
+        long length = temp1.length();
+        StreamBlob byteBlob = new StreamBlob(new FileInputStream(temp1), "sâmple.jpg");
+        Void aVoid = nuxeoClient.operation(BLOB_ATTACH_ON_DOCUMENT)
+                                .voidOperation(true)
+                                .param("document", FOLDER_2_FILE)
+                                .input(byteBlob)
+                                .execute();
+        assertNull(aVoid);
+
+        Blob blob = nuxeoClient.operation(DOCUMENT_GET_BLOB).input(FOLDER_2_FILE).execute();
+        assertNotNull(blob);
+        assertEquals("sâmple.jpg", blob.getFilename());
+        assertEquals(length, blob.getContentLength());
+        assertContentEquals("sample.jpg", blob);
+
+        // Attach blobs and get them
+        Blobs inputBlobs = new Blobs();
+        inputBlobs.addEntry(new StreamBlob(new FileInputStream(temp1), "sâmple.jpg"));
+        inputBlobs.addEntry(new StreamBlob(new FileInputStream(temp1), "sâmple.jpg"));
+        // Execute with void header
+        aVoid = nuxeoClient.operation(BLOB_ATTACH_ON_DOCUMENT)
+                           .voidOperation(true)
+                           .param("document", FOLDER_2_FILE)
+                           .param("xpath", "files:files")
+                           .input(inputBlobs)
+                           .execute();
+        assertNull(aVoid);
+
+        Blobs resultBlobs = nuxeoClient.operation(DOCUMENT_GET_BLOBS).input(FOLDER_2_FILE).execute();
+        assertNotNull(resultBlobs);
+        assertEquals(3, resultBlobs.size());
+        resultBlobs.getBlobs().forEach(b -> assertEquals("sâmple.jpg", b.getFilename()));
+        resultBlobs.getBlobs().forEach(b -> assertContentEquals("sample.jpg", b));
     }
 
     /**
