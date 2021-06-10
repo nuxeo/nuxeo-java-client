@@ -70,14 +70,14 @@ public class Group extends ConnectableEntity<UserManagerAPI, Group> {
      * {@code fetch.group=memberUsers} header to request.
      * <p>
      * This could be achieved with client API like this: <blockquote>
-     * 
+     *
      * <pre>
      * // if you want to apply header on all requests
      * client.fetchPropertiesForGroup("memberUsers").userManager().fetchGroup("...");
      * // if you want to apply header only on requests made by this userManager
      * client.userManager().fetchPropertiesForGroup("memberUsers").fetchGroup("...");
      * </pre>
-     * 
+     *
      * </blockquote>
      *
      * @return a list of member users
@@ -87,14 +87,29 @@ public class Group extends ConnectableEntity<UserManagerAPI, Group> {
     }
 
     /**
-     * Returns a list of member users fetched from server. This method will perform a request and store the result on
-     * this object.
-     * 
+     * Returns a list of member users fetched from server.
+     * <p>
+     * This method will perform a request and store the result on this object (by appending it).
+     *
      * @return a list of member users fetched from server
      * @since 3.0
      */
     public Users fetchMemberUsers() {
         Users users = fetchResponse(api.fetchGroupMemberUsers(getGroupName()));
+        memberUsers = users.streamEntries().map(User::getUserName).collect(Collectors.toList());
+        return users;
+    }
+
+    /**
+     * Returns a list of member users fetched from server.
+     * <p>
+     * This method will perform a request and store the result on this object (by appending it).
+     *
+     * @return a list of member users fetched from server
+     * @since 3.11.0
+     */
+    public Users fetchMemberUsers(int currentPageIndex, int pageSize) {
+        Users users = fetchResponse(api.fetchGroupMemberUsers(getGroupName(), currentPageIndex, pageSize));
         memberUsers = users.streamEntries().map(User::getUserName).collect(Collectors.toList());
         return users;
     }
@@ -112,14 +127,14 @@ public class Group extends ConnectableEntity<UserManagerAPI, Group> {
      * {@code fetch.group=memberGroups} header to request.
      * <p>
      * This could be achieved with client API like this: <blockquote>
-     * 
+     *
      * <pre>
      * // if you want to apply header on all requests
      * client.fetchPropertiesForGroup("memberGroups").userManager().fetchGroup("...");
      * // if you want to apply header only on requests made by this userManager
      * client.userManager().fetchPropertiesForGroup("memberGroups").fetchGroup("...");
      * </pre>
-     * 
+     *
      * </blockquote>
      *
      * @return a list of member groups
@@ -129,14 +144,29 @@ public class Group extends ConnectableEntity<UserManagerAPI, Group> {
     }
 
     /**
-     * Returns a list of member groups fetched from server. This method will perform a request and store the result on
-     * this object.
+     * Returns a list of member groups fetched from server.
+     * <p>
+     * This method will perform a request and store the result on this object.
      *
      * @return a list of member groups fetched from server
      * @since 3.0
      */
     public Groups fetchMemberGroups() {
         Groups groups = fetchResponse(api.fetchGroupMemberGroups(getGroupName()));
+        memberGroups = groups.streamEntries().map(Group::getGroupName).collect(Collectors.toList());
+        return groups;
+    }
+
+    /**
+     * Returns a list of member groups fetched from server.
+     * <p>
+     * This method will perform a request and store the result on this object.
+     *
+     * @return a list of member groups fetched from server
+     * @since 3.0
+     */
+    public Groups fetchMemberGroups(int currentPageIndex, int pageSize) {
+        Groups groups = fetchResponse(api.fetchGroupMemberGroups(getGroupName(), currentPageIndex, pageSize));
         memberGroups = groups.streamEntries().map(Group::getGroupName).collect(Collectors.toList());
         return groups;
     }
@@ -165,7 +195,7 @@ public class Group extends ConnectableEntity<UserManagerAPI, Group> {
      * </blockquote>
      * <p>
      * CAUTION: Only available for Nuxeo Server greater than LTS 2016 - 8.10-HF19
-     * 
+     *
      * @return a list of parent groups
      * @since 3.0
      */
