@@ -110,7 +110,7 @@ public class ITUserGroup extends AbstractITBase {
     @Test
     public void itCanUpdateAGroup() {
         UserManager userManager = nuxeoClient.userManager();
-        assertEquals("Toto Group", group.getGroupLabel());
+        assertEquals("Label totogroup", group.getGroupLabel());
         group.setGroupLabel("test update");
         group = userManager.updateGroup(group);
         assertNotNull(group);
@@ -233,6 +233,33 @@ public class ITUserGroup extends AbstractITBase {
         assertEquals(1, users.size());
         assertEquals(user.getUserName(), users.getEntry(0).getUserName());
         assertEquals(membersUsers, members.getMemberUsers());
+    }
+
+    // JAVACLIENT-220
+    @Test
+    public void itCanFetchMemberUsersFromAGroupPaginable() {
+        UserManager userManager = nuxeoClient.userManager();
+
+        // create user in members
+        userManager.createUser(ITBase.createUser("user_javaclient"));
+
+        Group members = userManager.fetchGroup("members");
+
+        Users users = members.fetchMemberUsers();
+        assertNotNull(users);
+        assertEquals(2, users.size());
+        assertEquals(user.getUserName(), users.getEntry(0).getUserName());
+        assertEquals("user_javaclient", users.getEntry(1).getUserName());
+
+        users = members.fetchMemberUsers(0, 1);
+        assertNotNull(users);
+        assertEquals(1, users.size());
+        assertEquals(user.getUserName(), users.getEntry(0).getUserName());
+
+        users = members.fetchMemberUsers(1, 1);
+        assertNotNull(users);
+        assertEquals(1, users.size());
+        assertEquals("user_javaclient", users.getEntry(0).getUserName());
     }
 
     /**

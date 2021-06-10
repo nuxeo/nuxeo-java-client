@@ -74,10 +74,24 @@ public interface UserManagerAPI {
     Call<Users> fetchGroupMemberUsers(@Path("groupName") String groupName);
 
     /**
+     * @since 3.11.0
+     */
+    @GET("group/{groupName}/@users")
+    Call<Users> fetchGroupMemberUsers(@Path("groupName") String groupName,
+            @Query("currentPageIndex") int currentPageIndex, @Query("pageSize") int pageSize);
+
+    /**
      * @since 3.0
      */
     @GET("group/{groupName}/@groups")
     Call<Groups> fetchGroupMemberGroups(@Path("groupName") String groupName);
+
+    /**
+     * @since 3.11.0
+     */
+    @GET("group/{groupName}/@groups")
+    Call<Groups> fetchGroupMemberGroups(@Path("groupName") String groupName,
+            @Query("currentPageIndex") int currentPageIndex, @Query("pageSize") int pageSize);
 
     // ---------
     // User APIs

@@ -182,14 +182,14 @@ public class ITBase {
         user = userManager.createUser(user);
         assertNotNull(user);
         assertEquals(DEFAULT_USER_LOGIN, user.getId());
-        assertEquals("to", user.getLastName());
+        assertEquals("last toto", user.getLastName());
         assertEquals(DEFAULT_USER_EMAIL, user.getEmail());
 
         // Fetch
         user = userManager.fetchUser(DEFAULT_USER_LOGIN);
         assertNotNull(user);
         assertEquals(DEFAULT_USER_LOGIN, user.getId());
-        assertEquals("to", user.getLastName());
+        assertEquals("last toto", user.getLastName());
         assertEquals(DEFAULT_USER_EMAIL, user.getEmail());
 
         // Delete
@@ -215,7 +215,7 @@ public class ITBase {
         assertNotNull(group);
         assertNotNull(group);
         assertEquals(DEFAULT_GROUP_NAME, group.getGroupName());
-        assertEquals("Toto Group", group.getGroupLabel());
+        assertEquals("Label totogroup", group.getGroupLabel());
         User user = userManager.fetchUser("Administrator");
         List<String> groups = user.getGroups();
         assertEquals(DEFAULT_GROUP_NAME, groups.get(1));
@@ -224,7 +224,7 @@ public class ITBase {
         group = userManager.fetchGroup(DEFAULT_GROUP_NAME);
         assertNotNull(group);
         assertEquals(DEFAULT_GROUP_NAME, group.getGroupName());
-        assertEquals("Toto Group", group.getGroupLabel());
+        assertEquals("Label totogroup", group.getGroupLabel());
 
         // Delete
         userManager.deleteGroup(DEFAULT_GROUP_NAME);
@@ -330,12 +330,19 @@ public class ITBase {
     }
 
     public static User createUser() {
+        return createUser(DEFAULT_USER_LOGIN);
+    }
+
+    /**
+     * @since 3.11.0
+     */
+    public static User createUser(String userName) {
         User user = new User();
-        user.setUserName(DEFAULT_USER_LOGIN);
+        user.setUserName(userName);
         user.setCompany("Nuxeo");
-        user.setEmail(DEFAULT_USER_EMAIL);
-        user.setFirstName("to");
-        user.setLastName("to");
+        user.setEmail(userName + "@nuxeo.com");
+        user.setFirstName("first " + userName);
+        user.setLastName("last " + userName);
         user.setPassword(DEFAULT_USER_PASSWORD);
         user.setTenantId("mytenantid");
         user.setGroups(Collections.singletonList("members"));
@@ -343,9 +350,16 @@ public class ITBase {
     }
 
     public static Group createGroup() {
+        return createGroup(DEFAULT_GROUP_NAME);
+    }
+
+    /**
+     * @since 3.11.0
+     */
+    public static Group createGroup(String groupName) {
         Group group = new Group();
-        group.setGroupName(DEFAULT_GROUP_NAME);
-        group.setGroupLabel("Toto Group");
+        group.setGroupName(groupName);
+        group.setGroupLabel("Label " + groupName);
         group.setMemberGroups(Collections.singletonList("members"));
         return group;
     }
