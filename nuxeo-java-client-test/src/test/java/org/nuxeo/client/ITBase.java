@@ -80,6 +80,7 @@ public class ITBase {
     public static final String DEFAULT_GROUP_NAME = "totogroup";
 
     @Test
+    @SuppressWarnings("deprecation")
     public void itCanFetchServerVersion() {
         NuxeoClient client = createClient();
         NuxeoVersion version = client.getServerVersion();

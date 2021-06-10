@@ -49,6 +49,7 @@ public class TestNuxeoVersion {
     }
 
     @Test
+    @SuppressWarnings("deprecation")
     public void testGreaterThan() {
         // Compare majors
         assertTrue(NuxeoVersion.LTS_7_10.isGreaterThan(NuxeoVersion.LTS_7_10));

@@ -40,8 +40,6 @@ public class ITDirectory extends AbstractITBase {
 
     @Test
     public void itCanGetDirectories() {
-        assumeTrue("itCanGetDirectories works only since Nuxeo 8.10",
-                nuxeoClient.getServerVersion().isGreaterThan(NuxeoVersion.LTS_8_10));
         Directories directories = nuxeoClient.directoryManager().fetchDirectories();
         assertNotNull(directories);
         Directory continent = directories.getDirectory("continent");
