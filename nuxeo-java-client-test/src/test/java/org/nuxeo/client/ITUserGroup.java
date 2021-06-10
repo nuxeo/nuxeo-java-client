@@ -25,7 +25,6 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
-import static org.junit.Assume.assumeTrue;
 
 import java.util.Collections;
 import java.util.List;
@@ -216,32 +215,24 @@ public class ITUserGroup extends AbstractITBase {
     @Test
     public void itCanFetchMemberUsersFromAGroup() {
         UserManager userManager = nuxeoClient.userManager();
-        if (nuxeoClient.getServerVersion().isGreaterThan(NuxeoVersion.LTS_8_10)) {
-            // by default server doesn't return member users
-            Group members = userManager.fetchGroup("members");
-            assertNull(members.getMemberUsers());
-            // add right header
-            members = userManager.fetchPropertiesForGroup("memberUsers").fetchGroup(members.getGroupName());
-            List<String> membersUsers = members.getMemberUsers();
-            assertNotNull(membersUsers);
-            assertEquals(1, membersUsers.size());
-            assertEquals(user.getUserName(), membersUsers.get(0));
-            // re-init user manager headers
-            userManager = nuxeoClient.userManager();
-            members = userManager.fetchGroup(members.getGroupName());
-            assertNull(members.getMemberUsers());
-            Users users = members.fetchMemberUsers();
-            assertNotNull(users);
-            assertEquals(1, users.size());
-            assertEquals(user.getUserName(), users.getEntry(0).getUserName());
-            assertEquals(membersUsers, members.getMemberUsers());
-        } else {
-            Group members = userManager.fetchGroup("members");
-            List<String> membersUsers = members.getMemberUsers();
-            assertNotNull(membersUsers);
-            assertEquals(1, membersUsers.size());
-            assertEquals(user.getUserName(), membersUsers.get(0));
-        }
+        // by default server doesn't return member users
+        Group members = userManager.fetchGroup("members");
+        assertNull(members.getMemberUsers());
+        // add right header
+        members = userManager.fetchPropertiesForGroup("memberUsers").fetchGroup(members.getGroupName());
+        List<String> membersUsers = members.getMemberUsers();
+        assertNotNull(membersUsers);
+        assertEquals(1, membersUsers.size());
+        assertEquals(user.getUserName(), membersUsers.get(0));
+        // re-init user manager headers
+        userManager = nuxeoClient.userManager();
+        members = userManager.fetchGroup(members.getGroupName());
+        assertNull(members.getMemberUsers());
+        Users users = members.fetchMemberUsers();
+        assertNotNull(users);
+        assertEquals(1, users.size());
+        assertEquals(user.getUserName(), users.getEntry(0).getUserName());
+        assertEquals(membersUsers, members.getMemberUsers());
     }
 
     /**
@@ -250,33 +241,24 @@ public class ITUserGroup extends AbstractITBase {
     @Test
     public void itCanFetchMemberGroupsFromAGroup() {
         UserManager userManager = nuxeoClient.userManager();
-        if (nuxeoClient.getServerVersion().isGreaterThan(NuxeoVersion.LTS_8_10)) {
-            // by default server doesn't return member groups
-            group = userManager.fetchGroup(group.getGroupName());
-            assertNull(group.getMemberGroups());
-            // add right header
-            group = userManager.fetchPropertiesForGroup("memberGroups").fetchGroup(group.getGroupName());
-            List<String> memberGroups = group.getMemberGroups();
-            assertNotNull(memberGroups);
-            assertEquals(1, memberGroups.size());
-            assertEquals("members", memberGroups.get(0));
-            // re-init user manager headers
-            userManager = nuxeoClient.userManager();
-            group = userManager.fetchGroup(group.getGroupName());
-            assertNull(group.getMemberGroups());
-            Groups groups = group.fetchMemberGroups();
-            assertNotNull(groups);
-            assertEquals(1, groups.size());
-            assertEquals("members", groups.getEntry(0).getGroupName());
-            assertEquals(memberGroups, group.getMemberGroups());
-        } else {
-            // nuxeo server before LTS 2016 always returned memberGroups
-            group = userManager.fetchGroup(group.getGroupName());
-            List<String> memberGroups = group.getMemberGroups();
-            assertNotNull(memberGroups);
-            assertEquals(1, memberGroups.size());
-            assertEquals("members", memberGroups.get(0));
-        }
+        // by default server doesn't return member groups
+        group = userManager.fetchGroup(group.getGroupName());
+        assertNull(group.getMemberGroups());
+        // add right header
+        group = userManager.fetchPropertiesForGroup("memberGroups").fetchGroup(group.getGroupName());
+        List<String> memberGroups = group.getMemberGroups();
+        assertNotNull(memberGroups);
+        assertEquals(1, memberGroups.size());
+        assertEquals("members", memberGroups.get(0));
+        // re-init user manager headers
+        userManager = nuxeoClient.userManager();
+        group = userManager.fetchGroup(group.getGroupName());
+        assertNull(group.getMemberGroups());
+        Groups groups = group.fetchMemberGroups();
+        assertNotNull(groups);
+        assertEquals(1, groups.size());
+        assertEquals("members", groups.getEntry(0).getGroupName());
+        assertEquals(memberGroups, group.getMemberGroups());
     }
 
     /**
@@ -284,9 +266,6 @@ public class ITUserGroup extends AbstractITBase {
      */
     @Test
     public void itCanFetchParentGroupsFromAGroup() {
-        // parentGroups are read and written only since 8.10-HF19
-        assumeTrue("itCanFetchParentGroupsFromAGroup works only since Nuxeo 8.10-HF19",
-                nuxeoClient.getServerVersion().isGreaterThan(NuxeoVersion.LTS_8_10.hotfix(19)));
         UserManager userManager = nuxeoClient.userManager();
         // by default server doesn't return parent groups
         Group members = userManager.fetchGroup("members");
@@ -304,9 +283,6 @@ public class ITUserGroup extends AbstractITBase {
      */
     @Test
     public void itCanSetParentGroups() {
-        // parentGroups are read and written only since 8.10-HF19
-        assumeTrue("itCanSetParentGroups works only since Nuxeo 8.10-HF19",
-                nuxeoClient.getServerVersion().isGreaterThan(NuxeoVersion.LTS_8_10.hotfix(19)));
         UserManager userManager = nuxeoClient.userManager();
         // create group
         Group subGroup = new Group();

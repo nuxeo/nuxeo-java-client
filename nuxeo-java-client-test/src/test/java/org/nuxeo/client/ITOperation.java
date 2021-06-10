@@ -207,9 +207,6 @@ public class ITOperation extends AbstractITBase {
      */
     @Test
     public void itCanExecuteOperationReturningEmptyBlobs() {
-        assumeTrue("itCanExecuteOperationReturningEmptyBlobs works only since Nuxeo 8.10",
-                nuxeoClient.getServerVersion().isGreaterThan(NuxeoVersion.LTS_8_10));
-
         // Get blobs
         Blobs resultBlobs = nuxeoClient.operation(DOCUMENT_GET_BLOBS_BY_PROPERTY).input(FOLDER_2_FILE).execute();
         assertNotNull(resultBlobs);

@@ -785,9 +785,6 @@ public class ITRepository extends AbstractITBase {
      */
     @Test
     public void itCanCheckIfDocumentIsProxy() {
-        assumeTrue("itCanCheckIfDocumentIsProxy works only since Nuxeo 8.10",
-                nuxeoClient.getServerVersion().isGreaterThan(NuxeoVersion.LTS_8_10));
-
         Document root = nuxeoClient.repository().fetchDocumentRoot();
         Document folder = nuxeoClient.repository(root.getRepositoryName()).fetchDocumentByPath("/folder_1");
 

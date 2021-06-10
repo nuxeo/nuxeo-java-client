@@ -31,8 +31,12 @@ import org.nuxeo.client.spi.NuxeoClientException;
  */
 public class NuxeoVersion {
 
+    /** @deprecated since 3.11.0 */
+    @Deprecated
     public static final NuxeoVersion LTS_7_10 = new NuxeoVersion(7, 10, -1, 0, false);
 
+    /** @deprecated since 3.11.0 */
+    @Deprecated
     public static final NuxeoVersion LTS_8_10 = new NuxeoVersion(8, 10, -1, 0, false);
 
     public static final NuxeoVersion LTS_9_10 = new NuxeoVersion(9, 10, -1, 0, false);
