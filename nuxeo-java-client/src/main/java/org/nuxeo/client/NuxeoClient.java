@@ -253,6 +253,16 @@ public class NuxeoClient extends AbstractBase<NuxeoClient> {
         return request(url, builder -> builder.post(body));
     }
 
+    public Response put(String url, String json, okhttp3.MediaType mediaType) {
+        RequestBody body = RequestBody.create(mediaType, json);
+        return request(url, builder -> builder.put(body));
+    }
+
+    public Response post(String url, String json, okhttp3.MediaType mediaType) {
+        RequestBody body = RequestBody.create(mediaType, json);
+        return request(url, builder -> builder.post(body));
+    }
+
     protected Response request(String url, UnaryOperator<Request.Builder> method) {
         try {
             Request.Builder requestBuilder = new Request.Builder().url(url);
