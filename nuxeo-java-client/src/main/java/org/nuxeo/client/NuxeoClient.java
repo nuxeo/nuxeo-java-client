@@ -31,6 +31,7 @@ import java.util.function.UnaryOperator;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import okhttp3.ConnectionPool;
 import org.apache.commons.lang3.StringUtils;
 import org.nuxeo.client.cache.NuxeoResponseCache;
 import org.nuxeo.client.marshaller.NuxeoConverterFactory;
@@ -475,6 +476,14 @@ public class NuxeoClient extends AbstractBase<NuxeoClient> {
 
         public Builder cache(NuxeoResponseCache cache) {
             this.cache = cache;
+            return this;
+        }
+
+        /**
+         * @since 3.12
+         */
+        public Builder connectionPool(ConnectionPool connectionPool) {
+            okhttpBuilder.connectionPool(connectionPool);
             return this;
         }
 
