@@ -135,12 +135,26 @@ public class DirectoryEntry extends ConnectableEntity<DirectoryManagerAPI, Direc
 
     @JsonIgnore
     public Long getOrderingProperty() {
-        return getProperty(ORDERING_PROPERTY);
+        Number value = getProperty(ORDERING_PROPERTY);
+        return value == null ? null : value.longValue();
     }
 
+    /**
+     * @deprecated since 3.12, use {@link #putOrderingProperty(Long value)} instead
+     */
     @JsonIgnore
+    @Deprecated
     public Integer putOrderingProperty(Integer value) {
         return putProperty(ORDERING_PROPERTY, value);
+    }
+
+    /**
+     * @since 3.12
+     */
+    @JsonIgnore
+    public Long putOrderingProperty(Long value) {
+        Number result = putProperty(ORDERING_PROPERTY, value);
+        return result == null ? null : result.longValue();
     }
 
     @JsonIgnore

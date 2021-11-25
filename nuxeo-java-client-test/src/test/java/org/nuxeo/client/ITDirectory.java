@@ -69,9 +69,10 @@ public class ITDirectory extends AbstractITBase {
         entry.putIdProperty("test");
         entry.putLabelProperty("test");
         entry.putObsoleteProperty(0);
-        entry.putOrderingProperty(0);
+        entry.putOrderingProperty(0L);
         DirectoryEntry result = directory.createEntry(entry);
         assertNotNull(result);
+        assertEquals(Long.valueOf(0L), result.getOrderingProperty());
         assertEquals("continent", result.getDirectoryName());
         assertEquals("test", result.getLabelProperty());
 
@@ -98,6 +99,58 @@ public class ITDirectory extends AbstractITBase {
 
         // Delete
         directory.deleteEntry(result.getId());
+    }
+
+    @Test
+    public void itCanSetOrderingPropertyInteger() {
+        Directory directory = nuxeoClient.directoryManager().directory("continent");
+
+        DirectoryEntry entryWithInteger = new DirectoryEntry();
+        entryWithInteger.setDirectoryName("continent");
+        entryWithInteger.putIdProperty("test1");
+        entryWithInteger.putLabelProperty("test1");
+        entryWithInteger.putObsoleteProperty(0);
+
+        entryWithInteger.putOrderingProperty(0L);
+        DirectoryEntry resultWithInteger = directory.createEntry(entryWithInteger);
+        assertNotNull(resultWithInteger);
+        assertEquals(Long.valueOf(0L), resultWithInteger.getOrderingProperty());
+        // assert the previous value and set a new Integer one
+        assertEquals(Long.valueOf(0L), resultWithInteger.putOrderingProperty(Long.valueOf(Integer.MAX_VALUE)));
+
+        resultWithInteger = resultWithInteger.update();
+        assertEquals(Long.valueOf(Integer.MAX_VALUE), resultWithInteger.getOrderingProperty());
+        // assert the previous value
+        assertEquals(Long.valueOf(Integer.MAX_VALUE), resultWithInteger.putOrderingProperty(0L));
+
+        resultWithInteger = resultWithInteger.update();
+        assertEquals(Long.valueOf(0L), resultWithInteger.getOrderingProperty());
+    }
+
+    @Test
+    public void itCanSetOrderingPropertyLong() {
+        Directory directory = nuxeoClient.directoryManager().directory("continent");
+
+        DirectoryEntry entryWithLong = new DirectoryEntry();
+        entryWithLong.setDirectoryName("continent");
+        entryWithLong.putIdProperty("test2");
+        entryWithLong.putLabelProperty("test2");
+        entryWithLong.putObsoleteProperty(1);
+
+        entryWithLong.putOrderingProperty(0L);
+        DirectoryEntry resultWithLong = directory.createEntry(entryWithLong);
+        assertNotNull(resultWithLong);
+        assertEquals(Long.valueOf(0L), resultWithLong.getOrderingProperty());
+        // assert the previous value and set a new Long one
+        assertEquals(Long.valueOf(0L), resultWithLong.putOrderingProperty(Long.MAX_VALUE));
+
+        resultWithLong = resultWithLong.update();
+        assertEquals(Long.valueOf(Long.MAX_VALUE), resultWithLong.getOrderingProperty());
+        // assert the previous value
+        assertEquals(Long.valueOf(Long.MAX_VALUE), resultWithLong.putOrderingProperty(0L));
+
+        resultWithLong = resultWithLong.update();
+        assertEquals(Long.valueOf(0L), resultWithLong.getOrderingProperty());
     }
 
 }
