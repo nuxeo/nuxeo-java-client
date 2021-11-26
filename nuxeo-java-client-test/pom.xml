@@ -9,39 +9,15 @@
   <artifactId>nuxeo-java-client-test</artifactId>
   <name>Nuxeo Java Client Test</name>
   <description>Nuxeo Java Client Suite Tests</description>
+  <packaging>zip</packaging>
 
   <properties>
-    <nuxeo.templates>default,jwt</nuxeo.templates>
+    <nuxeo.server.url />
     <!-- for use in maven-failsafe-plugin, jacoco-maven-plugin -->
     <it.failsafe.argLine></it.failsafe.argLine>
   </properties>
 
-  <dependencyManagement>
-    <dependencies>
-      <dependency>
-        <groupId>org.nuxeo.ecm.distribution</groupId>
-        <artifactId>nuxeo-distribution</artifactId>
-        <version>${nuxeo.distribution.version}</version>
-        <scope>import</scope>
-        <type>pom</type>
-      </dependency>
-    </dependencies>
-  </dependencyManagement>
-
   <dependencies>
-    <dependency>
-      <groupId>org.nuxeo.ecm.distribution</groupId>
-      <artifactId>nuxeo-server-tomcat</artifactId>
-      <version>${nuxeo.tested.version}</version>
-      <type>zip</type>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.nuxeo.ecm.platform</groupId>
-      <artifactId>nuxeo-platform-login-portal-sso</artifactId>
-      <version>${nuxeo.tested.version}</version>
-      <scope>test</scope>
-    </dependency>
     <dependency>
       <groupId>org.nuxeo.client</groupId>
       <artifactId>nuxeo-java-client</artifactId>
@@ -69,42 +45,50 @@
     </dependency>
   </dependencies>
 
-  <profiles>
-    <profile>
-      <id>master</id>
-      <activation>
-        <activeByDefault>true</activeByDefault>
-      </activation>
-      <properties>
-        <!-- TODO update this version to 11.10 -->
-        <!-- this version is used to get the base dependency graph to depend on the tested version -->
-        <nuxeo.distribution.version>11.1-SNAPSHOT</nuxeo.distribution.version>
-        <nuxeo.tested.version>[11.5.122,12.0)</nuxeo.tested.version>
-      </properties>
-    </profile>
-    <profile>
-      <id>10.10</id>
-      <properties>
-        <!-- this version is used to get the base dependency graph to depend on the tested version -->
-        <nuxeo.distribution.version>10.10</nuxeo.distribution.version>
-        <nuxeo.tested.version>[10.10,11.0)</nuxeo.tested.version>
-      </properties>
-    </profile>
-  </profiles>
-
   <build>
     <plugins>
+      <!-- as the module packaging is zip, we need these two plugins to build the ftests -->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-jar-plugin</artifactId>
-        <configuration>
-          <archive>
-            <manifestFile>src/main/resources/META-INF/MANIFEST.MF</manifestFile>
-            <manifestEntries>
-              <Bundle-ManifestVersion>2</Bundle-ManifestVersion>
-            </manifestEntries>
-          </archive>
-        </configuration>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>default-testCompile</id>
+            <phase>test-compile</phase>
+            <goals>
+              <goal>testCompile</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-resources-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>default-testResources</id>
+            <phase>process-test-resources</phase>
+            <goals>
+              <goal>testResources</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.nuxeo.build</groupId>
+        <artifactId>ant-assembly-maven-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>default-build</id>
+            <phase>compile</phase>
+            <goals>
+              <goal>build</goal>
+            </goals>
+            <configuration>
+              <buildFile>${basedir}/src/main/assemble/assembly.xml</buildFile>
+            </configuration>
+          </execution>
+        </executions>
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
@@ -116,6 +100,11 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-failsafe-plugin</artifactId>
+        <configuration>
+          <systemPropertyVariables>
+            <nuxeo.server.url>${nuxeo.server.url}</nuxeo.server.url>
+          </systemPropertyVariables>
+        </configuration>
         <executions>
           <execution>
             <goals>
@@ -125,44 +114,69 @@
           </execution>
         </executions>
       </plugin>
-      <plugin>
-        <groupId>org.nuxeo.build</groupId>
-        <artifactId>ant-assembly-maven-plugin</artifactId>
-        <version>2.0.6</version>
-        <configuration>
-          <buildFile>${basedir}/itests.xml</buildFile>
-        </configuration>
-        <executions>
-          <execution>
-            <id>start-tomcat</id>
-            <phase>pre-integration-test</phase>
-            <goals>
-              <goal>build</goal>
-            </goals>
-            <configuration>
-              <targets>
-                <target>prepare-environment</target>
-                <target>start</target>
-              </targets>
-            </configuration>
-          </execution>
-          <execution>
-            <id>stop-tomcat</id>
-            <phase>post-integration-test</phase>
-            <goals>
-              <goal>build</goal>
-              <goal>verify</goal>
-            </goals>
-            <configuration>
-              <targets>
-                <target>stop</target>
-                <target>cleanup-environment</target>
-              </targets>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
     </plugins>
   </build>
+
+  <profiles>
+    <profile>
+      <id>prePostIntegration</id>
+      <activation>
+        <property>
+          <name>!skipPrePostIntegration</name>
+        </property>
+      </activation>
+      <properties>
+        <nuxeo.server.tomcat.version>2021.0.17</nuxeo.server.tomcat.version>
+      </properties>
+      <dependencies>
+        <dependency>
+          <groupId>org.nuxeo.ecm.distribution</groupId>
+          <artifactId>nuxeo-server-tomcat</artifactId>
+          <version>${nuxeo.server.tomcat.version}</version>
+          <type>zip</type>
+          <scope>test</scope>
+        </dependency>
+      </dependencies>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.nuxeo.build</groupId>
+            <artifactId>ant-assembly-maven-plugin</artifactId>
+            <executions>
+              <execution>
+                <id>start-tomcat</id>
+                <phase>pre-integration-test</phase>
+                <goals>
+                  <goal>build</goal>
+                </goals>
+                <configuration>
+                  <buildFile>${basedir}/src/test/resources/itests.xml</buildFile>
+                  <targets>
+                    <target>prepare-environment</target>
+                    <target>start</target>
+                  </targets>
+                </configuration>
+              </execution>
+              <execution>
+                <id>stop-tomcat</id>
+                <phase>post-integration-test</phase>
+                <goals>
+                  <goal>build</goal>
+                  <goal>verify</goal>
+                </goals>
+                <configuration>
+                  <buildFile>${basedir}/src/test/resources/itests.xml</buildFile>
+                  <targets>
+                    <target>stop</target>
+                    <target>cleanup-environment</target>
+                  </targets>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+  </profiles>
 
 </project>

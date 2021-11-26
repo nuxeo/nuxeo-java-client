@@ -84,7 +84,6 @@ import org.nuxeo.client.objects.comment.CommentAdapter;
 import org.nuxeo.client.objects.comment.Comments;
 import org.nuxeo.client.objects.user.User;
 import org.nuxeo.client.spi.NuxeoClientRemoteException;
-import org.nuxeo.common.utils.FileUtils;
 
 /**
  * @since 0.1
@@ -323,8 +322,8 @@ public class ITRepository extends AbstractITBase {
         Document file = nuxeoClient.repository().fetchDocumentByPath(FOLDER_2_FILE);
 
         // Attach a blob
-        File temp1 = FileUtils.getResourceFileFromContext("sample.jpg");
-        File temp2 = FileUtils.getResourceFileFromContext("blob.json");
+        File temp1 = getResourceFileFromContext("sample.jpg");
+        File temp2 = getResourceFileFromContext("blob.json");
         Blobs inputBlobs = new Blobs();
         inputBlobs.addEntry(new FileBlob(temp1));
         inputBlobs.addEntry(new FileBlob(temp2));

@@ -22,6 +22,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+import static org.nuxeo.client.AbstractITBase.getResourceFileFromContext;
 import static org.nuxeo.client.Operations.BLOB_ATTACH_ON_DOCUMENT;
 
 import java.io.File;
@@ -30,6 +31,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
 import org.junit.Assert;
 import org.junit.Test;
 import org.nuxeo.client.objects.Document;
@@ -44,7 +46,6 @@ import org.nuxeo.client.spi.NuxeoClientRemoteException;
 import org.nuxeo.client.spi.auth.BasicAuthInterceptor;
 import org.nuxeo.client.spi.auth.JWTAuthInterceptor;
 import org.nuxeo.client.spi.auth.PortalSSOAuthInterceptor;
-import org.nuxeo.common.utils.FileUtils;
 
 import okhttp3.Interceptor;
 import okhttp3.Request;
@@ -58,7 +59,8 @@ import okhttp3.Response;
  */
 public class ITBase {
 
-    public static final String BASE_URL = "http://localhost:8080/nuxeo";
+    public static final String BASE_URL = StringUtils.defaultIfBlank(System.getProperty("nuxeo.server.url"),
+            "http://localhost:8080/nuxeo");
 
     public static final String LOGIN = "Administrator";
 
@@ -160,7 +162,7 @@ public class ITBase {
         doc.setPropertyValue("dc:title", "File");
         doc = client.repository().createDocumentByPath("/", doc);
         // Attach a blob
-        File file = FileUtils.getResourceFileFromContext("sample.jpg");
+        File file = getResourceFileFromContext("sample.jpg");
         FileBlob fileBlob = new FileBlob(file);
         client.operation(BLOB_ATTACH_ON_DOCUMENT)
               .voidOperation(true)

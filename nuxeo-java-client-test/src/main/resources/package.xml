@@ -1,0 +1,18 @@
+<package type="addon" name="nuxeo-java-client-test" version="@VERSION@">
+  <title>Nuxeo Java Client Test</title>
+  <description>
+    <p>This is an addon that brings necessary configuration to test Nuxeo Java Client.</p>
+  </description>
+  <home-page>https://www.nuxeo.com/</home-page>
+  <vendor>Nuxeo</vendor>
+  <installer restart="true" />
+  <uninstaller restart="true" />
+  <nuxeo-validation>nuxeo_certified</nuxeo-validation>
+  <platforms>
+    <platform>server-10.10*</platform>
+    <platform>lts-2021.*</platform>
+  </platforms>
+  <license>LGPL 2.1</license>
+  <license-url>http://www.gnu.org/licenses/lgpl-2.1.html</license-url>
+  <visibility>PUBLIC</visibility>
+</package>
