@@ -1,0 +1,32 @@
+<project name="mp-nuxeo-java-client-test" default="build" xmlns:nx="urn:nuxeo-build" xmlns:artifact="urn:nuxeo-artifact">
+  <taskdef resource="org/nuxeo/build/antlib.xml" uri="urn:nuxeo-build" />
+  <taskdef resource="org/nuxeo/build/artifact/antlib.xml" uri="urn:nuxeo-artifact" />
+  <taskdef resource="net/sf/antcontrib/antlib.xml" />
+
+  <target name="build" description="Build Nuxeo Java Client Test Marketplace package">
+    <property name="outdir" value="${maven.project.build.directory}" />
+    <tstamp />
+    <delete failonerror="false" dir="${outdir}/marketplace" />
+    <mkdir dir="${outdir}/marketplace" />
+    <copy todir="${outdir}/marketplace">
+      <fileset dir="src/main/resources" />
+      <filterset>
+        <filter token="VERSION" value="${maven.project.version}" />
+      </filterset>
+    </copy>
+
+    <!-- Bundles -->
+    <copy todir="${outdir}/marketplace/install/bundles-1010" overwrite="true">
+      <artifact:resolveFile key="org.nuxeo.ecm.platform:nuxeo-platform-login-portal-sso:10.10-HF56:jar:" />
+    </copy>
+    <copy todir="${outdir}/marketplace/install/bundles-2021" overwrite="true">
+      <artifact:resolveFile key="org.nuxeo.ecm.platform:nuxeo-platform-login-portal-sso:2021.13.8:jar:" />
+    </copy>
+
+    <zip destfile="${outdir}/${maven.project.artifactId}-${maven.project.version}.zip"
+         basedir="${outdir}/marketplace" />
+
+    <artifact:attach file="${outdir}/${maven.project.artifactId}-${maven.project.version}.zip" type="zip" />
+  </target>
+
+</project>
