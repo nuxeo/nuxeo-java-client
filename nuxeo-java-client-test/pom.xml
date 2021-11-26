@@ -11,6 +11,7 @@
   <description>Nuxeo Java Client Suite Tests</description>
 
   <properties>
+    <nuxeo.templates>default,jwt</nuxeo.templates>
     <!-- for use in maven-failsafe-plugin, jacoco-maven-plugin -->
     <it.failsafe.argLine></it.failsafe.argLine>
   </properties>
@@ -28,13 +29,6 @@
   </dependencyManagement>
 
   <dependencies>
-    <!-- we need to declare this dependency to build the project (for operation) -->
-    <dependency>
-      <groupId>org.nuxeo.ecm.automation</groupId>
-      <artifactId>nuxeo-automation-core</artifactId>
-      <version>${nuxeo.tested.version}</version>
-      <scope>provided</scope>
-    </dependency>
     <dependency>
       <groupId>org.nuxeo.ecm.distribution</groupId>
       <artifactId>nuxeo-server-tomcat</artifactId>
@@ -61,6 +55,7 @@
     <dependency>
       <groupId>org.apache.commons</groupId>
       <artifactId>commons-lang3</artifactId>
+      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>junit</groupId>
@@ -85,7 +80,6 @@
         <!-- this version is used to get the base dependency graph to depend on the tested version -->
         <nuxeo.distribution.version>11.1-SNAPSHOT</nuxeo.distribution.version>
         <nuxeo.tested.version>[11.5.122,12.0)</nuxeo.tested.version>
-        <nuxeo.templates>default,jwt</nuxeo.templates>
       </properties>
     </profile>
     <profile>
@@ -94,23 +88,6 @@
         <!-- this version is used to get the base dependency graph to depend on the tested version -->
         <nuxeo.distribution.version>10.10</nuxeo.distribution.version>
         <nuxeo.tested.version>[10.10,11.0)</nuxeo.tested.version>
-        <nuxeo.templates>default,jwt</nuxeo.templates>
-      </properties>
-    </profile>
-    <profile>
-      <id>9.10</id>
-      <properties>
-        <!-- this version is used to get the base dependency graph to depend on the tested version -->
-        <nuxeo.distribution.version>9.10</nuxeo.distribution.version>
-        <nuxeo.tested.version>[9.10,10.0)</nuxeo.tested.version>
-      </properties>
-    </profile>
-    <profile>
-      <id>8.10</id>
-      <properties>
-        <!-- this version is used to get the base dependency graph to depend on the tested version -->
-        <nuxeo.distribution.version>8.10</nuxeo.distribution.version>
-        <nuxeo.tested.version>[8.10,9.0)</nuxeo.tested.version>
       </properties>
     </profile>
   </profiles>
