@@ -272,7 +272,7 @@ public class ITOperation extends AbstractITBase {
     public void itCanFetchJSONBlob() {
         // register the entity
         NuxeoConverterFactory.registerEntity(CustomJSONObject.ENTITY_TYPE, CustomJSONObject.class);
-        CustomJSONObject result = nuxeoClient.operation("CustomOperationJSONBlob").execute();
+        CustomJSONObject result = nuxeoClient.operation("Scripting.CustomOperationJSONBlob").execute();
         assertNotNull(result);
         assertEquals("1", result.getUserId());
     }
