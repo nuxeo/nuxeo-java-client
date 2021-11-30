@@ -31,4 +31,5 @@ local.properties
 build
 captures
 .java-version
+helmfile.lock
 
