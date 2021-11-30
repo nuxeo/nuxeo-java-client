@@ -118,6 +118,19 @@
   </build>
 
   <profiles>
+
+    <profile>
+      <id>customEnvironment</id>
+      <activation>
+        <property>
+          <name>custom.environment</name>
+        </property>
+      </activation>
+      <build>
+        <directory>target-${custom.environment}</directory>
+      </build>
+    </profile>
+
     <profile>
       <id>prePostIntegration</id>
       <activation>
@@ -134,7 +147,7 @@
           <artifactId>nuxeo-server-tomcat</artifactId>
           <version>${nuxeo.server.tomcat.version}</version>
           <type>zip</type>
-          <scope>test</scope>
+          <scope>runtime</scope>
         </dependency>
       </dependencies>
       <build>
@@ -177,6 +190,7 @@
         </plugins>
       </build>
     </profile>
+
   </profiles>
 
 </project>

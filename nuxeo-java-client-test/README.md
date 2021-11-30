@@ -37,3 +37,19 @@ By default, the above command will try to reach the Nuxeo Server on `http://loca
 ```bash
 mvn verify -DskipPrePostIntegration -Dnuxeo.server.url=https://nightly.nuxeo.com/nuxeo
 ```
+
+You can deploy the same stack as the CI does by building a Nuxeo Docker image and using helmfile to deploy the stack 
+(you must be at the root of the project):
+
+```bash
+# build the docker image
+docker build -t nuxeo/nuxeo-java-client-ftests:2021 --build-arg NUXEO_VERSION=2021 . -f ci/docker/nuxeo/Dockerfile
+# deploy the stack
+helmfile --namespace njc-test --file ci/helm/helmfile.yaml --helm-binary /usr/local/bin/helm3 --environment functional-tests-2021 sync
+# in another terminal forward the traffic from your localhost to the cluster
+kubectl --namespace njc-test port-forward svc/nuxeo 8080:80
+# run functional tests
+mvn -pl :nuxeo-java-client-test -DskipPrePostIntegration verify
+# shutdown the stack
+helmfile --namespace njc-test --file ci/helm/helmfile.yaml --helm-binary /usr/local/bin/helm3 --environment functional-tests-2021 destroy
+```
