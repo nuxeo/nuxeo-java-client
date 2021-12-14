@@ -21,9 +21,9 @@ package org.nuxeo.client.objects;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
@@ -64,9 +64,9 @@ public class AbstractBase<B extends AbstractBase<B>> {
         // retrofit builder
         retrofitBuilder = new Retrofit.Builder();
         // header interceptors
-        headerInterceptors = new HashMap<>();
+        headerInterceptors = new ConcurrentHashMap<>();
         // header values
-        headerValues = new HashMap<>();
+        headerValues = new ConcurrentHashMap<>();
     }
 
     protected AbstractBase(AbstractBase<?> base) {
@@ -318,10 +318,10 @@ public class AbstractBase<B extends AbstractBase<B>> {
         // retrofit builder
         retrofitBuilder = retrofit.newBuilder();
         // copy header interceptors
-        headerInterceptors = new HashMap<>();
+        headerInterceptors = new ConcurrentHashMap<>();
         headerInterceptors.putAll(base.headerInterceptors);
         // copy header values
-        headerValues = new HashMap<>();
+        headerValues = new ConcurrentHashMap<>();
         headerValues.putAll(base.headerValues);
     }
 

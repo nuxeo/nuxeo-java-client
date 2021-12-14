@@ -27,6 +27,7 @@ import static org.nuxeo.client.Operations.BLOB_ATTACH_ON_DOCUMENT;
 import java.io.File;
 import java.util.List;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import org.nuxeo.client.methods.BatchUploadAPI;
 import org.nuxeo.client.objects.Document;
@@ -152,6 +153,7 @@ public class ITUpload extends AbstractITBase {
     }
 
     @Test
+    @Ignore("JAVACLIENT-223: It is random on QA")
     public void itCanAttachABatchToADoc() {
         // Upload file chunks
         BatchUploadManager batchUploadManager = nuxeoClient.batchUploadManager();
