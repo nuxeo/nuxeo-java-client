@@ -22,7 +22,6 @@ package org.nuxeo.client;
 import static junit.framework.TestCase.assertNotNull;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
-import static org.junit.Assume.assumeTrue;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -151,6 +150,35 @@ public class ITDirectory extends AbstractITBase {
 
         resultWithLong = resultWithLong.update();
         assertEquals(Long.valueOf(0L), resultWithLong.getOrderingProperty());
+    }
+
+    // JAVACLIENT-226
+    @Test
+    public void itCanUpdateDirectoryEntry() {
+        // use a directory with an integer id in order to meet the type conflict as the API returns a String
+        Directory directory = nuxeoClient.directoryManager().directory("oauth2Clients");
+        DirectoryEntry providerEntry = new DirectoryEntry();
+        providerEntry.putProperty("name", "OAuth2");
+        providerEntry.putProperty("clientId", "oauth2");
+        providerEntry.putProperty("clientSecret", "strongSecret");
+        providerEntry.putProperty("redirectURIs", "nuxeo://not-used");
+        providerEntry = directory.createEntry(providerEntry);
+        String providerEntryId = providerEntry.getId();
+        Integer providerEntryPropertiesId = providerEntry.getIdProperty();
+
+        // Update the directory entry by re-creating an object
+        // test I can set the id at the root level
+        providerEntry = new DirectoryEntry(providerEntryId);
+        providerEntry.putProperty("clientSecret", "strongSecret2");
+        providerEntry = directory.updateEntry(providerEntry);
+        assertEquals("strongSecret2", providerEntry.getProperty("clientSecret"));
+
+        // test I can set the id at properties level (backward compatibility)
+        providerEntry = new DirectoryEntry();
+        providerEntry.putIdProperty(providerEntryPropertiesId); // here type must be respected
+        providerEntry.putProperty("clientSecret", "strongSecret3");
+        providerEntry = directory.updateEntry(providerEntry);
+        assertEquals("strongSecret3", providerEntry.getProperty("clientSecret"));
     }
 
 }
