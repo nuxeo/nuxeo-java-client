@@ -67,7 +67,7 @@ public class DirectoryEntries extends Entities<DirectoryEntry> implements Connec
 
     public <T> DirectoryEntry getDirectoryEntry(T id) {
         for (DirectoryEntry directoryEntry : entries) {
-            if (directoryEntry.getIdProperty().equals(id)) {
+            if (directoryEntry.getId().equals(String.valueOf(id))) {
                 return directoryEntry;
             }
         }

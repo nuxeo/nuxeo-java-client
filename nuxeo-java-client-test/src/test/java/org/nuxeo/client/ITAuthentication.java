@@ -101,8 +101,8 @@ public class ITAuthentication {
         providerEntry.putProperty("clientId", "oauth2Jwt");
         providerEntry.putProperty("clientSecret", "strongSecret");
         providerEntry.putProperty("redirectURIs", "nuxeo://not-used");
-        providerEntry.putProperty("autoGrant", "true");
-        providerEntry.putProperty("enabled", "true");
+        providerEntry.putProperty("autoGrant", true);
+        providerEntry.putProperty("enabled", true);
         providerEntry = oauth2Directory.createEntry(providerEntry);
         try {
             OAuth2AuthInterceptor auth = OAuth2AuthInterceptor.obtainAuthFromJWTToken(ITBase.BASE_URL, "oauth2Jwt",

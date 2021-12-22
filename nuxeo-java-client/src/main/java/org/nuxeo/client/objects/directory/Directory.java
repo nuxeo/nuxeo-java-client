@@ -78,7 +78,16 @@ public class Directory extends ConnectableEntity<DirectoryManagerAPI, Directory>
         return fetchResponse(api.createDirectoryEntry(name, entry));
     }
 
+    /**
+     * @since 3.12.0
+     */
+    public DirectoryEntry fetchEntry(Object entryId) {
+        Objects.requireNonNull(entryId, "The entryId can not be null.");
+        return fetchResponse(api.fetchDirectoryEntry(name, String.valueOf(entryId)));
+    }
+
     public DirectoryEntry fetchEntry(String entryId) {
+        Objects.requireNonNull(entryId, "The entryId can not be null.");
         return fetchResponse(api.fetchDirectoryEntry(name, entryId));
     }
 
@@ -88,7 +97,16 @@ public class Directory extends ConnectableEntity<DirectoryManagerAPI, Directory>
         return fetchResponse(api.updateDirectoryEntry(name, entryId, entry));
     }
 
+    /**
+     * @since 3.12.0
+     */
+    public void deleteEntry(Object entryId) {
+        Objects.requireNonNull(entryId, "The entryId can not be null.");
+        fetchResponse(api.deleteDirectoryEntry(name, String.valueOf(entryId)));
+    }
+
     public void deleteEntry(String entryId) {
+        Objects.requireNonNull(entryId, "The entryId can not be null.");
         fetchResponse(api.deleteDirectoryEntry(name, entryId));
     }
 
