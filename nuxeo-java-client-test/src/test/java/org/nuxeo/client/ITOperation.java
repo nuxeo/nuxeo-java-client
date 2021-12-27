@@ -39,6 +39,7 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.nuxeo.client.marshaller.NuxeoConverterFactory;
 import org.nuxeo.client.objects.CustomJSONObject;
@@ -60,9 +61,8 @@ import org.nuxeo.client.spi.NuxeoClientException;
  */
 public class ITOperation extends AbstractITBase {
 
-    @Override
+    @Before
     public void init() {
-        super.init();
         initDocuments();
     }
 

@@ -35,7 +35,7 @@ import java.util.Collection;
 
 import org.apache.commons.io.IOUtils;
 import org.junit.After;
-import org.junit.Before;
+import org.junit.Rule;
 import org.nuxeo.client.objects.Document;
 import org.nuxeo.client.objects.Repository;
 import org.nuxeo.client.objects.blob.Blob;
@@ -50,8 +50,6 @@ public abstract class AbstractITBase {
 
     public static final String FOLDER_2_FILE = "/folder_2/file";
 
-    protected final NuxeoClient nuxeoClient = ITBase.createClient().schemas("*");
-
     protected final RepositoryInterceptor repositoryInterceptor = new RepositoryInterceptor();
 
     // TODO this is weird that deleting documents doesn't cancel workflow on them, maybe there's an asynchronous task
@@ -61,13 +59,15 @@ public abstract class AbstractITBase {
 
     protected final UserGroupInterceptor userGroupInterceptor = new UserGroupInterceptor();
 
-    @Before
-    public void init() {
-        // Create client and bind interceptors to register creation/deletion on server
-        nuxeoClient.addOkHttpInterceptor(repositoryInterceptor);
-        nuxeoClient.addOkHttpInterceptor(workflowInterceptor);
-        nuxeoClient.addOkHttpInterceptor(userGroupInterceptor);
-    }
+    protected final NuxeoClient nuxeoClient = ITBase.createClientBuilder()
+                                                    .schemas("*")
+                                                    .interceptor(repositoryInterceptor)
+                                                    .interceptor(workflowInterceptor)
+                                                    .interceptor(userGroupInterceptor)
+                                                    .build();
+
+    @Rule
+    public final LogTestOnServerRule logRule = new LogTestOnServerRule(nuxeoClient);
 
     public void initDocuments() {
         // Create documents
@@ -127,7 +127,7 @@ public abstract class AbstractITBase {
     @SuppressWarnings("ConstantConditions")
     protected void assertContentEquals(String expectedFilePath, Blob blob) {
         try (InputStream expectedBlobStream = getClass().getClassLoader().getResourceAsStream(expectedFilePath);
-             InputStream actualBlobStream = blob.getStream()) {
+                InputStream actualBlobStream = blob.getStream()) {
             assertEquals(IOUtils.toString(expectedBlobStream, UTF_8), IOUtils.toString(actualBlobStream, UTF_8));
         } catch (IOException e) {
             fail("Unable to read response or expected file, e=" + e);

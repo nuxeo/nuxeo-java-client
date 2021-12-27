@@ -33,6 +33,7 @@ import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
 import org.junit.Assert;
+import org.junit.Rule;
 import org.junit.Test;
 import org.nuxeo.client.objects.Document;
 import org.nuxeo.client.objects.Repository;
@@ -81,10 +82,14 @@ public class ITBase {
 
     public static final String DEFAULT_GROUP_NAME = "totogroup";
 
+    protected final NuxeoClient client = createClient();
+
+    @Rule
+    public final LogTestOnServerRule logRule = new LogTestOnServerRule(client);
+
     @Test
     @SuppressWarnings("deprecation")
     public void itCanFetchServerVersion() {
-        NuxeoClient client = createClient();
         NuxeoVersion version = client.getServerVersion();
         assertNotNull(version);
         // First version compatible with this client
@@ -93,7 +98,6 @@ public class ITBase {
 
     @Test
     public void itCanFetchRoot() {
-        NuxeoClient client = createClient();
         Document root = client.repository().fetchDocumentRoot();
         assertNotNull(root);
         assertEquals("Root", root.getType());
@@ -104,7 +108,6 @@ public class ITBase {
 
     @Test
     public void itCanFetchRootWithRepositoryName() {
-        NuxeoClient client = createClient();
         Document root = client.repository().fetchDocumentRoot();
         root = client.repository(root.getRepositoryName()).fetchDocumentRoot();
         assertNotNull(root);
@@ -116,7 +119,7 @@ public class ITBase {
 
     @Test
     public void itCanCreateFetchUpdateDeleteDocument() {
-        Repository repository = createClient().schemas("*").repository();
+        Repository repository = client.schemas("*").repository();
 
         Document root = repository.fetchDocumentRoot();
 
@@ -156,7 +159,6 @@ public class ITBase {
 
     @Test
     public void itCanAttachBlob() {
-        NuxeoClient client = createClient();
         // Create a file
         Document doc = Document.createWithName("file", "File");
         doc.setPropertyValue("dc:title", "File");
@@ -175,7 +177,6 @@ public class ITBase {
 
     @Test
     public void itCanCreateFetchDeleteAUser() {
-        NuxeoClient client = createClient();
         UserManager userManager = client.userManager();
         assertNotNull(userManager);
 
@@ -207,7 +208,6 @@ public class ITBase {
 
     @Test
     public void itCanCreateFetchDeleteAGroup() {
-        NuxeoClient client = createClient();
         UserManager userManager = client.userManager();
 
         // Create
@@ -241,7 +241,6 @@ public class ITBase {
 
     @Test
     public void itCanFetchWorkflowModelsFromRepository() {
-        NuxeoClient client = createClient();
         Workflows workflows = client.repository().fetchWorkflowModels();
         assertNotNull(workflows);
         // Assert basic server workflow definitions
@@ -255,7 +254,6 @@ public class ITBase {
 
     @Test
     public void itCanFailServerSide() {
-        NuxeoClient client = createClient();
         // create a document under a non existent parent
         Document doc = Document.createWithName("file", "File");
         doc.setPropertyValue("dc:title", "File");
@@ -270,7 +268,6 @@ public class ITBase {
 
     @Test
     public void itCanSendClientVersionAsUserAgent() {
-        NuxeoClient client = createClient();
         // bind an interceptor in order to get the user agent
         UserAgentInterceptor interceptor = new UserAgentInterceptor();
         client.addOkHttpInterceptor(interceptor);
