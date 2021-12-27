@@ -152,7 +152,6 @@ public class ITUpload extends AbstractITBase {
     }
 
     @Test
-    @Ignore("JAVACLIENT-223: It is random on QA")
     public void itCanAttachABatchToADoc() {
         // Upload file chunks
         BatchUploadManager batchUploadManager = nuxeoClient.batchUploadManager();

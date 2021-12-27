@@ -29,6 +29,7 @@ import static org.junit.Assert.fail;
 import java.util.Collections;
 import java.util.List;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.nuxeo.client.objects.user.Group;
 import org.nuxeo.client.objects.user.Groups;
@@ -46,9 +47,8 @@ public class ITUserGroup extends AbstractITBase {
 
     private Group group;
 
-    @Override
+    @Before
     public void init() {
-        super.init();
         UserManager userManager = nuxeoClient.userManager();
         // Create user
         user = userManager.createUser(ITBase.createUser());

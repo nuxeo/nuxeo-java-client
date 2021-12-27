@@ -30,6 +30,7 @@ import static org.junit.Assert.fail;
 import java.util.List;
 import java.util.function.Predicate;
 
+import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.nuxeo.client.objects.Document;
@@ -54,9 +55,8 @@ public class ITWorkflowAndTask extends AbstractITBase {
 
     private Workflow serialWorkflow;
 
-    @Override
+    @Before
     public void init() {
-        super.init();
         // Create a note
         document = Document.createWithName("note", "Note");
         document = nuxeoClient.repository().createDocumentByPath("/", document);
@@ -125,11 +125,10 @@ public class ITWorkflowAndTask extends AbstractITBase {
             nuxeoClient.repository().cancelWorkflowInstance(workflow.getId());
             fail("Should fail: wf instance already cancelled");
         } catch (NuxeoClientRemoteException reason) {
-            int expectedStatus = 500;
-            if (nuxeoClient.getServerVersion().isGreaterThan(NuxeoVersion.LTS_10_10.hotfix(30))) {
-                expectedStatus = 400;
-            }
-            assertEquals(expectedStatus, reason.getStatus());
+            // since 10.10-HF30 a second call to cancelWorkflowInstance produces a 400
+            // we can't use the server version as 10.10-HF image doesn't return the hotfix version
+            assertTrue("Received http status: " + reason.getStatus(),
+                    reason.getStatus() == 400 || reason.getStatus() == 500);
         }
     }
 

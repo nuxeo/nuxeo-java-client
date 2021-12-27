@@ -59,6 +59,7 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 
 import org.apache.commons.lang3.StringUtils;
+import org.junit.Before;
 import org.junit.Test;
 import org.nuxeo.client.cache.ResultCacheInMemory;
 import org.nuxeo.client.objects.DataSet;
@@ -90,9 +91,8 @@ import org.nuxeo.client.spi.NuxeoClientRemoteException;
  */
 public class ITRepository extends AbstractITBase {
 
-    @Override
+    @Before
     public void init() {
-        super.init();
         initDocuments();
     }
 
@@ -1001,7 +1001,8 @@ public class ITRepository extends AbstractITBase {
         annotationAdapter.remove(annotationId);
 
         // wait for async operations (listener to delete replies)
-        nuxeoClient.operation(ES_WAIT_FOR_INDEXING).param("refresh", true).execute();
+        // when waitForAudit is true, the operation await the WorkManager
+        nuxeoClient.operation(ES_WAIT_FOR_INDEXING).param("refresh", true).param("waitForAudit", true).execute();
 
         // check reply has been deleted
         try {
