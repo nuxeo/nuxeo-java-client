@@ -1,0 +1,32 @@
+<component name="org.nuxeo.client.test.automation">
+
+  <require>org.nuxeo.automation.scripting.classfilter</require>
+  <extension target="org.nuxeo.automation.scripting.internals.AutomationScriptingComponent" point="classFilter">
+    <classFilter>
+      <allow>org.nuxeo.ecm.core.api.Blobs</allow>
+    </classFilter>
+  </extension>
+
+  <extension target="org.nuxeo.automation.scripting.internals.AutomationScriptingComponent" point="operation">
+    <scriptedOperation id="Scripting.TestString">
+      <inputType>Void</inputType>
+      <outputType>String</outputType>
+      <script>
+        function run(input, params) {
+          return "Hello test!";
+        }
+      </script>
+    </scriptedOperation>
+    <scriptedOperation id="Scripting.CustomOperationJSONBlob">
+      <inputType>Void</inputType>
+      <outputType>String</outputType>
+      <script>
+        function run(input, params) {
+          var blob = "{\"entity-type\":\"custom-json-object\", \"userId\":\"1\", \"token\":\"token\"}";
+          return org.nuxeo.ecm.core.api.Blobs.createBlob(blob, "application/json")
+        }
+      </script>
+    </scriptedOperation>
+  </extension>
+
+</component>

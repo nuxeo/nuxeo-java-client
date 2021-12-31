@@ -1,0 +1,29 @@
+image:
+  {{/* this condition is used to differentiate execution in the CI and locally */}}
+  {{- if (env "BRANCH_NAME") }}
+  repository: {{ printf "%s/nuxeo/nuxeo-java-client-ftests" (requiredEnv "DOCKER_REGISTRY") }}
+  pullSecrets:
+  - name: kubernetes-docker-cfg
+  {{- else }}
+  repository: nuxeo/nuxeo-java-client-ftests
+  {{- end }}
+  tag: "{{ .Values.nuxeo.image.tag }}"
+podLabels:
+  {{- if (env "BRANCH_NAME") }}
+  branch: {{ env "BRANCH_NAME" | quote }}
+  {{- end }}
+  resource: pod
+  team: platform
+  usage: ftests
+service:
+  labels:
+    {{- if (env "BRANCH_NAME") }}
+    branch: {{ env "BRANCH_NAME" | quote }}
+    {{- end }}
+    resource: service
+    team: platform
+    usage: ftests
+mongodb:
+  enabled: true
+  host: mongodb.{{ .Namespace }}.svc.cluster.local
+packages: /tmp/nuxeo-java-client-test.zip

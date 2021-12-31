@@ -24,7 +24,6 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
-import static org.junit.Assume.assumeTrue;
 import static org.nuxeo.client.Operations.BLOB_ATTACH_ON_DOCUMENT;
 import static org.nuxeo.client.Operations.DIRECTORY_ENTRIES;
 import static org.nuxeo.client.Operations.DOCUMENT_GET_BLOB;
@@ -40,6 +39,7 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.nuxeo.client.marshaller.NuxeoConverterFactory;
 import org.nuxeo.client.objects.CustomJSONObject;
@@ -55,16 +55,14 @@ import org.nuxeo.client.objects.directory.DirectoryEntry;
 import org.nuxeo.client.objects.operation.DocRef;
 import org.nuxeo.client.objects.operation.DocRefs;
 import org.nuxeo.client.spi.NuxeoClientException;
-import org.nuxeo.common.utils.FileUtils;
 
 /**
  * @since 0.1
  */
 public class ITOperation extends AbstractITBase {
 
-    @Override
+    @Before
     public void init() {
-        super.init();
         initDocuments();
     }
 
@@ -106,7 +104,7 @@ public class ITOperation extends AbstractITBase {
         assertNotNull(blob);
         assertContentEquals("blob.json", blob);
         // Attach a blob
-        File temp1 = FileUtils.getResourceFileFromContext("sample.jpg");
+        File temp1 = getResourceFileFromContext("sample.jpg");
         FileBlob fileBlob = new FileBlob(temp1);
         long length = fileBlob.getContentLength();
         // Execute with void header
@@ -123,7 +121,7 @@ public class ITOperation extends AbstractITBase {
         assertContentEquals("sample.jpg", blob);
 
         // Attach blobs and get them
-        File temp2 = FileUtils.getResourceFileFromContext("sample.jpg");
+        File temp2 = getResourceFileFromContext("sample.jpg");
         Blobs inputBlobs = new Blobs();
         inputBlobs.addEntry(new FileBlob(temp1));
         inputBlobs.addEntry(new FileBlob(temp2));
@@ -145,7 +143,7 @@ public class ITOperation extends AbstractITBase {
     @Test
     public void itCanExecuteOperationWithStreamBlob() throws IOException {
         // Attach a blob
-        File temp1 = FileUtils.getResourceFileFromContext("sample.jpg");
+        File temp1 = getResourceFileFromContext("sample.jpg");
         long length = temp1.length();
         StreamBlob byteBlob = new StreamBlob(new FileInputStream(temp1), "sample.jpg");
         Void aVoid = nuxeoClient.operation(BLOB_ATTACH_ON_DOCUMENT)
@@ -166,7 +164,7 @@ public class ITOperation extends AbstractITBase {
     @Test
     public void itCanExecuteOperationWithBlobAndNonASCIIFilename() throws IOException {
         // Attach a blob
-        File temp1 = FileUtils.getResourceFileFromContext("sample.jpg");
+        File temp1 = getResourceFileFromContext("sample.jpg");
         long length = temp1.length();
         StreamBlob byteBlob = new StreamBlob(new FileInputStream(temp1), "sâmple.jpg");
         Void aVoid = nuxeoClient.operation(BLOB_ATTACH_ON_DOCUMENT)
@@ -272,7 +270,7 @@ public class ITOperation extends AbstractITBase {
     public void itCanFetchJSONBlob() {
         // register the entity
         NuxeoConverterFactory.registerEntity(CustomJSONObject.ENTITY_TYPE, CustomJSONObject.class);
-        CustomJSONObject result = nuxeoClient.operation("CustomOperationJSONBlob").execute();
+        CustomJSONObject result = nuxeoClient.operation("Scripting.CustomOperationJSONBlob").execute();
         assertNotNull(result);
         assertEquals("1", result.getUserId());
     }

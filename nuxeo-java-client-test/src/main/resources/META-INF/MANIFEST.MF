@@ -3,4 +3,3 @@ Bundle-ManifestVersion: 2
 Bundle-Name: Nuxeo Java Client Test
 Bundle-SymbolicName: org.nuxeo.client.test;singleton:=true
 Bundle-Version: 1.0.0
-Nuxeo-Component: OSGI-INF/javaclient-operations-contrib.xml

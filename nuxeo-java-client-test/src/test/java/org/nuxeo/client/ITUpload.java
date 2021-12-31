@@ -38,7 +38,6 @@ import org.nuxeo.client.objects.upload.BatchUpload;
 import org.nuxeo.client.objects.upload.BatchUploadManager;
 import org.nuxeo.client.spi.NuxeoClientRemoteException;
 import org.nuxeo.client.spi.auth.PortalSSOAuthInterceptor;
-import org.nuxeo.common.utils.FileUtils;
 
 /**
  * @since 0.1
@@ -85,7 +84,7 @@ public class ITUpload extends AbstractITBase {
         assertNotNull(batchUpload);
         String batchId = batchUpload.getBatchId();
         assertNotNull(batchId);
-        File file = FileUtils.getResourceFileFromContext(filename1);
+        File file = getResourceFileFromContext(filename1);
         FileBlob fileBlob = new FileBlob(file);
 
         batchUpload = batchUpload.upload("1", fileBlob);
@@ -101,7 +100,7 @@ public class ITUpload extends AbstractITBase {
         assertBatchUpload(batchId, "1", filename1, batchUpload);
 
         // Upload another file and check files
-        file = FileUtils.getResourceFileFromContext(filename2);
+        file = getResourceFileFromContext(filename2);
         fileBlob = new FileBlob(file);
         batchUpload.upload("2", fileBlob);
         List<BatchUpload> batchUploads = batchUpload.fetchBatchUploads();
@@ -129,7 +128,7 @@ public class ITUpload extends AbstractITBase {
         String batchId = batchUpload.getBatchId();
 
         // Upload file chunks
-        File file = FileUtils.getResourceFileFromContext("sample.jpg");
+        File file = getResourceFileFromContext("sample.jpg");
         FileBlob fileBlob = new FileBlob(file);
         batchUpload = batchUpload.upload("1", fileBlob);
         assertNotNull(batchUpload);
@@ -153,13 +152,12 @@ public class ITUpload extends AbstractITBase {
     }
 
     @Test
-    @Ignore("JAVACLIENT-223: It is random on QA")
     public void itCanAttachABatchToADoc() {
         // Upload file chunks
         BatchUploadManager batchUploadManager = nuxeoClient.batchUploadManager();
         BatchUpload batchUpload = batchUploadManager.createBatch();
         assertNotNull(batchUpload);
-        File file = FileUtils.getResourceFileFromContext("sample.jpg");
+        File file = getResourceFileFromContext("sample.jpg");
         FileBlob fileBlob = new FileBlob(file);
         batchUpload = batchUpload.upload("1", fileBlob);
         assertNotNull(batchUpload);
@@ -180,7 +178,7 @@ public class ITUpload extends AbstractITBase {
         BatchUploadManager batchUploadManager = nuxeoClient.batchUploadManager();
         BatchUpload batchUpload = batchUploadManager.createBatch();
         assertNotNull(batchUpload);
-        File file = FileUtils.getResourceFileFromContext("sample.jpg");
+        File file = getResourceFileFromContext("sample.jpg");
         FileBlob fileBlob = new FileBlob(file);
         batchUpload = batchUpload.upload("1", fileBlob);
         assertNotNull(batchUpload);
@@ -208,7 +206,7 @@ public class ITUpload extends AbstractITBase {
         // return batchId
 
         // POST request with blob and batch id to upload blob
-        File file = FileUtils.getResourceFileFromContext("sample.jpg");
+        File file = getResourceFileFromContext("sample.jpg");
         FileBlob fileBlob = new FileBlob(file);
         batchUpload = batchUploadManager.getBatch(batchId);
         batchUpload = batchUpload.upload("1", fileBlob);
@@ -239,7 +237,7 @@ public class ITUpload extends AbstractITBase {
         BatchUploadManager batchUploadManager = nuxeoClient.batchUploadManager();
         BatchUpload batchUpload = batchUploadManager.createBatch();
         assertNotNull(batchUpload);
-        File file = FileUtils.getResourceFileFromContext("sample.jpg");
+        File file = getResourceFileFromContext("sample.jpg");
         FileBlob fileBlob = new FileBlob(file, "Ümlaut.pdf");
         batchUpload = batchUpload.upload("1", fileBlob);
         assertNotNull(batchUpload);
