@@ -86,7 +86,7 @@ pipeline {
           Compile
           ----------------------------------------"""
           echo "MAVEN_OPTS=$MAVEN_OPTS"
-          sh "mvn ${MAVEN_ARGS} -DskipITs ${env.DRY_RUN != 'true' ? 'deploy' : 'install'}"
+          sh "mvn ${MAVEN_ARGS} -Prelease -DskipITs ${env.DRY_RUN != 'true' ? 'deploy' : 'install'}"
         }
       }
       post {
