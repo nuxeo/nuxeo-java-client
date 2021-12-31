@@ -86,17 +86,17 @@
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <!-- dependency versions -->
-    <apache.commons.version>3.8.1</apache.commons.version>
-    <awaitility.version>3.1.6</awaitility.version>
-    <commons-io.version>2.6</commons-io.version>
-    <guava.version>27.0.1-jre</guava.version>
-    <jackson.version>2.10.2</jackson.version>
+    <apache.commons.version>3.12.0</apache.commons.version>
+    <awaitility.version>4.1.1</awaitility.version>
+    <commons-io.version>2.11.0</commons-io.version>
+    <guava.version>31.0.1-jre</guava.version>
+    <jackson.version>2.13.1</jackson.version>
     <javax.mail.version>1.4.7</javax.mail.version>
     <javax.activation.version>1.2.0</javax.activation.version>
-    <junit.version>4.12</junit.version>
-    <okhttp.version>3.12.13</okhttp.version>
-    <okio.version>2.2.2</okio.version>
-    <retrofit.version>2.5.0</retrofit.version>
+    <junit.version>4.13.2</junit.version>
+    <okhttp.version>3.14.9</okhttp.version>
+    <okio.version>2.9.0</okio.version>
+    <retrofit.version>2.9.0</retrofit.version>
     <!-- other properties -->
     <java.version.release>8</java.version.release>
     <java.version.source>1.8</java.version.source>
