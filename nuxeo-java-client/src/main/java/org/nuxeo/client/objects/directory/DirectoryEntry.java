@@ -19,6 +19,8 @@
  */
 package org.nuxeo.client.objects.directory;
 
+import static org.apache.commons.lang3.StringUtils.isNotEmpty;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -64,22 +66,33 @@ public class DirectoryEntry extends ConnectableEntity<DirectoryManagerAPI, Direc
 
     protected Map<String, Object> properties = new HashMap<>();
 
+    /**
+     * Regular way to instantiate a {@link DirectoryEntry} in order to create it.
+     */
     public DirectoryEntry() {
         super(EntityTypes.DIRECTORY_ENTRY, DirectoryManagerAPI.class);
     }
 
     /**
+     * Regular way to instantiate a {@link DirectoryEntry} in order to update it.
+     *
+     * @since 3.12.0
+     */
+    public DirectoryEntry(String id) {
+        this();
+        this.id = id;
+    }
+
+    /**
      * Since NXP-22739, id is serialized as {@link String} beside properties to face type issue.
      *
-     * @return the id field if server is above 9.3, unless try to convert it to {@link String} from {@link #properties}
+     * @return the id field if present, otherwise try to convert it to {@link String} from {@link #getIdProperty()}
      */
     @JsonInclude(Include.NON_NULL)
     public String getId() {
-        if (nuxeoClient != null && nuxeoClient.getServerVersion().isGreaterThan("9.3-SNAPSHOT")) {
+        if (isNotEmpty(id)) {
             return id;
         }
-        // Object declaration is needed, unless compiler will infer char[] as return type and so a ClassCastException is
-        // raised
         Object idProperty = getIdProperty();
         return idProperty == null ? null : String.valueOf(idProperty);
     }
