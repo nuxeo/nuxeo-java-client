@@ -78,7 +78,7 @@ pipeline {
       }
     }
 
-    stage('Build and deploy Maven project') {
+    stage('Build Maven project') {
       steps {
         container('maven') {
           echo """
@@ -86,7 +86,7 @@ pipeline {
           Compile
           ----------------------------------------"""
           echo "MAVEN_OPTS=$MAVEN_OPTS"
-          sh "mvn ${MAVEN_ARGS} -Prelease -DskipITs ${env.DRY_RUN != 'true' ? 'deploy' : 'install'}"
+          sh "mvn ${MAVEN_ARGS} -Prelease -DskipITs install"
         }
       }
       post {
@@ -101,6 +101,24 @@ pipeline {
       steps {
         script {
           lib.runFunctionalTests()
+        }
+      }
+    }
+
+    stage('Deploy the artifacts') {
+      when {
+        not {
+          environment name: 'DRY_RUN', value: 'true'
+        }
+      }
+      steps {
+        container('maven') {
+          echo """
+          ----------------------------------------
+          Deploy
+          ----------------------------------------"""
+          echo "MAVEN_OPTS=$MAVEN_OPTS"
+          sh "mvn ${MAVEN_ARGS} -Prelease -DskipTests -DskipITs deploy"
         }
       }
     }
