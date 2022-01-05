@@ -89,6 +89,29 @@ pipeline {
       }
     }
 
+    stage('Deploy the artifacts') {
+      when {
+        allOf {
+          not {
+            branch 'PR-*'
+          }
+          not {
+            environment name: 'DRY_RUN', value: 'true'
+          }
+        }
+      }
+      steps {
+        container('maven') {
+          echo """
+          ----------------------------------------
+          Deploy
+          ----------------------------------------"""
+          echo "MAVEN_OPTS=$MAVEN_OPTS"
+          sh "mvn ${MAVEN_ARGS} -DskipTests -DskipITs deploy"
+        }
+      }
+    }
+
   }
 
   post {
