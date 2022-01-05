@@ -29,12 +29,15 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.junit.Assume.assumeTrue;
+import static org.nuxeo.client.ITBase.DEFAULT_USER_PASSWORD;
 import static org.nuxeo.client.ITBase.LOGIN;
+import static org.nuxeo.client.ITBase.createClientBuilder;
 import static org.nuxeo.client.Operations.BLOB_ATTACH_ON_DOCUMENT;
 import static org.nuxeo.client.Operations.DOCUMENT_CHECK_IN;
 import static org.nuxeo.client.Operations.DOCUMENT_GET_LAST_VERSION;
 import static org.nuxeo.client.Operations.ES_WAIT_FOR_INDEXING;
 import static org.nuxeo.client.objects.Document.DEFAULT_FILE_CONTENT;
+import static org.nuxeo.client.objects.acl.ACL.LOCAL_ACL;
 
 import java.io.File;
 import java.text.SimpleDateFormat;
@@ -391,10 +394,7 @@ public class ITRepository extends AbstractITBase {
         // Settings
         GregorianCalendar begin = new GregorianCalendar(2015, Calendar.JUNE, 20, 12, 34, 56);
         GregorianCalendar end = new GregorianCalendar(2015, Calendar.JULY, 14, 12, 34, 56);
-        ACE ace = new ACE();
-        ace.setUsername(user.getUserName());
-        ace.setPermission("Write");
-        ace.setCreator("Administrator");
+        ACE ace = createACE(user.getUserName(), "Write");
         ace.setBegin(begin);
         ace.setEnd(end);
         ace.setBlockInheritance(true);
@@ -424,10 +424,7 @@ public class ITRepository extends AbstractITBase {
         // Add a first permission on a new ACL "testPerm"
         Document folder = nuxeoClient.repository().fetchDocumentByPath("/folder_2");
         // Settings
-        ACE ace = new ACE();
-        ace.setUsername(user.getUserName());
-        ace.setPermission("Write");
-        ace.setCreator("Administrator");
+        ACE ace = createACE(user.getUserName(), "Write");
         ace.setBlockInheritance(false);
         folder.addPermission(ace, "testPerm");
         // Check created permission
@@ -449,6 +446,41 @@ public class ITRepository extends AbstractITBase {
         acp = folder.fetchPermissions();
         assertEquals(1, acp.getAcls().size());
         assertEquals("inherited", acp.getAcls().get(0).getName());
+    }
+
+    // JAVACLIENT-225
+    @Test
+    public void itCanManagePermissionsEvenIfNotAdministrator() {
+        // Create two users
+        nuxeoClient.userManager().createUser(ITBase.createUser("user1"));
+        nuxeoClient.userManager().createUser(ITBase.createUser("user2"));
+        Document folder = nuxeoClient.repository().fetchDocumentByPath("/folder_2");
+        // Give ReadWrite to user1 to be able to handle document
+        folder.addPermission(createACE("user1", "ReadWrite"));
+        // Give WriteSecurity to user1 to be able to remove permission
+        folder.addPermission(createACE("user1", "WriteSecurity"));
+        // Give ReadWrite to user2
+        folder.addPermission(createACE("user2", "ReadWrite"));
+
+        // now we want to test that user1 can remove the user2 permission (issue with secured prop, see JAVACLIENT-225)
+        NuxeoClient user1Client = createClientBuilder("user1", DEFAULT_USER_PASSWORD).schemas("*").connect();
+        folder = user1Client.repository().fetchDocumentByPath("/folder_2");
+        ACE ace = folder.fetchPermissions()
+                        .getAcls()
+                        .stream()
+                        .flatMap(acl -> acl.getAces().stream())
+                        .filter(a -> StringUtils.equals("user2", a.getUsername()))
+                        .findFirst()
+                        .orElseThrow(() -> new AssertionError("ACE for user: user2 should exist"));
+        folder.removePermission(ace.getId(), "user2", LOCAL_ACL);
+    }
+
+    protected ACE createACE(String user1, String ReadWrite) {
+        ACE ace = new ACE();
+        ace.setUsername(user1);
+        ace.setPermission(ReadWrite);
+        ace.setCreator("Administrator");
+        return ace;
     }
 
     @Test
