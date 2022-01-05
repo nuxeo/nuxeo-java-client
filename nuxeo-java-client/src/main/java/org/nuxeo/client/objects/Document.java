@@ -37,6 +37,7 @@ import java.util.Map.Entry;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
 
+import org.apache.commons.lang3.ObjectUtils;
 import org.nuxeo.client.ConstantsV1;
 import org.nuxeo.client.NuxeoClient;
 import org.nuxeo.client.Operations;
@@ -48,6 +49,7 @@ import org.nuxeo.client.objects.acl.ACP;
 import org.nuxeo.client.objects.audit.Audit;
 import org.nuxeo.client.objects.blob.FileBlob;
 import org.nuxeo.client.objects.blob.StreamBlob;
+import org.nuxeo.client.objects.operation.DocRef;
 import org.nuxeo.client.objects.task.Task;
 import org.nuxeo.client.objects.task.Tasks;
 import org.nuxeo.client.objects.workflow.Workflow;
@@ -557,7 +559,10 @@ public class Document extends RepositoryEntity<RepositoryAPI, Document> {
         Map<String, Object> params = toAutomationParameters(ace);
         params.put("user", ace.getUsername());
         params.put("acl", aclName);
-        return nuxeoClient.operation(Operations.DOCUMENT_ADD_PERMISSION).input(this).parameters(params).execute();
+        return nuxeoClient.operation(Operations.DOCUMENT_ADD_PERMISSION)
+                          .input(getOperationDocRef())
+                          .parameters(params)
+                          .execute();
     }
 
     protected Map<String, Object> toAutomationParameters(ACE ace) {
@@ -582,7 +587,10 @@ public class Document extends RepositoryEntity<RepositoryAPI, Document> {
     public Document addInvitation(ACE ace, String email) {
         Map<String, Object> params = toAutomationParameters(ace);
         params.put("email", email);
-        return nuxeoClient.operation(Operations.DOCUMENT_ADD_PERMISSION).input(this).parameters(params).execute();
+        return nuxeoClient.operation(Operations.DOCUMENT_ADD_PERMISSION)
+                          .input(getOperationDocRef())
+                          .parameters(params)
+                          .execute();
     }
 
     /**
@@ -608,7 +616,10 @@ public class Document extends RepositoryEntity<RepositoryAPI, Document> {
         params.put("id", aceId);
         params.put("user", username);
         params.put("acl", aclName);
-        nuxeoClient.operation(Operations.DOCUMENT_REMOVE_PERMISSION).input(this).parameters(params).execute();
+        nuxeoClient.operation(Operations.DOCUMENT_REMOVE_PERMISSION)
+                   .input(getOperationDocRef())
+                   .parameters(params)
+                   .execute();
     }
 
     /* ACP Async */
@@ -641,7 +652,10 @@ public class Document extends RepositoryEntity<RepositoryAPI, Document> {
         Map<String, Object> params = toAutomationParameters(ace);
         params.put("user", ace.getUsername());
         params.put("acl", aclName);
-        nuxeoClient.operation(Operations.DOCUMENT_ADD_PERMISSION).input(this).parameters(params).execute(callback);
+        nuxeoClient.operation(Operations.DOCUMENT_ADD_PERMISSION)
+                   .input(getOperationDocRef())
+                   .parameters(params)
+                   .execute(callback);
     }
 
     /**
@@ -654,7 +668,10 @@ public class Document extends RepositoryEntity<RepositoryAPI, Document> {
     public void addInvitation(ACE ace, String email, Callback<Document> callback) {
         Map<String, Object> params = toAutomationParameters(ace);
         params.put("email", email);
-        nuxeoClient.operation(Operations.DOCUMENT_ADD_PERMISSION).input(this).parameters(params).execute(callback);
+        nuxeoClient.operation(Operations.DOCUMENT_ADD_PERMISSION)
+                   .input(getOperationDocRef())
+                   .parameters(params)
+                   .execute(callback);
     }
 
     /* Children Sync */
@@ -832,7 +849,7 @@ public class Document extends RepositoryEntity<RepositoryAPI, Document> {
      * @since 3.1
      */
     public Document trash() {
-        return nuxeoClient.operation(Operations.DOCUMENT_TRASH).input(this).execute();
+        return nuxeoClient.operation(Operations.DOCUMENT_TRASH).input(getOperationDocRef()).execute();
     }
 
     /**
@@ -841,7 +858,11 @@ public class Document extends RepositoryEntity<RepositoryAPI, Document> {
      * @since 3.1
      */
     public Document untrash() {
-        return nuxeoClient.operation(Operations.DOCUMENT_UNTRASH).input(this).execute();
+        return nuxeoClient.operation(Operations.DOCUMENT_UNTRASH).input(getOperationDocRef()).execute();
+    }
+
+    protected DocRef getOperationDocRef() {
+        return new DocRef(ObjectUtils.firstNonNull(uid, path));
     }
 
     /* Web adapter */
