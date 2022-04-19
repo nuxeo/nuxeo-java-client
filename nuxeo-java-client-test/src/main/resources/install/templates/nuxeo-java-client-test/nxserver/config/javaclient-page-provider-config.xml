@@ -5,6 +5,10 @@
       <pattern>SELECT * From Note WHERE ecm:isVersion = 0 AND dc:title = ? AND dc:source = ?</pattern>
       <pageSize>50</pageSize>
     </coreQueryPageProvider>
+    <coreQueryPageProvider name="search_with_named_params">
+      <pattern>SELECT * From Note WHERE ecm:isVersion = 0 AND dc:title = :title AND dc:source = :source</pattern>
+      <pageSize>50</pageSize>
+    </coreQueryPageProvider>
   </extension>
 
 </component>

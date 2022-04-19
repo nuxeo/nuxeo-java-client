@@ -19,6 +19,8 @@
  */
 package org.nuxeo.client.objects;
 
+import java.io.Serializable;
+import java.util.Map;
 import java.util.function.Function;
 
 import org.apache.commons.lang3.ArrayUtils;
@@ -203,9 +205,19 @@ public class Repository extends RepositoryEntity<RepositoryAPI, Repository> {
     }
 
     public Documents queryByProvider(String providerName, String pageSize, String currentPageIndex, String maxResults,
-                                     String sortBy, String sortOrder, String... queryParams) {
+            String sortBy, String sortOrder, String... queryParams) {
         return fetchResponse(api.queryByProvider(providerName, pageSize, currentPageIndex, maxResults, sortBy,
                 sortOrder, queryParams));
+    }
+
+    /**
+     * @since 3.13.0
+     */
+    @SuppressWarnings("unchecked")
+    public Documents queryByProvider(String providerName, String pageSize, String currentPageIndex, String maxResults,
+            String sortBy, String sortOrder, Map<String, ? extends Serializable> namedParams, String... queryParams) {
+        return fetchResponse(api.queryByProvider(providerName, pageSize, currentPageIndex, maxResults, sortBy,
+                sortOrder, (Map<String, Serializable>) namedParams, queryParams));
     }
 
     /* Query - Async */
@@ -241,9 +253,20 @@ public class Repository extends RepositoryEntity<RepositoryAPI, Repository> {
     }
 
     public void queryByProvider(String providerName, String pageSize, String currentPageIndex, String maxResults,
-                                String sortBy, String sortOrder, String[] queryParams, Callback<Documents> callback) {
+            String sortBy, String sortOrder, String[] queryParams, Callback<Documents> callback) {
         fetchResponse(api.queryByProvider(providerName, pageSize, currentPageIndex, maxResults, sortBy, sortOrder,
                 queryParams), callback);
+    }
+
+    /**
+     * @since 3.13.0
+     */
+    @SuppressWarnings("unchecked")
+    public void queryByProvider(String providerName, String pageSize, String currentPageIndex, String maxResults,
+            String sortBy, String sortOrder, Map<String, ? extends Serializable> namedParams, String[] queryParams,
+            Callback<Documents> callback) {
+        fetchResponse(api.queryByProvider(providerName, pageSize, currentPageIndex, maxResults, sortBy, sortOrder,
+                (Map<String, Serializable>) namedParams, queryParams), callback);
     }
 
     /* Audit - Sync */
