@@ -218,6 +218,29 @@ public class ITRepository extends AbstractITBase {
     }
 
     @Test
+    public void itCanQueryByProviderWithNamedParameters() {
+        Map<String, String> namedParams = new HashMap<>();
+        namedParams.put("title", "Note 0");
+        namedParams.put("source", "Source 0");
+        Documents documents = nuxeoClient.repository()
+                                         .queryByProvider("search_with_named_params", null, null, null, null, null,
+                                                 namedParams);
+        assertEquals(1, documents.getDocuments().size());
+        Document document = documents.getDocuments().get(0);
+        assertEquals("Note", document.getType());
+        assertEquals("default", document.getRepositoryName());
+        assertEquals("project", document.getState());
+        assertEquals("Note 0", document.getTitle());
+
+        namedParams = new HashMap<>();
+        namedParams.put("title", "Note 0");
+        namedParams.put("source", "Source 1");
+        documents = nuxeoClient.repository()
+                               .queryByProvider("search_with_named_params", null, null, null, null, null, namedParams);
+        assertEquals(0, documents.getDocuments().size());
+    }
+
+    @Test
     public void itCanUseCaching() {
         // Re-build a client with cache
         NuxeoClient client = ITBase.createClientBuilder().cache(new ResultCacheInMemory()).connect().schemas("*");
