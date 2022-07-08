@@ -1,6 +1,6 @@
 repositories:
   - name: bitnami
-    url: https://charts.bitnami.com/bitnami
+    url: https://raw.githubusercontent.com/bitnami/charts/archive-full-index/bitnami
   - name: nuxeo
     url: https://chartmuseum.platform.dev.nuxeo.com/
 
