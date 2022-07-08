@@ -19,12 +19,13 @@
 package org.nuxeo.client.spi.auth.oauth2;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
+import static org.apache.commons.lang3.ObjectUtils.firstNonNull;
+import static org.nuxeo.client.MediaTypes.APPLICATION_JSON_S;
 
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.Map;
 
-import org.apache.commons.lang3.StringUtils;
 import org.nuxeo.client.spi.NuxeoClientException;
 import org.nuxeo.client.spi.NuxeoClientRemoteException;
 
@@ -107,13 +108,17 @@ public class OAuth2Client {
     }
 
     protected OAuth2Token executeRequest(RequestBody body) {
-        Request request = new Request.Builder().url(baseUrl + OAUTH_2_TOKEN_ENDPOINT).post(body).build();
+        Request request = new Request.Builder().url(baseUrl + OAUTH_2_TOKEN_ENDPOINT)
+                                               .header("Accept", APPLICATION_JSON_S)
+                                               .post(body)
+                                               .build();
         try (Response response = CLIENT.newCall(request).execute()) {
             if (!response.isSuccessful()) {
                 String errorBody = response.body().string();
                 @SuppressWarnings("unchecked")
                 Map<String, Serializable> errorMap = MAPPER.readValue(errorBody, Map.class);
-                String errorMessage = StringUtils.defaultIfBlank(response.message(), errorMap.get("error").toString());
+                String errorMessage = firstNonNull(errorMap.get("error_description"), errorMap.get("error"),
+                        response.message(), "error").toString();
                 throw new NuxeoClientRemoteException(response.code(), errorMessage, errorBody, null);
             }
             return MAPPER.readValue(response.body().charStream(), OAuth2Token.class);

@@ -43,6 +43,9 @@ public class NuxeoVersion {
 
     public static final NuxeoVersion LTS_10_10 = new NuxeoVersion(10, 10, -1, 0, false);
 
+    /** @since 3.13.0 */
+    public static final NuxeoVersion LTS_2021 = new NuxeoVersion(2021, 0, -1, 0, false);
+
     private static final Pattern NUXEO_VERSION_PATTERN = Pattern.compile(
             "(\\d+)\\.(\\d+)(?:\\.(\\d+))?(?:-HF(\\d+))?(-SNAPSHOT)?(-I\\d{8}_\\d{4})?");
 
@@ -137,6 +140,13 @@ public class NuxeoVersion {
      */
     public NuxeoVersion hotfix(int hotfix) {
         return new NuxeoVersion(majorVersion, minorVersion, -1, hotfix, false);
+    }
+
+    /**
+     * @return A new instance of {@link NuxeoVersion} with the same version + input minor number.
+     */
+    public NuxeoVersion minor(int minor) {
+        return new NuxeoVersion(majorVersion, minor, -1, -1, false);
     }
 
     /**
