@@ -22,12 +22,15 @@ package org.nuxeo.client;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.junit.Assume.assumeTrue;
 import static org.nuxeo.client.ITBase.JWT;
 import static org.nuxeo.client.ITBase.createClient;
 import static org.nuxeo.client.ITBase.createClientBuilder;
+import static org.nuxeo.client.NuxeoVersion.LTS_10_10;
+import static org.nuxeo.client.NuxeoVersion.LTS_2021;
 
 import org.junit.Test;
 import org.nuxeo.client.objects.directory.Directory;
@@ -82,7 +85,7 @@ public class ITAuthentication {
     @Test
     public void itCanLoginWithJWT() {
         assumeTrue("itCanChangeLoginWithJWT works only since Nuxeo 10.3",
-                createClient().getServerVersion().isGreaterThan(NuxeoVersion.LTS_10_10));
+                createClient().getServerVersion().isGreaterThan(LTS_10_10));
         NuxeoClient client = ITBase.createClientJWT();
         User currentUser = client.getCurrentUser();
         assertEquals("Administrator", currentUser.getUserName());
@@ -110,6 +113,41 @@ public class ITAuthentication {
             createClientBuilder(auth).connect();
         } finally {
             oauth2Directory.deleteEntry(providerEntry.getId());
+        }
+    }
+
+    // JAVACLIENT-216
+    @Test
+    public void itReturnProperExceptionWhenLoginWithOauth2AndJwtBearer() {
+        NuxeoClient adminClient = createClient();
+        NuxeoVersion serverVersion = adminClient.getServerVersion();
+        assumeTrue("itReturnProperExceptionWhenLoginWithOauth2AndJwtBearer works only since Nuxeo 10.10-HF63 / 2021.23",
+                serverVersion.majorVersion() == LTS_10_10.majorVersion()
+                        && serverVersion.isGreaterThan(LTS_10_10.hotfix(63))
+                        || serverVersion.majorVersion() == LTS_2021.majorVersion()
+                                && serverVersion.isGreaterThan(LTS_2021.minor(23)));
+
+        Directory oauth2Directory = adminClient.directoryManager().directory("oauth2Clients");
+        // create an oauth provider
+        DirectoryEntry providerEntry = new DirectoryEntry();
+        providerEntry.putProperty("name", "OAuth2 JWT");
+        providerEntry.putProperty("clientId", "ReturnProperExceptionWhenJwt");
+        providerEntry.putProperty("clientSecret", "strongSecret");
+        providerEntry.putProperty("redirectURIs", "nuxeo://not-used");
+        providerEntry.putProperty("autoGrant", true);
+        providerEntry.putProperty("enabled", true);
+        String providerEntryId1 = oauth2Directory.createEntry(providerEntry).getId();
+        // create a second oauth provider to produce an error
+        String providerEntryId2 = oauth2Directory.createEntry(providerEntry).getId();
+        try {
+            NuxeoClientRemoteException e = assertThrows(NuxeoClientRemoteException.class,
+                    () -> OAuth2AuthInterceptor.obtainAuthFromJWTToken(ITBase.BASE_URL, "ReturnProperExceptionWhenJwt",
+                            "strongSecret", JWT));
+            assertEquals("More than one client registered for the 'ReturnProperExceptionWhenJwt' id", e.getMessage());
+            assertEquals(500, e.getStatus());
+        } finally {
+            oauth2Directory.deleteEntry(providerEntryId1);
+            oauth2Directory.deleteEntry(providerEntryId2);
         }
     }
 
