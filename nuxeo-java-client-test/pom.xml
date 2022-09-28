@@ -95,6 +95,11 @@
         <artifactId>maven-surefire-plugin</artifactId>
         <configuration>
           <skipTests>true</skipTests>
+          <systemPropertyVariables>
+            <!-- define same system properties as failsafe for IDE -->
+            <nuxeo.server.url>${nuxeo.server.url}</nuxeo.server.url>
+            <okhttp.version>${okhttp.version}</okhttp.version>
+          </systemPropertyVariables>
         </configuration>
       </plugin>
       <plugin>
@@ -103,6 +108,7 @@
         <configuration>
           <systemPropertyVariables>
             <nuxeo.server.url>${nuxeo.server.url}</nuxeo.server.url>
+            <okhttp.version>${okhttp.version}</okhttp.version>
           </systemPropertyVariables>
         </configuration>
         <executions>
@@ -118,18 +124,6 @@
   </build>
 
   <profiles>
-
-    <profile>
-      <id>customEnvironment</id>
-      <activation>
-        <property>
-          <name>custom.environment</name>
-        </property>
-      </activation>
-      <build>
-        <directory>target-${custom.environment}</directory>
-      </build>
-    </profile>
 
     <profile>
       <id>prePostIntegration</id>

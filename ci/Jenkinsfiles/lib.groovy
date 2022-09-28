@@ -50,93 +50,132 @@ void helmfileDestroy(namespace, environment) {
   }
 }
 
-def runFunctionalTests() {
-  def testNuxeoVersions = [
+String getDefaultNuxeoVersionToTest() {
+  return '2021'
+}
+
+def getNuxeoVersionsToTest() {
+  return [
     '10.10',
-    '2021'
+    getDefaultNuxeoVersionToTest()
   ]
+}
+
+String getFunctionalTestDockerImageTag(nuxeoVersion) {
+  return "${nuxeoVersion}-${VERSION}"
+}
+
+def buildFunctionalDockerImages() {
   def stages = [:]
-  for (nuxeoVersion in testNuxeoVersions) {
-    stages["Against Nuxeo ${nuxeoVersion}"] = buildFunctionalTestStage(nuxeoVersion);
+  for (nuxeoVersion in getNuxeoVersionsToTest()) {
+    stages["Build functional tests image ${nuxeoVersion}"] = buildFunctionalTestDockerBuildStage(nuxeoVersion)
   }
   parallel stages
 }
 
-def buildFunctionalTestStage(nuxeoVersion) {
-  def environment = "functional-tests-${nuxeoVersion}"
-  def testNamespace = "$CURRENT_NAMESPACE-nuxeo-java-client-ftests-$BRANCH_NAME-$BUILD_NUMBER-${nuxeoVersion.replace('.', '-')}".toLowerCase()
+def buildFunctionalTestDockerBuildStage(nuxeoVersion) {
+  return {
+    container("maven") {
+      script {
+        def ftestsVersion = getFunctionalTestDockerImageTag(nuxeoVersion)
+        // TODO for 10.10 retrieve the last HF version
+        def nuxeoDockerVersion =  nuxeoVersion
+        if ("${nuxeoDockerVersion}"  == "10.10" ) {
+          nuxeoDockerVersion = '10.10-HF63'
+        }
+        echo """
+            ----------------------------------------
+            Build Nuxeo functional tests image
+            ----------------------------------------
+            Nuxeo version: ${nuxeoDockerVersion}
+            Image tag: ${ftestsVersion}
+            Registry: ${DOCKER_REGISTRY}
+          """
+        // push images to the Jenkins internal Docker registry
+        withEnv(["FTESTS_VERSION=${ftestsVersion}", "NUXEO_VERSION=${nuxeoDockerVersion}"]) {
+          sh '''
+            envsubst < ci/docker/nuxeo/skaffold.yaml > skaffold.yaml~gen
+            skaffold build -f skaffold.yaml~gen
+          '''
+        }
+      }
+    }
+  }
+}
+
+def runFunctionalTests(testWithOkhttp4 = true) {
+  def runStages = [:]
+  for (nuxeoVersion in getNuxeoVersionsToTest()) {
+    runStages["Against Nuxeo ${nuxeoVersion} - Okhttp 3"] = buildFunctionalTestStage(nuxeoVersion, '3');
+  }
+  if (testWithOkhttp4) {
+    def defaultNuxeoVersion = getDefaultNuxeoVersionToTest()
+    runStages["Against Nuxeo ${defaultNuxeoVersion} - Okhttp 4"] = buildFunctionalTestStage(defaultNuxeoVersion, '4');
+  }
+  parallel runStages
+}
+
+def buildFunctionalTestStage(nuxeoVersion, String okhttpVersion) {
+  def nuxeoVersionSlug = nuxeoVersion.replaceAll('\\..*', '')
+  def okhttpVersionSlug = okhttpVersion.replaceAll('\\..*', '')
+  def testNamespace = "$CURRENT_NAMESPACE-java-client-ftests-$BRANCH_NAME-$BUILD_NUMBER-nuxeo-${nuxeoVersionSlug}-okhttp-${okhttpVersionSlug}".toLowerCase()
 
   def ftestsVersion = "${nuxeoVersion}-${VERSION}"
+  def helmfileEnvironment = "functional-tests-${nuxeoVersion}"
+
+  def mvnCustomEnv = "nuxeo-${nuxeoVersionSlug}-okhttp-${okhttpVersionSlug}"
   return {
-    stage("Against Nuxeo ${nuxeoVersion}") {
-      container("maven") {
-        script {
+    container("maven") {
+      script {
+        try {
+          echo "Create ftests namespace for nuxeo: ${nuxeoVersion} okhttp: ${okhttpVersion}"
+          sh "kubectl create namespace ${testNamespace}"
+
+          echo "Copy image pull secret to ${testNamespace} namespace"
+          sh "kubectl --namespace=platform get secret kubernetes-docker-cfg -ojsonpath='{.data.\\.dockerconfigjson}' | base64 --decode > /tmp/config.json"
+          sh """kubectl create secret generic kubernetes-docker-cfg \
+              --namespace=${testNamespace} \
+              --from-file=.dockerconfigjson=/tmp/config.json \
+              --type=kubernetes.io/dockerconfigjson --dry-run -o yaml | kubectl apply -f -"""
+
+          echo """
+            ----------------------------------------
+            Deploy Nuxeo
+            ---------------------------------------- 
+            Image tag: ${ftestsVersion}
+          """
+          withEnv(["NUXEO_VERSION=${ftestsVersion}"]) {
+            helmfileSync("${testNamespace}", "${helmfileEnvironment}")
+          }
+
+          echo """
+            ----------------------------------------
+            Run Java Client functional tests
+            ---------------------------------------- 
+            Nuxeo version: ${nuxeoVersion}
+            Okhttp version: ${okhttpVersion}
+          """
+          sh """mvn -pl :nuxeo-java-client-test \
+                ${MAVEN_ARGS} \
+                -Pokhttp${okhttpVersion} \
+                -Dcustom.environment=${mvnCustomEnv} \
+                -Dnuxeo.server.url=http://nuxeo.${testNamespace}.svc.cluster.local/nuxeo \
+                verify
+          """
+        } finally {
           try {
-            // TODO for 10.10 retrieve the last HF version
-            def nuxeoDockerVersion =  nuxeoVersion
-            if ("${nuxeoDockerVersion}"  == "10.10" ) {
-              nuxeoDockerVersion = '10.10-HF63'
-            }
-            echo """
-              ----------------------------------------
-              Build Nuxeo functional tests image
-              ----------------------------------------
-              Nuxeo version: ${nuxeoDockerVersion}
-              Image tag: ${ftestsVersion}
-              Registry: ${DOCKER_REGISTRY}
-            """
-            // push images to the Jenkins internal Docker registry
-            withEnv(["FTESTS_VERSION=${ftestsVersion}", "NUXEO_VERSION=${nuxeoDockerVersion}"]) {
-              sh '''
-                envsubst < ci/docker/nuxeo/skaffold.yaml > skaffold.yaml~gen
-                skaffold build -f skaffold.yaml~gen
-              '''
-            }
-            echo "Create ftests namespace for ${nuxeoVersion}"
-            sh "kubectl create namespace ${testNamespace}"
-
-            echo "Copy image pull secret to ${testNamespace} namespace"
-            sh "kubectl --namespace=platform get secret kubernetes-docker-cfg -ojsonpath='{.data.\\.dockerconfigjson}' | base64 --decode > /tmp/config.json"
-            sh """kubectl create secret generic kubernetes-docker-cfg \
-                --namespace=${testNamespace} \
-                --from-file=.dockerconfigjson=/tmp/config.json \
-                --type=kubernetes.io/dockerconfigjson --dry-run -o yaml | kubectl apply -f -"""
-
-            echo """
-              ----------------------------------------
-              Deploy Nuxeo
-              ---------------------------------------- 
-            """
-            withEnv(["NUXEO_VERSION=${ftestsVersion}"]) {
-              helmfileSync("${testNamespace}", "${environment}")
-            }
-
-            echo """
-              ----------------------------------------
-              Run Java Client functional tests
-              ---------------------------------------- 
-            """
-            sh """mvn -pl :nuxeo-java-client-test \
-                  ${MAVEN_ARGS} \
-                  -Dcustom.environment=${nuxeoVersion} \
-                  -Dnuxeo.server.url=http://nuxeo.${testNamespace}.svc.cluster.local/nuxeo \
-                  verify
-            """
+            sh "kubectl logs -n ${testNamespace} \
+                \$(kubectl get pods -n ${testNamespace} --selector=app=nuxeo --output=jsonpath='{.items[*].metadata.name}') \
+              > nuxeo-java-client-test/target-${mvnCustomEnv}/nuxeo-server.log || true"
+            archiveArtifacts allowEmptyArchive: true, artifacts: "**/target-${mvnCustomEnv}/*.log"
+            junit testResults: "**/target-${mvnCustomEnv}/failsafe-reports/*.xml"
           } finally {
             try {
-              sh "kubectl logs -n ${testNamespace} \
-                  \$(kubectl get pods -n ${testNamespace} --selector=app=nuxeo --output=jsonpath='{.items[*].metadata.name}') \
-                > nuxeo-java-client-test/target-${nuxeoVersion}/nuxeo-server.log || true"
-              archiveArtifacts allowEmptyArchive: true, artifacts: "**/target-${nuxeoVersion}/*.log"
-              junit testResults: "**/target-${nuxeoVersion}/failsafe-reports/*.xml"
+              echo "nuxeo: ${nuxeoVersion} okhttp: ${okhttpVersion} ftests: clean up test namespace"
+              helmfileDestroy("${testNamespace}", "${helmfileEnvironment}")
             } finally {
-              try {
-                echo "${nuxeoVersion} ftests: clean up test namespace"
-                helmfileDestroy("${testNamespace}", "${environment}")
-              } finally {
-                // clean up test namespace
-                sh "kubectl delete namespace ${testNamespace} --ignore-not-found=true"
-              }
+              // clean up test namespace
+              sh "kubectl delete namespace ${testNamespace} --ignore-not-found=true"
             }
           }
         }

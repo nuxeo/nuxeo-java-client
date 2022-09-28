@@ -97,10 +97,18 @@ pipeline {
       }
     }
 
+    stage('Build functional Docker images') {
+      steps {
+        script {
+          lib.buildFunctionalDockerImages()
+        }
+      }
+    }
+
     stage('Run functional tests') {
       steps {
         script {
-          lib.runFunctionalTests()
+          lib.runFunctionalTests(false)
         }
       }
     }

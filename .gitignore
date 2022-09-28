@@ -24,6 +24,7 @@ dependency-tree.log
 *.rej
 .settings
 target
+target-*
 nashorn_code_cache/
 *.tmp
 .gradle

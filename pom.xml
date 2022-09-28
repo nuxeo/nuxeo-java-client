@@ -244,6 +244,25 @@
     </profile>
 
     <profile>
+      <id>customEnvironment</id>
+      <activation>
+        <property>
+          <name>custom.environment</name>
+        </property>
+      </activation>
+      <build>
+        <directory>target-${custom.environment}</directory>
+      </build>
+    </profile>
+
+    <profile>
+      <id>okhttp4</id>
+      <properties>
+        <okhttp.version>4.10.0</okhttp.version>
+      </properties>
+    </profile>
+
+    <profile>
       <id>release</id>
       <build>
         <plugins>

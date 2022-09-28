@@ -276,7 +276,9 @@ public class ITBase {
 
         String userAgent = interceptor.userAgent;
         assertNotNull(userAgent);
-        assertTrue("User-Agent is not correct=" + userAgent, userAgent.startsWith("okhttp/3.14.9 NuxeoJavaClient/3."));
+        String okhttpVersion = System.getProperty("okhttp.version");
+        assertTrue("User-Agent is not correct=" + userAgent,
+                userAgent.startsWith("okhttp/" + okhttpVersion + " NuxeoJavaClient/3."));
     }
 
     /**
