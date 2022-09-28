@@ -63,20 +63,49 @@ pipeline {
     }
 
     stage('Build Maven project') {
-      steps {
-        container('maven') {
-          echo """
-          ----------------------------------------
-          Compile
-          ----------------------------------------"""
-          echo "MAVEN_OPTS=$MAVEN_OPTS"
-          sh "mvn ${MAVEN_ARGS} -DskipITs install"
+      parallel {
+        stage('With Okhttp 3 (default)') {
+          steps {
+            container('maven') {
+              echo """
+              ------------------------------------------------
+              Compile with default Okhttp version (Okhttp 3.x)
+              ------------------------------------------------"""
+              echo "MAVEN_OPTS=$MAVEN_OPTS"
+              sh "mvn ${MAVEN_ARGS} -DskipITs install"
+            }
+          }
+          post {
+            always {
+              archiveArtifacts artifacts: '**/target/*.jar, **/target/nuxeo-java-client-*.zip, **/target/**/*.log'
+              junit testResults: '**/target/surefire-reports/*.xml'
+            }
+          }
+        }
+        stage('With Okhttp 4') {
+          steps {
+            container('maven') {
+              echo """
+              ------------------------------------------------
+              Compile with Okhttp version 4.x
+              ------------------------------------------------"""
+              echo "MAVEN_OPTS=$MAVEN_OPTS"
+              sh "mvn ${MAVEN_ARGS} -Pokhttp4 -Dcustom.environment=okhttp-4 test"
+            }
+          }
+          post {
+            always {
+              junit testResults: '**/target-okhttp-4/surefire-reports/*.xml'
+            }
+          }
         }
       }
-      post {
-        always {
-          archiveArtifacts artifacts: '**/target/*.jar, **/target/nuxeo-java-client-*.zip, **/target/**/*.log'
-          junit testResults: '**/target/surefire-reports/*.xml'
+    }
+
+    stage('Build functional Docker images') {
+      steps {
+        script {
+          lib.buildFunctionalDockerImages()
         }
       }
     }

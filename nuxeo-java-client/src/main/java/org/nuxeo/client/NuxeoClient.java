@@ -22,16 +22,18 @@ package org.nuxeo.client;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.net.URLDecoder;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.List;
 import java.util.Properties;
+import java.util.function.Supplier;
 import java.util.function.UnaryOperator;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import okhttp3.ConnectionPool;
 import org.apache.commons.lang3.StringUtils;
 import org.nuxeo.client.cache.NuxeoResponseCache;
 import org.nuxeo.client.marshaller.NuxeoConverterFactory;
@@ -64,14 +66,15 @@ import org.nuxeo.client.objects.user.UserManager;
 import org.nuxeo.client.spi.NuxeoClientException;
 import org.nuxeo.client.spi.NuxeoClientRemoteException;
 import org.nuxeo.client.spi.auth.BasicAuthInterceptor;
+import org.nuxeo.client.util.ThrowableSupplier;
 
+import okhttp3.ConnectionPool;
 import okhttp3.Headers;
 import okhttp3.Interceptor;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
 import okhttp3.ResponseBody;
-import okhttp3.internal.Version;
 import retrofit2.Call;
 import retrofit2.Callback;
 
@@ -109,7 +112,7 @@ public class NuxeoClient extends AbstractBase<NuxeoClient> {
     }
 
     protected String computeUserAgent() {
-        String nuxeoPart = " NuxeoJavaClient/";
+        String nuxeoPart = "NuxeoJavaClient/";
         try (InputStream inputStream = getClass().getResourceAsStream("/META-INF/nuxeo-java-client.properties")) {
             Properties properties = new Properties();
             properties.load(inputStream);
@@ -118,7 +121,28 @@ public class NuxeoClient extends AbstractBase<NuxeoClient> {
         } catch (IOException e) {
             nuxeoPart += "Unknown";
         }
-        return Version.userAgent() + nuxeoPart;
+        String okhttpPart = runReflectiveSupplierOrFallback(() -> {
+            // handle okhttp 3 version
+            Class<?> okhttp3VersionClass = Class.forName("okhttp3.internal.Version");
+            Method userAgentMethod = okhttp3VersionClass.getMethod("userAgent");
+            return (String) userAgentMethod.invoke(null);
+        }, () -> runReflectiveSupplierOrFallback(() -> {
+            // handle okhttp 4 version
+            Class<?> okhttp4UtilClass = Class.forName("okhttp3.internal.Util");
+            Field userAgentField = okhttp4UtilClass.getField("userAgent");
+            return (String) userAgentField.get(null);
+
+        }, () -> "okhttp/Unknown"));
+        return okhttpPart + " " + nuxeoPart;
+    }
+
+    protected String runReflectiveSupplierOrFallback(ThrowableSupplier<String, ReflectiveOperationException> supplier,
+            Supplier<String> errorHandler) {
+        try {
+            return supplier.get();
+        } catch (ReflectiveOperationException e) {
+            return errorHandler.get();
+        }
     }
 
     /*******************************
