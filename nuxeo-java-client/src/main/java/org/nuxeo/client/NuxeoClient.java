@@ -438,7 +438,7 @@ public class NuxeoClient extends AbstractBase<NuxeoClient> {
         } catch (NoSuchAlgorithmException e) {
             return null;
         }
-        digest.update((originalRequest.toString() + originalRequest.headers().toString()).getBytes());
+        digest.update((originalRequest.url().toString() + originalRequest.headers().toString()).getBytes());
         byte[] messageDigest = digest.digest();
         StringBuilder hexString = new StringBuilder();
         for (byte msg : messageDigest) {
