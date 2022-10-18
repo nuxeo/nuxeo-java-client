@@ -21,6 +21,13 @@ You can specify the Nuxeo Server version you want to test the client against:
 mvn clean install -Dnuxeo.server.tomcat=10.10
 ```
 
+You can run a Nuxeo with the configuration defined in the pom with (in order to run tests from your IDE):
+
+```bash
+mvn ant-assembly:build@start-tomcat
+mvn ant-assembly:build@stop-tomcat
+```
+
 You can build the marketplace package, then install it on a standalone Nuxeo Server, and run the functional tests:
 
 ```bash
@@ -32,7 +39,7 @@ nuxeoctl mp-install ~/ws/nuxeo-java-client/nuxeo-java-client-test/target/nuxeo-j
 mvn verify -DskipPrePostIntegration
 ```
 
-By default, the above command will try to reach the Nuxeo Server on `http://localhost:8080/nuxeo`, you can change this parameter:
+By default, the command above will try to reach the Nuxeo Server on `http://localhost:8080/nuxeo`, you can change this parameter:
 
 ```bash
 mvn verify -DskipPrePostIntegration -Dnuxeo.server.url=https://nightly.nuxeo.com/nuxeo

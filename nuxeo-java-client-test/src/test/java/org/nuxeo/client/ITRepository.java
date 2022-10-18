@@ -244,7 +244,7 @@ public class ITRepository extends AbstractITBase {
     public void itCanUseCaching() {
         // Re-build a client with cache
         NuxeoClient client = ITBase.createClientBuilder().cache(new ResultCacheInMemory()).connect().schemas("*");
-        // Retrieve a document from query
+        // Retrieve a document by path
         Document document = client.repository().fetchDocumentByPath("/folder_1/note_0");
         assertEquals("Note 0", document.getPropertyValue("dc:title"));
         assertEquals(1, client.getNuxeoCache().size());
@@ -271,6 +271,28 @@ public class ITRepository extends AbstractITBase {
         document = client.repository().fetchDocumentByPath("/folder_1/note_0");
         assertEquals("note updated again", document.getPropertyValue("dc:title"));
         assertEquals(1, client.getNuxeoCache().size());
+    }
+
+    // JAVACLIENT-231
+    @Test
+    public void itCanUseCachingWithQuery() {
+        // Re-build a client with cache
+        NuxeoClient client = ITBase.createClientBuilder().cache(new ResultCacheInMemory()).connect().schemas("*");
+
+        String query = "SELECT * FROM Document WHERE ecm:isVersion=0 AND isProxy=0 AND isTrashed=0 and dc:title=? AND dc:description=?";
+        // do a query
+        client.repository().query(query, "1000", "0", null, "dc:title", "ASC", "Tile-1", "Desc-1");
+        assertEquals(1, client.getNuxeoCache().size());
+        // retrieve again the result within the cache
+        client.repository().query(query, "1000", "0", null, "dc:title", "ASC", "Tile-1", "Desc-1");
+        assertEquals(1, client.getNuxeoCache().size());
+        // check that the same query with a different parameter creates a new cache entry
+        client.repository().query(query, "1000", "0", null, "dc:title", "ASC", "Tile-1", "Desc-2");
+        assertEquals(2, client.getNuxeoCache().size());
+        // check that a different query creates a new cache entry
+        query = "SELECT * FROM Document WHERE ecm:isVersion=0 AND isProxy=0 AND isTrashed=0 and dc:title=?";
+        client.repository().query(query, "1000", "0", null, "dc:title", "ASC", "Tile-1");
+        assertEquals(3, client.getNuxeoCache().size());
     }
 
     @Test
