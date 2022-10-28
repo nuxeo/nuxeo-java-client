@@ -26,4 +26,13 @@ service:
 mongodb:
   enabled: true
   host: mongodb.{{ .Namespace }}.svc.cluster.local
+elasticsearch:
+  enabled: true
+  host: elasticsearch-master.{{ .Namespace }}.svc.cluster.local
 packages: /tmp/nuxeo-java-client-test.zip
+{{- if hasPrefix "10.10" .Values.nuxeo.image.tag }}
+{{/* this value is lost for 10.10 */}}
+customProperties:
+  elasticsearch: |
+    elasticsearch.client=RestClient
+{{- end }}

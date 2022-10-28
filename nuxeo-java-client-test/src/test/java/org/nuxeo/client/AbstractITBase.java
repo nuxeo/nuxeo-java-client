@@ -106,7 +106,7 @@ public abstract class AbstractITBase {
         Repository repository = nuxeoClient.repository();
 
         // First cleanup workflow
-        // since NXP-29100 they are cleaned when document is deleted but we can't wait for the Work to be completed
+        // since NXP-29100 they are cleaned when document is deleted, but we can't wait for the Work to be completed
         workflowInterceptor.getWorkflowIdsToDelete().forEach(repository::cancelWorkflowInstance);
         // Second delete documents
         Collection<String> docIdsToDelete = repositoryInterceptor.getDocumentIdsToDelete();
@@ -115,10 +115,12 @@ public abstract class AbstractITBase {
             nuxeoClient.operation(Operations.DOCUMENT_REMOVE_PROXIES).input(new DocRefs(docIdsToDelete)).execute();
             docIdsToDelete.forEach(repository::deleteDocument);
         }
-        // Finally delete users / groups
+        // Third delete users / groups
         UserManager userManager = nuxeoClient.userManager();
         userGroupInterceptor.getUsersToDelete().forEach(userManager::deleteUser);
         userGroupInterceptor.getGroupsToDelete().forEach(userManager::deleteGroup);
+        // Finally wait ES indexing
+        nuxeoClient.operation(ES_WAIT_FOR_INDEXING).param("refresh", true).param("waitForAudit", true).execute();
     }
 
     /**
