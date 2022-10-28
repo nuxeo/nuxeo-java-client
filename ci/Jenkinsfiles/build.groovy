@@ -16,21 +16,7 @@
  * Contributors:
  *     Kevin Leturc <kleturc@nuxeo.com>
  */
-
-String getCurrentNamespace() {
-  container('maven') {
-    return sh(returnStdout: true, script: "kubectl get pod ${NODE_NAME} -ojsonpath='{..namespace}'")
-  }
-}
-
-String getVersion() {
-  String version = readMavenPom().getVersion()
-  return isPullRequest() ? "${BRANCH_NAME}-${BUILD_NUMBER}-" + version : version
-}
-
-boolean isPullRequest() {
-  return BRANCH_NAME =~ /PR-.*/
-}
+library identifier: "platform-ci-shared-library@v0.0.1"
 
 def lib
 
@@ -44,10 +30,10 @@ pipeline {
     githubProjectProperty(projectUrlStr: 'https://github.com/nuxeo/nuxeo-java-client')
   }
   environment {
-    CURRENT_NAMESPACE = getCurrentNamespace()
+    CURRENT_NAMESPACE = nxK8s.getCurrentNamespace()
     MAVEN_ARGS = '-B -nsu -DskipPrePostIntegration'
     MAVEN_OPTS = "$MAVEN_OPTS -Xms512m -Xmx3072m"
-    VERSION = "${getVersion()}"
+    VERSION = nxUtils.getVersion()
   }
   stages {
 
@@ -56,7 +42,7 @@ pipeline {
         container('maven') {
           script {
             lib = load 'ci/Jenkinsfiles/lib.groovy'
-            lib.setPodsLabel()
+            nxK8s.setPodLabel()
           }
         }
       }
@@ -70,7 +56,8 @@ pipeline {
               echo """
               ------------------------------------------------
               Compile with default Okhttp version (Okhttp 3.x)
-              ------------------------------------------------"""
+              ------------------------------------------------
+              """
               echo "MAVEN_OPTS=$MAVEN_OPTS"
               sh "mvn ${MAVEN_ARGS} -DskipITs install"
             }
@@ -88,7 +75,8 @@ pipeline {
               echo """
               ------------------------------------------------
               Compile with Okhttp version 4.x
-              ------------------------------------------------"""
+              ------------------------------------------------
+              """
               echo "MAVEN_OPTS=$MAVEN_OPTS"
               sh "mvn ${MAVEN_ARGS} -Pokhttp4 -Dcustom.environment=okhttp-4 test"
             }
@@ -120,21 +108,15 @@ pipeline {
 
     stage('Deploy the artifacts') {
       when {
-        allOf {
-          not {
-            branch 'PR-*'
-          }
-          not {
-            environment name: 'DRY_RUN', value: 'true'
-          }
-        }
+        expression { nxUtils.isNotPullRequestAndNotDryRun() }
       }
       steps {
         container('maven') {
           echo """
           ----------------------------------------
           Deploy
-          ----------------------------------------"""
+          ----------------------------------------
+          """
           echo "MAVEN_OPTS=$MAVEN_OPTS"
           sh "mvn ${MAVEN_ARGS} -DskipTests -DskipITs deploy"
         }
@@ -146,10 +128,7 @@ pipeline {
   post {
     always {
       script {
-        if (!isPullRequest() && env.DRY_RUN != 'true') {
-          // update JIRA issue
-          step([$class: 'JiraIssueUpdater', issueSelector: [$class: 'DefaultIssueSelector'], scm: scm])
-        }
+        nxJira.updateIssues()
       }
     }
   }

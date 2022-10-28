@@ -16,22 +16,7 @@
  * Contributors:
  *     Kevin Leturc <kleturc@nuxeo.com>
  */
-
-String getCurrentNamespace() {
-  container('maven') {
-    return sh(returnStdout: true, script: "kubectl get pod ${NODE_NAME} -ojsonpath='{..namespace}'")
-  }
-}
-
-String getVersion() {
-  return readMavenPom().getVersion().replace('-SNAPSHOT', '')
-}
-
-boolean isMinorRelease() {
-  container('maven') {
-    return sh(returnStdout: true, script: "semver get patch ${VERSION} | tr -d '\n'") == '0'
-  }
-}
+library identifier: "platform-ci-shared-library@v0.0.1"
 
 def lib
 
@@ -45,11 +30,10 @@ pipeline {
     githubProjectProperty(projectUrlStr: 'https://github.com/nuxeo/nuxeo-java-client')
   }
   environment {
-    CURRENT_NAMESPACE = getCurrentNamespace()
+    CURRENT_NAMESPACE = nxK8s.getCurrentNamespace()
     MAVEN_ARGS = '-B -nsu -DskipPrePostIntegration'
     MAVEN_OPTS = "$MAVEN_OPTS -Xms512m -Xmx3072m"
-    SLACK_CHANNEL = 'platform-notifs'
-    VERSION = "${getVersion()}"
+    VERSION = nxUtils.getReleaseVersion()
   }
   stages {
 
@@ -58,7 +42,7 @@ pipeline {
         container('maven') {
           script {
             lib = load 'ci/Jenkinsfiles/lib.groovy'
-            lib.setPodsLabel()
+            nxK8s.setPodLabel()
           }
         }
       }
@@ -84,7 +68,8 @@ pipeline {
           echo """
           ----------------------------------------
           Compile
-          ----------------------------------------"""
+          ----------------------------------------
+          """
           echo "MAVEN_OPTS=$MAVEN_OPTS"
           sh "mvn ${MAVEN_ARGS} -Prelease -DskipITs install"
         }
@@ -115,16 +100,15 @@ pipeline {
 
     stage('Deploy the artifacts') {
       when {
-        not {
-          environment name: 'DRY_RUN', value: 'true'
-        }
+        expression { !nxUtils.isDryRun() }
       }
       steps {
         container('maven') {
           echo """
           ----------------------------------------
           Deploy
-          ----------------------------------------"""
+          ----------------------------------------
+          """
           echo "MAVEN_OPTS=$MAVEN_OPTS"
           sh "mvn ${MAVEN_ARGS} -Prelease -DskipTests -DskipITs deploy"
         }
@@ -140,18 +124,7 @@ pipeline {
             Tag nuxeo-java-client ${VERSION}
             -------------------------------------------------
             """
-            sh """
-              git commit -a -m "Release ${VERSION}"
-              git tag -a release-${VERSION} -m "Release ${VERSION}"
-            """
-
-            if (env.DRY_RUN != 'true') {
-              sh """
-                jx step git credentials
-                git config credential.helper store
-                git push origin release-${VERSION}
-              """
-            }
+            nxGit.commitTagPush(tag: "release-${VERSION}")
           }
         }
       }
@@ -161,33 +134,15 @@ pipeline {
       steps {
         container('maven') {
           script {
-            String nextVersion
-            if (isMinorRelease()) {
-              // it was a minor release
-              nextVersion = sh(returnStdout: true, script: "semver bump minor ${VERSION} | tr -d '\n'")
-            } else {
-              // it was a patch release
-              nextVersion = sh(returnStdout: true, script: "semver bump patch ${VERSION} | tr -d '\n'")
-            }
-            nextVersion += '-SNAPSHOT'
+            String nextVersion = nxUtils.getNextVersion(increment: 'minor') + '-SNAPSHOT'
             echo """
             -------------------------------------------------
             Bump ${BRANCH_NAME} branch
             -------------------------------------------------
             New version: ${nextVersion}
             """
-            sh """
-              mvn ${MAVEN_ARGS} versions:set -DnewVersion=${nextVersion} -DgenerateBackupPoms=false
-              git commit -a -m "Post release ${VERSION}"
-            """
-
-            if (env.DRY_RUN != 'true') {
-              sh """
-                jx step git credentials
-                git config credential.helper store
-                git push origin HEAD:${BRANCH_NAME}
-              """
-            }
+            sh "mvn ${MAVEN_ARGS} versions:set -DnewVersion=${nextVersion} -DgenerateBackupPoms=false"
+            nxGit.commitPush(message: "Post release ${VERSION}")
           }
         }
       }
@@ -198,17 +153,13 @@ pipeline {
   post {
     success {
       script {
-        if (env.DRY_RUN != 'true') {
-          currentBuild.description = "Release ${VERSION}"
-          slackSend(channel: "${SLACK_CHANNEL}", color: 'good', message: "Successfully released nuxeo/nuxeo-java-client ${VERSION}: ${BUILD_URL}")
-        }
+        currentBuild.description = "Release ${VERSION}"
+        nxSlack.success(message: "Successfully released nuxeo/nuxeo-java-client ${VERSION}: ${BUILD_URL}")
       }
     }
     unsuccessful {
       script {
-        if (env.DRY_RUN != 'true') {
-          slackSend(channel: "${SLACK_CHANNEL}", color: 'danger', message: "Failed to release nuxeo/nuxeo-java-client ${VERSION}: ${BUILD_URL}")
-        }
+        nxSlack.error(message: "Failed to release nuxeo/nuxeo-java-client ${VERSION}: ${BUILD_URL}")
       }
     }
   }
