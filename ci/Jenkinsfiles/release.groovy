@@ -16,7 +16,10 @@
  * Contributors:
  *     Kevin Leturc <kleturc@nuxeo.com>
  */
-library identifier: "platform-ci-shared-library@v0.0.1"
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
+
+library identifier: "platform-ci-shared-library@v0.0.19"
 
 def lib
 
@@ -33,6 +36,7 @@ pipeline {
     CURRENT_NAMESPACE = nxK8s.getCurrentNamespace()
     MAVEN_ARGS = '-B -nsu -DskipPrePostIntegration'
     MAVEN_OPTS = "$MAVEN_OPTS -Xms512m -Xmx3072m"
+    JIRA_JAVACLIENT_MOVING_VERSION = 'next'
     VERSION = nxUtils.getReleaseVersion()
   }
   stages {
@@ -134,7 +138,7 @@ pipeline {
       steps {
         container('maven') {
           script {
-            String nextVersion = nxUtils.getNextVersion(increment: 'minor') + '-SNAPSHOT'
+            String nextVersion = nxUtils.getNextVersion(increment: 'patch') + '-SNAPSHOT'
             echo """
             -------------------------------------------------
             Bump ${BRANCH_NAME} branch
@@ -143,6 +147,32 @@ pipeline {
             """
             sh "mvn ${MAVEN_ARGS} versions:set -DnewVersion=${nextVersion} -DgenerateBackupPoms=false"
             nxGit.commitPush(message: "Post release ${VERSION}")
+          }
+        }
+      }
+    }
+
+    stage('Release Jira version') {
+      steps {
+        container('maven') {
+          script {
+            def jiraVersionName = "${VERSION}"
+            // create a new released version in Jira
+            def jiraVersion = [
+                project: 'JAVACLIENT',
+                name: jiraVersionName,
+                releaseDate: LocalDate.now().format(DateTimeFormatter.ISO_LOCAL_DATE),
+                released: true,
+            ]
+            nxJira.newVersion(version: jiraVersion)
+            // find Jira tickets included in this release and update them
+            def jiraTickets = nxJira.jqlSearch(jql: "project = JAVACLIENT and fixVersion = ${JIRA_JAVACLIENT_MOVING_VERSION}")
+            def previousVersion = sh(returnStdout: true, script: "perl -pe 's/\\b(\\d+)(?=\\D*\$)/\$1-1/e' <<< ${VERSION}").trim()
+            def changelog = nxGit.getChangeLog(previousVersion: previousVersion, version: env.VERSION)
+            def committedIssues = jiraTickets.data.issues.findAll { changelog.contains(it.key) }
+            committedIssues.each {
+              nxJira.editIssueFixVersion(idOrKey: it.key, fixVersionToRemove: env.JIRA_JAVACLIENT_MOVING_VERSION, fixVersionToAdd: jiraVersionName)
+            }
           }
         }
       }
