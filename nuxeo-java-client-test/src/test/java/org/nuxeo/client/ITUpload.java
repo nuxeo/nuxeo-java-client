@@ -19,19 +19,22 @@
  */
 package org.nuxeo.client;
 
+import static java.util.stream.Collectors.toList;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.fail;
 import static org.nuxeo.client.Operations.BLOB_ATTACH_ON_DOCUMENT;
 
 import java.io.File;
+import java.io.Serializable;
 import java.util.List;
+import java.util.Map;
 
-import org.junit.Ignore;
 import org.junit.Test;
 import org.nuxeo.client.methods.BatchUploadAPI;
 import org.nuxeo.client.objects.Document;
 import org.nuxeo.client.objects.blob.Blob;
+import org.nuxeo.client.objects.blob.Blobs;
 import org.nuxeo.client.objects.blob.FileBlob;
 import org.nuxeo.client.objects.blob.StreamBlob;
 import org.nuxeo.client.objects.upload.BatchUpload;
@@ -172,8 +175,47 @@ public class ITUpload extends AbstractITBase {
         assertEquals("sample.jpg", doc.getPropertyValue("file:content/name"));
     }
 
+    // JAVACLIENT-179
     @Test
-    public void itCanExecuteOp() {
+    @SuppressWarnings("unchecked")
+    public void itCanExecuteOpOnBatch() {
+        // Upload file
+        BatchUploadManager batchUploadManager = nuxeoClient.batchUploadManager();
+        BatchUpload batchUpload = batchUploadManager.createBatch();
+        assertNotNull(batchUpload);
+        File file = getResourceFileFromContext("sample.jpg");
+        batchUpload = batchUpload.upload("1", new FileBlob(file, "sample-1.jpg"));
+        assertNotNull(batchUpload);
+        batchUpload = batchUpload.upload("2", new FileBlob(file, "sample-2.jpg"));
+        assertNotNull(batchUpload);
+
+        // Getting a doc and attaching the batch file
+        Document doc = Document.createWithName("file", "File");
+        doc.setPropertyValue("dc:title", "new title");
+        doc = nuxeoClient.repository().createDocumentByPath("/", doc);
+        assertNotNull(doc);
+        Blobs blobs = batchUpload.operationOnBatch(BLOB_ATTACH_ON_DOCUMENT)
+                                 .param("document", doc.getId())
+                                 .param("xpath", "files:files")
+                                 .execute();
+        assertNotNull(blobs);
+        assertEquals(2, blobs.size());
+        assertEquals("sample-1.jpg", blobs.getEntry(0).getFilename());
+        assertContentEquals("sample.jpg", blobs.getEntry(0));
+        assertEquals("sample-2.jpg", blobs.getEntry(1).getFilename());
+        assertContentEquals("sample.jpg", blobs.getEntry(1));
+
+        doc = nuxeoClient.repository().fetchDocumentById(doc.getId());
+        List<Map<String, Serializable>> files = doc.getPropertyValue("files:files");
+        assertNotNull(files);
+        files = files.stream().map(f -> (Map<String, Serializable>) f.get("file")).collect(toList());
+        assertEquals(2, files.size());
+        assertEquals("sample-1.jpg", files.get(0).get("name"));
+        assertEquals("sample-2.jpg", files.get(1).get("name"));
+    }
+
+    @Test
+    public void itCanExecuteOpOnFile() {
         // Upload file
         BatchUploadManager batchUploadManager = nuxeoClient.batchUploadManager();
         BatchUpload batchUpload = batchUploadManager.createBatch();
@@ -188,7 +230,7 @@ public class ITUpload extends AbstractITBase {
         doc.setPropertyValue("dc:title", "new title");
         doc = nuxeoClient.repository().createDocumentByPath("/", doc);
         assertNotNull(doc);
-        Blob blob = batchUpload.operation(BLOB_ATTACH_ON_DOCUMENT).param("document", doc).execute();
+        Blob blob = batchUpload.operationOnFile(BLOB_ATTACH_ON_DOCUMENT).param("document", doc).execute();
         assertNotNull(blob);
         assertContentEquals("sample.jpg", blob);
     }

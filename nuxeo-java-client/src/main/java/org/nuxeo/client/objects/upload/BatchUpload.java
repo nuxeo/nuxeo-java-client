@@ -275,14 +275,31 @@ public class BatchUpload extends AbstractConnectable<BatchUploadAPI, BatchUpload
     }
 
     /**
+     * @since 3.14
+     */
+    public BatchUploadOperation operationOnBatch(String operationId) {
+        return new BatchUploadOperation(null, operationId);
+    }
+
+    /**
      * This method can only be called on a {@link BatchUpload} representing a real upload (ie: fileIdx != null).
      */
-    public BatchUploadOperation operation(String operationId) {
+    public BatchUploadOperation operationOnFile(String operationId) {
         if (fileIdx == null) {
             throw new NuxeoClientException(
                     "Unable to execute operation on a BatchUpload not representing a blob (fileIdx == null)");
         }
         return new BatchUploadOperation(fileIdx, operationId);
+    }
+
+    /**
+     * This method can only be called on a {@link BatchUpload} representing a real upload (ie: fileIdx != null).
+     * 
+     * @deprecated since 3.14, use {@link #operationOnFile} instead
+     */
+    @Deprecated
+    public BatchUploadOperation operation(String operationId) {
+        return operationOnFile(operationId);
     }
 
     public class BatchUploadOperation {
@@ -321,7 +338,11 @@ public class BatchUpload extends AbstractConnectable<BatchUploadAPI, BatchUpload
 
         @SuppressWarnings("unchecked")
         public <T> T execute() {
-            return (T) fetchResponse(api.execute(batchId, fileIdx, operationId, body));
+            if (fileIdx == null) {
+                return (T) fetchResponse(api.execute(batchId, operationId, body));
+            } else {
+                return (T) fetchResponse(api.execute(batchId, fileIdx, operationId, body));
+            }
         }
 
     }

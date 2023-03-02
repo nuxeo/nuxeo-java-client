@@ -53,6 +53,13 @@ public interface BatchUploadAPI {
     @DELETE("upload/{batchId}")
     Call<ResponseBody> cancel(@Path("batchId") String batchId);
 
+    /**
+     * @since 3.14
+     */
+    @POST("upload/{batchId}/execute/{operationId}")
+    Call<Object> execute(@Path("batchId") String batchId, @Path("operationId") String operationId,
+            @Body OperationBody body);
+
     @POST("upload/{batchId}/{fileIdx}/execute/{operationId}")
     Call<Object> execute(@Path("batchId") String batchId, @Path("fileIdx") String fileIdx,
             @Path("operationId") String operationId, @Body OperationBody body);
