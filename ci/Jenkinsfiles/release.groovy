@@ -166,7 +166,7 @@ pipeline {
             ]
             nxJira.newVersion(version: jiraVersion)
             // find Jira tickets included in this release and update them
-            def jiraTickets = nxJira.jqlSearch(jql: "project = JAVACLIENT and fixVersion = ${JIRA_JAVACLIENT_MOVING_VERSION}")
+            def jiraTickets = nxJira.jqlSearch(jql: "project = JAVACLIENT and fixVersion = '${JIRA_JAVACLIENT_MOVING_VERSION}'")
             def previousVersion = sh(returnStdout: true, script: "perl -pe 's/\\b(\\d+)(?=\\D*\$)/\$1-1/e' <<< ${VERSION}").trim()
             def changelog = nxGit.getChangeLog(previousVersion: previousVersion, version: env.VERSION)
             def committedIssues = jiraTickets.data.issues.findAll { changelog.contains(it.key) }
