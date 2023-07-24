@@ -18,12 +18,13 @@
  */
 
 String getDefaultNuxeoVersionToTest() {
-  return '2021'
+  return '2023'
 }
 
 def getNuxeoVersionsToTest() {
   return [
     '10.10',
+    '2021',
     getDefaultNuxeoVersionToTest()
   ]
 }

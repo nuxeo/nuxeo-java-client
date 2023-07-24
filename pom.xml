@@ -244,6 +244,24 @@
     </profile>
 
     <profile>
+      <id>java-17</id>
+      <activation>
+        <jdk>17</jdk>
+      </activation>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-compiler-plugin</artifactId>
+            <configuration>
+              <release>${java.version.release}</release>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+
+    <profile>
       <id>customEnvironment</id>
       <activation>
         <property>

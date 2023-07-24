@@ -22,7 +22,11 @@ mongodb:
   host: mongodb.{{ .Namespace }}.svc.cluster.local
 elasticsearch:
   enabled: true
+  {{- if .Values.opensearch.enabled }}
+  host: opensearch-cluster-master.{{ .Namespace }}.svc.cluster.local
+  {{- else }}
   host: elasticsearch-master.{{ .Namespace }}.svc.cluster.local
+  {{- end }}
 packages: /tmp/nuxeo-java-client-test.zip
 {{- if hasPrefix "10.10" .Values.nuxeo.image.tag }}
 {{/* this value is lost for 10.10 */}}

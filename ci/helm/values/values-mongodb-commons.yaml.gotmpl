@@ -1,6 +1,6 @@
 image:
   tag: {{ .Values.mongodb.image.tag }}
-usePassword: false
+fullnameOverride: "mongodb"
 serviceAccount:
   create: false
 resources:
