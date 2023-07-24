@@ -11,6 +11,7 @@
   <platforms>
     <platform>server-10.10*</platform>
     <platform>lts-2021.*</platform>
+    <platform>lts-2023.*</platform>
   </platforms>
   <license>LGPL 2.1</license>
   <license-url>http://www.gnu.org/licenses/lgpl-2.1.html</license-url>
