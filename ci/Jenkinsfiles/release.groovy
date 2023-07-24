@@ -19,7 +19,7 @@
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
-library identifier: "platform-ci-shared-library@v0.0.19"
+library identifier: "platform-ci-shared-library@v0.0.25"
 
 def lib
 
@@ -46,7 +46,7 @@ pipeline {
         container('maven') {
           script {
             lib = load 'ci/Jenkinsfiles/lib.groovy'
-            nxK8s.setPodLabel()
+            nxK8s.setPodLabels()
           }
         }
       }
