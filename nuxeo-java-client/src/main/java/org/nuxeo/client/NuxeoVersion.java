@@ -46,6 +46,9 @@ public class NuxeoVersion {
     /** @since 3.13.0 */
     public static final NuxeoVersion LTS_2021 = new NuxeoVersion(2021, 0, -1, 0, false);
 
+    /** @since 3.14.0 */
+    public static final NuxeoVersion LTS_2023 = new NuxeoVersion(2023, 0, -1, 0, false);
+
     private static final Pattern NUXEO_VERSION_PATTERN = Pattern.compile(
             "(\\d+)\\.(\\d+)(?:\\.(\\d+))?(?:-HF(\\d+))?(-SNAPSHOT)?(-I\\d{8}_\\d{4})?");
 
