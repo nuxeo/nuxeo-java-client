@@ -31,6 +31,7 @@ import static org.nuxeo.client.ITBase.createClient;
 import static org.nuxeo.client.ITBase.createClientBuilder;
 import static org.nuxeo.client.NuxeoVersion.LTS_10_10;
 import static org.nuxeo.client.NuxeoVersion.LTS_2021;
+import static org.nuxeo.client.NuxeoVersion.LTS_2023;
 
 import org.junit.Test;
 import org.nuxeo.client.objects.directory.Directory;
@@ -125,7 +126,8 @@ public class ITAuthentication {
                 serverVersion.majorVersion() == LTS_10_10.majorVersion()
                         && serverVersion.isGreaterThan(LTS_10_10.hotfix(63))
                         || serverVersion.majorVersion() == LTS_2021.majorVersion()
-                                && serverVersion.isGreaterThan(LTS_2021.minor(23)));
+                                && serverVersion.isGreaterThan(LTS_2021.minor(23))
+                        || serverVersion.isGreaterThan(LTS_2023));
 
         Directory oauth2Directory = adminClient.directoryManager().directory("oauth2Clients");
         // create an oauth provider
