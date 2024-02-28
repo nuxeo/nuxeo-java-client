@@ -329,11 +329,20 @@ public class ITRepository extends AbstractITBase {
 
     @Test
     public void itCanStreamBlobFromDocument() {
-        Document file = nuxeoClient.repository().fetchDocumentByPath(FOLDER_2_FILE);
+        assertBlob(FOLDER_2_FILE, "text/plain");
+    }
+
+    @Test
+    public void itCanStreamJsonBlobFromDocument() {
+        assertBlob(FOLDER_2_JSON_FILE, "application/json");
+    }
+
+    protected void assertBlob(String filePath, String contentType) {
+        Document file = nuxeoClient.repository().fetchDocumentByPath(filePath);
         StreamBlob blob = file.streamBlob();
         assertNotNull(blob);
         assertEquals("blob.json", blob.getFilename());
-        assertEquals("text/plain", blob.getMimeType());
+        assertEquals(contentType, blob.getMimeType());
         assertContentEquals("blob.json", blob);
     }
 
@@ -609,7 +618,7 @@ public class ITRepository extends AbstractITBase {
         // Test connect
         Documents children = folder2.fetchChildren();
         assertNotNull(children);
-        assertEquals(1, children.size());
+        assertEquals(2, children.size());
         assertEquals(FOLDER_2_FILE, children.getDocument(0).getPath());
     }
 

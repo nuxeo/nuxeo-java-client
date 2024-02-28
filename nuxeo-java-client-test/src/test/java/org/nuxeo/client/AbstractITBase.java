@@ -50,6 +50,8 @@ public abstract class AbstractITBase {
 
     public static final String FOLDER_2_FILE = "/folder_2/file";
 
+    public static final String FOLDER_2_JSON_FILE = "/folder_2/JSONFile";
+
     protected final RepositoryInterceptor repositoryInterceptor = new RepositoryInterceptor();
 
     // TODO this is weird that deleting documents doesn't cancel workflow on them, maybe there's an asynchronous task
@@ -97,6 +99,20 @@ public abstract class AbstractITBase {
                    .param("document", FOLDER_2_FILE)
                    .input(fileBlob)
                    .execute();
+
+        // Create a JSON file
+        doc = Document.createWithName("JSONFile", "File");
+        doc.setPropertyValue("dc:title", "JSONFile");
+        nuxeoClient.repository().createDocumentByPath("/folder_2", doc);
+        // Attach a light blob
+        file = getResourceFileFromContext("blob.json");
+        fileBlob = new FileBlob(file, "blob.json", "application/json");
+        nuxeoClient.operation(BLOB_ATTACH_ON_DOCUMENT)
+                   .voidOperation(true)
+                   .param("document", FOLDER_2_JSON_FILE)
+                   .input(fileBlob)
+                   .execute();
+
         // page providers can leverage Elasticsearch so wait for indexing before starting tests
         nuxeoClient.operation(ES_WAIT_FOR_INDEXING).param("refresh", true).param("waitForAudit", true).execute();
     }

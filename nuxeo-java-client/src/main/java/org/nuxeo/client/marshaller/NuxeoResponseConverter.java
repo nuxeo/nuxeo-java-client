@@ -74,6 +74,10 @@ public final class NuxeoResponseConverter<T> implements Converter<ResponseBody, 
     public T convert(ResponseBody body) throws IOException {
         // Checking if multipart outputs.
         MediaType mediaType = MediaType.fromOkHttpMediaType(body.contentType());
+        // there's post treatment in NuxeoClient on blob
+        if (javaType.getRawClass().equals(StreamBlob.class)) {
+            return (T) new StreamBlob(body.byteStream(), null, mediaType.toString());
+        }
         if (!MediaTypes.APPLICATION_JSON.equalsTypeSubTypeWithoutSuffix(mediaType)) {
             if (mediaType.type().equals(MediaTypes.MULTIPART_S)) {
                 List<Blob> blobs = new ArrayList<>();
@@ -90,10 +94,6 @@ public final class NuxeoResponseConverter<T> implements Converter<ResponseBody, 
                     throw new IOException(reason);
                 }
                 return (T) new Blobs(blobs);
-            }
-            // there's post treatment in NuxeoClient on blob
-            else if (javaType.getRawClass().equals(StreamBlob.class)) {
-                return (T) new StreamBlob(body.byteStream(), null, mediaType.toString());
             }
             // deprecated since 3.1
             else if (javaType.getRawClass().equals(FileBlob.class)) {
