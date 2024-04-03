@@ -23,16 +23,11 @@ import static org.nuxeo.client.ConstantsV1.ENTITY_TYPE;
 import static org.nuxeo.client.marshaller.NuxeoConverterFactory.JACKSON_ATTRIBUTE_KEY;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.Reader;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-
-import javax.mail.BodyPart;
-import javax.mail.MessagingException;
-import javax.mail.internet.MimeMultipart;
-import javax.mail.util.ByteArrayDataSource;
+import java.util.stream.Stream;
 
 import org.nuxeo.client.MediaType;
 import org.nuxeo.client.MediaTypes;
@@ -47,6 +42,8 @@ import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import okhttp3.Headers;
+import okhttp3.MultipartReader;
 import okhttp3.ResponseBody;
 import retrofit2.Converter;
 
@@ -71,28 +68,32 @@ public final class NuxeoResponseConverter<T> implements Converter<ResponseBody, 
     @Override
     @SuppressWarnings("unchecked")
     public T convert(ResponseBody body) throws IOException {
-        // Checking if multipart outputs.
         MediaType mediaType = MediaType.fromOkHttpMediaType(body.contentType());
         // there's post treatment in NuxeoClient on blob
         if (javaType.getRawClass().equals(StreamBlob.class)) {
             return (T) new StreamBlob(body.byteStream(), null, mediaType.toString());
         }
+        // Checking if multipart outputs.
         if (!MediaTypes.APPLICATION_JSON.equalsTypeSubTypeWithoutSuffix(mediaType)) {
             if (mediaType.type().equals(MediaTypes.MULTIPART_S)) {
                 List<Blob> blobs = new ArrayList<>();
-                try (InputStream is = body.byteStream()) {
-                    MimeMultipart mp = new MimeMultipart(new ByteArrayDataSource(is, mediaType.toString()));
-                    int size = mp.getCount();
-                    for (int i = 0; i < size; i++) {
-                        BodyPart part = mp.getBodyPart(i);
+                try (MultipartReader reader = new MultipartReader(body)) {
+                    MultipartReader.Part part;
+                    while ((part = reader.nextPart()) != null) {
+                        Headers headers = part.headers();
+                        String contentDisposition = headers.get("Content-Disposition");
+                        String contentType = headers.get("Content-Type");
+                        String filename = Stream.of(contentDisposition.split("; ?"))
+                                                .filter(s -> s.startsWith("filename"))
+                                                .map(s -> s.replaceFirst("filename=\"?([^\"]*)\"?", "$1"))
+                                                .findFirst()
+                                                .orElse(null);
                         // IOUtils.copyToTempFile close the input stream for us
-                        blobs.add(new FileBlob(IOUtils.copyToTempFile(part.getInputStream()), part.getFileName(),
-                                part.getContentType()));
+                        blobs.add(
+                                new FileBlob(IOUtils.copyToTempFile(part.body().inputStream()), filename, contentType));
                     }
-                } catch (MessagingException reason) {
-                    throw new IOException(reason);
+                    return (T) new Blobs(blobs);
                 }
-                return (T) new Blobs(blobs);
             }
             // automation case
             else {

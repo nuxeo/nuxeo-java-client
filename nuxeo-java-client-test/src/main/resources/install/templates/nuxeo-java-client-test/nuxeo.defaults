@@ -2,3 +2,6 @@
 nuxeo-java-client-test.target=.
 
 nuxeo.jwt.secret=abracadabra
+
+# for Nuxeo LTS 2021/2023
+nuxeo.multipart.filename.utf8.encoding=true

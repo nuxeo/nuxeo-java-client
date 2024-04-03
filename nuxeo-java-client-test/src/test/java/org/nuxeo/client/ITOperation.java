@@ -24,6 +24,9 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+import static org.junit.Assume.assumeTrue;
+import static org.nuxeo.client.NuxeoVersion.LTS_2021;
+import static org.nuxeo.client.NuxeoVersion.LTS_2023;
 import static org.nuxeo.client.Operations.BLOB_ATTACH_ON_DOCUMENT;
 import static org.nuxeo.client.Operations.DIRECTORY_ENTRIES;
 import static org.nuxeo.client.Operations.DOCUMENT_GET_BLOB;
@@ -149,6 +152,13 @@ public class ITOperation extends AbstractITBase {
     // JAVACLIENT-218
     @Test
     public void itCanExecuteOperationWithBlobAndNonASCIIFilename() throws IOException {
+        NuxeoVersion serverVersion = nuxeoClient.getServerVersion();
+        assumeTrue("itCanExecuteOperationWithBlobAndNonASCIIFilename works only since Nuxeo 2021.56 / 2023.14",
+                serverVersion.majorVersion() == LTS_2021.majorVersion()
+                        && serverVersion.isGreaterThan(LTS_2021.minor(56))
+                        || serverVersion.majorVersion() == LTS_2023.majorVersion()
+                                && serverVersion.isGreaterThan(LTS_2023.minor(14))
+                        || serverVersion.isGreaterThan("2025.0"));
         // Attach a blob
         File temp1 = getResourceFileFromContext("sample.jpg");
         long length = temp1.length();
