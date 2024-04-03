@@ -329,16 +329,25 @@ public class ITRepository extends AbstractITBase {
 
     @Test
     public void itCanStreamBlobFromDocument() {
-        assertBlob(FOLDER_2_FILE, "text/plain");
+        assertFolder2FileBlob("text/plain");
     }
 
+    // JAVACLIENT-236
     @Test
     public void itCanStreamJsonBlobFromDocument() {
-        assertBlob(FOLDER_2_JSON_FILE, "application/json");
+        // replace main blob to change the content type
+        File file = getResourceFileFromContext("blob.json");
+        FileBlob fileBlob = new FileBlob(file, "blob.json", "application/json");
+        nuxeoClient.operation(BLOB_ATTACH_ON_DOCUMENT)
+                   .voidOperation(true)
+                   .param("document", FOLDER_2_FILE)
+                   .input(fileBlob)
+                   .execute();
+        assertFolder2FileBlob("application/json");
     }
 
-    protected void assertBlob(String filePath, String contentType) {
-        Document file = nuxeoClient.repository().fetchDocumentByPath(filePath);
+    protected void assertFolder2FileBlob(String contentType) {
+        Document file = nuxeoClient.repository().fetchDocumentByPath(FOLDER_2_FILE);
         StreamBlob blob = file.streamBlob();
         assertNotNull(blob);
         assertEquals("blob.json", blob.getFilename());
@@ -618,7 +627,7 @@ public class ITRepository extends AbstractITBase {
         // Test connect
         Documents children = folder2.fetchChildren();
         assertNotNull(children);
-        assertEquals(2, children.size());
+        assertEquals(1, children.size());
         assertEquals(FOLDER_2_FILE, children.getDocument(0).getPath());
     }
 
