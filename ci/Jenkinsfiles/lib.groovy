@@ -57,24 +57,19 @@ Closure buildFunctionalTestDockerBuildStage(nuxeoVersion) {
   }
 }
 
-def runFunctionalTests(testWithOkhttp4 = true) {
+def runFunctionalTests() {
   def runStages = [:]
   for (nuxeoVersion in getNuxeoVersionsToTest()) {
-    runStages["Against Nuxeo ${nuxeoVersion} - Okhttp 3"] = buildFunctionalTestStage(nuxeoVersion, '3')
-  }
-  if (testWithOkhttp4) {
-    def defaultNuxeoVersion = getDefaultNuxeoVersionToTest()
-    runStages["Against Nuxeo ${defaultNuxeoVersion} - Okhttp 4"] = buildFunctionalTestStage(defaultNuxeoVersion, '4')
+    runStages["Against Nuxeo ${nuxeoVersion}"] = buildFunctionalTestStage(nuxeoVersion)
   }
   parallel runStages
 }
 
-Closure buildFunctionalTestStage(nuxeoVersion, String okhttpVersion) {
+Closure buildFunctionalTestStage(nuxeoVersion) {
   def nuxeoVersionSlug = nuxeoVersion.replaceAll('\\..*', '')
-  def okhttpVersionSlug = okhttpVersion.replaceAll('\\..*', '')
-  def testNamespace = "$CURRENT_NAMESPACE-java-client-ftests-$BRANCH_NAME-$BUILD_NUMBER-nuxeo-${nuxeoVersionSlug}-okhttp-${okhttpVersionSlug}".toLowerCase()
+  def testNamespace = "$CURRENT_NAMESPACE-java-client-ftests-$BRANCH_NAME-$BUILD_NUMBER-nuxeo-${nuxeoVersionSlug}".toLowerCase()
 
-  String mvnCustomEnv = "nuxeo-${nuxeoVersionSlug}-okhttp-${okhttpVersionSlug}"
+  String mvnCustomEnv = "nuxeo-${nuxeoVersionSlug}"
   return {
     container("maven") {
       nxWithHelmfileDeployment(namespace: testNamespace, environment: "functional-tests-${nuxeoVersion}",
@@ -86,12 +81,10 @@ Closure buildFunctionalTestStage(nuxeoVersion, String okhttpVersion) {
             Run Java Client functional tests
             ---------------------------------------- 
             Nuxeo version: ${nuxeoVersion}
-            Okhttp version: ${okhttpVersion}
             """
             sh """
               mvn -pl :nuxeo-java-client-test \
                 ${MAVEN_ARGS} \
-                -Pokhttp${okhttpVersion} \
                 -Dcustom.environment=${mvnCustomEnv} \
                 -Dnuxeo.server.url=http://nuxeo.${testNamespace}.svc.cluster.local/nuxeo \
                 verify

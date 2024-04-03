@@ -23,7 +23,6 @@ import org.nuxeo.client.objects.directory.Directories;
 import org.nuxeo.client.objects.directory.DirectoryEntries;
 import org.nuxeo.client.objects.directory.DirectoryEntry;
 
-import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.DELETE;
@@ -47,7 +46,8 @@ public interface DirectoryManagerAPI {
     @GET("directory/{directoryName}")
     Call<DirectoryEntries> fetchDirectoryEntries(@Path("directoryName") String directoryName,
             @Query("currentPageIndex") String currentPageIndex, @Query("pageSize") String pageSize,
-            @Query("maxResults") String maxResults, @Query("sortBy") String sortBy, @Query("sortOrder") String sortOrder);
+            @Query("maxResults") String maxResults, @Query("sortBy") String sortBy,
+            @Query("sortOrder") String sortOrder);
 
     @POST("directory/{directoryName}")
     Call<DirectoryEntry> createDirectoryEntry(@Path("directoryName") String directoryName,
@@ -62,7 +62,7 @@ public interface DirectoryManagerAPI {
             @Path("entryId") String directoryEntryId, @Body DirectoryEntry directoryEntry);
 
     @DELETE("directory/{directoryName}/{entryId}")
-    Call<ResponseBody> deleteDirectoryEntry(@Path("directoryName") String directoryName,
+    Call<Void> deleteDirectoryEntry(@Path("directoryName") String directoryName,
             @Path("entryId") String directoryEntryId);
 
 }

@@ -22,18 +22,16 @@ package org.nuxeo.client;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
 import java.net.URLDecoder;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.List;
 import java.util.Properties;
-import java.util.function.Supplier;
 import java.util.function.UnaryOperator;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import okhttp3.internal.Util;
 import org.apache.commons.lang3.StringUtils;
 import org.nuxeo.client.cache.NuxeoResponseCache;
 import org.nuxeo.client.marshaller.NuxeoConverterFactory;
@@ -66,7 +64,6 @@ import org.nuxeo.client.objects.user.UserManager;
 import org.nuxeo.client.spi.NuxeoClientException;
 import org.nuxeo.client.spi.NuxeoClientRemoteException;
 import org.nuxeo.client.spi.auth.BasicAuthInterceptor;
-import org.nuxeo.client.util.ThrowableSupplier;
 
 import okhttp3.ConnectionPool;
 import okhttp3.Headers;
@@ -121,28 +118,8 @@ public class NuxeoClient extends AbstractBase<NuxeoClient> {
         } catch (IOException e) {
             nuxeoPart += "Unknown";
         }
-        String okhttpPart = runReflectiveSupplierOrFallback(() -> {
-            // handle okhttp 3 version
-            Class<?> okhttp3VersionClass = Class.forName("okhttp3.internal.Version");
-            Method userAgentMethod = okhttp3VersionClass.getMethod("userAgent");
-            return (String) userAgentMethod.invoke(null);
-        }, () -> runReflectiveSupplierOrFallback(() -> {
-            // handle okhttp 4 version
-            Class<?> okhttp4UtilClass = Class.forName("okhttp3.internal.Util");
-            Field userAgentField = okhttp4UtilClass.getField("userAgent");
-            return (String) userAgentField.get(null);
-
-        }, () -> "okhttp/Unknown"));
+        String okhttpPart = Util.userAgent;
         return okhttpPart + " " + nuxeoPart;
-    }
-
-    protected String runReflectiveSupplierOrFallback(ThrowableSupplier<String, ReflectiveOperationException> supplier,
-            Supplier<String> errorHandler) {
-        try {
-            return supplier.get();
-        } catch (ReflectiveOperationException e) {
-            return errorHandler.get();
-        }
     }
 
     /*******************************
@@ -264,27 +241,27 @@ public class NuxeoClient extends AbstractBase<NuxeoClient> {
     }
 
     public Response delete(String url, String json) {
-        RequestBody body = RequestBody.create(MediaTypes.APPLICATION_JSON_CHARSET_UTF_8.toOkHttpMediaType(), json);
+        RequestBody body = RequestBody.create(json, MediaTypes.APPLICATION_JSON_CHARSET_UTF_8.toOkHttpMediaType());
         return request(url, builder -> builder.delete(body));
     }
 
     public Response put(String url, String json) {
-        RequestBody body = RequestBody.create(MediaTypes.APPLICATION_JSON_CHARSET_UTF_8.toOkHttpMediaType(), json);
+        RequestBody body = RequestBody.create(json, MediaTypes.APPLICATION_JSON_CHARSET_UTF_8.toOkHttpMediaType());
         return request(url, builder -> builder.put(body));
     }
 
     public Response post(String url, String json) {
-        RequestBody body = RequestBody.create(MediaTypes.APPLICATION_JSON_CHARSET_UTF_8.toOkHttpMediaType(), json);
+        RequestBody body = RequestBody.create(json, MediaTypes.APPLICATION_JSON_CHARSET_UTF_8.toOkHttpMediaType());
         return request(url, builder -> builder.post(body));
     }
 
     public Response put(String url, String json, okhttp3.MediaType mediaType) {
-        RequestBody body = RequestBody.create(mediaType, json);
+        RequestBody body = RequestBody.create(json, mediaType);
         return request(url, builder -> builder.put(body));
     }
 
     public Response post(String url, String json, okhttp3.MediaType mediaType) {
-        RequestBody body = RequestBody.create(mediaType, json);
+        RequestBody body = RequestBody.create(json, mediaType);
         return request(url, builder -> builder.post(body));
     }
 
@@ -343,14 +320,18 @@ public class NuxeoClient extends AbstractBase<NuxeoClient> {
             String httpMessage = response.message();
             if (!response.isSuccessful() && httpCode != 308) {
                 // error body is not null as it's an error
-                String errorBody = response.errorBody().string();
-                // content type could be null
-                MediaType mediaType = MediaType.fromOkHttpMediaType(response.raw().body().contentType());
-                if (!StringUtils.EMPTY.equals(errorBody)
-                        && MediaTypes.APPLICATION_JSON.equalsTypeSubTypeWithoutSuffix(mediaType)) {
-                    throw converterFactory.readJSON(errorBody, NuxeoClientRemoteException.class);
+                try (ResponseBody responseErrorBody = response.errorBody()) {
+                    String errorBody = responseErrorBody.string();
+                    // content type could be null
+                    try (Response rawResponse = response.raw()) {
+                        MediaType mediaType = MediaType.fromOkHttpMediaType(rawResponse.body().contentType());
+                        if (!StringUtils.EMPTY.equals(errorBody)
+                                && MediaTypes.APPLICATION_JSON.equalsTypeSubTypeWithoutSuffix(mediaType)) {
+                            throw converterFactory.readJSON(errorBody, NuxeoClientRemoteException.class);
+                        }
+                        throw new NuxeoClientRemoteException(httpCode, httpMessage, errorBody, null);
+                    }
                 }
-                throw new NuxeoClientRemoteException(httpCode, httpMessage, errorBody, null);
             }
             if (useCache(call)) {
                 nuxeoCache.put(computeCacheKey(call), response);

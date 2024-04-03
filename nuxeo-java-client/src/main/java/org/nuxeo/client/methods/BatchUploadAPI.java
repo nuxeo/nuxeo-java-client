@@ -26,7 +26,6 @@ import org.nuxeo.client.objects.operation.OperationBody;
 import org.nuxeo.client.objects.upload.BatchUpload;
 
 import okhttp3.RequestBody;
-import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.DELETE;
@@ -51,7 +50,7 @@ public interface BatchUploadAPI {
     Call<BatchUpload> fetchBatchUpload(@Path("batchId") String batchId, @Path("fileIdx") String fileIdx);
 
     @DELETE("upload/{batchId}")
-    Call<ResponseBody> cancel(@Path("batchId") String batchId);
+    Call<Void> cancel(@Path("batchId") String batchId);
 
     /**
      * @since 3.14
