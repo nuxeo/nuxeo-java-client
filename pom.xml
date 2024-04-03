@@ -95,7 +95,7 @@
     <javax.activation.version>1.2.0</javax.activation.version>
     <junit.version>4.13.2</junit.version>
     <okhttp.version>4.12.0</okhttp.version>
-    <okio.version>2.9.0</okio.version>
+    <okio.version>3.9.0</okio.version>
     <retrofit.version>2.9.0</retrofit.version>
     <!-- other properties -->
     <java.version.release>8</java.version.release>
