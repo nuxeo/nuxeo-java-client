@@ -104,7 +104,7 @@ public interface UserManagerAPI {
     Call<User> updateUser(@Path("userName") String userName, @Body User user);
 
     @DELETE("user/{userName}")
-    Call<ResponseBody> deleteUser(@Path("userName") String userName);
+    Call<Void> deleteUser(@Path("userName") String userName);
 
     @POST("user")
     Call<User> createUser(@Body User user);

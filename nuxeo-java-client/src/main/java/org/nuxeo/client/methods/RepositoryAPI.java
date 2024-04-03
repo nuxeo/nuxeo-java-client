@@ -32,7 +32,6 @@ import org.nuxeo.client.objects.workflow.Graph;
 import org.nuxeo.client.objects.workflow.Workflow;
 import org.nuxeo.client.objects.workflow.Workflows;
 
-import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.DELETE;
@@ -66,8 +65,7 @@ public interface RepositoryAPI {
             @Path("repositoryName") String repositoryName);
 
     @DELETE("repo/{repositoryName}/id/{documentId}")
-    Call<ResponseBody> deleteDocument(@Path("documentId") String documentId,
-            @Path("repositoryName") String repositoryName);
+    Call<Void> deleteDocument(@Path("documentId") String documentId, @Path("repositoryName") String repositoryName);
 
     @GET("id/{documentId}")
     Call<Document> fetchDocumentById(@Path("documentId") String documentId);
@@ -79,7 +77,7 @@ public interface RepositoryAPI {
     Call<Document> updateDocument(@Path("documentId") String documentId, @Body Document document);
 
     @DELETE("id/{documentId}")
-    Call<ResponseBody> deleteDocument(@Path("documentId") String documentId);
+    Call<Void> deleteDocument(@Path("documentId") String documentId);
 
     @GET("repo/{repositoryName}/path{docPath}")
     Call<Document> fetchDocumentByPath(@Path(value = "docPath", encoded = true) String docPath,
@@ -271,7 +269,7 @@ public interface RepositoryAPI {
     Call<Workflow> fetchWorkflowInstance(@Path("workflowInstanceId") String workflowInstanceId);
 
     @DELETE("workflow/{workflowInstanceId}")
-    Call<ResponseBody> cancelWorkflowInstance(@Path("workflowInstanceId") String workflowInstanceId);
+    Call<Void> cancelWorkflowInstance(@Path("workflowInstanceId") String workflowInstanceId);
 
     @GET("workflow/{workflowInstanceId}/graph")
     Call<Graph> fetchWorkflowInstanceGraph(@Path("workflowInstanceId") String workflowInstanceId);
@@ -339,7 +337,7 @@ public interface RepositoryAPI {
      * @since 3.2
      */
     @DELETE("id/{parentId}/@{adapter}/{pathSuffix}")
-    Call<ResponseBody> deleteForAdapter(@Path("parentId") String documentId, @Path("adapter") String adapter,
+    Call<Void> deleteForAdapter(@Path("parentId") String documentId, @Path("adapter") String adapter,
             @Path(value = "pathSuffix", encoded = true) String pathSuffix,
             @QueryMap(encoded = true) Map<String, Serializable> queryParams);
 
@@ -347,8 +345,7 @@ public interface RepositoryAPI {
      * @since 3.2
      */
     @DELETE("repo/{repositoryName}/id/{parentId}/@{adapter}/{pathSuffix}")
-    Call<ResponseBody> deleteForAdapter(@Path("repositoryName") String repositoryName,
-            @Path("parentId") String documentId, @Path("adapter") String adapter,
-            @Path(value = "pathSuffix", encoded = true) String pathSuffix,
+    Call<Void> deleteForAdapter(@Path("repositoryName") String repositoryName, @Path("parentId") String documentId,
+            @Path("adapter") String adapter, @Path(value = "pathSuffix", encoded = true) String pathSuffix,
             @QueryMap(encoded = true) Map<String, Serializable> queryParams);
 }

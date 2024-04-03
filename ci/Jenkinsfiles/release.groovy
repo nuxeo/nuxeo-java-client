@@ -97,7 +97,7 @@ pipeline {
     stage('Run functional tests') {
       steps {
         script {
-          lib.runFunctionalTests(false)
+          lib.runFunctionalTests()
         }
       }
     }

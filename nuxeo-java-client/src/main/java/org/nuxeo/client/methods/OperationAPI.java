@@ -46,14 +46,16 @@ public interface OperationAPI {
 
     @Multipart
     @POST("automation/{operationId}")
-    Call<Object> execute(@Path("operationId") String operationId, @Part("request") OperationBody body, @PartMap Map<String, RequestBody> inputs);
+    Call<Object> execute(@Path("operationId") String operationId, @Part("request") OperationBody body,
+            @PartMap Map<String, RequestBody> inputs);
 
     /**
      * @since 2.2
      */
     @Multipart
     @POST("automation/{operationId}")
-    Call<Object> execute(@Path("operationId") String operationId, @Part("request") OperationBody body, @Part List<MultipartBody.Part> filePart);
+    Call<Object> execute(@Path("operationId") String operationId, @Part("request") OperationBody body,
+            @Part List<MultipartBody.Part> filePart);
 
     @GET("automation/{operationId}")
     Call<Operation> fetchOperation(@Path("operationId") String operationId);

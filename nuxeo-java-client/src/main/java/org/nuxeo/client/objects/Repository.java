@@ -130,7 +130,7 @@ public class Repository extends RepositoryEntity<RepositoryAPI, Repository> {
         }
     }
 
-    public void deleteDocument(Document document, Callback<ResponseBody> callback) {
+    public void deleteDocument(Document document, Callback<Void> callback) {
         if (repositoryName == null) {
             fetchResponse(api.deleteDocument(document.getId()), callback);
         } else {

@@ -46,7 +46,7 @@ public final class NuxeoRequestConverter<T> implements Converter<T, RequestBody>
     @Override
     public RequestBody convert(T value) throws IOException {
         byte[] bytes = objectMapper.writeValueAsBytes(value);
-        return RequestBody.create(MediaTypes.APPLICATION_JSON_CHARSET_UTF_8.toOkHttpMediaType(), bytes);
+        return RequestBody.create(bytes, MediaTypes.APPLICATION_JSON_CHARSET_UTF_8.toOkHttpMediaType());
     }
 
 }

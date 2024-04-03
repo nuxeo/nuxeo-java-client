@@ -181,7 +181,7 @@ public class UserManager extends AbstractConnectable<UserManagerAPI, UserManager
         fetchResponse(api.updateUser(user.getUserName(), user), callback);
     }
 
-    public void deleteUser(String userName, Callback<ResponseBody> callback) {
+    public void deleteUser(String userName, Callback<Void> callback) {
         fetchResponse(api.deleteUser(userName), callback);
     }
 

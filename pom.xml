@@ -94,7 +94,7 @@
     <javax.mail.version>1.4.7</javax.mail.version>
     <javax.activation.version>1.2.0</javax.activation.version>
     <junit.version>4.13.2</junit.version>
-    <okhttp.version>3.14.9</okhttp.version>
+    <okhttp.version>4.12.0</okhttp.version>
     <okio.version>2.9.0</okio.version>
     <retrofit.version>2.9.0</retrofit.version>
     <!-- other properties -->
@@ -271,13 +271,6 @@
       <build>
         <directory>target-${custom.environment}</directory>
       </build>
-    </profile>
-
-    <profile>
-      <id>okhttp4</id>
-      <properties>
-        <okhttp.version>4.10.0</okhttp.version>
-      </properties>
     </profile>
 
     <profile>
