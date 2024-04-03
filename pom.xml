@@ -91,8 +91,6 @@
     <commons-lang3.version>3.14.0</commons-lang3.version>
     <guava.version>33.1.0-jre</guava.version>
     <jackson.version>2.17.0</jackson.version>
-    <javax.mail.version>1.4.7</javax.mail.version>
-    <javax.activation.version>1.2.0</javax.activation.version>
     <junit.version>4.13.2</junit.version>
     <okhttp.version>4.12.0</okhttp.version>
     <okio.version>3.9.0</okio.version>
@@ -167,22 +165,6 @@
         <groupId>commons-io</groupId>
         <artifactId>commons-io</artifactId>
         <version>${commons-io.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>javax.mail</groupId>
-        <artifactId>mail</artifactId>
-        <version>${javax.mail.version}</version>
-        <exclusions>
-          <exclusion>
-            <groupId>javax.activation</groupId> <!-- use com.sun.activation:javax.activation instead -->
-            <artifactId>activation</artifactId>
-          </exclusion>
-        </exclusions>
-      </dependency>
-      <dependency>
-        <groupId>com.sun.activation</groupId>
-        <artifactId>javax.activation</artifactId>
-        <version>${javax.activation.version}</version>
       </dependency>
       <dependency>
         <groupId>org.apache.commons</groupId>
