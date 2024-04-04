@@ -31,7 +31,6 @@ import java.util.function.UnaryOperator;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import okhttp3.internal.Util;
 import org.apache.commons.lang3.StringUtils;
 import org.nuxeo.client.cache.NuxeoResponseCache;
 import org.nuxeo.client.marshaller.NuxeoConverterFactory;
@@ -46,8 +45,6 @@ import org.nuxeo.client.objects.Repository;
 import org.nuxeo.client.objects.StringEntity;
 import org.nuxeo.client.objects.blob.Blob;
 import org.nuxeo.client.objects.blob.Blobs;
-import org.nuxeo.client.objects.blob.FileBlob;
-import org.nuxeo.client.objects.blob.FileStreamBlob;
 import org.nuxeo.client.objects.blob.StreamBlob;
 import org.nuxeo.client.objects.comment.Annotation;
 import org.nuxeo.client.objects.comment.Annotations;
@@ -72,6 +69,7 @@ import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
 import okhttp3.ResponseBody;
+import okhttp3.internal.Util;
 import retrofit2.Call;
 import retrofit2.Callback;
 
@@ -367,6 +365,9 @@ public class NuxeoClient extends AbstractBase<NuxeoClient> {
 
                 String mimeType = headers.get(HttpHeaders.CONTENT_TYPE);
                 if (mimeType == null) {
+                    mimeType = blob.getMimeType();
+                }
+                if (mimeType == null) {
                     mimeType = MediaTypes.APPLICATION_OCTET_STREAM_S;
                 }
                 String lengthString = headers.get(HttpHeaders.CONTENT_LENGTH);
@@ -374,17 +375,7 @@ public class NuxeoClient extends AbstractBase<NuxeoClient> {
                 if (lengthString != null) {
                     length = Long.parseLong(lengthString);
                 }
-                if (blob instanceof StreamBlob) {
-                    blob = new StreamBlob(blob.getStream(), filename, mimeType, length);
-                }
-                // for backward compatibility
-                else if (blob instanceof FileStreamBlob) {
-                    blob = new FileStreamBlob(blob.getStream(), filename, mimeType, length);
-                }
-                // deprecated since 3.1
-                else if (blob instanceof FileBlob) {
-                    blob = new FileBlob(((FileBlob) blob).getFile(), filename, mimeType);
-                }
+                blob = new StreamBlob(blob.getStream(), filename, mimeType, length);
                 return retrofit2.Response.success((T) blob, response.raw());
             }
             // No need to wrap the response

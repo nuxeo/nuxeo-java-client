@@ -21,7 +21,6 @@ package org.nuxeo.client.marshaller;
 
 import static org.nuxeo.client.ConstantsV1.ENTITY_TYPE;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;
@@ -39,7 +38,6 @@ import org.nuxeo.client.MediaTypes;
 import org.nuxeo.client.objects.blob.Blob;
 import org.nuxeo.client.objects.blob.Blobs;
 import org.nuxeo.client.objects.blob.FileBlob;
-import org.nuxeo.client.objects.blob.FileStreamBlob;
 import org.nuxeo.client.objects.blob.StreamBlob;
 import org.nuxeo.client.spi.NuxeoClientException;
 import org.nuxeo.client.util.IOUtils;
@@ -95,16 +93,9 @@ public final class NuxeoResponseConverter<T> implements Converter<ResponseBody, 
                 }
                 return (T) new Blobs(blobs);
             }
-            // deprecated since 3.1
-            else if (javaType.getRawClass().equals(FileBlob.class)) {
-                // IOUtils.copyToTempFile close the input stream for us
-                File tmpFile = IOUtils.copyToTempFile(body.byteStream());
-                return (T) new FileBlob(tmpFile);
-            }
             // automation case
             else {
-                // for backward compatibility we need to return a FileBlob
-                return (T) new FileStreamBlob(body.byteStream());
+                return (T) new StreamBlob(body.byteStream(), null, mediaType.toString());
             }
         }
         try (Reader reader = body.charStream()) {

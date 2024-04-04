@@ -31,18 +31,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  */
 public class NuxeoClientRemoteException extends NuxeoClientException {
 
-    /**
-     * This field represents the JSON property {@code code} which is the exception class name happened on server.
-     * <p />
-     * Since Nuxeo LTS 2017 - 9.10, this property is absent from error response. Needed exception/error information are
-     * now status code and message.
-     *
-     * @deprecated on Nuxeo server since LTS 2017 - 9.10
-     */
-    @Deprecated
-    @JsonProperty("code")
-    protected final String exceptionClassName;
-
     protected final int status;
 
     protected final String errorBody;
@@ -61,16 +49,6 @@ public class NuxeoClientRemoteException extends NuxeoClientException {
         super(message, cause);
         this.status = status;
         this.errorBody = errorBody;
-        this.exceptionClassName = null; // NOSONAR
-    }
-
-    /**
-     * @see #exceptionClassName
-     * @deprecated on Nuxeo server since LTS 2017 - 9.10
-     */
-    @Deprecated
-    public String getExceptionClassName() {
-        return exceptionClassName;
     }
 
     public int getStatus() {

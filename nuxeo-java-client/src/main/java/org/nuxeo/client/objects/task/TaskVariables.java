@@ -23,7 +23,6 @@ import java.io.Serializable;
 import java.util.Calendar;
 import java.util.List;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
@@ -56,26 +55,8 @@ public class TaskVariables implements Serializable {
         this.assignees = assignees;
     }
 
-    /**
-     * @deprecated since 3.2, use {@link #getEndDate()} instead
-     */
-    @Deprecated
-    @JsonIgnore
-    public Calendar getEnd_date() { // NOSONAR
-        return getEndDate();
-    }
-
     public Calendar getEndDate() {
         return endDate;
-    }
-
-    /**
-     * @deprecated since 3.2, use {@link #setEndDate(Calendar)} instead
-     */
-    @Deprecated
-    @JsonIgnore
-    public void setEnd_date(Calendar endDate) { // NOSONAR
-        setEndDate(endDate);
     }
 
     public void setEndDate(Calendar endDate) {

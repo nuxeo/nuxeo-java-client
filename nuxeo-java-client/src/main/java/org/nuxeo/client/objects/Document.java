@@ -47,10 +47,8 @@ import org.nuxeo.client.objects.acl.ACE;
 import org.nuxeo.client.objects.acl.ACL;
 import org.nuxeo.client.objects.acl.ACP;
 import org.nuxeo.client.objects.audit.Audit;
-import org.nuxeo.client.objects.blob.FileBlob;
 import org.nuxeo.client.objects.blob.StreamBlob;
 import org.nuxeo.client.objects.operation.DocRef;
-import org.nuxeo.client.objects.task.Task;
 import org.nuxeo.client.objects.task.Tasks;
 import org.nuxeo.client.objects.workflow.Workflow;
 import org.nuxeo.client.objects.workflow.Workflows;
@@ -694,25 +692,6 @@ public class Document extends RepositoryEntity<RepositoryAPI, Document> {
 
     /* Blobs Sync */
 
-    /**
-     * @deprecated since 3.1, use {@link #streamBlob()} instead
-     */
-    @Deprecated
-    public FileBlob fetchBlob() {
-        return fetchBlob(DEFAULT_FILE_CONTENT);
-    }
-
-    /**
-     * @deprecated since 3.1, use {@link #streamBlob(String)} instead
-     */
-    @Deprecated
-    public FileBlob fetchBlob(String fieldPath) {
-        if (repositoryName == null) {
-            return fetchResponse(api.fetchBlobById(uid, fieldPath));
-        }
-        return fetchResponse(api.fetchBlobById(uid, fieldPath, repositoryName));
-    }
-
     public StreamBlob streamBlob() {
         return streamBlob(DEFAULT_FILE_CONTENT);
     }
@@ -725,25 +704,6 @@ public class Document extends RepositoryEntity<RepositoryAPI, Document> {
     }
 
     /* Blobs Async */
-
-    /**
-     * @deprecated since 3.1, use {@link #streamBlob(Callback)} instead
-     */
-    @Deprecated
-    public void fetchBlob(Callback<FileBlob> callback) {
-        fetchBlob(DEFAULT_FILE_CONTENT, callback);
-    }
-
-    /**
-     * @deprecated since 3.1, use {@link #streamBlob(String, Callback)} instead
-     */
-    @Deprecated
-    public void fetchBlob(String fieldPath, Callback<FileBlob> callback) {
-        if (repositoryName == null) {
-            fetchResponse(api.fetchBlobById(uid, fieldPath), callback);
-        }
-        fetchResponse(api.fetchBlobById(uid, fieldPath, repositoryName), callback);
-    }
 
     public void streamBlob(Callback<StreamBlob> callback) {
         streamBlob(DEFAULT_FILE_CONTENT, callback);
@@ -789,14 +749,6 @@ public class Document extends RepositoryEntity<RepositoryAPI, Document> {
     }
 
     /* Task */
-
-    /**
-     * @deprecated since 3.2, this method has never worked, use {@link #fetchTasks()} instead
-     */
-    @Deprecated
-    public Task fetchTask() {
-        return adapter("task").get();
-    }
 
     public Tasks fetchTasks() {
         return adapter("task").get();

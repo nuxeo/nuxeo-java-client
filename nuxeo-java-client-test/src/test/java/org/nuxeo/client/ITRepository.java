@@ -313,20 +313,6 @@ public class ITRepository extends AbstractITBase {
         }
     }
 
-    /**
-     * @deprecated since 3.1
-     */
-    @Test
-    @Deprecated
-    public void itCanFetchBlobFromDocument() {
-        Document file = nuxeoClient.repository().fetchDocumentByPath(FOLDER_2_FILE);
-        FileBlob blob = file.fetchBlob();
-        assertNotNull(blob);
-        assertEquals("blob.json", blob.getFilename());
-        assertEquals("text/plain", blob.getMimeType());
-        assertContentEquals("blob.json", blob);
-    }
-
     @Test
     public void itCanStreamBlobFromDocument() {
         assertFolder2FileBlob("text/plain");
@@ -353,24 +339,6 @@ public class ITRepository extends AbstractITBase {
         assertEquals("blob.json", blob.getFilename());
         assertEquals(contentType, blob.getMimeType());
         assertContentEquals("blob.json", blob);
-    }
-
-    /**
-     * @deprecated since 3.1
-     */
-    @Test
-    @Deprecated
-    public void itCanFetchBlobByPathFromRepository() {
-        itCanFetchBlobFromRepository(Document::getPath, nuxeoClient.repository()::fetchBlobByPath);
-    }
-
-    /**
-     * @deprecated since 3.1
-     */
-    @Test
-    @Deprecated
-    public void itCanFetchBlobByIdFromRepository() {
-        itCanFetchBlobFromRepository(Document::getUid, nuxeoClient.repository()::fetchBlobById);
     }
 
     @Test

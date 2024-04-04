@@ -37,20 +37,4 @@ public class Workflows extends Entities<Workflow> {
         super(EntityTypes.WORKFLOWS, entries);
     }
 
-    /**
-     * @deprecated since 3.2, use {@link #getEntries()} instead
-     */
-    @Deprecated
-    public List<Workflow> getWorkflows() {
-        return getEntries();
-    }
-
-    /**
-     * @deprecated since 3.2, use {@link #getEntry(int)} instead
-     */
-    @Deprecated
-    public Workflow get(int id) {
-        return getEntry(id);
-    }
-
 }

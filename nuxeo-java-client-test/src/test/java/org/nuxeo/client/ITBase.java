@@ -88,12 +88,11 @@ public class ITBase {
     public final LogTestOnServerRule logRule = new LogTestOnServerRule(client);
 
     @Test
-    @SuppressWarnings("deprecation")
     public void itCanFetchServerVersion() {
         NuxeoVersion version = client.getServerVersion();
         assertNotNull(version);
         // First version compatible with this client
-        assertTrue(version.isGreaterThan(NuxeoVersion.LTS_7_10));
+        assertTrue(version.isGreaterThan(NuxeoVersion.LTS_9_10));
     }
 
     @Test

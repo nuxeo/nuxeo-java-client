@@ -26,7 +26,6 @@ import org.nuxeo.client.objects.Document;
 import org.nuxeo.client.objects.Documents;
 import org.nuxeo.client.objects.acl.ACP;
 import org.nuxeo.client.objects.audit.Audit;
-import org.nuxeo.client.objects.blob.FileBlob;
 import org.nuxeo.client.objects.blob.StreamBlob;
 import org.nuxeo.client.objects.workflow.Graph;
 import org.nuxeo.client.objects.workflow.Workflow;
@@ -99,31 +98,11 @@ public interface RepositoryAPI {
     @GET("query")
     Call<Documents> query(@Query("query") String query);
 
-    /**
-     * @deprecated since 3.7, use {{@link #query(String, String, String, String, String, String, String...)}} instead
-     */
-    @GET("query")
-    @Deprecated
-    Call<Documents> query(@Query("query") String query, @Query("pageSize") String pageSize,
-            @Query("currentPageIndex") String currentPageIndex, @Query("maxResults") String maxResults,
-            @Query("sortBy") String sortBy, @Query("sortOrder") String sortOrder,
-            @Query("queryParams") String queryParams);
-
     @GET("query")
     Call<Documents> query(@Query("query") String query, @Query("pageSize") String pageSize,
             @Query("currentPageIndex") String currentPageIndex, @Query("maxResults") String maxResults,
             @Query("sortBy") String sortBy, @Query("sortOrder") String sortOrder,
             @Query("queryParams") String... queryParams);
-
-    /**
-     * @deprecated since 3.10, use {{@link #query(String, String, String, String, String, String, String...)}} instead
-     */
-    @GET("query/{providerName}")
-    @Deprecated
-    Call<Documents> queryByProvider(@Path("providerName") String providerName, @Query("pageSize") String pageSize,
-            @Query("currentPageIndex") String currentPageIndex, @Query("maxResults") String maxResults,
-            @Query("sortBy") String sortBy, @Query("sortOrder") String sortOrder,
-            @Query("queryParams") String queryParams);
 
     @GET("query/{providerName}")
     Call<Documents> queryByProvider(@Path("providerName") String providerName, @Query("pageSize") String pageSize,
@@ -185,38 +164,6 @@ public interface RepositoryAPI {
     Call<Documents> fetchChildrenById(@Path("parentId") String parentId, @Path("repositoryName") String repositoryName);
 
     /* Blobs */
-
-    /**
-     * @deprecated since 3.1
-     */
-    @Deprecated
-    @GET("path{documentPath}/@blob/{fieldPath}")
-    Call<FileBlob> fetchBlobByPath(@Path(value = "documentPath", encoded = true) String documentPath,
-            @Path(value = "fieldPath", encoded = true) String fieldPath);
-
-    /**
-     * @deprecated since 3.1
-     */
-    @Deprecated
-    @GET("id/{documentId}/@blob/{fieldPath}")
-    Call<FileBlob> fetchBlobById(@Path("documentId") String documentId,
-            @Path(value = "fieldPath", encoded = true) String fieldPath);
-
-    /**
-     * @deprecated since 3.1
-     */
-    @Deprecated
-    @GET("repo/{repositoryName}/path{documentPath}/@blob/{fieldPath}")
-    Call<FileBlob> fetchBlobByPath(@Path(value = "documentPath", encoded = true) String documentPath,
-            @Path(value = "fieldPath", encoded = true) String fieldPath, @Path("repositoryName") String repositoryName);
-
-    /**
-     * @deprecated since 3.1
-     */
-    @Deprecated
-    @GET("repo/{repositoryName}/id/{documentId}/@blob/{fieldPath}")
-    Call<FileBlob> fetchBlobById(@Path("documentId") String documentId,
-            @Path(value = "fieldPath", encoded = true) String fieldPath, @Path("repositoryName") String repositoryName);
 
     @GET("path{documentPath}/@blob/{fieldPath}")
     Call<StreamBlob> streamBlobByPath(@Path(value = "documentPath", encoded = true) String documentPath,

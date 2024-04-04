@@ -19,13 +19,10 @@
  */
 package org.nuxeo.client.objects.blob;
 
-import java.io.File;
 import java.util.List;
 
 import org.nuxeo.client.objects.Entities;
 import org.nuxeo.client.objects.EntityTypes;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
 
 /**
  * @since 0.1
@@ -38,29 +35,6 @@ public class Blobs extends Entities<Blob> {
 
     public Blobs(List<? extends Blob> blobs) {
         super(EntityTypes.BLOBS, blobs);
-    }
-
-    public List<Blob> getBlobs() {
-        return getEntries();
-    }
-
-    /**
-     * @deprecated since 3.2, use {@link #addEntry(Object)} instead
-     */
-    @Deprecated
-    @JsonIgnore
-    public void add(File file) {
-        FileBlob blob = new FileBlob(file);
-        super.addEntry(blob);
-    }
-
-    /**
-     * @deprecated since 3.2, use {@link #addEntry(Object)} instead
-     */
-    @Deprecated
-    @JsonIgnore
-    public boolean add(Blob blob) {
-        return super.addEntry(blob);
     }
 
 }

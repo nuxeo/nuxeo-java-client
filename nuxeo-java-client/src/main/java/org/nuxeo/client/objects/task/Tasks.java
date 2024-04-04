@@ -37,20 +37,4 @@ public class Tasks extends Entities<Task> {
         super(EntityTypes.TASKS, entries);
     }
 
-    /**
-     * @deprecated since 3.2, use {@link #getEntries()} instead
-     */
-    @Deprecated
-    public List<Task> getTasks() {
-        return getEntries();
-    }
-
-    /**
-     * @deprecated since 3.2, use {@link #getEntry(int)} instead
-     */
-    @Deprecated
-    public Task get(int id) {
-        return getEntry(id);
-    }
-
 }
