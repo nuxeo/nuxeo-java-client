@@ -28,7 +28,6 @@ import org.nuxeo.client.NuxeoClient;
 import org.nuxeo.client.methods.RepositoryAPI;
 import org.nuxeo.client.objects.acl.ACP;
 import org.nuxeo.client.objects.audit.Audit;
-import org.nuxeo.client.objects.blob.FileBlob;
 import org.nuxeo.client.objects.blob.StreamBlob;
 import org.nuxeo.client.objects.workflow.Graph;
 import org.nuxeo.client.objects.workflow.Workflow;
@@ -178,30 +177,10 @@ public class Repository extends RepositoryEntity<RepositoryAPI, Repository> {
         return fetchResponse(api.query(query));
     }
 
-    /**
-     * @deprecated since 3.7
-     */
-    @Deprecated
-    public Documents query(String query, String pageSize, String currentPageIndex, String maxResults, String sortBy,
-            String sortOrder, String queryParam) {
-        return query(query, pageSize, currentPageIndex, maxResults, sortBy, sortOrder, queryParam, new String[0]);
-    }
-
     public Documents query(String query, String pageSize, String currentPageIndex, String maxResults, String sortBy,
             String sortOrder, String queryParam, String... queryParams) {
         return fetchResponse(api.query(query, pageSize, currentPageIndex, maxResults, sortBy, sortOrder,
                 ArrayUtils.insert(0, queryParams, queryParam)));
-    }
-
-    /**
-     * @deprecated since 3.10, use {@link #queryByProvider(String, String, String, String, String, String, String...)}
-     *             instead
-     */
-    @Deprecated
-    public Documents queryByProvider(String providerName, String pageSize, String currentPageIndex, String maxResults,
-            String sortBy, String sortOrder, String queryParams) {
-        return fetchResponse(api.queryByProvider(providerName, pageSize, currentPageIndex, maxResults, sortBy,
-                sortOrder, queryParams));
     }
 
     public Documents queryByProvider(String providerName, String pageSize, String currentPageIndex, String maxResults,
@@ -226,30 +205,10 @@ public class Repository extends RepositoryEntity<RepositoryAPI, Repository> {
         fetchResponse(api.query(query), callback);
     }
 
-    /**
-     * @deprecated since 3.7
-     */
-    @Deprecated
-    public void query(String query, String pageSize, String currentPageIndex, String maxResults, String sortBy,
-            String sortOrder, String queryParams, Callback<Documents> callback) {
-        query(query, pageSize, currentPageIndex, maxResults, sortBy, sortOrder, new String[] { queryParams }, callback);
-    }
-
     public void query(String query, String pageSize, String currentPageIndex, String maxResults, String sortBy,
             String sortOrder, String[] queryParams, Callback<Documents> callback) {
         fetchResponse(api.query(query, pageSize, currentPageIndex, maxResults, sortBy, sortOrder, queryParams),
                 callback);
-    }
-
-    /**
-     * @deprecated since 3.10, use
-     *             {@link #queryByProvider(String, String, String, String, String, String, String[], Callback)} instead
-     */
-    @Deprecated
-    public void queryByProvider(String providerName, String pageSize, String currentPageIndex, String maxResults,
-            String sortBy, String sortOrder, String queryParams, Callback<Documents> callback) {
-        queryByProvider(providerName, pageSize, currentPageIndex, maxResults, sortBy, sortOrder,
-                new String[] { queryParams }, callback);
     }
 
     public void queryByProvider(String providerName, String pageSize, String currentPageIndex, String maxResults,
@@ -373,28 +332,6 @@ public class Repository extends RepositoryEntity<RepositoryAPI, Repository> {
 
     /* Blobs - Sync */
 
-    /**
-     * @deprecated since 3.1, use {@link #streamBlobByPath(String, String)} instead
-     */
-    @Deprecated
-    public FileBlob fetchBlobByPath(String documentPath, String fieldPath) {
-        if (repositoryName == null) {
-            return fetchResponse(api.fetchBlobByPath(documentPath, fieldPath));
-        }
-        return fetchResponse(api.fetchBlobByPath(documentPath, fieldPath, repositoryName));
-    }
-
-    /**
-     * @deprecated since 3.1, use {@link #streamBlobById(String, String)} instead
-     */
-    @Deprecated
-    public FileBlob fetchBlobById(String documentId, String fieldPath) {
-        if (repositoryName == null) {
-            return fetchResponse(api.fetchBlobById(documentId, fieldPath));
-        }
-        return fetchResponse(api.fetchBlobById(documentId, fieldPath, repositoryName));
-    }
-
     public StreamBlob streamBlobByPath(String documentPath, String fieldPath) {
         if (repositoryName == null) {
             return fetchResponse(api.streamBlobByPath(documentPath, fieldPath));
@@ -410,30 +347,6 @@ public class Repository extends RepositoryEntity<RepositoryAPI, Repository> {
     }
 
     /* Blobs - Async */
-
-    /**
-     * @deprecated since 3.1, use {@link #streamBlobByPath(String, String, Callback)} instead
-     */
-    @Deprecated
-    public void fetchBlobByPath(String documentPath, String fieldPath, Callback<FileBlob> callback) {
-        if (repositoryName == null) {
-            fetchResponse(api.fetchBlobByPath(documentPath, fieldPath), callback);
-        } else {
-            fetchResponse(api.fetchBlobByPath(documentPath, fieldPath, repositoryName), callback);
-        }
-    }
-
-    /**
-     * @deprecated since 3.1, use {@link #streamBlobById(String, String, Callback)} instead
-     */
-    @Deprecated
-    public void fetchBlobById(String documentId, String fieldPath, Callback<FileBlob> callback) {
-        if (repositoryName == null) {
-            fetchResponse(api.fetchBlobById(documentId, fieldPath), callback);
-        } else {
-            fetchResponse(api.fetchBlobById(documentId, fieldPath, repositoryName), callback);
-        }
-    }
 
     public void streamBlobByPath(String documentPath, String fieldPath, Callback<StreamBlob> callback) {
         if (repositoryName == null) {

@@ -41,14 +41,6 @@ public class Directories extends Entities<Directory> implements Connectable {
         super(EntityTypes.DIRECTORIES, entries);
     }
 
-    /**
-     * @deprecated since 3.2, use {@link #getEntries()} instead
-     */
-    @Deprecated
-    public List<Directory> getDirectories() {
-        return getEntries();
-    }
-
     public Directory getDirectory(String name) {
         for (Directory directory : entries) {
             if (directory.getName().equals(name)) {
@@ -56,14 +48,6 @@ public class Directories extends Entities<Directory> implements Connectable {
             }
         }
         return null;
-    }
-
-    /**
-     * @deprecated since 3.2, use {@link #getEntry(int)} instead
-     */
-    @Deprecated
-    public Directory getDirectory(int index) {
-        return super.getEntry(index);
     }
 
     @Override

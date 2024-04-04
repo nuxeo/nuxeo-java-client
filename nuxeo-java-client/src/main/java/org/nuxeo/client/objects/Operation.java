@@ -19,7 +19,6 @@
  */
 package org.nuxeo.client.objects;
 
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -121,7 +120,7 @@ public class Operation extends ConnectableEntity<OperationAPI, Operation> {
             Part formData = Part.createFormData(INPUT_PART, blob.getFilename(), fbody);
             return api.execute(operationId, body, Collections.singletonList(formData));
         } else if (input instanceof Blobs) { // If input is blob or blobs -> use multipart
-            List<Blob> blobs = ((Blobs) input).getBlobs();
+            List<Blob> blobs = ((Blobs) input).getEntries();
             List<MultipartBody.Part> fileParts = new ArrayList<>();
             for (int i = 0; i < blobs.size(); i++) {
                 Blob blob = blobs.get(i);
@@ -133,16 +132,6 @@ public class Operation extends ConnectableEntity<OperationAPI, Operation> {
         } else {
             return api.execute(operationId, body);
         }
-    }
-
-    /**
-     * Returns a new request body that transmits the content of {@link InputStream}.
-     *
-     * @deprecated since 3.1, use {@link Requests#create(Blob)} instead
-     */
-    @Deprecated
-    public static RequestBody create(Blob blob) {
-        return Requests.create(blob);
     }
 
     /*******************************

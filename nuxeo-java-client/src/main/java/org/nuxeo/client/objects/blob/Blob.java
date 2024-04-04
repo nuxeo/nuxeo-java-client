@@ -32,12 +32,6 @@ public interface Blob extends Serializable {
     String getMimeType();
 
     /**
-     * @deprecated since 3.1, use {@link #getContentLength()} instead
-     */
-    @Deprecated
-    int getLength();
-
-    /**
      * @since 3.1
      */
     long getContentLength();

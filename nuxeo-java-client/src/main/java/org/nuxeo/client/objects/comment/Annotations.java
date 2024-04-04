@@ -18,8 +18,6 @@
  */
 package org.nuxeo.client.objects.comment;
 
-import java.util.List;
-
 import org.nuxeo.client.objects.Entities;
 import org.nuxeo.client.objects.EntityTypes;
 
@@ -32,22 +30,6 @@ public class Annotations extends Entities<Annotation> {
 
     public Annotations() {
         super(EntityTypes.ANNOTATIONS);
-    }
-
-    /**
-     * @deprecated since 3.2, use {@link #getEntries()} instead.
-     */
-    @Deprecated
-    public List<Annotation> getAnnotations() {
-        return getEntries();
-    }
-
-    /**
-     * @deprecated since 3.2, use {@link #getEntry(int)} ()} instead.
-     */
-    @Deprecated
-    public Annotation get(int id) {
-        return getEntry(id);
     }
 
 }

@@ -63,19 +63,6 @@ public interface BatchUploadAPI {
     Call<Object> execute(@Path("batchId") String batchId, @Path("fileIdx") String fileIdx,
             @Path("operationId") String operationId, @Body OperationBody body);
 
-    /**
-     * @deprecated since 3.1, use {@link #upload(String, long, String, String, long, long, String, String, RequestBody)}
-     *             instead
-     */
-    @Deprecated
-    @Headers(HttpHeaders.CONTENT_TYPE_APPLICATION_OCTET_STREAM)
-    @POST("upload/{batchId}/{fileIdx}")
-    Call<BatchUpload> upload(@Header("X-File-Name") String filename, @Header("X-File-Size") String fileSize,
-            @Header("X-File-Type") String fileType, @Header("X-Upload-Type") String uploadType,
-            @Header("X-Upload-Chunk-Index") String uploadChunkIndex,
-            @Header("X-Upload-Chunk-Count") String totalChunkCount, @Path("batchId") String batchId,
-            @Path("fileIdx") String fileIdx, @Body RequestBody file);
-
     @Headers(HttpHeaders.CONTENT_TYPE_APPLICATION_OCTET_STREAM)
     @POST("upload/{batchId}/{fileIdx}")
     Call<BatchUpload> upload(@Header("X-File-Name") String filename, @Header("X-File-Size") long fileSize,

@@ -80,22 +80,6 @@ public class ITOperation extends AbstractITBase {
         assertTrue(result.getTotalSize() != 0);
     }
 
-    /**
-     * @deprecated since 3.1
-     */
-    @Test
-    @Deprecated
-    public void itCanBeBackwardCompatible() {
-        // Get a blob
-        Document result = nuxeoClient.operation(REPOSITORY_GET_DOCUMENT).param("value", FOLDER_2_FILE).execute();
-        FileBlob blob = nuxeoClient.operation(DOCUMENT_GET_BLOB).input(result).execute();
-        assertNotNull(blob);
-        // convert blob to a real File
-        assertNotNull(blob.getFile());
-        // then assert content which assert stream switch
-        assertContentEquals("blob.json", blob);
-    }
-
     @Test
     public void itCanExecuteOperationWithBlobs() {
         // Get a blob
@@ -137,7 +121,7 @@ public class ITOperation extends AbstractITBase {
         Blobs resultBlobs = nuxeoClient.operation(DOCUMENT_GET_BLOBS).input(FOLDER_2_FILE).execute();
         assertNotNull(resultBlobs);
         assertTrue(resultBlobs.size() >= 3);
-        resultBlobs.getBlobs()
+        resultBlobs.getEntries()
                    .stream()
                    .filter(b -> "sample.jpg".equalsIgnoreCase(b.getFilename()))
                    .forEach(b -> assertContentEquals("sample.jpg", b));
@@ -199,7 +183,7 @@ public class ITOperation extends AbstractITBase {
         Blobs resultBlobs = nuxeoClient.operation(DOCUMENT_GET_BLOBS).input(FOLDER_2_FILE).execute();
         assertNotNull(resultBlobs);
         assertTrue(resultBlobs.size() >= 3);
-        assertTrue(resultBlobs.getBlobs().stream().anyMatch(b -> "sâmple.jpg".equals(b.getFilename())));
+        assertTrue(resultBlobs.getEntries().stream().anyMatch(b -> "sâmple.jpg".equals(b.getFilename())));
     }
 
     /**
@@ -210,7 +194,7 @@ public class ITOperation extends AbstractITBase {
         // Get blobs
         Blobs resultBlobs = nuxeoClient.operation(DOCUMENT_GET_BLOBS_BY_PROPERTY).input(FOLDER_2_FILE).execute();
         assertNotNull(resultBlobs);
-        assertTrue(resultBlobs.getBlobs().isEmpty());
+        assertTrue(resultBlobs.getEntries().isEmpty());
     }
 
     @Test

@@ -153,15 +153,6 @@ public class DirectoryEntry extends ConnectableEntity<DirectoryManagerAPI, Direc
     }
 
     /**
-     * @deprecated since 3.12, use {@link #putOrderingProperty(Long value)} instead
-     */
-    @JsonIgnore
-    @Deprecated
-    public Integer putOrderingProperty(Integer value) {
-        return putProperty(ORDERING_PROPERTY, value);
-    }
-
-    /**
      * @since 3.12
      */
     @JsonIgnore

@@ -30,14 +30,6 @@ public abstract class AbstractBlob implements Blob {
     protected final long length;
 
     /**
-     * @deprecated since 3.1, implementation should decide about length strategy
-     */
-    @Deprecated
-    public AbstractBlob(String filename, String mimeType) {
-        this(filename, mimeType, -1);
-    }
-
-    /**
      * @since 3.1
      */
     protected AbstractBlob(String filename, String mimeType, long length) {
@@ -54,19 +46,6 @@ public abstract class AbstractBlob implements Blob {
     @Override
     public String getMimeType() {
         return mimeType;
-    }
-
-    /**
-     * @deprecated since 3.1, use {@link #getContentLength()} instead
-     */
-    @Override
-    @Deprecated
-    public int getLength() {
-        long contentLength = getContentLength();
-        if (contentLength > (long) Integer.MAX_VALUE) {
-            return -1;
-        }
-        return (int) contentLength;
     }
 
     @Override

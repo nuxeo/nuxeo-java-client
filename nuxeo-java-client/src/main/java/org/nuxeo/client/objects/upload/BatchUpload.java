@@ -23,7 +23,6 @@ import static org.nuxeo.client.ConstantsV1.UPLOAD_CHUNKED_TYPE;
 import static org.nuxeo.client.ConstantsV1.UPLOAD_NORMAL_TYPE;
 
 import java.io.BufferedInputStream;
-import java.io.File;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
@@ -37,7 +36,6 @@ import org.nuxeo.client.Requests;
 import org.nuxeo.client.methods.BatchUploadAPI;
 import org.nuxeo.client.objects.AbstractConnectable;
 import org.nuxeo.client.objects.blob.Blob;
-import org.nuxeo.client.objects.blob.FileBlob;
 import org.nuxeo.client.objects.operation.OperationBody;
 import org.nuxeo.client.spi.NuxeoClientException;
 
@@ -121,39 +119,6 @@ public class BatchUpload extends AbstractConnectable<BatchUploadAPI, BatchUpload
      */
     protected void setSize(long size) {
         uploadedSize = size;
-    }
-
-    /**
-     * @deprecated since 3.1, use {@link #upload(String, Blob)} instead
-     */
-    @Deprecated
-    public BatchUpload upload(String fileIdx, File file) {
-        return upload(fileIdx, new FileBlob(file));
-    }
-
-    /**
-     * @deprecated since 3.1, use {@link #upload(String, Blob)} instead
-     */
-    @Deprecated
-    public BatchUpload upload(String fileIdx, File file, String name) {
-        return upload(fileIdx, new FileBlob(file, name));
-    }
-
-    /**
-     * @deprecated since 3.1, use {@link #upload(String, Blob)} instead
-     */
-    @Deprecated
-    public BatchUpload upload(String fileIdx, File file, String name, String fileType) {
-        return upload(fileIdx, new FileBlob(file, name, fileType));
-    }
-
-    /**
-     * @deprecated since 3.1, use {@link #upload(String, Blob)} instead
-     */
-    @Deprecated
-    public BatchUpload upload(String fileIdx, File file, String name, String fileType, long length) {
-        // length parameter is kinda weird because we have it in File -> forget it
-        return upload(fileIdx, new FileBlob(file, name, fileType));
     }
 
     /**
@@ -290,16 +255,6 @@ public class BatchUpload extends AbstractConnectable<BatchUploadAPI, BatchUpload
                     "Unable to execute operation on a BatchUpload not representing a blob (fileIdx == null)");
         }
         return new BatchUploadOperation(fileIdx, operationId);
-    }
-
-    /**
-     * This method can only be called on a {@link BatchUpload} representing a real upload (ie: fileIdx != null).
-     * 
-     * @deprecated since 3.14, use {@link #operationOnFile} instead
-     */
-    @Deprecated
-    public BatchUploadOperation operation(String operationId) {
-        return operationOnFile(operationId);
     }
 
     public class BatchUploadOperation {

@@ -18,7 +18,6 @@
  */
 package org.nuxeo.client.objects.upload;
 
-import java.io.File;
 import java.util.List;
 
 import org.nuxeo.client.NuxeoClient;
@@ -53,38 +52,6 @@ public class BatchUploadManager extends AbstractConnectable<BatchUploadAPI, Batc
 
     public BatchUpload fetchBatchUpload(String batchId, String fileIdx) {
         return getBatch(batchId, fileIdx).fetchBatchUpload();
-    }
-
-    /**
-     * @deprecated since 3.1, use {@link #upload(String, String, Blob)} instead
-     */
-    @Deprecated
-    public BatchUpload upload(String batchId, String fileIdx, File file) {
-        return getBatch(batchId).upload(fileIdx, file);
-    }
-
-    /**
-     * @deprecated since 3.1, use {@link #upload(String, String, Blob)} instead
-     */
-    @Deprecated
-    public BatchUpload upload(String batchId, String fileIdx, File file, String name) {
-        return getBatch(batchId).upload(fileIdx, file, name);
-    }
-
-    /**
-     * @deprecated since 3.1, use {@link #upload(String, String, Blob)} instead
-     */
-    @Deprecated
-    public BatchUpload upload(String batchId, String fileIdx, File file, String name, String fileType) {
-        return getBatch(batchId).upload(fileIdx, file, name, fileType);
-    }
-
-    /**
-     * @deprecated since 3.1, use {@link #upload(String, String, Blob)} instead
-     */
-    @Deprecated
-    public BatchUpload upload(String batchId, String fileIdx, File file, String name, String fileType, long length) {
-        return getBatch(batchId).upload(fileIdx, file, name, fileType, length);
     }
 
     /**

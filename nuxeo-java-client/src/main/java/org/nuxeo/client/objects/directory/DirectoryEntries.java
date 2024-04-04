@@ -38,33 +38,6 @@ public class DirectoryEntries extends Entities<DirectoryEntry> implements Connec
         super(EntityTypes.DIRECTORY_ENTRIES, entries);
     }
 
-    /**
-     * @deprecated since 3.2, use {@link #getEntries()} instead
-     */
-    @Deprecated
-    public List<DirectoryEntry> getDirectoryEntries() {
-        return getEntries();
-    }
-
-    /**
-     * @deprecated since 3.2, no replacement except {@link #DirectoryEntries(List)}.
-     */
-    @Deprecated
-    public void setDirectoryEntries(List<DirectoryEntry> directoryEntries) {
-        entries.clear();
-        if (directoryEntries != null) {
-            entries.addAll(directoryEntries);
-        }
-    }
-
-    /**
-     * @deprecated since 3.2, use {@link #addEntry(Object)} instead
-     */
-    @Deprecated
-    public void addDirectoryEntry(DirectoryEntry directoryEntry) {
-        addEntry(directoryEntry);
-    }
-
     public <T> DirectoryEntry getDirectoryEntry(T id) {
         for (DirectoryEntry directoryEntry : entries) {
             if (directoryEntry.getId().equals(String.valueOf(id))) {
@@ -72,14 +45,6 @@ public class DirectoryEntries extends Entities<DirectoryEntry> implements Connec
             }
         }
         return null;
-    }
-
-    /**
-     * @deprecated since 3.2, use {@link #getEntry(int)} instead
-     */
-    @Deprecated
-    public DirectoryEntry getDirectoryEntry(int index) {
-        return getEntry(index);
     }
 
     @Override
