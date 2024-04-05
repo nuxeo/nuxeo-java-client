@@ -19,13 +19,13 @@
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
-library identifier: "platform-ci-shared-library@v0.0.25"
+library identifier: "platform-ci-shared-library@v0.0.32"
 
 def lib
 
 pipeline {
   agent {
-    label 'jenkins-nuxeo-package-lts-2021'
+    label 'jenkins-nuxeo-package-lts-2023'
   }
   options {
     buildDiscarder(logRotator(daysToKeepStr: '60', numToKeepStr: '60', artifactNumToKeepStr: '5'))
@@ -168,7 +168,7 @@ pipeline {
             // find Jira tickets included in this release and update them
             def jiraTickets = nxJira.jqlSearch(jql: "project = JAVACLIENT and fixVersion = '${JIRA_JAVACLIENT_MOVING_VERSION}'")
             def previousVersion = sh(returnStdout: true, script: "perl -pe 's/\\b(\\d+)(?=\\D*\$)/\$1-1/e' <<< ${VERSION}").trim()
-            def changelog = nxGit.getChangeLog(previousVersion: previousVersion, version: env.VERSION)
+            def changelog = nxGit.getChangeLog(tagPrefix: 'release-', previousVersion: previousVersion, version: env.VERSION)
             def committedIssues = jiraTickets.data.issues.findAll { changelog.contains(it.key) }
             committedIssues.each {
               nxJira.editIssueFixVersion(idOrKey: it.key, fixVersionToRemove: env.JIRA_JAVACLIENT_MOVING_VERSION, fixVersionToAdd: jiraVersionName)

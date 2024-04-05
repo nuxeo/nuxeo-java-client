@@ -16,7 +16,7 @@
  * Contributors:
  *     Kevin Leturc <kleturc@nuxeo.com>
  */
-library identifier: "platform-ci-shared-library@v0.0.25"
+library identifier: "platform-ci-shared-library@v0.0.32"
 
 def lib
 
