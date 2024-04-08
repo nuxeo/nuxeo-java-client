@@ -22,6 +22,8 @@ package org.nuxeo.client;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
+import java.net.Proxy;
+import java.net.ProxySelector;
 import java.net.URLDecoder;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -31,6 +33,7 @@ import java.util.function.UnaryOperator;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import okhttp3.Authenticator;
 import org.apache.commons.lang3.StringUtils;
 import org.nuxeo.client.cache.NuxeoResponseCache;
 import org.nuxeo.client.marshaller.NuxeoConverterFactory;
@@ -480,6 +483,32 @@ public class NuxeoClient extends AbstractBase<NuxeoClient> {
          */
         public Builder connectionPool(ConnectionPool connectionPool) {
             okhttpBuilder.connectionPool(connectionPool);
+            return this;
+        }
+
+        /**
+         * @since 4.0.0
+         */
+        public Builder proxy(Proxy proxy) {
+            okhttpBuilder.proxy(proxy);
+            return this;
+        }
+
+
+        /**
+         * @since 4.0.0
+         */
+        public Builder proxyAuthenticator(Authenticator proxyAuthenticator) {
+            okhttpBuilder.proxyAuthenticator(proxyAuthenticator);
+            return this;
+        }
+
+
+        /**
+         * @since 4.0.0
+         */
+        public Builder proxySelector(ProxySelector proxySelector) {
+            okhttpBuilder.proxySelector(proxySelector);
             return this;
         }
 
