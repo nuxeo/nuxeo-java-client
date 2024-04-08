@@ -514,12 +514,9 @@ public class NuxeoClient extends AbstractBase<NuxeoClient> {
 
         /**
          * Register entity type to class link for automatic unmarshalling process in operation.
-         * <p />
-         * CAUTION: this method is just a convenient way to register entity pojo. This operation is done in a static way
-         * on NuxeoConverterFactory.
          */
         public Builder registerEntity(String entityType, Class<?> clazz) {
-            NuxeoConverterFactory.registerEntity(entityType, clazz);
+            converterFactory.registerEntity(entityType, clazz);
             return this;
         }
 

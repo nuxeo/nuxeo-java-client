@@ -18,7 +18,10 @@
  */
 package org.nuxeo.client.marshaller;
 
+import static org.nuxeo.client.marshaller.NuxeoConverterFactory.JACKSON_ATTRIBUTE_KEY;
+
 import java.io.IOException;
+import java.util.Map;
 
 import org.nuxeo.client.ConstantsV1;
 
@@ -44,15 +47,16 @@ public class EntityValueDeserializer extends StdDeserializer<Object> {
     @Override
     public Object deserialize(JsonParser jp, DeserializationContext ctxt) throws IOException {
         TreeNode node = jp.readValueAsTree();
-        Class<?> concreteType = determineConcreteType(node);
+        Class<?> concreteType = determineConcreteType(node, ctxt);
         return jp.getCodec().treeToValue(node, concreteType);
     }
 
-    protected Class<?> determineConcreteType(TreeNode node) {
+    @SuppressWarnings("unchecked")
+    protected Class<?> determineConcreteType(TreeNode node, DeserializationContext ctxt) {
         TreeNode entityNode = node.get(ConstantsV1.ENTITY_TYPE);
         if (entityNode != null && entityNode.isValueNode()) {
             String entityType = ((ValueNode) entityNode).asText();
-            Class<?> klazz = NuxeoConverterFactory.entityTypeToClass.get(entityType);
+            Class<?> klazz = ((Map<String, Class<?>>) ctxt.getAttribute(JACKSON_ATTRIBUTE_KEY)).get(entityType);
             if (klazz != null) {
                 return klazz;
             }

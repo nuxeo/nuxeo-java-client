@@ -20,6 +20,7 @@
 package org.nuxeo.client.marshaller;
 
 import static org.nuxeo.client.ConstantsV1.ENTITY_TYPE;
+import static org.nuxeo.client.marshaller.NuxeoConverterFactory.JACKSON_ATTRIBUTE_KEY;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -109,14 +110,18 @@ public final class NuxeoResponseConverter<T> implements Converter<ResponseBody, 
                     String entityType = payload.get(ENTITY_TYPE).textValue();
                     Class<?> entityClass = entityTypeToClass.get(entityType);
                     if (entityClass != null) {
-                        return objectMapper.readerFor(entityClass).readValue(payload);
+                        return objectMapper.readerFor(entityClass)
+                                           .withAttribute(JACKSON_ATTRIBUTE_KEY, entityTypeToClass)
+                                           .readValue(payload);
                     }
                 }
                 // If we can't find an appropriate class to map response just return the plain text
                 return (T) objectMapper.writeValueAsString(payload);
             } else {
                 // Delegate other cases to jackson
-                return objectMapper.readerFor(javaType).readValue(reader);
+                return objectMapper.readerFor(javaType)
+                                   .withAttribute(JACKSON_ATTRIBUTE_KEY, entityTypeToClass)
+                                   .readValue(reader);
             }
         } catch (IOException reason) {
             throw new NuxeoClientException("Error during deserialization of HTTP body", reason);

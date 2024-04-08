@@ -41,7 +41,6 @@ import java.util.Map;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.nuxeo.client.marshaller.NuxeoConverterFactory;
 import org.nuxeo.client.objects.CustomJSONObject;
 import org.nuxeo.client.objects.Document;
 import org.nuxeo.client.objects.Documents;
@@ -255,8 +254,10 @@ public class ITOperation extends AbstractITBase {
     @Test
     public void itCanFetchJSONBlob() {
         // register the entity
-        NuxeoConverterFactory.registerEntity(CustomJSONObject.ENTITY_TYPE, CustomJSONObject.class);
-        CustomJSONObject result = nuxeoClient.operation("Scripting.CustomOperationJSONBlob").execute();
+        NuxeoClient client = ITBase.createClientBuilder()
+                                   .registerEntity(CustomJSONObject.ENTITY_TYPE, CustomJSONObject.class)
+                                   .connect();
+        CustomJSONObject result = client.operation("Scripting.CustomOperationJSONBlob").execute();
         assertNotNull(result);
         assertEquals("1", result.getUserId());
     }
