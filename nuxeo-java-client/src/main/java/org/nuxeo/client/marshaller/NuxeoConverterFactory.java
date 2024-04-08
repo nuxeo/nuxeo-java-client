@@ -44,7 +44,9 @@ import retrofit2.Retrofit;
  */
 public class NuxeoConverterFactory extends Converter.Factory {
 
-    protected static final Map<String, Class<?>> entityTypeToClass = new HashMap<>();
+    protected static final String JACKSON_ATTRIBUTE_KEY = "entityTypeToClass";
+
+    protected final Map<String, Class<?>> entityTypeToClass = new HashMap<>();
 
     protected final ObjectMapper mapper;
 
@@ -69,7 +71,7 @@ public class NuxeoConverterFactory extends Converter.Factory {
      *
      * @since 3.0
      */
-    public static void registerEntity(String entityType, Class<?> clazz) {
+    public void registerEntity(String entityType, Class<?> clazz) {
         entityTypeToClass.put(entityType, clazz);
     }
 
