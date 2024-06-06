@@ -39,16 +39,6 @@ public class FileBlob extends AbstractBlob {
      */
     protected File file;
 
-    /**
-     * @since 3.1
-     * @deprecated since 3.1, used to create a bridge for backward compatibility in NuxeoResponseConverter
-     */
-    @Deprecated
-    protected FileBlob(String filename, String mediaType, long length) {
-        super(filename, mediaType, length);
-        this.file = null;
-    }
-
     public FileBlob(File file) {
         this(file, file.getName());
     }
