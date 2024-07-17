@@ -31,12 +31,8 @@ import org.nuxeo.client.spi.NuxeoClientException;
  */
 public class NuxeoVersion {
 
-    public static final NuxeoVersion LTS_9_10 = new NuxeoVersion(9, 10, -1, 0, false);
-
-    public static final NuxeoVersion LTS_10_10 = new NuxeoVersion(10, 10, -1, 0, false);
-
     /** @since 3.13.0 */
-    public static final NuxeoVersion LTS_2021 = new NuxeoVersion(2021, 0, -1, 0, false);
+    public static final NuxeoVersion LTS_2021 = new NuxeoVersion(2021, 1, -1, 0, false);
 
     /** @since 3.14.0 */
     public static final NuxeoVersion LTS_2023 = new NuxeoVersion(2023, 0, -1, 0, false);

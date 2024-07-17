@@ -23,7 +23,6 @@ String getDefaultNuxeoVersionToTest() {
 
 def getNuxeoVersionsToTest() {
   return [
-    '10.10',
     '2021',
     getDefaultNuxeoVersionToTest()
   ]
@@ -45,13 +44,8 @@ Closure buildFunctionalTestDockerBuildStage(nuxeoVersion) {
   return {
     container("maven") {
       script {
-        // TODO for 10.10 retrieve the last HF version
-        def nuxeoDockerVersion =  nuxeoVersion
-        if ("${nuxeoDockerVersion}"  == "10.10" ) {
-          nuxeoDockerVersion = '10.10-HF63'
-        }
         nxDocker.build(skaffoldFile: 'ci/docker/nuxeo/skaffold.yaml',
-            envVars: ["FTESTS_VERSION=${getFunctionalTestDockerImageTag(nuxeoVersion)}", "NUXEO_VERSION=${nuxeoDockerVersion}"])
+            envVars: ["FTESTS_VERSION=${getFunctionalTestDockerImageTag(nuxeoVersion)}", "NUXEO_VERSION=${nuxeoVersion}"])
       }
     }
   }

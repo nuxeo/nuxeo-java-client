@@ -29,6 +29,10 @@ import org.junit.Test;
  */
 public class TestNuxeoVersion {
 
+    public static final NuxeoVersion LTS_9_10 = new NuxeoVersion(9, 10, -1, 0, false);
+
+    public static final NuxeoVersion LTS_10_10 = new NuxeoVersion(10, 10, -1, 0, false);
+
     @Test
     public void testParseVersion() {
         assertVersion(NuxeoVersion.parse("7.10"), 7, 10, -1, 0, false);
@@ -51,30 +55,30 @@ public class TestNuxeoVersion {
     @Test
     public void testGreaterThan() {
         // Compare majors
-        assertTrue(NuxeoVersion.LTS_9_10.isGreaterThan(NuxeoVersion.LTS_9_10));
-        assertTrue(NuxeoVersion.LTS_10_10.isGreaterThan(NuxeoVersion.LTS_9_10));
-        assertTrue(NuxeoVersion.LTS_2021.isGreaterThan(NuxeoVersion.LTS_9_10));
-        assertTrue(NuxeoVersion.LTS_2021.isGreaterThan(NuxeoVersion.LTS_10_10));
-        assertFalse(NuxeoVersion.LTS_9_10.isGreaterThan(NuxeoVersion.LTS_10_10));
+        assertTrue(LTS_9_10.isGreaterThan(LTS_9_10));
+        assertTrue(LTS_10_10.isGreaterThan(LTS_9_10));
+        assertTrue(NuxeoVersion.LTS_2021.isGreaterThan(LTS_9_10));
+        assertTrue(NuxeoVersion.LTS_2021.isGreaterThan(LTS_10_10));
+        assertFalse(LTS_9_10.isGreaterThan(LTS_10_10));
 
         // Compare minor
-        assertTrue(NuxeoVersion.LTS_9_10.isGreaterThan(new NuxeoVersion(9, 1, -1, 0, false)));
-        assertFalse(new NuxeoVersion(9, 1, -1, 0, false).isGreaterThan(NuxeoVersion.LTS_9_10));
+        assertTrue(LTS_9_10.isGreaterThan(new NuxeoVersion(9, 1, -1, 0, false)));
+        assertFalse(new NuxeoVersion(9, 1, -1, 0, false).isGreaterThan(LTS_9_10));
 
         // Compare build
         assertTrue(new NuxeoVersion(11, 2, 2, 0, false).isGreaterThan(new NuxeoVersion(11, 2, 0, 0, false)));
         assertFalse(new NuxeoVersion(11, 2, 0, 0, false).isGreaterThan(new NuxeoVersion(11, 2, 2, 0, false)));
 
         // Compare hotfix
-        assertTrue(NuxeoVersion.LTS_9_10.hotfix(5).isGreaterThan(NuxeoVersion.LTS_9_10.hotfix(5)));
-        assertTrue(NuxeoVersion.LTS_9_10.hotfix(5).isGreaterThan(NuxeoVersion.LTS_9_10));
-        assertFalse(NuxeoVersion.LTS_9_10.isGreaterThan(NuxeoVersion.LTS_9_10.hotfix(5)));
+        assertTrue(LTS_9_10.hotfix(5).isGreaterThan(LTS_9_10.hotfix(5)));
+        assertTrue(LTS_9_10.hotfix(5).isGreaterThan(LTS_9_10));
+        assertFalse(LTS_9_10.isGreaterThan(LTS_9_10.hotfix(5)));
 
         // Compare both
-        assertTrue(new NuxeoVersion(10, 1, -1, 0, false).isGreaterThan(NuxeoVersion.LTS_9_10));
-        assertFalse(NuxeoVersion.LTS_9_10.isGreaterThan(new NuxeoVersion(10, 1, -1, 0, false)));
-        assertTrue(NuxeoVersion.LTS_10_10.hotfix((5)).isGreaterThan(NuxeoVersion.LTS_9_10.hotfix(10)));
-        assertTrue(new NuxeoVersion(11, 2, 2, 0, false).isGreaterThan(NuxeoVersion.LTS_10_10.hotfix(29)));
+        assertTrue(new NuxeoVersion(10, 1, -1, 0, false).isGreaterThan(LTS_9_10));
+        assertFalse(LTS_9_10.isGreaterThan(new NuxeoVersion(10, 1, -1, 0, false)));
+        assertTrue(LTS_10_10.hotfix((5)).isGreaterThan(LTS_9_10.hotfix(10)));
+        assertTrue(new NuxeoVersion(11, 2, 2, 0, false).isGreaterThan(LTS_10_10.hotfix(29)));
     }
 
     public void assertVersion(NuxeoVersion version, int majorVersion, int minorVersion, int buildVersion, int hotfix,

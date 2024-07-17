@@ -869,8 +869,6 @@ public class ITRepository extends AbstractITBase {
 
     @Test
     public void itCanManageAnnotations() {
-        assumeTrue("itCanManageAnnotations works only since Nuxeo 10.2",
-                nuxeoClient.getServerVersion().isGreaterThan(NuxeoVersion.LTS_10_10));
         Document file = nuxeoClient.repository().fetchDocumentByPath(FOLDER_2_FILE);
         AnnotationAdapter annotationAdapter = file.adapter(AnnotationAdapter::new);
 
@@ -934,8 +932,6 @@ public class ITRepository extends AbstractITBase {
 
     @Test
     public void itCanTrashUntrashDocument() {
-        assumeTrue("itCanTrashUntrashDocument works only since Nuxeo 10.2",
-                nuxeoClient.getServerVersion().isGreaterThan(NuxeoVersion.LTS_10_10));
         Document file = nuxeoClient.repository().fetchDocumentByPath(FOLDER_2_FILE);
 
         assertFalse(file.isTrashed());
@@ -950,8 +946,6 @@ public class ITRepository extends AbstractITBase {
 
     @Test
     public void itCanManageComments() {
-        assumeTrue("itCanManageComments works only since Nuxeo 10.3",
-                nuxeoClient.getServerVersion().isGreaterThan(NuxeoVersion.LTS_10_10));
         Document file = nuxeoClient.repository().fetchDocumentByPath(FOLDER_2_FILE);
         CommentAdapter commentAdapter = file.adapter(CommentAdapter::new);
 
@@ -1022,8 +1016,6 @@ public class ITRepository extends AbstractITBase {
 
     @Test
     public void itCanManageAnnotationReplies() {
-        assumeTrue("itCanManageAnnotationReplies works only since Nuxeo 10.3",
-                nuxeoClient.getServerVersion().isGreaterThan(NuxeoVersion.LTS_10_10));
         Document file = nuxeoClient.repository().fetchDocumentByPath(FOLDER_2_FILE);
         AnnotationAdapter annotationAdapter = file.adapter(AnnotationAdapter::new);
 
@@ -1078,8 +1070,6 @@ public class ITRepository extends AbstractITBase {
 
     @Test
     public void itCanRetrieveCommentPermissions() {
-        assumeTrue("itCanRetrieveCommentPermissions works only since Nuxeo 10.3",
-                nuxeoClient.getServerVersion().isGreaterThan(NuxeoVersion.LTS_10_10));
         Document file = nuxeoClient.repository().fetchDocumentByPath(FOLDER_2_FILE);
         CommentAdapter commentAdapter = file.adapter(CommentAdapter::new);
 
@@ -1103,8 +1093,6 @@ public class ITRepository extends AbstractITBase {
 
     @Test
     public void itCanInstantiateAnAdapterWithRepositoryAndUseIt() {
-        assumeTrue("itCanInstantiateAnAdapterWithRepositoryAndUseIt works only since Nuxeo 10.3",
-                nuxeoClient.getServerVersion().isGreaterThan(NuxeoVersion.LTS_10_10));
         Repository repository = nuxeoClient.repository();
         String folder2FileId = repository.fetchDocumentByPath(FOLDER_2_FILE).getId();
         AnnotationAdapter annotationAdapter = repository.newDocumentAdapter(folder2FileId, AnnotationAdapter::new);

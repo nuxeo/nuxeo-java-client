@@ -133,7 +133,7 @@
         </property>
       </activation>
       <properties>
-        <nuxeo.server.tomcat.version>2021.0.17</nuxeo.server.tomcat.version>
+        <nuxeo.server.tomcat.version>2021.1.19</nuxeo.server.tomcat.version>
       </properties>
       <!-- import nuxeo-ecm parent pom otherwise we will an error about an unknown dependency: -->
       <!-- The POM for net.openhft:chronicle-core:jar:2.20.7-SNAPSHOT is missing, no dependency information available -->

@@ -8,11 +8,10 @@
   <installer restart="true" />
   <uninstaller restart="true" />
   <nuxeo-validation>nuxeo_certified</nuxeo-validation>
-  <platforms>
-    <platform>server-10.10*</platform>
-    <platform>lts-2021.*</platform>
-    <platform>lts-2023.*</platform>
-  </platforms>
+  <target-platform>
+    <name>lts</name>
+    <version>[2021.0,2025.0)</version>
+  </target-platform>
   <license>LGPL 2.1</license>
   <license-url>http://www.gnu.org/licenses/lgpl-2.1.html</license-url>
   <visibility>PUBLIC</visibility>
