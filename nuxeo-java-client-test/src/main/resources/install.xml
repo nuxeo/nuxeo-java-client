@@ -3,8 +3,6 @@
   <copy dir="${package.root}/install/templates" todir="${env.templates}" overwrite="true"  />
 
   <!-- Bundles installation based on Nuxeo version -->
-  <update file="${package.root}/install/bundles-1010" todir="${env.bundles}"
-          if="Version.isGreaterOrEqual(Platform.getVersion(), '10.10') &amp;&amp; Version.isLess(Platform.getVersion(), '2021.0.0')" />
   <update file="${package.root}/install/bundles-2021" todir="${env.bundles}"
           if="Version.isGreaterOrEqual(Platform.getVersion(), '2021.0.0') &amp;&amp; Version.isLess(Platform.getVersion(), '2022.0.0')" />
   <update file="${package.root}/install/bundles-2023" todir="${env.bundles}"

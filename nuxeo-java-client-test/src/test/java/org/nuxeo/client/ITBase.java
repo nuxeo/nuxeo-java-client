@@ -92,7 +92,7 @@ public class ITBase {
         NuxeoVersion version = client.getServerVersion();
         assertNotNull(version);
         // First version compatible with this client
-        assertTrue(version.isGreaterThan(NuxeoVersion.LTS_9_10));
+        assertTrue(version.isGreaterThan(NuxeoVersion.LTS_2021));
     }
 
     @Test

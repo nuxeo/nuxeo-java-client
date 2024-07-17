@@ -22,7 +22,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assume.assumeTrue;
 
 import org.junit.Test;
 import org.nuxeo.client.objects.capabilities.Capabilities;
@@ -35,8 +34,6 @@ public class ITCapabilities extends AbstractITBase {
 
     @Test
     public void itCanFetchCapabilities() {
-        assumeTrue("itCanFetchCapabilities works only since Nuxeo 2021.1",
-                nuxeoClient.getServerVersion().isGreaterThan(NuxeoVersion.LTS_2021.minor(1)));
         Capabilities capabilities = nuxeoClient.capabilitiesManager().fetchCapabilities();
         assertNotNull(capabilities);
 

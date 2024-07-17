@@ -29,9 +29,7 @@ import static org.junit.Assume.assumeTrue;
 import static org.nuxeo.client.ITBase.JWT;
 import static org.nuxeo.client.ITBase.createClient;
 import static org.nuxeo.client.ITBase.createClientBuilder;
-import static org.nuxeo.client.NuxeoVersion.LTS_10_10;
 import static org.nuxeo.client.NuxeoVersion.LTS_2021;
-import static org.nuxeo.client.NuxeoVersion.LTS_2023;
 
 import org.junit.Test;
 import org.nuxeo.client.objects.directory.Directory;
@@ -85,8 +83,6 @@ public class ITAuthentication {
 
     @Test
     public void itCanLoginWithJWT() {
-        assumeTrue("itCanChangeLoginWithJWT works only since Nuxeo 10.3",
-                createClient().getServerVersion().isGreaterThan(LTS_10_10));
         NuxeoClient client = ITBase.createClientJWT();
         User currentUser = client.getCurrentUser();
         assertEquals("Administrator", currentUser.getUserName());
@@ -122,12 +118,8 @@ public class ITAuthentication {
     public void itReturnProperExceptionWhenLoginWithOauth2AndJwtBearer() {
         NuxeoClient adminClient = createClient();
         NuxeoVersion serverVersion = adminClient.getServerVersion();
-        assumeTrue("itReturnProperExceptionWhenLoginWithOauth2AndJwtBearer works only since Nuxeo 10.10-HF63 / 2021.23",
-                serverVersion.majorVersion() == LTS_10_10.majorVersion()
-                        && serverVersion.isGreaterThan(LTS_10_10.hotfix(63))
-                        || serverVersion.majorVersion() == LTS_2021.majorVersion()
-                                && serverVersion.isGreaterThan(LTS_2021.minor(23))
-                        || serverVersion.isGreaterThan(LTS_2023));
+        assumeTrue("itReturnProperExceptionWhenLoginWithOauth2AndJwtBearer works only since Nuxeo 2021.23",
+                serverVersion.isGreaterThan(LTS_2021.minor(23)));
 
         Directory oauth2Directory = adminClient.directoryManager().directory("oauth2Clients");
         // create an oauth provider

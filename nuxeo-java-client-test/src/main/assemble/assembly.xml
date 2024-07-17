@@ -16,9 +16,6 @@
     </copy>
 
     <!-- Bundles -->
-    <copy todir="${outdir}/marketplace/install/bundles-1010" overwrite="true">
-      <artifact:resolveFile key="org.nuxeo.ecm.platform:nuxeo-platform-login-portal-sso:10.10-HF56:jar:" />
-    </copy>
     <copy todir="${outdir}/marketplace/install/bundles-2021" overwrite="true">
       <artifact:resolveFile key="org.nuxeo.ecm.platform:nuxeo-platform-login-portal-sso:2021.13.8:jar:" />
     </copy>

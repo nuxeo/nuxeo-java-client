@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2016-2018 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2016-2024 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,10 +30,7 @@ import java.security.NoSuchAlgorithmException;
 import java.util.List;
 import java.util.Properties;
 import java.util.function.UnaryOperator;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
-import okhttp3.Authenticator;
 import org.apache.commons.lang3.StringUtils;
 import org.nuxeo.client.cache.NuxeoResponseCache;
 import org.nuxeo.client.marshaller.NuxeoConverterFactory;
@@ -50,6 +47,8 @@ import org.nuxeo.client.objects.StringEntity;
 import org.nuxeo.client.objects.blob.Blob;
 import org.nuxeo.client.objects.blob.Blobs;
 import org.nuxeo.client.objects.blob.StreamBlob;
+import org.nuxeo.client.objects.capabilities.Capabilities;
+import org.nuxeo.client.objects.capabilities.Capability;
 import org.nuxeo.client.objects.comment.Annotation;
 import org.nuxeo.client.objects.comment.Annotations;
 import org.nuxeo.client.objects.comment.Comment;
@@ -66,6 +65,7 @@ import org.nuxeo.client.spi.NuxeoClientException;
 import org.nuxeo.client.spi.NuxeoClientRemoteException;
 import org.nuxeo.client.spi.auth.BasicAuthInterceptor;
 
+import okhttp3.Authenticator;
 import okhttp3.ConnectionPool;
 import okhttp3.Headers;
 import okhttp3.Interceptor;
@@ -81,8 +81,6 @@ import retrofit2.Callback;
  * @since 0.1
  */
 public class NuxeoClient extends AbstractBase<NuxeoClient> {
-
-    public static final Pattern CMIS_PRODUCT_VERSION_PATTERN = Pattern.compile("\"productVersion\":\"(.*?)\"");
 
     protected final NuxeoConverterFactory converterFactory;
 
@@ -175,22 +173,9 @@ public class NuxeoClient extends AbstractBase<NuxeoClient> {
      */
     public NuxeoVersion getServerVersion() {
         if (serverVersion == null) {
-            try {
-                // Remove API_PATH from the base url
-                // Get repository capabilities on CMIS
-                Response response = get(
-                        retrofit.baseUrl().toString().replaceFirst(ConstantsV1.API_PATH, "") + "/json/cmis");
-                String body = response.body().string();
-                Matcher matcher = CMIS_PRODUCT_VERSION_PATTERN.matcher(body);
-                if (matcher.find()) {
-                    String version = matcher.group(1);
-                    serverVersion = NuxeoVersion.parse(version);
-                } else {
-                    throw new NuxeoClientException("Unable to get version from CMIS");
-                }
-            } catch (IOException ioe) {
-                throw new NuxeoClientException("Unable to retrieve the server version.", ioe);
-            }
+            Capabilities capabilities = capabilitiesManager().fetchCapabilities();
+            Capability serverCapability = capabilities.serverCapability();
+            serverVersion = serverCapability.capabilityAs("distributionVersion", NuxeoVersion::parse);
         }
         return serverVersion;
     }
@@ -502,7 +487,6 @@ public class NuxeoClient extends AbstractBase<NuxeoClient> {
             return this;
         }
 
-
         /**
          * @since 4.0.0
          */
@@ -510,7 +494,6 @@ public class NuxeoClient extends AbstractBase<NuxeoClient> {
             okhttpBuilder.proxyAuthenticator(proxyAuthenticator);
             return this;
         }
-
 
         /**
          * @since 4.0.0

@@ -2,7 +2,7 @@
 
 The Nuxeo Java Client is a Java client library for Nuxeo REST API.
 
-This is supported by Nuxeo and compatible with Nuxeo LTS 2019 and higher.
+This is supported by Nuxeo and compatible with Nuxeo LTS 2021 and higher.
 
 See the [Documentation Website](https://doc.nuxeo.com/client-java) for documentation, usages and APIs.
 
