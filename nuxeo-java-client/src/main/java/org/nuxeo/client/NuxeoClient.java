@@ -38,6 +38,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.nuxeo.client.cache.NuxeoResponseCache;
 import org.nuxeo.client.marshaller.NuxeoConverterFactory;
 import org.nuxeo.client.objects.AbstractBase;
+import org.nuxeo.client.objects.CapabilitiesManager;
 import org.nuxeo.client.objects.Connectable;
 import org.nuxeo.client.objects.Document;
 import org.nuxeo.client.objects.Documents;
@@ -227,6 +228,13 @@ public class NuxeoClient extends AbstractBase<NuxeoClient> {
 
     public ConfigManager configManager() {
         return new ConfigManager(this);
+    }
+
+    /**
+     * @since 4.0.0
+     */
+    public CapabilitiesManager capabilitiesManager() {
+        return new CapabilitiesManager(this);
     }
 
     /*******************************

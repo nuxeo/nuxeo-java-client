@@ -40,6 +40,13 @@ public class EntityTypes {
     public static final String ANNOTATIONS = "annotations";
 
     /**
+     * This API is available since Nuxeo Server 2021.
+     *
+     * @since 4.0.0
+     */
+    public static final String CAPABILITIES = "capabilities";
+
+    /**
      * This API is available since Nuxeo Server 10.3.
      *
      * @since 3.2
