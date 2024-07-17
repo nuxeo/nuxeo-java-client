@@ -18,7 +18,8 @@ mvn clean install
 You can specify the Nuxeo Server version you want to test the client against:
 
 ```bash
-mvn clean install -Dnuxeo.server.tomcat.version=2021.1.19
+mvn clean install -Dnuxeo.parent.version=2021.1
+mvn clean install -Dnuxeo.parent.version=2021.1.19
 ```
 
 You can run a Nuxeo with the configuration defined in the pom with (in order to run tests from your IDE):

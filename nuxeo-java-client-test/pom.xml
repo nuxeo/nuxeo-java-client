@@ -133,7 +133,7 @@
         </property>
       </activation>
       <properties>
-        <nuxeo.server.tomcat.version>2021.1.19</nuxeo.server.tomcat.version>
+        <nuxeo.parent.version>2021.1.19</nuxeo.parent.version>
       </properties>
       <!-- import nuxeo-ecm parent pom otherwise we will an error about an unknown dependency: -->
       <!-- The POM for net.openhft:chronicle-core:jar:2.20.7-SNAPSHOT is missing, no dependency information available -->
@@ -141,8 +141,8 @@
         <dependencies>
           <dependency>
             <groupId>org.nuxeo</groupId>
-            <artifactId>nuxeo-ecm</artifactId>
-            <version>${nuxeo.server.tomcat.version}</version>
+            <artifactId>nuxeo-parent</artifactId>
+            <version>${nuxeo.parent.version}</version>
             <type>pom</type>
             <scope>import</scope>
           </dependency>
@@ -152,7 +152,6 @@
         <dependency>
           <groupId>org.nuxeo.ecm.distribution</groupId>
           <artifactId>nuxeo-server-tomcat</artifactId>
-          <version>${nuxeo.server.tomcat.version}</version>
           <type>zip</type>
           <scope>runtime</scope>
         </dependency>
