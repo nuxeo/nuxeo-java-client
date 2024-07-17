@@ -19,15 +19,14 @@
  */
 package org.nuxeo.client;
 
-import static java.util.Collections.singletonList;
-import static java.util.Collections.singletonMap;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 
 import java.util.List;
+import java.util.Map;
 import java.util.function.Predicate;
 
 import org.junit.Before;
@@ -97,11 +96,11 @@ public class ITWorkflowAndTask extends AbstractITBase {
         nuxeoClient.repository().startWorkflowInstanceWithDocPath(document.getPath(), serialWorkflow);
         Workflows workflowInstances = nuxeoClient.userManager().fetchWorkflowInstances();
         assertNotNull(workflowInstances);
-        assertTrue(workflowInstances.size() != 0);
+        assertFalse(workflowInstances.isEmpty());
     }
 
     @Test
-    public void itCanFetchDocWorflowInstances() {
+    public void itCanFetchDocWorkflowInstances() {
         document.startWorkflowInstance(serialWorkflow);
         Workflows workflowInstances = document.fetchWorkflowInstances();
         assertNotNull(workflowInstances);
@@ -121,22 +120,17 @@ public class ITWorkflowAndTask extends AbstractITBase {
     public void itCanCancelWorkflow() {
         Workflow workflow = document.startWorkflowInstance(serialWorkflow);
         nuxeoClient.repository().cancelWorkflowInstance(workflow.getId());
-        try {
-            nuxeoClient.repository().cancelWorkflowInstance(workflow.getId());
-            fail("Should fail: wf instance already cancelled");
-        } catch (NuxeoClientRemoteException reason) {
-            // since 10.10-HF30 a second call to cancelWorkflowInstance produces a 400
-            // we can't use the server version as 10.10-HF image doesn't return the hotfix version
-            assertTrue("Received http status: " + reason.getStatus(),
-                    reason.getStatus() == 400 || reason.getStatus() == 500);
-        }
+        var reason = assertThrows("Should fail: wf instance already cancelled", NuxeoClientRemoteException.class,
+                () -> nuxeoClient.repository().cancelWorkflowInstance(workflow.getId()));
+        assertTrue("Received http status: " + reason.getStatus(),
+                reason.getStatus() == 400 || reason.getStatus() == 500);
     }
 
     @Test
     public void itCanFetchAllTasksFromWFAndUser() {
         Tasks tasks = fetchAllTasks();
         assertNotNull(tasks);
-        assertTrue(tasks.size() != 0);
+        assertFalse(tasks.isEmpty());
     }
 
     @Test
@@ -176,7 +170,7 @@ public class ITWorkflowAndTask extends AbstractITBase {
         Task task = fetchAllTasks().getEntry(0);
         TaskCompletionRequest taskCompletionRequest = new TaskCompletionRequest();
         taskCompletionRequest.setComment("Please review");
-        taskCompletionRequest.setVariables(singletonMap("participants", singletonList("user:Administrator")));
+        taskCompletionRequest.setVariables(Map.of("participants", List.of("user:Administrator")));
         task = nuxeoClient.taskManager().complete(task.getId(), "start_review", taskCompletionRequest);
         assertNotNull(task);
         assertEquals("ended", task.getState());
@@ -197,12 +191,9 @@ public class ITWorkflowAndTask extends AbstractITBase {
     @Test
     public void itCanReAssign() {
         Task task = fetchAllTasks().getEntry(0);
-        try {
-            nuxeoClient.taskManager().reassign(task.getId(), "Administrator", "some comment");
-            fail("Should fail: not possible to reassign this task");
-        } catch (NuxeoClientRemoteException reason) {
-            assertEquals(500, reason.getStatus());
-        }
+        var reason = assertThrows("Should fail: not possible to reassign this task", NuxeoClientRemoteException.class,
+                () -> nuxeoClient.taskManager().reassign(task.getId(), "Administrator", "some comment"));
+        assertEquals(500, reason.getStatus());
     }
 
     protected Tasks fetchAllTasks() {

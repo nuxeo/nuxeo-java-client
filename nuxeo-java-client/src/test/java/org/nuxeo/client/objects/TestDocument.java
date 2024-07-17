@@ -1,18 +1,16 @@
 package org.nuxeo.client.objects;
 
-import org.junit.Test;
-import org.nuxeo.client.objects.user.User;
-import org.nuxeo.client.spi.NuxeoClientException;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.fail;
 
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.fail;
+import org.junit.Test;
+import org.nuxeo.client.objects.user.User;
+import org.nuxeo.client.spi.NuxeoClientException;
 
 /**
  * @since 3.3
@@ -38,7 +36,7 @@ public class TestDocument {
     @Test
     public void testGetPropertyValueWithXPathListProperty() {
         Document document = Document.createWithName("test.doc", "File");
-        List<String> list = Arrays.asList("first", "second", "third");
+        List<String> list = List.of("first", "second", "third");
         document.setPropertyValue("list:list", list);
 
         assertEquals(list, document.getPropertyValue("list:list"));
@@ -63,23 +61,23 @@ public class TestDocument {
     @Test
     public void testGetPropertyValueWithXPathListComplexProperty() {
         Document document = Document.createWithName("test.doc", "File");
-        Map<String, Object> complex1 = Collections.singletonMap("string", "myString1");
-        Map<String, Object> complex2 = Collections.singletonMap("string", "myString2");
-        List<Map<String, Object>> list = Arrays.asList(complex1, complex2);
+        Map<String, Object> complex1 = Map.of("string", "myString1");
+        Map<String, Object> complex2 = Map.of("string", "myString2");
+        List<Map<String, Object>> list = List.of(complex1, complex2);
         document.setPropertyValue("list:list", list);
 
         assertEquals(list, document.getPropertyValue("list:list"));
         assertEquals(list, document.getPropertyValue("list:list/*"));
         assertEquals("myString1", document.getPropertyValue("list:list/0/string"));
         assertEquals("myString2", document.getPropertyValue("list:list/1/string"));
-        assertEquals(Arrays.asList("myString1", "myString2"), document.getPropertyValue("list:list/*/string"));
+        assertEquals(List.of("myString1", "myString2"), document.getPropertyValue("list:list/*/string"));
     }
 
     @Test
     public void testGetPropertyValueWithXPathMissingProperty() {
         Document document = Document.createWithName("test.doc", "File");
-        Map<String, Object> complex1 = Collections.singletonMap("string", "myString1");
-        List<Map<String, Object>> list = Collections.singletonList(complex1);
+        Map<String, Object> complex1 = Map.of("string", "myString1");
+        List<Map<String, Object>> list = List.of(complex1);
         document.setPropertyValue("list:list", list);
 
         assertNull(document.getPropertyValue("simple:missing"));
@@ -88,12 +86,12 @@ public class TestDocument {
         assertNull(document.getPropertyValue("list:list/1/string"));
         assertNull(document.getPropertyValue("list:missing/0/string"));
     }
-    
+
     @Test
     public void testGetPropertyValueWithWrongXPath() {
         Document document = Document.createWithName("test.doc", "File");
-        Map<String, Object> complex1 = Collections.singletonMap("user", new User());
-        List<Map<String, Object>> list = Collections.singletonList(complex1);
+        Map<String, Object> complex1 = Map.of("user", new User());
+        List<Map<String, Object>> list = List.of(complex1);
         document.setPropertyValue("list:list", list);
 
         try {
@@ -118,8 +116,7 @@ public class TestDocument {
             document.getPropertyValue("list:list/0/user/id");
             fail("Expected to fail because list:list/0/user/id is not a valid XPath");
         } catch (NuxeoClientException e) {
-            assertEquals("Unable to traverse User object" +
-                    " with segment=id", e.getMessage());
+            assertEquals("Unable to traverse User object" + " with segment=id", e.getMessage());
         }
     }
 }

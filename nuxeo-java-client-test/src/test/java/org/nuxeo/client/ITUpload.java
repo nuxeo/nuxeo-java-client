@@ -22,7 +22,7 @@ package org.nuxeo.client;
 import static java.util.stream.Collectors.toList;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.assertThrows;
 import static org.nuxeo.client.Operations.BLOB_ATTACH_ON_DOCUMENT;
 
 import java.io.File;
@@ -54,12 +54,9 @@ public class ITUpload extends AbstractITBase {
         assertNotNull(batchUpload);
         assertNotNull(batchUpload.getBatchId());
         batchUpload.cancel();
-        try {
-            batchUpload.fetchBatchUploads();
-            fail("Should be not found");
-        } catch (NuxeoClientRemoteException reason) {
-            assertEquals(404, reason.getStatus());
-        }
+        var reason = assertThrows("Should be not found", NuxeoClientRemoteException.class,
+                batchUpload::fetchBatchUploads);
+        assertEquals(404, reason.getStatus());
     }
 
     @Test

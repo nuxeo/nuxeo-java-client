@@ -76,6 +76,7 @@ public class AbstractBase<B extends AbstractBase<B>> {
     /**
      * Sets retry on connection failure or not.
      */
+    @SuppressWarnings("unchecked")
     public B retryOnConnectionFailure(boolean enable) {
         okhttpBuilder.retryOnConnectionFailure(enable);
         buildRetrofit();
@@ -187,7 +188,7 @@ public class AbstractBase<B extends AbstractBase<B>> {
         List<String> lValues = headerValues.compute(header, (k, vOld) -> {
             List<String> vNew = new ArrayList<>(1 + values.length);
             vNew.add(value);
-            vNew.addAll(Arrays.asList(values));
+            vNew.addAll(List.of(values));
             if (append && vOld != null) {
                 vNew.addAll(vOld);
             }

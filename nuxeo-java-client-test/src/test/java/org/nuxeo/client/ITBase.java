@@ -20,19 +20,17 @@ package org.nuxeo.client;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 import static org.nuxeo.client.AbstractITBase.getResourceFileFromContext;
 import static org.nuxeo.client.Operations.BLOB_ATTACH_ON_DOCUMENT;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
-import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
 import org.nuxeo.client.objects.Document;
@@ -148,12 +146,9 @@ public class ITBase {
 
         // Delete
         repository.deleteDocument(result);
-        try {
-            repository.fetchDocumentByPath(result.getPath());
-            fail("Document should have been deleted");
-        } catch (NuxeoClientRemoteException nce) {
-            assertEquals(404, nce.getStatus());
-        }
+        var nce = assertThrows("Document should have been deleted", NuxeoClientRemoteException.class,
+                () -> repository.fetchDocumentByPath(result.getPath()));
+        assertEquals(404, nce.getStatus());
     }
 
     @Test
@@ -196,13 +191,10 @@ public class ITBase {
 
         // Delete
         userManager.deleteUser(DEFAULT_USER_LOGIN);
-        try {
-            userManager.fetchUser(DEFAULT_USER_LOGIN);
-            fail("User should not exist");
-        } catch (NuxeoClientRemoteException reason) {
-            Assert.assertEquals(404, reason.getStatus());
-            Assert.assertEquals("user does not exist", reason.getMessage());
-        }
+        var reason = assertThrows("User should not exist", NuxeoClientRemoteException.class,
+                () -> userManager.fetchUser(DEFAULT_USER_LOGIN));
+        assertEquals(404, reason.getStatus());
+        assertEquals("user does not exist", reason.getMessage());
     }
 
     @Test
@@ -211,7 +203,7 @@ public class ITBase {
 
         // Create
         Group group = createGroup();
-        group.setMemberUsers(Collections.singletonList("Administrator"));
+        group.setMemberUsers(List.of("Administrator"));
         group = userManager.createGroup(group);
         assertNotNull(group);
         assertNotNull(group);
@@ -229,13 +221,10 @@ public class ITBase {
 
         // Delete
         userManager.deleteGroup(DEFAULT_GROUP_NAME);
-        try {
-            userManager.fetchGroup(DEFAULT_GROUP_NAME);
-            fail("Group should not exist");
-        } catch (NuxeoClientRemoteException reason) {
-            Assert.assertEquals(404, reason.getStatus());
-            Assert.assertEquals("group does not exist", reason.getMessage());
-        }
+        var reason = assertThrows("Group should not exist", NuxeoClientRemoteException.class,
+                () -> userManager.fetchGroup(DEFAULT_GROUP_NAME));
+        assertEquals(404, reason.getStatus());
+        assertEquals("group does not exist", reason.getMessage());
     }
 
     @Test
@@ -256,13 +245,10 @@ public class ITBase {
         // create a document under a non existent parent
         Document doc = Document.createWithName("file", "File");
         doc.setPropertyValue("dc:title", "File");
-        try {
-            client.repository().createDocumentByPath("/absent", doc);
-            fail("Previous call should have failed.");
-        } catch (NuxeoClientRemoteException e) {
-            assertEquals(404, e.getStatus());
-            assertEquals("/absent", e.getMessage());
-        }
+        var e = assertThrows(NuxeoClientRemoteException.class,
+                () -> client.repository().createDocumentByPath("/absent", doc));
+        assertEquals(404, e.getStatus());
+        assertEquals("/absent", e.getMessage());
     }
 
     @Test
@@ -345,7 +331,7 @@ public class ITBase {
         user.setLastName("last " + userName);
         user.setPassword(DEFAULT_USER_PASSWORD);
         user.setTenantId("mytenantid");
-        user.setGroups(Collections.singletonList("members"));
+        user.setGroups(List.of("members"));
         return user;
     }
 
@@ -360,7 +346,7 @@ public class ITBase {
         Group group = new Group();
         group.setGroupName(groupName);
         group.setGroupLabel("Label " + groupName);
-        group.setMemberGroups(Collections.singletonList("members"));
+        group.setMemberGroups(List.of("members"));
         return group;
     }
 

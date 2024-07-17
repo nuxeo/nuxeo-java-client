@@ -24,7 +24,6 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 import static org.junit.Assume.assumeTrue;
 import static org.nuxeo.client.ITBase.JWT;
 import static org.nuxeo.client.ITBase.createClient;
@@ -56,22 +55,16 @@ public class ITAuthentication {
 
         // Logout
         client.disconnect();
-        try {
-            client.userManager().fetchCurrentUser();
-            fail("Should be non authorized");
-        } catch (NuxeoClientRemoteException reason) {
-            assertEquals(401, reason.getStatus());
-        }
+        var reason = assertThrows("Should be non authorized", NuxeoClientRemoteException.class,
+                () -> client.userManager().fetchCurrentUser());
+        assertEquals(401, reason.getStatus());
     }
 
     @Test
     public void itCanFailOnLogin() {
-        try {
-            createClient("wrong", "credentials");
-            fail("Should be non authorized");
-        } catch (NuxeoClientRemoteException reason) {
-            assertEquals(401, reason.getStatus());
-        }
+        var reason = assertThrows("Should be non authorized", NuxeoClientRemoteException.class,
+                () -> createClient("wrong", "credentials"));
+        assertEquals(401, reason.getStatus());
     }
 
     @Test

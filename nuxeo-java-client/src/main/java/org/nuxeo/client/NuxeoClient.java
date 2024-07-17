@@ -25,6 +25,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.Proxy;
 import java.net.ProxySelector;
 import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.List;
@@ -76,6 +77,8 @@ import okhttp3.ResponseBody;
 import okhttp3.internal.Util;
 import retrofit2.Call;
 import retrofit2.Callback;
+
+import static java.nio.charset.StandardCharsets.UTF_8;
 
 /**
  * @since 0.1
@@ -153,9 +156,9 @@ public class NuxeoClient extends AbstractBase<NuxeoClient> {
         buildRetrofit();
     }
 
-    /******************************
-     * Services *
-     ******************************/
+    // *****************************
+    // *         Services          *
+    // *****************************
 
     /**
      * This method returns the current logged user retrieved on {@link NuxeoClient} creation.
@@ -222,9 +225,9 @@ public class NuxeoClient extends AbstractBase<NuxeoClient> {
         return new CapabilitiesManager(this);
     }
 
-    /*******************************
-     * HTTP Services *
-     ******************************/
+    // ******************************
+    // *       HTTP Services        *
+    // ******************************
 
     public Response get(String url) {
         return request(url, Request.Builder::get);
@@ -383,12 +386,7 @@ public class NuxeoClient extends AbstractBase<NuxeoClient> {
 
     protected String decodeFilename(String contentDisposition) {
         String filename = contentDisposition.replaceFirst(".*filename\\*?=(UTF-8'')?(.*)", "$2");
-        try {
-            filename = URLDecoder.decode(filename, "UTF-8");
-        } catch (UnsupportedEncodingException e) {
-            // May not happen
-        }
-        return filename;
+        return URLDecoder.decode(filename, UTF_8);
     }
 
     protected boolean useCache(Call<?> call) {

@@ -488,7 +488,8 @@ public class Repository extends RepositoryEntity<RepositoryAPI, Repository> {
      * @since 3.2
      * @apiNote method can take an {@link Document.AbstractAdapter AbstractAdapter} creator since 3.3.1
      */
-    public <A extends Document.AbstractAdapter> A newDocumentAdapter(String documentId, Function<Document, A> creator) {
+    public <A extends Document.AbstractAdapter<A>> A newDocumentAdapter(String documentId,
+            Function<Document, A> creator) {
         // create a document mock to meet API
         Document document = new Document();
         document.nuxeoClient = nuxeoClient;

@@ -20,7 +20,6 @@
 package org.nuxeo.client.objects.task;
 
 import java.util.Calendar;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -157,7 +156,7 @@ public class Task extends Entity {
 
     @JsonIgnore
     public void setTargetDocumentIds(List<String> ids) {
-        targetDocumentIds = ids.stream().map(i -> Collections.singletonMap("id", i)).collect(Collectors.toList());
+        targetDocumentIds = ids.stream().map(i -> Map.of("id", i)).collect(Collectors.toList());
     }
 
     @JsonIgnore
@@ -167,7 +166,7 @@ public class Task extends Entity {
 
     @JsonIgnore
     public void setActors(List<String> ids) {
-        actors = ids.stream().map(i -> Collections.singletonMap("id", i)).collect(Collectors.toList());
+        actors = ids.stream().map(i -> Map.of("id", i)).collect(Collectors.toList());
     }
 
     public TaskVariables getVariables() {

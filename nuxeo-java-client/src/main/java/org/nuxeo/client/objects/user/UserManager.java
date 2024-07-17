@@ -52,7 +52,9 @@ public class UserManager extends AbstractConnectable<UserManagerAPI, UserManager
     }
 
     public void deleteGroup(String groupName) {
-        fetchResponse(api.deleteGroup(groupName));
+        try (var ignored = fetchResponse(api.deleteGroup(groupName))) {
+            // just do the try-with-resources
+        }
     }
 
     public Group createGroup(Group group) {

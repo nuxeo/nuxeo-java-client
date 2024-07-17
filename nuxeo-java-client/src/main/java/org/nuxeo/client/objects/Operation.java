@@ -20,7 +20,6 @@
 package org.nuxeo.client.objects;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -118,15 +117,14 @@ public class Operation extends ConnectableEntity<OperationAPI, Operation> {
             Blob blob = (Blob) input;
             RequestBody fbody = Requests.create(blob);
             Part formData = Part.createFormData(INPUT_PART, blob.getFilename(), fbody);
-            return api.execute(operationId, body, Collections.singletonList(formData));
+            return api.execute(operationId, body, List.of(formData));
         } else if (input instanceof Blobs) { // If input is blob or blobs -> use multipart
             List<Blob> blobs = ((Blobs) input).getEntries();
             List<MultipartBody.Part> fileParts = new ArrayList<>();
             for (int i = 0; i < blobs.size(); i++) {
                 Blob blob = blobs.get(i);
                 RequestBody fbody = Requests.create(blob);
-                fileParts.add(
-                        MultipartBody.Part.createFormData(INPUT_PARTS + String.valueOf(i), blob.getFilename(), fbody));
+                fileParts.add(MultipartBody.Part.createFormData(INPUT_PARTS + i, blob.getFilename(), fbody));
             }
             return api.execute(operationId, body, fileParts);
         } else {

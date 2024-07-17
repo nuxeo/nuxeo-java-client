@@ -20,7 +20,7 @@
 package org.nuxeo.client;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
@@ -43,7 +43,7 @@ public class ITSimpleClient extends AbstractITBase {
         assertNotNull(response);
         assertTrue(response.isSuccessful());
         String json = response.body().string();
-        assertFalse(StringUtils.EMPTY.equals(json));
+        assertNotEquals(StringUtils.EMPTY, json);
         Document document = nuxeoClient.getConverterFactory().readJSON(json, Document.class);
         assertNotNull(document);
         assertEquals("Root", document.getType());
@@ -56,7 +56,7 @@ public class ITSimpleClient extends AbstractITBase {
         assertNotNull(response);
         assertTrue(response.isSuccessful());
         String json = response.body().string();
-        assertFalse(StringUtils.EMPTY.equals(json));
+        assertNotEquals(StringUtils.EMPTY, json);
         Document document = nuxeoClient.getConverterFactory().readJSON(json, Document.class);
         assertNotNull(document);
         assertEquals("new title", document.getTitle());
@@ -69,7 +69,7 @@ public class ITSimpleClient extends AbstractITBase {
         assertNotNull(response);
         assertTrue(response.isSuccessful());
         String json = response.body().string();
-        assertFalse(StringUtils.EMPTY.equals(json));
+        assertNotEquals(StringUtils.EMPTY, json);
         Document document = nuxeoClient.getConverterFactory().readJSON(json, Document.class);
         assertNotNull(document);
         assertEquals("file", document.getTitle());
@@ -77,7 +77,7 @@ public class ITSimpleClient extends AbstractITBase {
         response = nuxeoClient.delete(ITBase.BASE_URL + ConstantsV1.API_PATH + "path/file");
         assertTrue(response.isSuccessful());
         json = response.body().string();
-        assertTrue(StringUtils.EMPTY.equals(json));
+        assertEquals(StringUtils.EMPTY, json);
     }
 
 }

@@ -20,7 +20,6 @@ package org.nuxeo.client.marshaller;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
@@ -48,11 +47,10 @@ public class DocTypeSchemaDeserializer extends StdDeserializer<List<Schema>> {
     }
 
     @Override
-    public List<Schema> deserialize(JsonParser p, DeserializationContext ctxt)
-            throws IOException {
+    public List<Schema> deserialize(JsonParser p, DeserializationContext ctxt) throws IOException {
         ArrayNode schemas = p.readValueAsTree();
-        if (schemas.size() == 0) {
-            return Collections.emptyList();
+        if (schemas.isEmpty()) {
+            return List.of();
         } else if (schemas.get(0).isTextual()) {
             List<Schema> objSchemas = new ArrayList<>(schemas.size());
             Iterator<JsonNode> schemasIt = schemas.elements();
