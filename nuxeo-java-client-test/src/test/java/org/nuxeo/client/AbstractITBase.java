@@ -28,7 +28,6 @@ import static org.nuxeo.client.Operations.ES_WAIT_FOR_INDEXING;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
 import java.net.URL;
 import java.net.URLDecoder;
 import java.util.Collection;
@@ -138,12 +137,8 @@ public abstract class AbstractITBase {
     }
 
     public static File getResourceFileFromContext(String resource) {
-        try {
-            URL url = Thread.currentThread().getContextClassLoader().getResource(resource);
-            String path = URLDecoder.decode(url.getPath(), "UTF-8");
-            return new File(path);
-        } catch (UnsupportedEncodingException e) {
-            throw new RuntimeException("Unable to retrieve resource file", e);
-        }
+        URL url = Thread.currentThread().getContextClassLoader().getResource(resource);
+        String path = URLDecoder.decode(url.getPath(), UTF_8);
+        return new File(path);
     }
 }

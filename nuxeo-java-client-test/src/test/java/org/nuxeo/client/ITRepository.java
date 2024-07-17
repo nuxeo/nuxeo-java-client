@@ -20,15 +20,13 @@
  */
 package org.nuxeo.client;
 
-import static java.util.Collections.singletonList;
 import static java.util.stream.Collectors.toList;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-import static org.junit.Assume.assumeTrue;
 import static org.nuxeo.client.ITBase.DEFAULT_USER_PASSWORD;
 import static org.nuxeo.client.ITBase.LOGIN;
 import static org.nuxeo.client.ITBase.createClientBuilder;
@@ -48,9 +46,7 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
-import java.util.Arrays;
 import java.util.Calendar;
-import java.util.Collections;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
@@ -58,7 +54,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
 import java.util.function.BiFunction;
-import java.util.function.Consumer;
 import java.util.function.Function;
 
 import org.apache.commons.lang3.StringUtils;
@@ -300,17 +295,14 @@ public class ITRepository extends AbstractITBase {
         RecordSet documents = nuxeoClient.operation("Repository.ResultSetQuery")
                                          .param("query", "SELECT * FROM Document")
                                          .execute();
-        assertTrue(documents.getUuids().size() != 0);
+        assertFalse(documents.getUuids().isEmpty());
     }
 
     @Test
     public void itCanFail() {
-        try {
-            nuxeoClient.repository().fetchDocumentByPath("/folder_1/wrong");
-            fail("Should be not found");
-        } catch (NuxeoClientRemoteException reason) {
-            assertEquals(404, reason.getStatus());
-        }
+        var reason = assertThrows("Should be not found", NuxeoClientRemoteException.class,
+                () -> nuxeoClient.repository().fetchDocumentByPath("/folder_1/wrong"));
+        assertEquals(404, reason.getStatus());
     }
 
     @Test
@@ -406,7 +398,7 @@ public class ITRepository extends AbstractITBase {
     public void itCanFetchACP() {
         Document folder = nuxeoClient.repository().fetchDocumentByPath("/folder_2");
         ACP acp = folder.fetchPermissions();
-        assertTrue(acp.getAcls().size() != 0);
+        assertFalse(acp.getAcls().isEmpty());
         assertEquals("inherited", acp.getAcls().get(0).getName());
         assertEquals("Administrator", acp.getAcls().get(0).getAces().get(0).getUsername());
     }
@@ -418,7 +410,7 @@ public class ITRepository extends AbstractITBase {
         // First Check
         Document folder = nuxeoClient.repository().fetchDocumentByPath("/folder_2");
         ACP acp = folder.fetchPermissions();
-        assertTrue(acp.getAcls().size() != 0);
+        assertFalse(acp.getAcls().isEmpty());
         assertEquals(1, acp.getAcls().size());
         assertEquals(2, acp.getAcls().get(0).getAces().size());
         assertEquals("inherited", acp.getAcls().get(0).getName());
@@ -433,7 +425,7 @@ public class ITRepository extends AbstractITBase {
         // Final Check
         folder = nuxeoClient.repository().fetchDocumentByPath("/folder_2");
         acp = folder.fetchPermissions();
-        assertTrue(acp.getAcls().size() != 0);
+        assertFalse(acp.getAcls().isEmpty());
         assertEquals(1, acp.getAcls().size());
         assertEquals(4, acp.getAcls().get(0).getAces().size());
         assertEquals("local", acp.getAcls().get(0).getName());
@@ -442,7 +434,7 @@ public class ITRepository extends AbstractITBase {
         // Final Check
         folder = nuxeoClient.repository().fetchDocumentByPath("/folder_2");
         acp = folder.fetchPermissions();
-        assertTrue(acp.getAcls().size() != 0);
+        assertFalse(acp.getAcls().isEmpty());
         assertEquals(1, acp.getAcls().size());
         assertEquals(3, acp.getAcls().get(0).getAces().size());
         assertEquals("local", acp.getAcls().get(0).getName());
@@ -461,7 +453,7 @@ public class ITRepository extends AbstractITBase {
         // Check created permission
         folder = nuxeoClient.repository().fetchDocumentByPath("/folder_2");
         ACP acp = folder.fetchPermissions();
-        assertTrue(acp.getAcls().size() != 0);
+        assertFalse(acp.getAcls().isEmpty());
         assertEquals(2, acp.getAcls().size());
         ACL testPermACL = acp.getAcls()
                              .stream()
@@ -531,7 +523,7 @@ public class ITRepository extends AbstractITBase {
                 RecordSet documents = nuxeoClient.operation("Repository.ResultSetQuery")
                                                  .param("query", "SELECT * FROM Document")
                                                  .execute();
-                assertTrue(documents.getUuids().size() != 0);
+                assertFalse(documents.getUuids().isEmpty());
             } catch (Exception e) {
                 // ignore
             }
@@ -541,7 +533,7 @@ public class ITRepository extends AbstractITBase {
                 RecordSet documents = nuxeoClient.operation("Repository.ResultSetQuery")
                                                  .param("query", "SELECT * FROM Document")
                                                  .execute();
-                assertTrue(documents.getUuids().size() != 0);
+                assertFalse(documents.getUuids().isEmpty());
             } catch (Exception e) {
                 // ignore
             }
@@ -656,7 +648,7 @@ public class ITRepository extends AbstractITBase {
         assertEquals("File", file.getType());
         assertEquals("2017-05-04T03:02:01.000Z", file.getPropertyValue("dc:issued"));
 
-        dateTime = dateTime.plus(1, ChronoUnit.MONTHS);
+        dateTime = dateTime.plusMonths(1);
         file.setPropertyValue("dc:issued", dateTime.format(formatter));
         file = nuxeoClient.repository().updateDocument(file);
         assertEquals("2017-06-04T03:02:01.000Z", file.getPropertyValue("dc:issued"));
@@ -675,7 +667,7 @@ public class ITRepository extends AbstractITBase {
         assertEquals("File", file.getType());
         assertEquals("2017-05-04T01:02:01.000Z", file.getPropertyValue("dc:issued"));
 
-        dateTime = dateTime.plus(1, ChronoUnit.MONTHS);
+        dateTime = dateTime.plusMonths(1);
         file.setPropertyValue("dc:issued", dateTime.format(formatter));
         file = nuxeoClient.repository().updateDocument(file);
         assertEquals("2017-06-04T01:02:01.000Z", file.getPropertyValue("dc:issued"));
@@ -700,8 +692,11 @@ public class ITRepository extends AbstractITBase {
         GregorianCalendar dateType1 = new GregorianCalendar();
         Date dateType2 = new Date(System.currentTimeMillis());
 
-        assertExceptionFor(doc -> doc.setPropertyValue("dc:issued", dateType1), file, expectedMsg1);
-        assertExceptionFor(doc -> doc.setPropertyValue("dc:issued", dateType2), file, expectedMsg2);
+        var e = assertThrows(IllegalArgumentException.class, () -> file.setPropertyValue("dc:issued", dateType1));
+        assertEquals(expectedMsg1, e.getMessage());
+
+        e = assertThrows(IllegalArgumentException.class, () -> file.setPropertyValue("dc:issued", dateType2));
+        assertEquals(expectedMsg2, e.getMessage());
     }
 
     @Test
@@ -711,8 +706,11 @@ public class ITRepository extends AbstractITBase {
         props.put("dc:issued", new GregorianCalendar());
         String expectedMsg = buildErrorMsgForDate("dc:issued", GregorianCalendar.class);
 
-        assertExceptionFor(doc -> doc.setProperties(props), file, expectedMsg);
-        assertExceptionFor(doc -> doc.setDirtyProperties(props), file, expectedMsg);
+        var e = assertThrows(IllegalArgumentException.class, () -> file.setProperties(props));
+        assertEquals(expectedMsg, e.getMessage());
+
+        e = assertThrows(IllegalArgumentException.class, () -> file.setDirtyProperties(props));
+        assertEquals(expectedMsg, e.getMessage());
     }
 
     @Test
@@ -722,19 +720,25 @@ public class ITRepository extends AbstractITBase {
         props.put("sth:dateArray", new Object[] { "unused", new GregorianCalendar() });
         String expectedMsg = buildErrorMsgForDate("sth:dateArray", GregorianCalendar.class);
 
-        assertExceptionFor(doc -> doc.setProperties(props), file, expectedMsg);
-        assertExceptionFor(doc -> doc.setDirtyProperties(props), file, expectedMsg);
+        var e = assertThrows(IllegalArgumentException.class, () -> file.setProperties(props));
+        assertEquals(expectedMsg, e.getMessage());
+
+        e = assertThrows(IllegalArgumentException.class, () -> file.setDirtyProperties(props));
+        assertEquals(expectedMsg, e.getMessage());
     }
 
     @Test
     public void itCannotHandlePropsIfDateListFound() {
         Document file = Document.createWithName("My Title", "File");
         Map<String, Object> props = new HashMap<>();
-        props.put("sth:dateList", Arrays.asList(new GregorianCalendar(), new GregorianCalendar()));
+        props.put("sth:dateList", List.of(new GregorianCalendar(), new GregorianCalendar()));
         String expectedMsg = buildErrorMsgForDate("sth:dateList", GregorianCalendar.class);
 
-        assertExceptionFor(doc -> doc.setProperties(props), file, expectedMsg);
-        assertExceptionFor(doc -> doc.setDirtyProperties(props), file, expectedMsg);
+        var e = assertThrows(IllegalArgumentException.class, () -> file.setProperties(props));
+        assertEquals(expectedMsg, e.getMessage());
+
+        e = assertThrows(IllegalArgumentException.class, () -> file.setDirtyProperties(props));
+        assertEquals(expectedMsg, e.getMessage());
     }
 
     @Test
@@ -747,41 +751,24 @@ public class ITRepository extends AbstractITBase {
         props.put("sth:complex", complexProps);
         String expectedMsg = buildErrorMsgForDate("complex:date", Date.class);
 
-        assertExceptionFor(doc -> doc.setProperties(props), file, expectedMsg);
-        assertExceptionFor(doc -> doc.setDirtyProperties(props), file, expectedMsg);
-    }
+        var e = assertThrows(IllegalArgumentException.class, () -> file.setProperties(props));
+        assertEquals(expectedMsg, e.getMessage());
 
-    private void assertExceptionFor(Consumer<Document> consumer, Document doc, String expectedMsg) {
-        try {
-            consumer.accept(doc);
-            fail();
-        } catch (IllegalArgumentException e) {
-            assertEquals(e.getMessage(), expectedMsg, e.getMessage());
-        }
+        e = assertThrows(IllegalArgumentException.class, () -> file.setDirtyProperties(props));
+        assertEquals(expectedMsg, e.getMessage());
     }
 
     @Test
     public void itCannotConstructDocumentIfDateFoundInProps() {
-        Map<String, Object> withoutComplexProps = Collections.singletonMap("dc:issued", new GregorianCalendar());
-        try {
-            Document document = Document.createWithName("ID", "TYPE");
-            document.setProperties(withoutComplexProps);
-            fail();
-        } catch (IllegalArgumentException e) {
-            String expectedMsg = buildErrorMsgForDate("dc:issued", GregorianCalendar.class);
-            assertEquals(e.getMessage(), expectedMsg, e.getMessage());
-        }
+        Map<String, Object> withoutComplexProps = Map.of("dc:issued", new GregorianCalendar());
+        Document document = Document.createWithName("ID", "TYPE");
+        var e = assertThrows(IllegalArgumentException.class, () -> document.setProperties(withoutComplexProps));
+        assertEquals(buildErrorMsgForDate("dc:issued", GregorianCalendar.class), e.getMessage());
 
-        Map<String, Object> complexProps = Collections.singletonMap("complex:date", new Date());
-        Map<String, Object> withComplexProps = Collections.singletonMap("sth:complex", complexProps);
-        try {
-            Document document = Document.createWithName("ID", "TYPE");
-            document.setProperties(withComplexProps);
-            fail();
-        } catch (IllegalArgumentException e) {
-            String expectedMsg = buildErrorMsgForDate("complex:date", Date.class);
-            assertEquals(e.getMessage(), expectedMsg, e.getMessage());
-        }
+        Map<String, Object> complexProps = Map.of("complex:date", new Date());
+        Map<String, Object> withComplexProps = Map.of("sth:complex", complexProps);
+        e = assertThrows(IllegalArgumentException.class, () -> document.setProperties(withComplexProps));
+        assertEquals(buildErrorMsgForDate("complex:date", Date.class), e.getMessage());
     }
 
     /**
@@ -794,10 +781,10 @@ public class ITRepository extends AbstractITBase {
         Document document = Document.createWithName("dataSet1", "DataSet");
         document.setPropertyValue("dc:title", "new title");
 
-        List<String> roles = Arrays.asList("BenchmarkIndicator", "Decision");
+        List<String> roles = List.of("BenchmarkIndicator", "Decision");
         Field field1 = new Field("string", "description", roles, "columnName", "sqlTypeHint", "name");
         Field field2 = new Field("string", "description", roles, "columnName", "sqlTypeHint", "name");
-        List<Field> fields = Arrays.asList(field1, field2);
+        List<Field> fields = List.of(field1, field2);
 
         Map<String, Object> creationProps = new HashMap<>();
         creationProps.put("ds:tableName", "MyTable");
@@ -816,8 +803,8 @@ public class ITRepository extends AbstractITBase {
         assertEquals("dataSet1", document.getTitle());
 
         // Here we are using a sub class DataSet of Document which let the dev implementing business logic.
-        roles = singletonList("BenchmarkIndicator");
-        fields = singletonList(new Field("string", "description", roles, "columnName", "sqlTypeHint", "name"));
+        roles = List.of("BenchmarkIndicator");
+        fields = List.of(new Field("string", "description", roles, "columnName", "sqlTypeHint", "name"));
         DataSet dataset = new DataSet(document.getId());
         dataset.setFields(fields);
 
@@ -1047,7 +1034,7 @@ public class ITRepository extends AbstractITBase {
         nuxeoClient.operation(ES_WAIT_FOR_INDEXING).param("refresh", true).execute();
 
         // fetch all replies
-        replies = annotationAdapter.fetchComments(singletonList(annotationId));
+        replies = annotationAdapter.fetchComments(List.of(annotationId));
         assertEquals(1, replies.size());
         assertEquals(replyId, replies.getEntry(0).getId());
         assertEquals("REPLY_ID", replies.getEntry(0).getEntityId());
@@ -1060,12 +1047,9 @@ public class ITRepository extends AbstractITBase {
         nuxeoClient.operation(ES_WAIT_FOR_INDEXING).param("refresh", true).param("waitForAudit", true).execute();
 
         // check reply has been deleted
-        try {
-            nuxeoClient.repository().fetchDocumentById(replyId);
-            fail("Reply should have been deleted");
-        } catch (NuxeoClientRemoteException e) {
-            assertEquals(404, e.getStatus());
-        }
+        var e = assertThrows("Reply should have been deleted", NuxeoClientRemoteException.class,
+                () -> nuxeoClient.repository().fetchDocumentByPath(replyId));
+        assertEquals(404, e.getStatus());
     }
 
     @Test
@@ -1083,12 +1067,12 @@ public class ITRepository extends AbstractITBase {
         // assert its permissions
         assertTrue(comment.getPermissions().toString(),
                 comment.getPermissions()
-                       .containsAll(Arrays.asList("Write", "WriteVersion", "ReadProperties", "ReadCanCollect",
-                               "ReadSecurity", "Remove", "ReadVersion", "Read", "WriteLifeCycle", "Everything",
-                               "Moderate", "Version", "ReadChildren", "AddChildren", "Comment", "ReadLifeCycle",
-                               "RemoveChildren", "DataVisualization", "ReviewParticipant", "Unlock",
-                               "CanAskForPublishing", "RestrictedRead", "ReadWrite", "ReadRemove", "Browse",
-                               "WriteProperties", "WriteSecurity", "ManageWorkflows")));
+                       .containsAll(List.of("Write", "WriteVersion", "ReadProperties", "ReadCanCollect", "ReadSecurity",
+                               "Remove", "ReadVersion", "Read", "WriteLifeCycle", "Everything", "Moderate", "Version",
+                               "ReadChildren", "AddChildren", "Comment", "ReadLifeCycle", "RemoveChildren",
+                               "DataVisualization", "ReviewParticipant", "Unlock", "CanAskForPublishing",
+                               "RestrictedRead", "ReadWrite", "ReadRemove", "Browse", "WriteProperties",
+                               "WriteSecurity", "ManageWorkflows")));
     }
 
     @Test

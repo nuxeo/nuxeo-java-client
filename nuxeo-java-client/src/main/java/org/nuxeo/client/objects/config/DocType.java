@@ -79,9 +79,9 @@ public class DocType extends ConnectableEntity<ConfigAPI, DocType> {
         return schemas.stream().filter(schema -> schema.getName().equals(name)).findAny().orElse(null);
     }
 
-    /************
-     * Services *
-     ************/
+    // ************
+    // * Services *
+    // ************
 
     /**
      * @return the parent doc type if exist, unless fetch it from server and store it in this object

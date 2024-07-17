@@ -19,14 +19,11 @@
  */
 package org.nuxeo.client.objects;
 
-import static java.util.Collections.emptyMap;
-
 import java.io.Serializable;
 import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
@@ -388,7 +385,7 @@ public class Document extends RepositoryEntity<RepositoryAPI, Document> {
      */
     @SuppressWarnings("unchecked")
     public <T> T getPropertyValue(String xpath) {
-        List<String> segments = Arrays.asList(xpath.split("/"));
+        List<String> segments = List.of(xpath.split("/"));
         return (T) getPropertyValue(properties, segments);
     }
 
@@ -835,7 +832,7 @@ public class Document extends RepositoryEntity<RepositoryAPI, Document> {
      * @param creator the function used to instantiate a specific {@link Adapter adapter}
      * @since 3.2
      */
-    public <A extends AbstractAdapter> A adapter(Function<Document, A> creator) {
+    public <A extends AbstractAdapter<A>> A adapter(Function<Document, A> creator) {
         return creator.apply(this);
     }
 
@@ -918,7 +915,7 @@ public class Document extends RepositoryEntity<RepositoryAPI, Document> {
          * @since 3.2
          */
         public <O> O get(String pathSuffix) {
-            return get(pathSuffix, emptyMap());
+            return get(pathSuffix, Map.of());
         }
 
         /**
@@ -965,7 +962,7 @@ public class Document extends RepositoryEntity<RepositoryAPI, Document> {
          * @since 3.2
          */
         public <O> O post(String pathSuffix, Object object) {
-            return post(pathSuffix, emptyMap(), object);
+            return post(pathSuffix, Map.of(), object);
         }
 
         /**
@@ -1015,7 +1012,7 @@ public class Document extends RepositoryEntity<RepositoryAPI, Document> {
          * @since 3.2
          */
         public <O> O put(String pathSuffix, O object) {
-            return put(pathSuffix, emptyMap(), object);
+            return put(pathSuffix, Map.of(), object);
         }
 
         /**
@@ -1061,7 +1058,7 @@ public class Document extends RepositoryEntity<RepositoryAPI, Document> {
          * @since 3.2
          */
         public void delete(String pathSuffix) {
-            delete(pathSuffix, emptyMap());
+            delete(pathSuffix, Map.of());
         }
 
         /**

@@ -18,10 +18,10 @@
  */
 package org.nuxeo.client.objects.comment;
 
-import static java.util.Collections.singletonMap;
 import static org.nuxeo.client.objects.Document.DEFAULT_FILE_CONTENT;
 
 import java.util.List;
+import java.util.Map;
 
 import org.nuxeo.client.objects.Document;
 
@@ -50,7 +50,7 @@ public class AnnotationAdapter extends Document.AbstractAdapter<AnnotationAdapte
     }
 
     public Annotations list(String xpath) {
-        return get(singletonMap("xpath", xpath));
+        return get(Map.of("xpath", xpath));
     }
 
     public Annotation fetch(String annotationId) {

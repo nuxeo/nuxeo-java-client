@@ -26,7 +26,6 @@ import java.util.Map;
 import org.nuxeo.client.objects.capabilities.Capabilities;
 import org.nuxeo.client.objects.capabilities.Capability;
 
-import com.fasterxml.jackson.core.JacksonException;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -44,7 +43,7 @@ public class CapabilitiesDeserializer extends StdDeserializer<Capabilities> {
 
     @Override
     @SuppressWarnings("unchecked")
-    public Capabilities deserialize(JsonParser p, DeserializationContext ctxt) throws IOException, JacksonException {
+    public Capabilities deserialize(JsonParser p, DeserializationContext ctxt) throws IOException {
         Map<String, Capability> capabilities = new HashMap<>();
         ObjectNode entity = p.readValueAsTree();
         for (Iterator<Map.Entry<String, JsonNode>> it = entity.fields(); it.hasNext();) {

@@ -87,17 +87,16 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <!-- dependency versions -->
     <awaitility.version>4.2.1</awaitility.version>
-    <commons-io.version>2.16.0</commons-io.version>
+    <commons-io.version>2.16.1</commons-io.version>
     <commons-lang3.version>3.14.0</commons-lang3.version>
-    <guava.version>33.1.0-jre</guava.version>
-    <jackson.version>2.17.0</jackson.version>
+    <guava.version>33.2.1-jre</guava.version>
+    <jackson.version>2.17.2</jackson.version>
     <junit.version>4.13.2</junit.version>
     <okhttp.version>4.12.0</okhttp.version>
     <okio.version>3.9.0</okio.version>
     <retrofit.version>2.11.0</retrofit.version>
     <!-- other properties -->
-    <java.version.release>8</java.version.release>
-    <java.version.source>1.8</java.version.source>
+    <java.version.release>11</java.version.release>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <!-- sonar properties -->
     <sonar.host.url>https://sonarcloud.io</sonar.host.url>
@@ -187,61 +186,6 @@
   </dependencyManagement>
 
   <profiles>
-
-    <profile>
-      <id>java-8</id>
-      <activation>
-        <jdk>1.8</jdk>
-      </activation>
-      <build>
-        <plugins>
-          <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-compiler-plugin</artifactId>
-            <configuration>
-              <source>${java.version.source}</source>
-              <target>${java.version.source}</target>
-            </configuration>
-          </plugin>
-        </plugins>
-      </build>
-    </profile>
-
-    <profile>
-      <id>java-11</id>
-      <activation>
-        <jdk>11</jdk>
-      </activation>
-      <build>
-        <plugins>
-          <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-compiler-plugin</artifactId>
-            <configuration>
-              <release>${java.version.release}</release>
-            </configuration>
-          </plugin>
-        </plugins>
-      </build>
-    </profile>
-
-    <profile>
-      <id>java-17</id>
-      <activation>
-        <jdk>17</jdk>
-      </activation>
-      <build>
-        <plugins>
-          <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-compiler-plugin</artifactId>
-            <configuration>
-              <release>${java.version.release}</release>
-            </configuration>
-          </plugin>
-        </plugins>
-      </build>
-    </profile>
 
     <profile>
       <id>customEnvironment</id>
@@ -360,10 +304,10 @@
                 </includes>
               </requireReleaseDeps>
               <requireMavenVersion>
-                <version>[3.2,)</version>
+                <version>[3.6.3,)</version>
               </requireMavenVersion>
               <requireJavaVersion>
-                <version>[1.8,)</version>
+                <version>[11,)</version>
               </requireJavaVersion>
             </rules>
             <skip>false</skip>
@@ -372,42 +316,40 @@
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-clean-plugin</artifactId>
-          <version>3.1.0</version>
+          <version>3.4.0</version>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-resources-plugin</artifactId>
-          <version>3.1.0</version>
+          <version>3.3.1</version>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-compiler-plugin</artifactId>
-          <version>3.8.0</version>
+          <version>3.13.0</version>
+          <configuration>
+            <release>${java.version.release}</release>
+          </configuration>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-javadoc-plugin</artifactId>
-          <version>3.0.1</version>
+          <version>3.7.0</version>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-source-plugin</artifactId>
-          <version>3.0.1</version>
-        </plugin>
-        <plugin>
-          <groupId>net.orfjackal.retrolambda</groupId>
-          <artifactId>retrolambda-maven-plugin</artifactId>
-          <version>2.5.4</version>
+          <version>3.3.1</version>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-surefire-plugin</artifactId>
-          <version>2.22.0</version>
+          <version>3.3.1</version>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-failsafe-plugin</artifactId>
-          <version>2.22.0</version>
+          <version>3.3.1</version>
           <configuration>
             <trimStackTrace>false</trimStackTrace>
           </configuration>
@@ -415,24 +357,22 @@
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-jar-plugin</artifactId>
-          <version>3.1.0</version>
+          <version>3.4.2</version>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-install-plugin</artifactId>
-          <!-- Newer versions don't build the expected MANIFEST.MF -->
-          <version>2.3.1</version>
-          <!--<version>2.5.2</version>-->
+          <version>3.1.2</version>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-deploy-plugin</artifactId>
-          <version>2.8.2</version>
+          <version>3.1.2</version>
         </plugin>
         <plugin>
           <groupId>org.jacoco</groupId>
           <artifactId>jacoco-maven-plugin</artifactId>
-          <version>0.8.2</version>
+          <version>0.8.12</version>
           <configuration>
             <propertyName>it.failsafe.argLine</propertyName>
             <destFile>${it.jacoco.destFile}</destFile>
@@ -467,7 +407,7 @@
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-site-plugin</artifactId>
-          <version>3.7.1</version>
+          <version>3.12.1</version>
         </plugin>
         <plugin>
           <groupId>org.codehaus.sonar-plugins</groupId>
@@ -483,7 +423,7 @@
         <plugin>
           <groupId>org.codehaus.mojo</groupId>
           <artifactId>versions-maven-plugin</artifactId>
-          <version>2.8.1</version>
+          <version>2.17.1</version>
         </plugin>
       </plugins>
     </pluginManagement>

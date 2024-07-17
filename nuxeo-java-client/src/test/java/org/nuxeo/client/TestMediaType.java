@@ -18,10 +18,9 @@
  */
 package org.nuxeo.client;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
-
-import java.nio.charset.Charset;
 
 import org.junit.Test;
 
@@ -52,7 +51,7 @@ public class TestMediaType {
         MediaType mediaType = MediaType.parse("application/json; charset=UTF-8");
         assertEquals("application", mediaType.type());
         assertEquals("json", mediaType.subtype());
-        assertEquals(Charset.forName("UTF-8"), mediaType.charset());
+        assertEquals(UTF_8, mediaType.charset());
     }
 
     @Test

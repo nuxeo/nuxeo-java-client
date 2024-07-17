@@ -19,12 +19,12 @@
  */
 package org.nuxeo.client.objects.upload;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.nuxeo.client.ConstantsV1.UPLOAD_CHUNKED_TYPE;
 import static org.nuxeo.client.ConstantsV1.UPLOAD_NORMAL_TYPE;
 
 import java.io.BufferedInputStream;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.List;
 import java.util.Map;
@@ -173,11 +173,7 @@ public class BatchUpload extends AbstractConnectable<BatchUploadAPI, BatchUpload
     }
 
     protected String encodeToAsciiForHeader(String string) {
-        try {
-            return URLEncoder.encode(string, "UTF-8");
-        } catch (UnsupportedEncodingException e) {
-            throw new NuxeoClientException("Unable to encode the header: " + string, e);
-        }
+        return URLEncoder.encode(string, UTF_8);
     }
 
     public void cancel() {

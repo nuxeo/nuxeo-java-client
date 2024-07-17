@@ -26,7 +26,6 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
-import java.util.Collections;
 import java.util.List;
 
 import org.junit.Before;
@@ -315,7 +314,7 @@ public class ITUserGroup extends AbstractITBase {
         Group subGroup = new Group();
         subGroup.setGroupName("sub" + group.getGroupName());
         subGroup.setGroupLabel("Sub " + group.getGroupLabel());
-        subGroup.setParentGroups(Collections.singletonList(group.getGroupName()));
+        subGroup.setParentGroups(List.of(group.getGroupName()));
         subGroup = userManager.createGroup(subGroup);
         // by default server doesn't return parent groups
         assertNull(subGroup.getParentGroups());

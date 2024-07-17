@@ -25,7 +25,6 @@ import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 import org.nuxeo.client.objects.capabilities.Capabilities;
-import org.nuxeo.client.objects.capabilities.Capability;
 
 /**
  * @since 4.0.0
@@ -37,18 +36,18 @@ public class ITCapabilities extends AbstractITBase {
         Capabilities capabilities = nuxeoClient.capabilitiesManager().fetchCapabilities();
         assertNotNull(capabilities);
 
-        Capability clusterCapability = capabilities.clusterCapability();
+        var clusterCapability = capabilities.clusterCapability();
         assertNotNull(clusterCapability);
         assertFalse(clusterCapability.capabilityAsBoolean("enabled"));
 
-        Capability repositoryCapability = capabilities.repositoryCapability();
+        var repositoryCapability = capabilities.repositoryCapability();
         assertNotNull(repositoryCapability);
         assertTrue(repositoryCapability.hasCapability("default"));
-        Capability defaultRepositoryCapability = repositoryCapability.capabilityAsCapability("default");
+        var defaultRepositoryCapability = repositoryCapability.capabilityAsCapability("default");
         assertNotNull(defaultRepositoryCapability);
         assertTrue(defaultRepositoryCapability.hasCapability("queryBlobKeys"));
 
-        Capability serverCapability = capabilities.serverCapability();
+        var serverCapability = capabilities.serverCapability();
         assertNotNull(serverCapability);
         assertEquals("lts", serverCapability.capabilityAsString("distributionName"));
     }
