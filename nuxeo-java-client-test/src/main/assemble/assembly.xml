@@ -22,6 +22,10 @@
     <copy todir="${outdir}/marketplace/install/bundles-2023" overwrite="true">
       <artifact:resolveFile key="org.nuxeo.ecm.platform:nuxeo-platform-login-portal-sso:2023.0.159:jar:" />
     </copy>
+    <copy todir="${outdir}/marketplace/install/bundles-2025" overwrite="true">
+      <!-- TODO update the artefact to the released version -->
+      <artifact:resolveFile key="org.nuxeo.ecm.platform:nuxeo-platform-login-portal-sso:2025.0.96:jar:" />
+    </copy>
 
     <zip destfile="${outdir}/${maven.project.artifactId}-${maven.project.version}.zip"
          basedir="${outdir}/marketplace" />
