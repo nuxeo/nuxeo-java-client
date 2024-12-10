@@ -7,6 +7,8 @@
           if="Version.isGreaterOrEqual(Platform.getVersion(), '2021.0.0') &amp;&amp; Version.isLess(Platform.getVersion(), '2022.0.0')" />
   <update file="${package.root}/install/bundles-2023" todir="${env.bundles}"
           if="Version.isGreaterOrEqual(Platform.getVersion(), '2023.0.0') &amp;&amp; Version.isLess(Platform.getVersion(), '2024.0.0')" />
+  <update file="${package.root}/install/bundles-2025" todir="${env.bundles}"
+          if="Version.isGreaterOrEqual(Platform.getVersion(), '2025.0.0') &amp;&amp; Version.isLess(Platform.getVersion(), '2026.0.0')" />
 
   <config addtemplate="nuxeo-java-client-test" />
 

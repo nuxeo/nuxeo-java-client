@@ -17,14 +17,11 @@
  *     Kevin Leturc <kleturc@nuxeo.com>
  */
 
-String getDefaultNuxeoVersionToTest() {
-  return '2023'
-}
-
 def getNuxeoVersionsToTest() {
   return [
     '2021',
-    getDefaultNuxeoVersionToTest()
+    '2023',
+    '2025.x',
   ]
 }
 
@@ -66,7 +63,7 @@ Closure buildFunctionalTestStage(nuxeoVersion) {
   String mvnCustomEnv = "nuxeo-${nuxeoVersionSlug}"
   return {
     container("maven") {
-      nxWithHelmfileDeployment(namespace: testNamespace, environment: "functional-tests-${nuxeoVersion}",
+      nxWithHelmfileDeployment(namespace: testNamespace, environment: "functional-tests-${nuxeoVersionSlug}",
           envVars: ["NUXEO_VERSION=${getFunctionalTestDockerImageTag(nuxeoVersion)}"]) {
         script {
           try {

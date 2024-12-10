@@ -10,7 +10,7 @@
   <nuxeo-validation>nuxeo_certified</nuxeo-validation>
   <target-platform>
     <name>lts</name>
-    <version>[2021.0,2025.0)</version>
+    <version>[2021.0,2027.0)</version>
   </target-platform>
   <license>LGPL 2.1</license>
   <license-url>http://www.gnu.org/licenses/lgpl-2.1.html</license-url>
