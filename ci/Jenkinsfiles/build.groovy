@@ -22,7 +22,7 @@ def lib
 
 pipeline {
   agent {
-    label 'jenkins-nuxeo-package-lts-2023'
+    label 'jenkins-nuxeo-package-lts-2025'
   }
   options {
     buildDiscarder(logRotator(daysToKeepStr: '60', numToKeepStr: '60', artifactNumToKeepStr: '5'))
@@ -49,21 +49,47 @@ pipeline {
     }
 
     stage('Build Maven project') {
-      steps {
-        container('maven') {
-          echo """
-          ------------------------------------------------
-          Compile
-          ------------------------------------------------
-          """
-          echo "MAVEN_OPTS=$MAVEN_OPTS"
-          sh "mvn ${MAVEN_ARGS} -DskipITs install"
+      parallel {
+        stage('Compile') {
+          steps {
+            container('maven') {
+              echo """
+              ------------------------------------------------
+              Compile
+              ------------------------------------------------
+              """
+              echo "MAVEN_OPTS=$MAVEN_OPTS"
+              sh "mvn ${MAVEN_ARGS} -DskipITs install"
+            }
+          }
+          post {
+            always {
+              archiveArtifacts artifacts: '**/target/*.jar, **/target/nuxeo-java-client-*.zip, **/target/**/*.log'
+              junit testResults: '**/target/surefire-reports/*.xml'
+            }
+          }
         }
-      }
-      post {
-        always {
-          archiveArtifacts artifacts: '**/target/*.jar, **/target/nuxeo-java-client-*.zip, **/target/**/*.log'
-          junit testResults: '**/target/surefire-reports/*.xml'
+        stage('Formatting check') {
+          environment {
+            // env variable defined to workaround https://github.com/diffplug/spotless/pull/2238
+            MAVEN_CLI_ARGS = "--settings /root/.m2/settings.xml -Duser.home=/home/jenkins -B -nsu"
+          }
+          steps {
+            container('maven') {
+              warnError(message: 'Formatting check has failed') {
+                nxWithGitHubStatus(context: 'maven/lint', message: 'Lint') {
+                  script {
+                    echo """
+                    ----------------------------------------
+                    Check formatting
+                    ----------------------------------------"""
+                    sh "git fetch origin master:origin/master"
+                    sh "mvn ${MAVEN_CLI_ARGS} -V -Dcustom.environment=spotless spotless:check"
+                  }
+                }
+              }
+            }
+          }
         }
       }
     }
