@@ -331,7 +331,7 @@
             <dependency>
               <groupId>org.nuxeo</groupId>
               <artifactId>nuxeo-build-tools</artifactId>
-              <version>2</version>
+              <version>3</version>
             </dependency>
           </dependencies>
           <configuration>
