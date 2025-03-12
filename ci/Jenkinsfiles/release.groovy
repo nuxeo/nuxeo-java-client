@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2021 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2021-2025 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -55,13 +55,15 @@ pipeline {
     stage('Update version') {
       steps {
         container('maven') {
-          echo """
-          ----------------------------------------
-          Update version
-          ----------------------------------------
-          New version: ${VERSION}
-          """
-          sh "mvn ${MAVEN_ARGS} versions:set -DnewVersion=${VERSION} -DgenerateBackupPoms=false"
+          script {
+            echo """
+            ----------------------------------------
+            Update version
+            ----------------------------------------
+            New version: ${VERSION}
+            """.stripIndent()
+            nxMvn.updateVersion()
+          }
         }
       }
     }
