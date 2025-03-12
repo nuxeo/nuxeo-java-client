@@ -36,7 +36,7 @@ pipeline {
     CURRENT_NAMESPACE = nxK8s.getCurrentNamespace()
     MAVEN_ARGS = '-B -nsu -DskipPrePostIntegration'
     MAVEN_OPTS = "$MAVEN_OPTS -Xms512m -Xmx3072m"
-    JIRA_JAVACLIENT_MOVING_VERSION = 'next'
+    JIRA_JAVACLIENT_MOVING_VERSION = '"next"'
     VERSION = nxUtils.getReleaseVersion()
   }
   stages {
