@@ -274,7 +274,7 @@ public class ITRepository extends AbstractITBase {
         // Re-build a client with cache
         NuxeoClient client = ITBase.createClientBuilder().cache(new ResultCacheInMemory()).connect().schemas("*");
 
-        String query = "SELECT * FROM Document WHERE ecm:isVersion=0 AND isProxy=0 AND isTrashed=0 and dc:title=? AND dc:description=?";
+        String query = "SELECT * FROM Document WHERE ecm:isVersion=0 AND ecm:isProxy=0 AND ecm:isTrashed=0 and dc:title=? AND dc:description=?";
         // do a query
         client.repository().query(query, "1000", "0", null, "dc:title", "ASC", "Tile-1", "Desc-1");
         assertEquals(1, client.getNuxeoCache().size());
@@ -285,7 +285,7 @@ public class ITRepository extends AbstractITBase {
         client.repository().query(query, "1000", "0", null, "dc:title", "ASC", "Tile-1", "Desc-2");
         assertEquals(2, client.getNuxeoCache().size());
         // check that a different query creates a new cache entry
-        query = "SELECT * FROM Document WHERE ecm:isVersion=0 AND isProxy=0 AND isTrashed=0 and dc:title=?";
+        query = "SELECT * FROM Document WHERE ecm:isVersion=0 AND ecm:isProxy=0 AND ecm:isTrashed=0 and dc:title=?";
         client.repository().query(query, "1000", "0", null, "dc:title", "ASC", "Tile-1");
         assertEquals(3, client.getNuxeoCache().size());
     }
