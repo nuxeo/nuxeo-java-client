@@ -19,7 +19,6 @@
 
 def getNuxeoVersionsToTest() {
   return [
-    '2021',
     '2023',
     '2025',
   ]
