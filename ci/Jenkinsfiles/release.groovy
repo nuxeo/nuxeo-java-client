@@ -160,18 +160,17 @@ pipeline {
       steps {
         container('maven') {
           script {
-            def jiraIssueFetchers = [
-                type                 : 'jira',
-                jql                  : "project = ${JIRA_PROJECT} and fixVersion = ${JIRA_MOVING_VERSION}",
-                newJiraVersion       : [
-                    project    : env.JIRA_PROJECT,
-                    name       : env.JIRA_RELEASED_VERSION,
-                    releaseDate: LocalDate.now().format(DateTimeFormatter.ISO_LOCAL_DATE),
-                    released   : true,
-                ],
-                jiraMovingVersionName: env.JIRA_MOVING_VERSION,
-            ]
-            nxProject.release(issuesFetchers: [jiraIssueFetchers], tagPrefix: 'release-')
+            nxProject.release(
+              jql                  : "project = ${JIRA_PROJECT} and fixVersion = ${JIRA_MOVING_VERSION}",
+              newJiraVersion       : [
+                project    : env.JIRA_PROJECT,
+                name       : env.JIRA_RELEASED_VERSION,
+                releaseDate: LocalDate.now().format(DateTimeFormatter.ISO_LOCAL_DATE),
+                released   : true,
+              ],
+              jiraMovingVersionName: env.JIRA_MOVING_VERSION,
+              tagPrefix: 'release-',
+            )
           }
         }
       }
