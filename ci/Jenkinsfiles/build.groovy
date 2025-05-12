@@ -16,7 +16,7 @@
  * Contributors:
  *     Kevin Leturc <kleturc@nuxeo.com>
  */
-library identifier: "platform-ci-shared-library@v0.0.53"
+library identifier: "platform-ci-shared-library@v0.0.59"
 
 def lib
 
@@ -132,7 +132,9 @@ pipeline {
   post {
     always {
       script {
+        nxUtils.setBuildDescription()
         nxJira.updateIssues()
+        nxUtils.notifyBuildStatusIfNecessary()
       }
     }
   }
