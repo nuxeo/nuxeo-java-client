@@ -346,6 +346,7 @@
                 <spacesPerTab>4</spacesPerTab>
               </indent>
               <removeUnusedImports />
+              <removeWildcardImports />
               <importOrder>
                 <file>nuxeo.importorder</file>
               </importOrder>
