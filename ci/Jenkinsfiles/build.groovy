@@ -70,10 +70,6 @@ pipeline {
           }
         }
         stage('Formatting check') {
-          environment {
-            // env variable defined to workaround https://github.com/diffplug/spotless/pull/2238
-            MAVEN_CLI_ARGS = "--settings /root/.m2/settings.xml -Duser.home=/home/jenkins -B -nsu"
-          }
           steps {
             container('maven') {
               warnError(message: 'Formatting check has failed') {
@@ -84,7 +80,7 @@ pipeline {
                     Check formatting
                     ----------------------------------------"""
                     sh "git fetch origin master:origin/master"
-                    sh "mvn ${MAVEN_CLI_ARGS} -V -Dcustom.environment=spotless spotless:check"
+                    sh "mvn -V -Dcustom.environment=spotless spotless:check"
                   }
                 }
               }
