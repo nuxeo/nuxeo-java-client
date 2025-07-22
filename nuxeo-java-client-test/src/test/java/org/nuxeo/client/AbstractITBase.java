@@ -39,6 +39,7 @@ import org.nuxeo.client.objects.Document;
 import org.nuxeo.client.objects.Repository;
 import org.nuxeo.client.objects.blob.Blob;
 import org.nuxeo.client.objects.blob.FileBlob;
+import org.nuxeo.client.objects.directory.DirectoryManager;
 import org.nuxeo.client.objects.operation.DocRefs;
 import org.nuxeo.client.objects.user.UserManager;
 
@@ -58,11 +59,14 @@ public abstract class AbstractITBase {
 
     protected final UserGroupInterceptor userGroupInterceptor = new UserGroupInterceptor();
 
+    protected final DirectoryEntryInterceptor directoryEntryInterceptor = new DirectoryEntryInterceptor();
+
     protected final NuxeoClient nuxeoClient = ITBase.createClientBuilder()
                                                     .schemas("*")
                                                     .interceptor(repositoryInterceptor)
                                                     .interceptor(workflowInterceptor)
                                                     .interceptor(userGroupInterceptor)
+                                                    .interceptor(directoryEntryInterceptor)
                                                     .build();
 
     @Rule
@@ -119,6 +123,11 @@ public abstract class AbstractITBase {
         UserManager userManager = nuxeoClient.userManager();
         userGroupInterceptor.getUsersToDelete().forEach(userManager::deleteUser);
         userGroupInterceptor.getGroupsToDelete().forEach(userManager::deleteGroup);
+        // Fourth delete directory entries
+        DirectoryManager directoryManager = nuxeoClient.directoryManager();
+        directoryEntryInterceptor.getDirectoryEntryIdsToDelete()
+                                 .forEach(pair -> directoryManager.directory(pair.getLeft())
+                                                                  .deleteEntry(pair.getRight()));
         // Finally wait ES indexing
         nuxeoClient.operation(ES_WAIT_FOR_INDEXING).param("refresh", true).param("waitForAudit", true).execute();
     }
