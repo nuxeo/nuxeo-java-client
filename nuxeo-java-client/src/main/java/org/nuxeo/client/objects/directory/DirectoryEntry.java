@@ -27,6 +27,7 @@ import java.util.Map;
 import org.nuxeo.client.methods.DirectoryManagerAPI;
 import org.nuxeo.client.objects.ConnectableEntity;
 import org.nuxeo.client.objects.EntityTypes;
+import org.nuxeo.client.util.PathSegments;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -172,14 +173,14 @@ public class DirectoryEntry extends ConnectableEntity<DirectoryManagerAPI, Direc
     }
 
     public DirectoryEntry update() {
-        return fetchResponse(api.updateDirectoryEntry(directoryName, getId(), this));
+        return fetchResponse(api.updateDirectoryEntry(directoryName, PathSegments.encode(getId()), this));
     }
 
     /**
      * @since 3.0
      */
     public void delete() {
-        fetchResponse(api.deleteDirectoryEntry(directoryName, getId()));
+        fetchResponse(api.deleteDirectoryEntry(directoryName, PathSegments.encode(getId())));
     }
 
 }

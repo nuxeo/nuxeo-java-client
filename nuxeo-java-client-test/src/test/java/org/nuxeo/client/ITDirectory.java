@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2016-2017 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2016-2025 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,6 +24,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.junit.Test;
@@ -98,6 +99,41 @@ public class ITDirectory extends AbstractITBase {
 
         // Delete
         directory.deleteEntry(result.getId());
+    }
+
+    // JAVACLIENT-247
+    @Test
+    public void itCanUseDirectoryEntryWithSpecialPathSegmentCharacter() {
+        Directory directory = nuxeoClient.directoryManager().directory("continent");
+        for (var separator : List.of("/", ";", ":", "*", "@", "+", "%")) {
+            String entryId = String.format("Europe %s East", separator);
+
+            // Create
+            DirectoryEntry entry = new DirectoryEntry();
+            entry.setDirectoryName("continent");
+            entry.putIdProperty(entryId);
+            entry.putLabelProperty(entryId);
+            DirectoryEntry result = directory.createEntry(entry);
+            assertNotNull(result);
+            assertEquals("continent", result.getDirectoryName());
+            assertEquals(entryId, result.getLabelProperty());
+
+            String entryIdBis = entryId + " (bis)";
+
+            // Update (the given id is the one sent by the server)
+            result.putLabelProperty(entryIdBis);
+            result = result.update();
+            assertEquals(entryIdBis, result.getLabelProperty());
+
+            // Fetch (the given id is the one declared here)
+            result = directory.fetchEntry(entryId);
+            assertNotNull(result);
+            assertEquals("continent", result.getDirectoryName());
+            assertEquals(entryIdBis, result.getLabelProperty());
+
+            // Delete (the given id is the one sent by the server)
+            directory.deleteEntry(result.getId());
+        }
     }
 
     @Test
@@ -180,5 +216,4 @@ public class ITDirectory extends AbstractITBase {
         providerEntry = directory.updateEntry(providerEntry);
         assertEquals("strongSecret3", providerEntry.getProperty("clientSecret"));
     }
-
 }

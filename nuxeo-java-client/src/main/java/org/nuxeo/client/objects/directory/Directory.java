@@ -24,6 +24,7 @@ import org.nuxeo.client.NuxeoClient;
 import org.nuxeo.client.methods.DirectoryManagerAPI;
 import org.nuxeo.client.objects.ConnectableEntity;
 import org.nuxeo.client.objects.EntityTypes;
+import org.nuxeo.client.util.PathSegments;
 
 /**
  * @since 3.0
@@ -83,18 +84,18 @@ public class Directory extends ConnectableEntity<DirectoryManagerAPI, Directory>
      */
     public DirectoryEntry fetchEntry(Object entryId) {
         Objects.requireNonNull(entryId, "The entryId can not be null.");
-        return fetchResponse(api.fetchDirectoryEntry(name, String.valueOf(entryId)));
+        return fetchResponse(api.fetchDirectoryEntry(name, PathSegments.encode(String.valueOf(entryId))));
     }
 
     public DirectoryEntry fetchEntry(String entryId) {
         Objects.requireNonNull(entryId, "The entryId can not be null.");
-        return fetchResponse(api.fetchDirectoryEntry(name, entryId));
+        return fetchResponse(api.fetchDirectoryEntry(name, PathSegments.encode(entryId)));
     }
 
     public DirectoryEntry updateEntry(DirectoryEntry entry) {
         entry.setDirectoryName(name);
         String entryId = Objects.requireNonNull(entry.getId(), "You have to give the entry id to your entry.");
-        return fetchResponse(api.updateDirectoryEntry(name, entryId, entry));
+        return fetchResponse(api.updateDirectoryEntry(name, PathSegments.encode(entryId), entry));
     }
 
     /**
@@ -102,12 +103,12 @@ public class Directory extends ConnectableEntity<DirectoryManagerAPI, Directory>
      */
     public void deleteEntry(Object entryId) {
         Objects.requireNonNull(entryId, "The entryId can not be null.");
-        fetchResponse(api.deleteDirectoryEntry(name, String.valueOf(entryId)));
+        fetchResponse(api.deleteDirectoryEntry(name, PathSegments.encode(String.valueOf(entryId))));
     }
 
     public void deleteEntry(String entryId) {
         Objects.requireNonNull(entryId, "The entryId can not be null.");
-        fetchResponse(api.deleteDirectoryEntry(name, entryId));
+        fetchResponse(api.deleteDirectoryEntry(name, PathSegments.encode(entryId)));
     }
 
 }
