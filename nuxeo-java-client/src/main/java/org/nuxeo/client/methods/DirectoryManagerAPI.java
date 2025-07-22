@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2016-2017 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2016-2025 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -55,14 +55,14 @@ public interface DirectoryManagerAPI {
 
     @GET("directory/{directoryName}/{entryId}")
     Call<DirectoryEntry> fetchDirectoryEntry(@Path("directoryName") String directoryName,
-            @Path("entryId") String directoryEntryId);
+            @Path(value = "entryId", encoded = true) String directoryEntryId);
 
     @PUT("directory/{directoryName}/{entryId}")
     Call<DirectoryEntry> updateDirectoryEntry(@Path("directoryName") String directoryName,
-            @Path("entryId") String directoryEntryId, @Body DirectoryEntry directoryEntry);
+            @Path(value = "entryId", encoded = true) String directoryEntryId, @Body DirectoryEntry directoryEntry);
 
     @DELETE("directory/{directoryName}/{entryId}")
     Call<Void> deleteDirectoryEntry(@Path("directoryName") String directoryName,
-            @Path("entryId") String directoryEntryId);
+            @Path(value = "entryId", encoded = true) String directoryEntryId);
 
 }
