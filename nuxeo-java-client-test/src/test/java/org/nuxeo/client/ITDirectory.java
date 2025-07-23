@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2016-2017 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2016-2025 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -100,6 +100,46 @@ public class ITDirectory extends AbstractITBase {
         directory.deleteEntry(result.getId());
     }
 
+    // JAVACLIENT-247
+    @Test
+    public void itCanUseDirectoryEntryWithSpecialCharacter() {
+        Directory directory = nuxeoClient.directoryManager().directory("continent");
+
+        // Create
+        DirectoryEntry entry = new DirectoryEntry();
+        entry.setDirectoryName("continent");
+        entry.putIdProperty("Europe/East");
+        entry.putLabelProperty("Europe/East");
+        DirectoryEntry result = directory.createEntry(entry);
+        assertNotNull(result);
+        assertEquals("continent", result.getDirectoryName());
+        assertEquals("Europe/East", result.getLabelProperty());
+
+        // Update
+        result.putLabelProperty("Europe - East");
+        result = result.update();
+        assertEquals("Europe - East", result.getLabelProperty());
+
+        // Fetch
+        result = directory.fetchEntry("Europe/East");
+        assertNotNull(result);
+        assertEquals("continent", result.getDirectoryName());
+        assertEquals("Europe - East", result.getLabelProperty());
+
+        // Another way to update
+        Map<String, String> props = new HashMap<>();
+        props.put(DirectoryEntry.ID_PROPERTY, "Europe/East");
+        props.put(DirectoryEntry.LABEL_PROPERTY, "Europe * East");
+        result.setProperties(props);
+        result = directory.updateEntry(result);
+        assertNotNull(result);
+        assertEquals("continent", result.getDirectoryName());
+        assertEquals("Europe * East", result.getLabelProperty());
+
+        // Delete
+        directory.deleteEntry(result.getId());
+    }
+
     @Test
     public void itCanSetOrderingPropertyInteger() {
         Directory directory = nuxeoClient.directoryManager().directory("continent");
@@ -180,5 +220,4 @@ public class ITDirectory extends AbstractITBase {
         providerEntry = directory.updateEntry(providerEntry);
         assertEquals("strongSecret3", providerEntry.getProperty("clientSecret"));
     }
-
 }
