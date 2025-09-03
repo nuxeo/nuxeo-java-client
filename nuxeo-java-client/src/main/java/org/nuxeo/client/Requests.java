@@ -19,12 +19,12 @@
 package org.nuxeo.client;
 
 import java.io.IOException;
+import java.io.InputStream;
 
 import org.nuxeo.client.objects.blob.Blob;
 
 import okhttp3.MediaType;
 import okhttp3.RequestBody;
-import okhttp3.internal.Util;
 import okio.BufferedSink;
 import okio.Okio;
 import okio.Source;
@@ -56,12 +56,8 @@ public class Requests {
 
             @Override
             public void writeTo(BufferedSink sink) throws IOException {
-                Source source = null;
-                try {
-                    source = Okio.source(blob.getStream());
+                try (InputStream stream = blob.getStream(); Source source = Okio.source(stream)) {
                     sink.writeAll(source);
-                } finally {
-                    Util.closeQuietly(source);
                 }
             }
 
