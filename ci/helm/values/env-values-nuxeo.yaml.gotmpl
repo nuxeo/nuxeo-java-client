@@ -1,0 +1,25 @@
+nuxeo:
+  image:
+    {{/* this condition is used to differentiate execution in the CI and locally */}}
+    {{- if (env "BRANCH_NAME") }}
+    repository: {{ printf "%s/nuxeo/nuxeo-java-client-ftests" (requiredEnv "DOCKER_REGISTRY") }}
+    {{- else }}
+    repository: nuxeo/nuxeo-java-client-ftests
+    {{- end }}
+    tag: {{ requiredEnv "VERSION" | quote }}
+  customEnvs:
+  {{- if (contains "preprod" (env "CONNECT_CLID_SECRET")) }}
+  - name: NUXEO_CONNECT_URL
+    value: https://nos-preprod-connect.nuxeocloud.com/nuxeo/site/
+  {{- end }}
+  - name: NUXEO_CLID
+    valueFrom:
+      secretKeyRef:
+        name: {{ env "CONNECT_CLID_SECRET" | default "instance-clid" }}
+        key: instance.clid
+  {{- if eq .Environment.Name "functional-tests-2025" }}
+  # it would have been better to put them in Dockerfile but as it is condition by Nuxeo LTS major version set them here
+  packages: >-
+    nuxeo-audit-opensearch1
+    nuxeo-search-client-opensearch1
+  {{- end }}
