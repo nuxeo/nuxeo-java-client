@@ -19,6 +19,7 @@
 package org.nuxeo.client;
 
 import java.io.IOException;
+import java.io.InputStream;
 
 import org.nuxeo.client.objects.blob.Blob;
 
@@ -56,12 +57,8 @@ public class Requests {
 
             @Override
             public void writeTo(BufferedSink sink) throws IOException {
-                Source source = null;
-                try {
-                    source = Okio.source(blob.getStream());
+                try (InputStream stream = blob.getStream(); Source source = Okio.source(stream)) {
                     sink.writeAll(source);
-                } finally {
-                    Util.closeQuietly(source);
                 }
             }
 
