@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2021 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2021-2025 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,31 +17,36 @@
  *     Kevin Leturc <kleturc@nuxeo.com>
  */
 
-def getNuxeoVersionsToTest() {
+def getNuxeoTagsToTest() {
   return [
     '2023',
     '2025',
   ]
 }
 
-String getFunctionalTestDockerImageTag(nuxeoVersion) {
-  return "${nuxeoVersion}-${VERSION}"
+String getFunctionalTestDockerImageTag(nuxeoTag) {
+  return "${nuxeoTag}-${VERSION}"
+}
+
+String getClidSecret(nuxeoTag) {
+  // target connect preprod if nuxeo tag is a build tag or a moving tag
+  return nuxeoTag.matches("^\\d+\\.(x|\\d+\\.\\d+)\$") ? 'instance-clid-preprod' : 'instance-clid'
 }
 
 def buildFunctionalDockerImages() {
   def stages = [:]
-  for (nuxeoVersion in getNuxeoVersionsToTest()) {
-    stages["Build functional tests image ${nuxeoVersion}"] = buildFunctionalTestDockerBuildStage(nuxeoVersion)
+  for (nuxeoTag in getNuxeoTagsToTest()) {
+    stages["Build functional tests image ${nuxeoTag}"] = buildFunctionalTestDockerBuildStage(nuxeoTag)
   }
   parallel stages
 }
 
-Closure buildFunctionalTestDockerBuildStage(nuxeoVersion) {
+Closure buildFunctionalTestDockerBuildStage(nuxeoTag) {
   return {
     container("maven") {
       script {
         nxDocker.build(skaffoldFile: 'ci/docker/nuxeo/skaffold.yaml',
-            envVars: ["FTESTS_VERSION=${getFunctionalTestDockerImageTag(nuxeoVersion)}", "NUXEO_VERSION=${nuxeoVersion}"])
+            envVars: ["FTESTS_VERSION=${getFunctionalTestDockerImageTag(nuxeoTag)}", "NUXEO_VERSION=${nuxeoTag}"])
       }
     }
   }
@@ -49,28 +54,34 @@ Closure buildFunctionalTestDockerBuildStage(nuxeoVersion) {
 
 def runFunctionalTests() {
   def runStages = [:]
-  for (nuxeoVersion in getNuxeoVersionsToTest()) {
-    runStages["Against Nuxeo ${nuxeoVersion}"] = buildFunctionalTestStage(nuxeoVersion)
+  for (nuxeoTag in getNuxeoTagsToTest()) {
+    runStages["Against Nuxeo ${nuxeoTag}"] = buildFunctionalTestStage(nuxeoTag)
   }
   parallel runStages
 }
 
-Closure buildFunctionalTestStage(nuxeoVersion) {
-  def nuxeoVersionSlug = nuxeoVersion.replaceAll('\\..*', '')
-  def testNamespace = "$CURRENT_NAMESPACE-java-client-ftests-$BRANCH_NAME-$BUILD_NUMBER-nuxeo-${nuxeoVersionSlug}".toLowerCase()
+Closure buildFunctionalTestStage(nuxeoTag) {
+  def nuxeoFullVersion = nxDocker.getLabel(image: "${PRIVATE_DOCKER_REGISTRY}/nuxeo/nuxeo:${nuxeoTag}", label: 'org.nuxeo.version')
+  def clidSecret = getClidSecret(nuxeoTag)
 
-  String mvnCustomEnv = "nuxeo-${nuxeoVersionSlug}"
+  def nuxeoTagSlug = nuxeoTag.replaceAll('\\..*', '')
+  def testNamespace = "$CURRENT_NAMESPACE-java-client-ftests-$BRANCH_NAME-$BUILD_NUMBER-nuxeo-${nuxeoTagSlug}".toLowerCase()
+  def environment = "functional-tests-${nuxeoTagSlug}"
+
+  String mvnCustomEnv = "nuxeo-${nuxeoTagSlug}"
   return {
     container("maven") {
-      nxWithHelmfileDeployment(namespace: testNamespace, environment: "functional-tests-${nuxeoVersionSlug}",
-          envVars: ["NUXEO_VERSION=${getFunctionalTestDockerImageTag(nuxeoVersion)}"]) {
+      nxWithHelmfileDeployment(namespace: testNamespace, environment: environment,
+          envVars: ["CONNECT_CLID_SECRET=${clidSecret}", "NUXEO_VERSION=${nuxeoFullVersion}", "VERSION=${getFunctionalTestDockerImageTag(nuxeoTag)}"],
+          secrets: [[name: clidSecret, namespace: 'platform']],
+          cacheName: environment) {
         script {
           try {
             echo """
             ----------------------------------------
             Run Java Client functional tests
             ---------------------------------------- 
-            Nuxeo version: ${nuxeoVersion}
+            Nuxeo version: ${nuxeoTag} (${nuxeoFullVersion})
             """
             sh """
               mvn -pl :nuxeo-java-client-test \
