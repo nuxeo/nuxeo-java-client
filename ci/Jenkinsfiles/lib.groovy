@@ -69,9 +69,6 @@ Closure buildFunctionalTestStage(nuxeoTag) {
   def environment = "functional-tests-${nuxeoTagSlug}"
 
   String mvnCustomEnv = "nuxeo-${nuxeoTagSlug}"
-  if (nuxeoFullVersion.startsWith("2023")) {
-    nuxeoFullVersion = "2023.36.0"
-  }
   return {
     container("maven") {
       nxWithHelmfileDeployment(namespace: testNamespace, environment: environment,
