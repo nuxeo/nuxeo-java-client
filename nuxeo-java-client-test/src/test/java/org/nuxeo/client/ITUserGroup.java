@@ -95,14 +95,14 @@ public class ITUserGroup extends AbstractITBase {
         assertNotNull(users);
         assertEquals(2, users.getResultsCount());
         assertEquals(1, users.getCurrentPageSize());
-        assertEquals("Administrator", users.getUsers().get(0).getId());
+        assertEquals("Administrator", users.getUsers().get(0).getUserName());
         assertTrue(users.isNextPageAvailable());
         // Second search will retrieve Guest
         users = nuxeoClient.userManager().searchUser("*", 1, 1);
         assertNotNull(users);
         assertEquals(2, users.getResultsCount());
         assertEquals(1, users.getCurrentPageSize());
-        assertEquals("toto", users.getUsers().get(0).getId());
+        assertEquals("toto", users.getUsers().get(0).getUserName());
         assertFalse(users.isNextPageAvailable());
     }
 

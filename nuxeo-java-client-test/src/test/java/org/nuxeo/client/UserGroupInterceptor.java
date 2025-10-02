@@ -58,7 +58,7 @@ public class UserGroupInterceptor implements Interceptor {
         if ("POST".equals(method)) {
             if (httpUrl.encodedPath().matches(USER_PATH)) {
                 String body = Responses.bodyToString(response);
-                String username = body.replaceFirst(".*\"id\":\"([^\"]*)\".*", "$1");
+                String username = body.replaceFirst(".*\"username\":\"([^\"]*)\".*", "$1");
                 if (StringUtils.isNotBlank(username)) {
                     usersToDelete.add(username);
                 }
