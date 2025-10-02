@@ -178,14 +178,14 @@ public class ITBase {
         User user = createUser();
         user = userManager.createUser(user);
         assertNotNull(user);
-        assertEquals(DEFAULT_USER_LOGIN, user.getId());
+        assertEquals(DEFAULT_USER_LOGIN, user.getUserName());
         assertEquals("last toto", user.getLastName());
         assertEquals(DEFAULT_USER_EMAIL, user.getEmail());
 
         // Fetch
         user = userManager.fetchUser(DEFAULT_USER_LOGIN);
         assertNotNull(user);
-        assertEquals(DEFAULT_USER_LOGIN, user.getId());
+        assertEquals(DEFAULT_USER_LOGIN, user.getUserName());
         assertEquals("last toto", user.getLastName());
         assertEquals(DEFAULT_USER_EMAIL, user.getEmail());
 

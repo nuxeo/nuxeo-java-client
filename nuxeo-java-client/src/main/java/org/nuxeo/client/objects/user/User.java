@@ -19,12 +19,15 @@
  */
 package org.nuxeo.client.objects.user;
 
+import static org.apache.commons.lang3.ObjectUtils.getIfNull;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.nuxeo.client.objects.Entity;
+import org.nuxeo.client.methods.UserManagerAPI;
+import org.nuxeo.client.objects.ConnectableEntity;
 import org.nuxeo.client.objects.EntityTypes;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -34,7 +37,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 /**
  * @since 0.1
  */
-public class User extends Entity {
+public class User extends ConnectableEntity<UserManagerAPI, User> {
 
     /**
      * User first name property key, this property can be set when creating or updating a user
@@ -104,12 +107,25 @@ public class User extends Entity {
     @JsonProperty("isAnonymous")
     protected boolean isAnonymous;
 
-    /** Used to map login used to fetch current user. */
+    /**
+     * This field is only present when fetching the current user with
+     * {@link org.nuxeo.client.methods.UserManagerAPI#fetchCurrentUser() UserManagerAPI.fetchCurrentUser()} API which
+     * does not return the exact same object than regular
+     * {@link org.nuxeo.client.methods.UserManagerAPI#fetchUser(String) UserManagerAPI.fetchUser(String)} API.
+     */
     @JsonProperty("username")
     protected String userName;
 
     public User() {
-        super(EntityTypes.USER);
+        super(EntityTypes.USER, UserManagerAPI.class);
+    }
+
+    /**
+     * @return the id or username of this user to use in REST paths
+     * @since 4.0.4
+     */
+    public String getIdOrUsername() {
+        return getIfNull(getId(), this::getUserName);
     }
 
     public String getId() {
@@ -189,10 +205,24 @@ public class User extends Entity {
         this.properties.put(GROUPS_PROPERTY, groups);
     }
 
+    /**
+     * Adds the current user to the given group.
+     * <p>
+     * This method will perform a request.
+     * 
+     * @param group the group to add the user to
+     * @return the updated user from remote
+     * @since 4.0.4
+     */
+    public User addUserToGroup(Group group) {
+        return fetchResponse(api.addUserToGroup(getIdOrUsername(), group.getIdOrGroupname()));
+    }
+
     /** @since 4.0.4 */
     public String getTenantId() {
         return (String) this.properties.get(TENANTID_PROPERTY);
     }
+
     /**
      * @since 2.4
      */

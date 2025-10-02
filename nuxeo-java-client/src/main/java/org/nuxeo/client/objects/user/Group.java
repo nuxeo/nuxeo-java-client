@@ -19,6 +19,8 @@
  */
 package org.nuxeo.client.objects.user;
 
+import static org.apache.commons.lang3.ObjectUtils.getIfNull;
+
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -32,6 +34,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  * @since 0.1
  */
 public class Group extends ConnectableEntity<UserManagerAPI, Group> {
+
+    protected String id;
 
     @JsonProperty("groupname")
     protected String groupName;
@@ -47,6 +51,19 @@ public class Group extends ConnectableEntity<UserManagerAPI, Group> {
 
     public Group() {
         super(EntityTypes.GROUP, UserManagerAPI.class);
+    }
+
+    /**
+     * @return the id or groupname of this group to use in REST paths
+     * @since 4.0.4
+     */
+    public String getIdOrGroupname() {
+        return getIfNull(getId(), this::getGroupName);
+    }
+
+    /** @since 4.0.4 */
+    public String getId() {
+        return id;
     }
 
     public String getGroupName() {
@@ -95,7 +112,7 @@ public class Group extends ConnectableEntity<UserManagerAPI, Group> {
      * @since 3.0
      */
     public Users fetchMemberUsers() {
-        Users users = fetchResponse(api.fetchGroupMemberUsers(getGroupName()));
+        Users users = fetchResponse(api.fetchGroupMemberUsers(getIdOrGroupname()));
         memberUsers = users.streamEntries().map(User::getUserName).collect(Collectors.toList());
         return users;
     }
@@ -109,7 +126,7 @@ public class Group extends ConnectableEntity<UserManagerAPI, Group> {
      * @since 3.11.0
      */
     public Users fetchMemberUsers(int currentPageIndex, int pageSize) {
-        Users users = fetchResponse(api.fetchGroupMemberUsers(getGroupName(), currentPageIndex, pageSize));
+        Users users = fetchResponse(api.fetchGroupMemberUsers(getIdOrGroupname(), currentPageIndex, pageSize));
         memberUsers = users.streamEntries().map(User::getUserName).collect(Collectors.toList());
         return users;
     }
@@ -120,6 +137,19 @@ public class Group extends ConnectableEntity<UserManagerAPI, Group> {
      */
     public void setMemberUsers(List<String> memberUsers) {
         this.memberUsers = memberUsers;
+    }
+
+    /**
+     * Adds the given user to this group.
+     * <p>
+     * This method will perform a request.
+     *
+     * @param user the user to add to this group
+     * @return the updated user from remote
+     * @since 4.0.4
+     */
+    public Group addUserToGroup(User user) {
+        return fetchResponse(api.attachGroupToUser(getIdOrGroupname(), user.getIdOrUsername()));
     }
 
     /**
@@ -152,7 +182,7 @@ public class Group extends ConnectableEntity<UserManagerAPI, Group> {
      * @since 3.0
      */
     public Groups fetchMemberGroups() {
-        Groups groups = fetchResponse(api.fetchGroupMemberGroups(getGroupName()));
+        Groups groups = fetchResponse(api.fetchGroupMemberGroups(getIdOrGroupname()));
         memberGroups = groups.streamEntries().map(Group::getGroupName).collect(Collectors.toList());
         return groups;
     }
@@ -166,7 +196,7 @@ public class Group extends ConnectableEntity<UserManagerAPI, Group> {
      * @since 3.0
      */
     public Groups fetchMemberGroups(int currentPageIndex, int pageSize) {
-        Groups groups = fetchResponse(api.fetchGroupMemberGroups(getGroupName(), currentPageIndex, pageSize));
+        Groups groups = fetchResponse(api.fetchGroupMemberGroups(getIdOrGroupname(), currentPageIndex, pageSize));
         memberGroups = groups.streamEntries().map(Group::getGroupName).collect(Collectors.toList());
         return groups;
     }

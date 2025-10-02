@@ -39,20 +39,20 @@ public class UserManager extends AbstractConnectable<UserManagerAPI, UserManager
 
     /** Sync **/
 
-    public Group fetchGroup(String groupName) {
-        return fetchResponse(api.fetchGroup(groupName));
+    public Group fetchGroup(String idOrGroupname) {
+        return fetchResponse(api.fetchGroup(idOrGroupname));
     }
 
-    public Group updateGroup(String groupName, Group group) {
-        return fetchResponse(api.updateGroup(groupName, group));
+    public Group updateGroup(String idOrGroupname, Group group) {
+        return fetchResponse(api.updateGroup(idOrGroupname, group));
     }
 
     public Group updateGroup(Group group) {
-        return fetchResponse(api.updateGroup(group.getGroupName(), group));
+        return fetchResponse(api.updateGroup(group.getIdOrGroupname(), group));
     }
 
-    public void deleteGroup(String groupName) {
-        try (var ignored = fetchResponse(api.deleteGroup(groupName))) {
+    public void deleteGroup(String idOrGroupname) {
+        try (var ignored = fetchResponse(api.deleteGroup(idOrGroupname))) {
             // just do the try-with-resources
         }
     }
@@ -69,8 +69,8 @@ public class UserManager extends AbstractConnectable<UserManagerAPI, UserManager
         return fetchResponse(api.searchGroup(query, currentPageIndex, pageSize));
     }
 
-    public User addUserToGroup(String userName, String groupName) {
-        return fetchResponse(api.addUserToGroup(userName, groupName));
+    public User addUserToGroup(String idOrUsername, String idOrGroupname) {
+        return fetchResponse(api.addUserToGroup(idOrUsername, idOrGroupname));
     }
 
     public User fetchCurrentUser() {
@@ -91,20 +91,20 @@ public class UserManager extends AbstractConnectable<UserManagerAPI, UserManager
         return fetchResponse(api.startWorkflowInstance(workflow));
     }
 
-    public User fetchUser(String userName) {
-        return fetchResponse(api.fetchUser(userName));
+    public User fetchUser(String idOrUsername) {
+        return fetchResponse(api.fetchUser(idOrUsername));
     }
 
-    public User updateUser(String userName, User user) {
-        return fetchResponse(api.updateUser(userName, user));
+    public User updateUser(String idOrUsername, User user) {
+        return fetchResponse(api.updateUser(idOrUsername, user));
     }
 
     public User updateUser(User user) {
-        return fetchResponse(api.updateUser(user.getUserName(), user));
+        return fetchResponse(api.updateUser(user.getIdOrUsername(), user));
     }
 
-    public void deleteUser(String userName) {
-        fetchResponse(api.deleteUser(userName));
+    public void deleteUser(String idOrUsername) {
+        fetchResponse(api.deleteUser(idOrUsername));
     }
 
     public User createUser(User user) {
@@ -119,26 +119,26 @@ public class UserManager extends AbstractConnectable<UserManagerAPI, UserManager
         return fetchResponse(api.searchUser(query, currentPageIndex, pageSize));
     }
 
-    public User attachGroupToUser(String groupName, String userName) {
-        return fetchResponse(api.attachGroupToUser(groupName, userName));
+    public Group attachGroupToUser(String idOrGroupname, String idOrUsername) {
+        return fetchResponse(api.attachGroupToUser(idOrGroupname, idOrUsername));
     }
 
     /** Async **/
 
-    public void fetchGroup(String groupName, Callback<Group> callback) {
-        fetchResponse(api.fetchGroup(groupName), callback);
+    public void fetchGroup(String idOrGroupname, Callback<Group> callback) {
+        fetchResponse(api.fetchGroup(idOrGroupname), callback);
     }
 
-    public void updateGroup(String groupName, Group group, Callback<Group> callback) {
-        fetchResponse(api.updateGroup(groupName, group), callback);
+    public void updateGroup(String idOrGroupname, Group group, Callback<Group> callback) {
+        fetchResponse(api.updateGroup(idOrGroupname, group), callback);
     }
 
     public void updateGroup(Group group, Callback<Group> callback) {
-        fetchResponse(api.updateGroup(group.getGroupName(), group), callback);
+        fetchResponse(api.updateGroup(group.getIdOrGroupname(), group), callback);
     }
 
-    public void deleteGroup(String groupName, Callback<ResponseBody> callback) {
-        fetchResponse(api.deleteGroup(groupName), callback);
+    public void deleteGroup(String idOrGroupname, Callback<ResponseBody> callback) {
+        fetchResponse(api.deleteGroup(idOrGroupname), callback);
     }
 
     public void createGroup(Group group, Callback<Group> callback) {
@@ -149,8 +149,8 @@ public class UserManager extends AbstractConnectable<UserManagerAPI, UserManager
         fetchResponse(api.searchGroup(query), callback);
     }
 
-    public void addUserToGroup(String userName, String groupName, Callback<User> callback) {
-        fetchResponse(api.addUserToGroup(userName, groupName), callback);
+    public void addUserToGroup(String idOrUsername, String idOrGroupname, Callback<User> callback) {
+        fetchResponse(api.addUserToGroup(idOrUsername, idOrGroupname), callback);
     }
 
     public void fetchCurrentUser(Callback<User> callback) {
@@ -171,20 +171,20 @@ public class UserManager extends AbstractConnectable<UserManagerAPI, UserManager
         fetchResponse(api.startWorkflowInstance(workflow), callback);
     }
 
-    public void fetchUser(String userName, Callback<User> callback) {
-        fetchResponse(api.fetchUser(userName), callback);
+    public void fetchUser(String idOrUsername, Callback<User> callback) {
+        fetchResponse(api.fetchUser(idOrUsername), callback);
     }
 
-    public void updateUser(String userName, User user, Callback<User> callback) {
-        fetchResponse(api.updateUser(userName, user), callback);
+    public void updateUser(String idOrUsername, User user, Callback<User> callback) {
+        fetchResponse(api.updateUser(idOrUsername, user), callback);
     }
 
     public void updateUser(User user, Callback<User> callback) {
-        fetchResponse(api.updateUser(user.getUserName(), user), callback);
+        fetchResponse(api.updateUser(user.getIdOrUsername(), user), callback);
     }
 
-    public void deleteUser(String userName, Callback<Void> callback) {
-        fetchResponse(api.deleteUser(userName), callback);
+    public void deleteUser(String idOrUsername, Callback<Void> callback) {
+        fetchResponse(api.deleteUser(idOrUsername), callback);
     }
 
     public void createUser(User user, Callback<User> callback) {
@@ -195,8 +195,8 @@ public class UserManager extends AbstractConnectable<UserManagerAPI, UserManager
         fetchResponse(api.searchUser(query), callback);
     }
 
-    public void attachGroupToUser(String groupName, String userName, Callback<User> callback) {
-        fetchResponse(api.attachGroupToUser(groupName, userName), callback);
+    public void attachGroupToUser(String idOrGroupname, String idOrUsername, Callback<Group> callback) {
+        fetchResponse(api.attachGroupToUser(idOrGroupname, idOrUsername), callback);
     }
 
 }

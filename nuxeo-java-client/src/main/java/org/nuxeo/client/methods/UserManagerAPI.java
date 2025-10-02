@@ -45,14 +45,14 @@ public interface UserManagerAPI {
     // Group APIs
     // ----------
 
-    @GET("group/{groupName}")
-    Call<Group> fetchGroup(@Path("groupName") String groupName);
+    @GET("group/{idOrGroupname}")
+    Call<Group> fetchGroup(@Path("idOrGroupname") String idOrGroupname);
 
-    @PUT("group/{groupName}")
-    Call<Group> updateGroup(@Path("groupName") String groupName, @Body Group group);
+    @PUT("group/{idOrGroupname}")
+    Call<Group> updateGroup(@Path("idOrGroupname") String idOrGroupname, @Body Group group);
 
-    @DELETE("group/{groupName}")
-    Call<ResponseBody> deleteGroup(@Path("groupName") String groupName);
+    @DELETE("group/{idOrGroupname}")
+    Call<ResponseBody> deleteGroup(@Path("idOrGroupname") String idOrGroupname);
 
     @POST("group")
     Call<Group> createGroup(@Body Group group);
@@ -64,47 +64,48 @@ public interface UserManagerAPI {
     Call<Groups> searchGroup(@Query("q") String query, @Query("currentPageIndex") int currentPageIndex,
             @Query("pageSize") int pageSize);
 
-    @POST("group/{groupName}/user/{userName}")
-    Call<User> attachGroupToUser(@Path("groupName") String groupName, @Path("userName") String userName);
+    @POST("group/{idOrGroupname}/user/{idOrUsername}")
+    Call<Group> attachGroupToUser(@Path("idOrGroupname") String idOrGroupname,
+            @Path("idOrUsername") String idOrUsername);
 
     /**
      * @since 3.0
      */
-    @GET("group/{groupName}/@users")
-    Call<Users> fetchGroupMemberUsers(@Path("groupName") String groupName);
+    @GET("group/{idOrGroupname}/@users")
+    Call<Users> fetchGroupMemberUsers(@Path("idOrGroupname") String idOrGroupname);
 
     /**
      * @since 3.11.0
      */
-    @GET("group/{groupName}/@users")
-    Call<Users> fetchGroupMemberUsers(@Path("groupName") String groupName,
+    @GET("group/{idOrGroupname}/@users")
+    Call<Users> fetchGroupMemberUsers(@Path("idOrGroupname") String idOrGroupname,
             @Query("currentPageIndex") int currentPageIndex, @Query("pageSize") int pageSize);
 
     /**
      * @since 3.0
      */
-    @GET("group/{groupName}/@groups")
-    Call<Groups> fetchGroupMemberGroups(@Path("groupName") String groupName);
+    @GET("group/{idOrGroupname}/@groups")
+    Call<Groups> fetchGroupMemberGroups(@Path("idOrGroupname") String idOrGroupname);
 
     /**
      * @since 3.11.0
      */
-    @GET("group/{groupName}/@groups")
-    Call<Groups> fetchGroupMemberGroups(@Path("groupName") String groupName,
+    @GET("group/{idOrGroupname}/@groups")
+    Call<Groups> fetchGroupMemberGroups(@Path("idOrGroupname") String idOrGroupname,
             @Query("currentPageIndex") int currentPageIndex, @Query("pageSize") int pageSize);
 
     // ---------
     // User APIs
     // ---------
 
-    @GET("user/{userName}")
-    Call<User> fetchUser(@Path("userName") String userName);
+    @GET("user/{idOrUsername}")
+    Call<User> fetchUser(@Path("idOrUsername") String idOrUsername);
 
-    @PUT("user/{userName}")
-    Call<User> updateUser(@Path("userName") String userName, @Body User user);
+    @PUT("user/{idOrUsername}")
+    Call<User> updateUser(@Path("idOrUsername") String idOrUsername, @Body User user);
 
-    @DELETE("user/{userName}")
-    Call<Void> deleteUser(@Path("userName") String userName);
+    @DELETE("user/{idOrUsername}")
+    Call<Void> deleteUser(@Path("idOrUsername") String idOrUsername);
 
     @POST("user")
     Call<User> createUser(@Body User user);
@@ -116,8 +117,8 @@ public interface UserManagerAPI {
     Call<Users> searchUser(@Query("q") String query, @Query("currentPageIndex") int currentPageIndex,
             @Query("pageSize") int pageSize);
 
-    @POST("user/{userName}/group/{groupName}")
-    Call<User> addUserToGroup(@Path("userName") String userName, @Path("groupName") String groupName);
+    @POST("user/{idOrUsername}/group/{idOrGroupname}")
+    Call<User> addUserToGroup(@Path("idOrUsername") String idOrUsername, @Path("idOrGroupname") String idOrGroupname);
 
     // -----------------
     // Current user APIs
