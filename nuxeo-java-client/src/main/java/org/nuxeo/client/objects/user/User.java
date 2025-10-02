@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2016-2017 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2016-2025 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -124,31 +124,6 @@ public class User extends Entity {
         return isAnonymous;
     }
 
-    public List<ExtendedGroup> getExtendedGroups() {
-        return extendedGroups;
-    }
-
-    public String getFirstName() {
-        return (String) this.properties.get(FIRST_NAME_PROPERTY);
-    }
-
-    public String getLastName() {
-        return (String) this.properties.get(LAST_NAME_PROPERTY);
-    }
-
-    public String getCompany() {
-        return (String) this.properties.get(COMPANY_PROPERTY);
-    }
-
-    public String getEmail() {
-        return (String) this.properties.get(EMAIL_PROPERTY);
-    }
-
-    @SuppressWarnings("unchecked")
-    public List<String> getGroups() {
-        return (List<String>) this.properties.get(GROUPS_PROPERTY);
-    }
-
     public String getUserName() {
         if (userName == null) {
             return (String) this.properties.get(USERNAME_PROPERTY);
@@ -156,37 +131,13 @@ public class User extends Entity {
         return userName;
     }
 
-    public String getPassword() {
-        return (String) this.properties.get(PASSWORD_PROPERTY);
-    }
-
-    public void setExtendedGroups(List<ExtendedGroup> extendedGroups) {
-        this.extendedGroups = extendedGroups;
-    }
-
-    public void setFirstName(String firstName) {
-        this.properties.put(FIRST_NAME_PROPERTY, firstName);
-    }
-
-    public void setLastName(String lastName) {
-        this.properties.put(LAST_NAME_PROPERTY, lastName);
-    }
-
-    public void setCompany(String company) {
-        this.properties.put(COMPANY_PROPERTY, company);
-    }
-
-    public void setEmail(String email) {
-        this.properties.put(EMAIL_PROPERTY, email);
-    }
-
-    public void setGroups(List<String> groups) {
-        this.properties.put(GROUPS_PROPERTY, groups);
-    }
-
     public void setUserName(String userName) {
         this.userName = userName;
         this.properties.put(USERNAME_PROPERTY, userName);
+    }
+
+    public String getPassword() {
+        return (String) this.properties.get(PASSWORD_PROPERTY);
     }
 
     /**
@@ -197,11 +148,60 @@ public class User extends Entity {
         this.properties.put(PASSWORD_PROPERTY, password);
     }
 
+    public String getFirstName() {
+        return (String) this.properties.get(FIRST_NAME_PROPERTY);
+    }
+
+    public void setFirstName(String firstName) {
+        this.properties.put(FIRST_NAME_PROPERTY, firstName);
+    }
+
+    public String getLastName() {
+        return (String) this.properties.get(LAST_NAME_PROPERTY);
+    }
+
+    public void setLastName(String lastName) {
+        this.properties.put(LAST_NAME_PROPERTY, lastName);
+    }
+
+    public String getCompany() {
+        return (String) this.properties.get(COMPANY_PROPERTY);
+    }
+
+    public void setCompany(String company) {
+        this.properties.put(COMPANY_PROPERTY, company);
+    }
+
+    public String getEmail() {
+        return (String) this.properties.get(EMAIL_PROPERTY);
+    }
+
+    public void setEmail(String email) {
+        this.properties.put(EMAIL_PROPERTY, email);
+    }
+
+    @SuppressWarnings("unchecked")
+    public List<String> getGroups() {
+        return (List<String>) this.properties.get(GROUPS_PROPERTY);
+    }
+
+    public void setGroups(List<String> groups) {
+        this.properties.put(GROUPS_PROPERTY, groups);
+    }
+
+    /** @since 4.0.4 */
+    public String getTenantId() {
+        return (String) this.properties.get(TENANTID_PROPERTY);
+    }
     /**
      * @since 2.4
      */
     public void setTenantId(String tenantId) {
         this.properties.put(TENANTID_PROPERTY, tenantId);
+    }
+
+    public Map<String, Object> getProperties() {
+        return properties;
     }
 
     /**
@@ -211,8 +211,11 @@ public class User extends Entity {
         this.properties = properties;
     }
 
-    public Map<String, Object> getProperties() {
-        return properties;
+    public List<ExtendedGroup> getExtendedGroups() {
+        return extendedGroups;
     }
 
+    public void setExtendedGroups(List<ExtendedGroup> extendedGroups) {
+        this.extendedGroups = extendedGroups;
+    }
 }
