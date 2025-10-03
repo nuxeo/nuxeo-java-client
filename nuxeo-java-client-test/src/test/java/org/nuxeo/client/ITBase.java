@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2017-2018 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2017-2025 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -178,14 +178,14 @@ public class ITBase {
         User user = createUser();
         user = userManager.createUser(user);
         assertNotNull(user);
-        assertEquals(DEFAULT_USER_LOGIN, user.getId());
+        assertEquals(DEFAULT_USER_LOGIN, user.getUserName());
         assertEquals("last toto", user.getLastName());
         assertEquals(DEFAULT_USER_EMAIL, user.getEmail());
 
         // Fetch
         user = userManager.fetchUser(DEFAULT_USER_LOGIN);
         assertNotNull(user);
-        assertEquals(DEFAULT_USER_LOGIN, user.getId());
+        assertEquals(DEFAULT_USER_LOGIN, user.getUserName());
         assertEquals("last toto", user.getLastName());
         assertEquals(DEFAULT_USER_EMAIL, user.getEmail());
 

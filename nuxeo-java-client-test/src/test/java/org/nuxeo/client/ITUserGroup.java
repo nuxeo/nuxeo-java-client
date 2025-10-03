@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2016-2017 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2016-2025 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -95,14 +95,14 @@ public class ITUserGroup extends AbstractITBase {
         assertNotNull(users);
         assertEquals(2, users.getResultsCount());
         assertEquals(1, users.getCurrentPageSize());
-        assertEquals("Administrator", users.getUsers().get(0).getId());
+        assertEquals("Administrator", users.getUsers().get(0).getUserName());
         assertTrue(users.isNextPageAvailable());
         // Second search will retrieve Guest
         users = nuxeoClient.userManager().searchUser("*", 1, 1);
         assertNotNull(users);
         assertEquals(2, users.getResultsCount());
         assertEquals(1, users.getCurrentPageSize());
-        assertEquals("toto", users.getUsers().get(0).getId());
+        assertEquals("toto", users.getUsers().get(0).getUserName());
         assertFalse(users.isNextPageAvailable());
     }
 

@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2017 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2017-2025 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -58,7 +58,7 @@ public class UserGroupInterceptor implements Interceptor {
         if ("POST".equals(method)) {
             if (httpUrl.encodedPath().matches(USER_PATH)) {
                 String body = Responses.bodyToString(response);
-                String username = body.replaceFirst(".*\"id\":\"([^\"]*)\".*", "$1");
+                String username = body.replaceFirst(".*\"username\":\"([^\"]*)\".*", "$1");
                 if (StringUtils.isNotBlank(username)) {
                     usersToDelete.add(username);
                 }
