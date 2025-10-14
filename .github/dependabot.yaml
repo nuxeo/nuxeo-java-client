@@ -1,12 +1,33 @@
 version: 2
 updates:
+# Default branch: master
+# Maven
 - package-ecosystem: "maven"
   directory: "/"
   schedule:
     interval: "daily"
-  # Enable version updates along with security updates, limit to 10 to prevent CI overload
+  # Limit version updates to 10 to prevent CI overload
   open-pull-requests-limit: 10
+  # Group all version updates (patch only)
+  groups:
+    version-updates:
+      applies-to: "version-updates"
+      patterns:
+       - "*"
   ignore:
-  # Major version updates (doesn't work for security updates, need to list them explicitly, see below)
+  # Major version updates
   - dependency-name: "*"
     update-types: ["version-update:semver-major"]
+
+
+  # GitHub Actions
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "daily"
+    # Group all version updates (major, minor and patch)
+    groups:
+      version-updates:
+        applies-to: "version-updates"
+        patterns:
+        - "*"
