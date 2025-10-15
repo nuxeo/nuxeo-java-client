@@ -93,7 +93,7 @@
     <jackson.version>2.20.0</jackson.version>
     <junit.version>4.13.2</junit.version>
     <okhttp.version>4.12.0</okhttp.version>
-    <okio.version>3.16.1</okio.version>
+    <okio.version>3.16.2</okio.version>
     <retrofit.version>3.0.0</retrofit.version>
     <!-- other properties -->
     <java.version.release>11</java.version.release>
