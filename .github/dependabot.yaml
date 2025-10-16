@@ -1,30 +1,30 @@
 version: 2
 updates:
-# Default branch: master
-# Maven
-- package-ecosystem: "maven"
-  directory: "/"
-  schedule:
-    interval: "daily"
-  # Limit version updates to 10 to prevent CI overload
-  open-pull-requests-limit: 10
-  # Group all version updates (patch only)
-  groups:
-    version-updates:
-      applies-to: "version-updates"
-      patterns:
-       - "*"
-  ignore:
-  # Major version updates
-  - dependency-name: "*"
-    update-types: ["version-update:semver-major"]
+  # Default branch: master
+  # Maven
+  - package-ecosystem: "maven"
+    directory: "/"
+    schedule:
+      interval: "daily"
+    # Limit version updates to 10 to prevent CI overload
+    open-pull-requests-limit: 10
+    # Group all version updates (minor and patch)
+    groups:
+      version-updates:
+        applies-to: "version-updates"
+        patterns:
+          - "*"
+    ignore:
+      # Major version updates
+      - dependency-name: "*"
+        update-types: ["version-update:semver-major"]
 
-  # Nuxeo parent POM
-  - dependency-name: "org.nuxeo:nuxeo-parent"
-    update-types: [
-      "version-update:semver-minor",
-      "version-update:semver-patch"
-    ]
+      # Nuxeo parent POM
+      - dependency-name: "org.nuxeo:nuxeo-parent"
+        update-types: [
+          "version-update:semver-minor",
+          "version-update:semver-patch"
+        ]
 
   # GitHub Actions
   - package-ecosystem: "github-actions"
@@ -36,4 +36,4 @@ updates:
       version-updates:
         applies-to: "version-updates"
         patterns:
-        - "*"
+          - "*"
