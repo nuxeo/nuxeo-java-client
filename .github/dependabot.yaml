@@ -19,6 +19,9 @@ updates:
       - dependency-name: "*"
         update-types: ["version-update:semver-major"]
 
+      # Nuxeo dependencies Dependabot would try to fetch unnecessarily
+      - dependency-name: "org.nuxeo.ecm.distribution:nuxeo-server-tomcat"
+
       # Nuxeo parent POM
       - dependency-name: "org.nuxeo:nuxeo-parent"
         update-types: [
