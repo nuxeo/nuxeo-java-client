@@ -492,19 +492,8 @@
 
   <repositories>
     <repository>
-      <id>maven-public</id>
-      <url>https://packages.nuxeo.com/repository/maven-public/</url>
-      <releases>
-        <enabled>true</enabled>
-      </releases>
-      <snapshots>
-        <enabled>true</enabled>
-        <updatePolicy>always</updatePolicy>
-      </snapshots>
-    </repository>
-    <repository>
-      <id>maven-internal</id>
-      <url>https://packages.nuxeo.com/repository/maven-internal/</url>
+      <id>maven-public-lts</id>
+      <url>https://packages.nuxeo.com/repository/maven-public-lts</url>
       <releases>
         <enabled>true</enabled>
       </releases>
@@ -517,14 +506,14 @@
 
   <pluginRepositories>
     <pluginRepository>
-      <id>maven-public</id>
-      <url>https://packages.nuxeo.com/repository/maven-public/</url>
+      <id>maven-public-lts</id>
+      <url>https://packages.nuxeo.com/repository/maven-public-lts</url>
       <releases>
         <enabled>true</enabled>
       </releases>
+      <!-- no need to enable snapshots for plugin repository -->
       <snapshots>
-        <enabled>true</enabled>
-        <updatePolicy>always</updatePolicy>
+        <enabled>false</enabled>
       </snapshots>
     </pluginRepository>
   </pluginRepositories>
