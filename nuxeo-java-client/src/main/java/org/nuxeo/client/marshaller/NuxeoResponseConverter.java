@@ -68,38 +68,46 @@ public final class NuxeoResponseConverter<T> implements Converter<ResponseBody, 
     @Override
     @SuppressWarnings("unchecked")
     public T convert(ResponseBody body) throws IOException {
+        // deserialization with Retrofit starts here, we mainly have three cases:
+        // - Retrofit API states the endpoint returns a Blob
+        // - The response is of media type application/json
+        // - Other cases, like Retrofit API stating Object and response contains blob(s)
+        // then NuxeoClient performs post treatment on the converted object, like connecting them to the client
+        T result;
         MediaType mediaType = MediaType.fromOkHttpMediaType(body.contentType());
-        // there's post treatment in NuxeoClient on blob
         if (javaType.getRawClass().equals(StreamBlob.class)) {
-            return (T) new StreamBlob(body.byteStream(), null, mediaType.toString());
+            result = (T) new StreamBlob(body.byteStream(), null, mediaType.toString());
+        } else if (MediaTypes.APPLICATION_JSON.equalsTypeSubTypeWithoutSuffix(mediaType)) {
+            result = convertApplicationJson(body);
+        } else if (mediaType.type().equals(MediaTypes.MULTIPART_S)) { // Checking if multipart outputs.
+            result = (T) convertMultipart(body);
+        } else { // automation case
+            result = (T) new StreamBlob(body.byteStream(), null, mediaType.toString());
         }
-        // Checking if multipart outputs.
-        if (!MediaTypes.APPLICATION_JSON.equalsTypeSubTypeWithoutSuffix(mediaType)) {
-            if (mediaType.type().equals(MediaTypes.MULTIPART_S)) {
-                List<Blob> blobs = new ArrayList<>();
-                try (MultipartReader reader = new MultipartReader(body)) {
-                    MultipartReader.Part part;
-                    while ((part = reader.nextPart()) != null) {
-                        Headers headers = part.headers();
-                        String contentDisposition = headers.get("Content-Disposition");
-                        String contentType = headers.get("Content-Type");
-                        String filename = Stream.of(contentDisposition.split("; ?"))
-                                                .filter(s -> s.startsWith("filename"))
-                                                .map(s -> s.replaceFirst("filename=\"?([^\"]*)\"?", "$1"))
-                                                .findFirst()
-                                                .orElse(null);
-                        // IOUtils.copyToTempFile close the input stream for us
-                        blobs.add(
-                                new FileBlob(IOUtils.copyToTempFile(part.body().inputStream()), filename, contentType));
-                    }
-                    return (T) new Blobs(blobs);
-                }
+        return result;
+    }
+
+    protected Iterable<Blob> convertMultipart(ResponseBody body) throws IOException {
+        List<Blob> blobs = new ArrayList<>();
+        try (MultipartReader reader = new MultipartReader(body)) {
+            MultipartReader.Part part;
+            while ((part = reader.nextPart()) != null) {
+                Headers headers = part.headers();
+                String contentDisposition = headers.get("Content-Disposition");
+                String contentType = headers.get("Content-Type");
+                String filename = Stream.of(contentDisposition.split("; ?"))
+                                        .filter(s -> s.startsWith("filename"))
+                                        .map(s -> s.replaceFirst("filename=\"?([^\"]*)\"?", "$1"))
+                                        .findFirst()
+                                        .orElse(null);
+                // IOUtils.copyToTempFile close the input stream for us
+                blobs.add(new FileBlob(IOUtils.copyToTempFile(part.body().inputStream()), filename, contentType));
             }
-            // automation case
-            else {
-                return (T) new StreamBlob(body.byteStream(), null, mediaType.toString());
-            }
+            return new Blobs(blobs);
         }
+    }
+
+    protected T convertApplicationJson(ResponseBody body) {
         try (Reader reader = body.charStream()) {
             // Checking the type of the method client side
             if (javaType.getRawClass().equals(Object.class)) {
@@ -117,6 +125,7 @@ public final class NuxeoResponseConverter<T> implements Converter<ResponseBody, 
                     }
                 }
                 // If we can't find an appropriate class to map response just return the plain text
+                // noinspection unchecked
                 return (T) objectMapper.writeValueAsString(payload);
             } else {
                 // Delegate other cases to jackson
@@ -128,5 +137,4 @@ public final class NuxeoResponseConverter<T> implements Converter<ResponseBody, 
             throw new NuxeoClientException("Error during deserialization of HTTP body", reason);
         }
     }
-
 }
