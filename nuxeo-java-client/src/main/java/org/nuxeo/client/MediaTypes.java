@@ -41,6 +41,9 @@ public class MediaTypes {
 
     public static final String MULTIPART_S = "multipart";
 
+    /** @since 4.0.4 */
+    public static final MediaType MULTIPART_RELATED = MediaType.parse("multipart/related");
+
     private MediaTypes() {
         // empty
     }
