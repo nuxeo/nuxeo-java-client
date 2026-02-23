@@ -854,6 +854,29 @@ public class ITRepository extends AbstractITBase {
                 key, valueType.getTypeName());
     }
 
+    // JAVACLIENT-252
+    @Test
+    public void itCanStreamBlobWithAdapters() {
+        // replace main blob to change the content type
+        File file = getResourceFileFromContext("sample.mhtml");
+        FileBlob fileBlob = new FileBlob(file, "sample.mhtml");
+        nuxeoClient.operation(BLOB_ATTACH_ON_DOCUMENT)
+                   .voidOperation(true)
+                   .param("document", FOLDER_2_FILE)
+                   .input(fileBlob)
+                   .execute();
+        // get the blob adapter on it
+        Document.Adapter blobAdapter = nuxeoClient.repository()
+                                                  .fetchDocumentByPath(FOLDER_2_FILE)
+                                                  .adapter(document -> new Document.Adapter(document, "blob"));
+        // stream the blob with the dynamic API (ie: Object get())
+        StreamBlob blob = blobAdapter.get("file:content");
+        assertNotNull(blob);
+        assertEquals("sample.mhtml", blob.getFilename());
+        assertEquals("multipart/related", blob.getMimeType());
+        assertContentEquals(fileBlob, blob);
+    }
+
     @Test
     public void itCanManageAnnotations() {
         Document file = nuxeoClient.repository().fetchDocumentByPath(FOLDER_2_FILE);

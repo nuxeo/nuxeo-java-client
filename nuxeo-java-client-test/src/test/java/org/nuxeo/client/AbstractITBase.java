@@ -133,6 +133,17 @@ public abstract class AbstractITBase {
     }
 
     /**
+     * @since 4.0.4
+     */
+    protected void assertContentEquals(Blob expected, Blob actual) {
+        try (InputStream expectedBlobStream = expected.getStream(); InputStream actualBlobStream = actual.getStream()) {
+            assertEquals(IOUtils.toString(expectedBlobStream, UTF_8), IOUtils.toString(actualBlobStream, UTF_8));
+        } catch (IOException e) {
+            fail("Unable to read blob stream, e=" + e);
+        }
+    }
+
+    /**
      * @since 3.1
      */
     @SuppressWarnings("ConstantConditions")

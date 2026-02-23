@@ -196,6 +196,27 @@ public class ITOperation extends AbstractITBase {
         assertTrue(resultBlobs.getEntries().stream().anyMatch(b -> "sâmple.jpg".equals(b.getFilename())));
     }
 
+    // JAVACLIENT-252
+    @Test
+    public void itCanExecuteOperationWithMHtmlBlob() throws IOException {
+        // Attach a blob
+        File temp1 = getResourceFileFromContext("sample.mhtml");
+        long length = temp1.length();
+        StreamBlob byteBlob = new StreamBlob(new FileInputStream(temp1), "sample.mhtml");
+        Void aVoid = nuxeoClient.operation(BLOB_ATTACH_ON_DOCUMENT)
+                                .voidOperation(true)
+                                .param("document", FOLDER_2_FILE)
+                                .input(byteBlob)
+                                .execute();
+        assertNull(aVoid);
+
+        Blob blob = nuxeoClient.operation(DOCUMENT_GET_BLOB).input(FOLDER_2_FILE).execute();
+        assertNotNull(blob);
+        assertEquals("sample.mhtml", blob.getFilename());
+        assertEquals(length, blob.getContentLength());
+        assertContentEquals("sample.mhtml", blob);
+    }
+
     /**
      * JAVACLIENT-101
      */

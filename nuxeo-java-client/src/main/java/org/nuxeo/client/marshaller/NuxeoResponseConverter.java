@@ -79,7 +79,8 @@ public final class NuxeoResponseConverter<T> implements Converter<ResponseBody, 
             result = (T) new StreamBlob(body.byteStream(), null, mediaType.toString());
         } else if (MediaTypes.APPLICATION_JSON.equalsTypeSubTypeWithoutSuffix(mediaType)) {
             result = convertApplicationJson(body);
-        } else if (mediaType.type().equals(MediaTypes.MULTIPART_S)) { // Checking if multipart outputs.
+        } else if (mediaType.type().equals(MediaTypes.MULTIPART_S) && !mediaType.equals(MediaTypes.MULTIPART_RELATED)) {
+            // multipart case
             result = (T) convertMultipart(body);
         } else { // automation case
             result = (T) new StreamBlob(body.byteStream(), null, mediaType.toString());
