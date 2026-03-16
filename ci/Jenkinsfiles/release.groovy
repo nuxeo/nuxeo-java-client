@@ -19,7 +19,7 @@
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
-library identifier: "platform-ci-shared-library@v0.0.75"
+library identifier: "platform-ci-shared-library@v0.0.79"
 
 def lib
 
@@ -65,6 +65,36 @@ pipeline {
             New version: ${VERSION}
             """.stripIndent()
             nxMvn.updateVersion()
+            nxGit.commitTag(tag: "release-${VERSION}")
+          }
+        }
+      }
+    }
+
+    stage('Check blocker issues') {
+      steps {
+        container('maven') {
+          script {
+            def blockerIssueCheck = nxProject.checkBlockerJiraIssues(tagPrefix: 'release-')
+            if (blockerIssueCheck) {
+              env.TEAMS_NOTIFICATION_MESSAGE = blockerIssueCheck.message
+              error 'Found some unresolved or uncommitted blocker issues'
+            }
+          }
+        }
+      }
+    }
+
+    stage('Git push') {
+      steps {
+        container('maven') {
+          script {
+            echo """
+            ----------------------------------------
+            Git push
+            ----------------------------------------
+            """.stripIndent()
+            nxGit.push(reference: "release-${VERSION}")
           }
         }
       }
@@ -123,21 +153,6 @@ pipeline {
       }
     }
 
-    stage('Create tag') {
-      steps {
-        container('maven') {
-          script {
-            echo """
-            -------------------------------------------------
-            Tag nuxeo-java-client ${VERSION}
-            -------------------------------------------------
-            """
-            nxGit.commitTagPush(tag: "release-${VERSION}")
-          }
-        }
-      }
-    }
-
     stage('Bump branch') {
       steps {
         container('maven') {
@@ -170,6 +185,7 @@ pipeline {
               ],
               jiraMovingVersionName: env.JIRA_MOVING_VERSION,
               tagPrefix: 'release-',
+              version: env.VERSION,
             )
           }
         }
@@ -182,7 +198,7 @@ pipeline {
     always {
       script {
         nxUtils.setReleaseDescription()
-        nxUtils.notifyReleaseStatusIfNecessary()
+        nxUtils.notifyReleaseStatusIfNecessary(details: env.TEAMS_NOTIFICATION_MESSAGE)
       }
     }
   }
