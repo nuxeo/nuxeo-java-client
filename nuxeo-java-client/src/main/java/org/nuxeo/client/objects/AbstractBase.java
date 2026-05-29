@@ -20,7 +20,6 @@ package org.nuxeo.client.objects;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -214,6 +213,19 @@ public class AbstractBase<B extends AbstractBase<B>> {
 
     public B transactionTimeout(long timeout) {
         return header(HttpHeaders.NUXEO_TX_TIMEOUT, String.valueOf(timeout));
+    }
+
+    /**
+     * Force synchronous search indexing during a REST call.
+     * <p>
+     * This ensures that any indexing triggered by the call is completed before the response is returned, providing
+     * read-after-write consistency for subsequent search-based queries.
+     *
+     * @since 4.1
+     */
+    public B syncIndexing() {
+        header(HttpHeaders.NX_SEARCH_SYNC, "true");
+        return header(HttpHeaders.NX_ES_SYNC, "true");
     }
 
     public B enrichers(boolean append, String type, String enricher, String... enrichers) {
