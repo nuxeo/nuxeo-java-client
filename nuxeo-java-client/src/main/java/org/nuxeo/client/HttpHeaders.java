@@ -46,8 +46,14 @@ public class HttpHeaders {
 
     public static final String NX_TS = "NX_TS";
 
-    /** @since 3.2 */
+    /**
+     * @since 3.2
+     * @see #NX_SEARCH_SYNC for the modern equivalent (2025+)
+     */
     public static final String NX_ES_SYNC = "nx_es_sync";
+
+    /** @since 4.1 */
+    public static final String NX_SEARCH_SYNC = "nx-search-sync";
 
     /** @since 3.1 */
     public static final String USER_AGENT = "User-Agent";

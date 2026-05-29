@@ -266,6 +266,19 @@ public class ITBase {
                 userAgent.startsWith("okhttp/" + okhttpVersion + " NuxeoJavaClient/"));
     }
 
+    @Test
+    public void itCanSendSyncIndexingHeaders() {
+        // configure syncIndexing first, then bind capture interceptor after so it's last in the chain
+        client.syncIndexing();
+        SyncIndexingInterceptor interceptor = new SyncIndexingInterceptor();
+        client.addOkHttpInterceptor(interceptor);
+        // do a call - capture interceptor sees headers set by prior interceptors in the chain
+        client.repository().fetchDocumentRoot();
+
+        assertEquals("true", interceptor.searchSync);
+        assertEquals("true", interceptor.esSync);
+    }
+
     /**
      * @return A {@link NuxeoClient} filled with Nuxeo Server URL and default basic authentication.
      */
@@ -358,6 +371,22 @@ public class ITBase {
         public Response intercept(Chain chain) throws IOException {
             Request request = chain.request();
             userAgent = request.header(HttpHeaders.USER_AGENT);
+            return chain.proceed(request);
+        }
+
+    }
+
+    public static class SyncIndexingInterceptor implements Interceptor {
+
+        public String searchSync;
+
+        public String esSync;
+
+        @Override
+        public Response intercept(Chain chain) throws IOException {
+            Request request = chain.request();
+            searchSync = request.header(HttpHeaders.NX_SEARCH_SYNC);
+            esSync = request.header(HttpHeaders.NX_ES_SYNC);
             return chain.proceed(request);
         }
 
