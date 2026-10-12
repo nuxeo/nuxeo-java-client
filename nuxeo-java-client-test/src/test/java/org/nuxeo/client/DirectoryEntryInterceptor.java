@@ -38,7 +38,10 @@ import okhttp3.Response;
  */
 public class DirectoryEntryInterceptor implements Interceptor {
 
-    private static final String DIRECTORY_ENTRY_PATH = "/nuxeo/api/v1/directory/([^/]+)(?:/(.*)(?:/@.+)*)?$";
+    // an entry id may span several path segments, as PathSegments#encode leaves '/' unencoded, but it may never
+    // contain the '/@' adapter separator: spelling that out keeps the regex unambiguous, hence free of catastrophic
+    // backtracking
+    private static final String DIRECTORY_ENTRY_PATH = "/nuxeo/api/v1/directory/([^/]+)(?:/((?:[^/]|/(?!@))+))?(?:/@.+)?$";
 
     private final Set<Pair<String, String>> directoryEntryIdsToDelete = new HashSet<>();
 

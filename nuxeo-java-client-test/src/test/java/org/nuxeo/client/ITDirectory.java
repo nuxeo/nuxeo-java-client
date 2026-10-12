@@ -22,11 +22,14 @@ package org.nuxeo.client;
 import static junit.framework.TestCase.assertNotNull;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
+import org.apache.commons.lang3.tuple.Pair;
 import org.junit.Test;
 import org.nuxeo.client.objects.directory.Directories;
 import org.nuxeo.client.objects.directory.Directory;
@@ -134,6 +137,25 @@ public class ITDirectory extends AbstractITBase {
             // Delete (the given id is the one sent by the server)
             directory.deleteEntry(result.getId());
         }
+    }
+
+    // JAVACLIENT-254
+    @Test
+    public void itCanUnqueueDirectoryEntryWithSlashInId() {
+        Directory directory = nuxeoClient.directoryManager().directory("continent");
+        String entryId = "Europe / East";
+
+        DirectoryEntry entry = new DirectoryEntry();
+        entry.setDirectoryName("continent");
+        entry.putIdProperty(entryId);
+        DirectoryEntry result = directory.createEntry(entry);
+        // the interceptor must have queued the created entry for cleanup
+        assertEquals(Set.of(Pair.of("continent", entryId)),
+                Set.copyOf(directoryEntryInterceptor.getDirectoryEntryIdsToDelete()));
+
+        directory.deleteEntry(result.getId());
+        // and unqueued it, meaning it matched the DELETE path for an id spanning several path segments
+        assertTrue(directoryEntryInterceptor.getDirectoryEntryIdsToDelete().isEmpty());
     }
 
     @Test
