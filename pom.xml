@@ -92,7 +92,7 @@
     <guava.version>33.7.2-jre</guava.version>
     <jackson.version>2.22.4</jackson.version>
     <junit.version>4.13.2</junit.version>
-    <okhttp.version>4.12.0</okhttp.version>
+    <okhttp.version>4.12.1</okhttp.version>
     <okio.version>3.18.2</okio.version>
     <retrofit.version>3.0.0</retrofit.version>
     <!-- other properties -->
@@ -365,12 +365,12 @@
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-surefire-plugin</artifactId>
-          <version>3.6.0</version>
+          <version>3.6.1</version>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-failsafe-plugin</artifactId>
-          <version>3.6.0</version>
+          <version>3.6.1</version>
           <configuration>
             <trimStackTrace>false</trimStackTrace>
           </configuration>
